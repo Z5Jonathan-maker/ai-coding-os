@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
 # Fetch the latest verification/OTP code from a Mail.app email matching a
-# sender filter. Polls until a fresh code arrives or timeout.
-#
-# Used by any auth flow that emails OTP codes — GitHub, AWS, Cloudflare,
-# Stripe, banks, etc. Mail.app must be running and signed in to the iCloud
-# account that receives the codes.
+# sender filter. Used by any auth flow that emails OTP codes — GitHub, AWS,
+# Cloudflare, Stripe, banks, etc. Mail.app must be running and signed in to
+# the iCloud account that receives the codes.
 #
 # Usage:
 #   mail-code <sender-substring> [--since-now] [--timeout=N] [--digits=MIN-MAX]
 #
 # Examples:
-#   mail-code github.com                   # latest code from any github.com sender
-#   mail-code github.com --since-now       # wait up to 60s for a NEW email
-#   mail-code aws.amazon.com --timeout=120
-#   mail-code stripe.com --digits=6        # exactly 6 digits
-#   mail-code cloudflare.com --digits=6-8  # 6 to 8 digits
+#   mail-code noreply@github.com               # latest GH code, immediate
+#   mail-code noreply@github.com --since-now   # wait up to 60s for a NEW email
+#   mail-code stripe.com --digits=6
 set -euo pipefail
 
 if [ $# -lt 1 ]; then
@@ -27,6 +23,7 @@ SINCE_NOW=0
 TIMEOUT=60
 DIGITS_MIN=6
 DIGITS_MAX=8
+SCAN_LIMIT=10
 for arg in "$@"; do
   case "$arg" in
     --since-now) SINCE_NOW=1 ;;
@@ -41,30 +38,22 @@ for arg in "$@"; do
         DIGITS_MAX="$spec"
       fi
       ;;
+    --limit=*) SCAN_LIMIT="${arg#--limit=}" ;;
   esac
 done
 
 START_TS=$(date +%s)
 
-SCAN_LIMIT=10  # how many recent emails per sender to inspect for a code
-
-# Returns N most recent matching messages, one per line: "epoch|||body"
-read_recent() {
-  local sender="$1" limit="$2"
+# Read the i-th most recent matching message: returns "epoch|||body" or empty.
+read_msg_at() {
+  local sender="$1" idx="$2"
   /usr/bin/osascript <<APPLESCRIPT
 tell application "Mail"
   try
     set msgs to (messages of inbox whose sender contains "$sender")
-    set total to (count of msgs)
-    if total is 0 then return ""
-    set scanN to $limit
-    if total < scanN then set scanN to total
-    set out to ""
-    repeat with i from 1 to scanN
-      set m to item i of msgs
-      set out to out & ((date received of m) as string) & "|||" & (content of m) & "@@@END@@@"
-    end repeat
-    return out
+    if (count of msgs) < $idx then return ""
+    set m to item $idx of msgs
+    return ((date received of m) as string) & "|||" & (content of m)
   on error
     return ""
   end try
@@ -76,17 +65,15 @@ extract_code() {
   /usr/bin/grep -oE "\\b[0-9]{${DIGITS_MIN},${DIGITS_MAX}}\\b" | head -1
 }
 
-# Scan all-recent. Filter to "since-now" if set. Return first valid code.
-scan_for_code() {
-  local raw="$1" since_now="$2" start_ts="$3"
-  IFS=$'\n' read -r -d '' -a msgs < <(printf '%s' "$raw" | tr '\f' '\n' | awk -v RS='@@@END@@@' '{print}' && printf '\0')
-  for msg in "${msgs[@]}"; do
-    [ -z "$msg" ] && continue
-    local ts="${msg%%|||*}"
-    local body="${msg#*|||}"
-    local epoch
+# Scan up to SCAN_LIMIT recent messages from the sender, return first code.
+scan_once() {
+  for i in $(seq 1 "$SCAN_LIMIT"); do
+    local raw
+    raw=$(read_msg_at "$SENDER" "$i")
+    [ -z "$raw" ] && return 1
+    local ts="${raw%%|||*}" body="${raw#*|||}" epoch
     epoch=$(date -j -f "%A, %B %d, %Y at %l:%M:%S %p" "$ts" +%s 2>/dev/null || echo 0)
-    if [ "$since_now" -eq 1 ] && [ "$epoch" -lt "$start_ts" ]; then
+    if [ "$SINCE_NOW" -eq 1 ] && [ "$epoch" -lt "$START_TS" ]; then
       continue
     fi
     local code
@@ -99,19 +86,17 @@ scan_for_code() {
   return 1
 }
 
-# Fast path: non-poll mode — read once and bail
+# Fast path: non-poll mode
 if [ "$SINCE_NOW" -eq 0 ]; then
-  raw=$(read_recent "$SENDER" "$SCAN_LIMIT")
-  if scan_for_code "$raw" 0 0; then exit 0; fi
-  echo "no code found in $SCAN_LIMIT most recent emails from '$SENDER'" >&2
+  if scan_once; then exit 0; fi
+  echo "no code found in last $SCAN_LIMIT emails from '$SENDER'" >&2
   exit 1
 fi
 
-# Poll path: --since-now, wait for a fresh email
+# Poll path: wait for a fresh email
 elapsed=0
 while [ "$elapsed" -lt "$TIMEOUT" ]; do
-  raw=$(read_recent "$SENDER" "$SCAN_LIMIT")
-  if scan_for_code "$raw" 1 "$START_TS"; then exit 0; fi
+  if scan_once; then exit 0; fi
   sleep 3
   elapsed=$((elapsed + 3))
 done

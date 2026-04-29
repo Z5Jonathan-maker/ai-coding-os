@@ -1,0 +1,13 @@
+# Wire sudo-askpass for ALL sudo invocations (including /usr/bin/sudo
+# called directly by brew/system tools that bypass the PATH wrapper).
+# Without this, non-TTY callers fail because there's nowhere to type the
+# password. With it, sudo runs the askpass helper, which resolves via
+# 1Password (biometric or service-account token) without prompting.
+Defaults askpass="/Users/leonardofibonacci/dotfiles/bin/sudo-askpass"
+Defaults:leonardofibonacci !requiretty
+
+# Install via:
+#   sudo visudo -cf /Users/leonardofibonacci/dotfiles/etc/sudoers.d/00-askpass \
+#     && sudo install -m 440 -o root -g wheel \
+#        /Users/leonardofibonacci/dotfiles/etc/sudoers.d/00-askpass \
+#        /etc/sudoers.d/00-askpass

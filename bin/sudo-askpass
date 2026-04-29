@@ -6,10 +6,21 @@
 # without programs needing to pass -A explicitly.
 set -euo pipefail
 
+# Resolve `op` to an absolute path so we work under sudo's reset PATH and
+# under non-login subshells (playwright, hooks, claude code). Brew prefix on
+# Apple Silicon is /opt/homebrew; Intel is /usr/local.
+OP_BIN=""
+for cand in /opt/homebrew/bin/op /usr/local/bin/op "$HOME/local/bin/op"; do
+  [ -x "$cand" ] && { OP_BIN="$cand"; break; }
+done
+[ -z "$OP_BIN" ] && command -v op >/dev/null 2>&1 && OP_BIN="$(command -v op)"
+
 # Try 1Password — needs Settings → Developer → "Integrate with 1Password CLI" enabled,
 # and an item named "macOS" with a "password" field in your Personal vault.
-if command -v op >/dev/null 2>&1; then
-  if pw=$(op read 'op://Personal/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
+# If OP_SERVICE_ACCOUNT_TOKEN is set, op uses it instead of biometric and never
+# prompts — that is the path for full headless autonomy.
+if [ -n "$OP_BIN" ]; then
+  if pw=$("$OP_BIN" read 'op://Personal/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
     printf '%s' "$pw"
     exit 0
   fi

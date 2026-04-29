@@ -23,10 +23,10 @@ import urllib.parse
 from pathlib import Path
 
 GH_CLIENT_ID = "178c6fc778ccc68e1d6a"
-DEFAULT_SCOPES = (
-    "repo,read:org,workflow,gist,"
-    "admin:public_key,admin:ssh_signing_key"
-)
+# Default to scopes that DON'T require password re-prompt on the consent page.
+# admin:* scopes can be granted via `gh-auto-auth repo,...,admin:public_key,...`
+# but those flows need manual confirmation.
+DEFAULT_SCOPES = "repo,read:org,workflow,gist"
 PROFILE = str(Path.home() / ".cache" / "playwright-profile")
 
 def post(url: str, data: dict) -> dict:
@@ -114,14 +114,15 @@ def autofill_with_playwright(user_code: str, verify_url: str,
                 except Exception:
                     pass
 
-                # Look for an Authorize button — that's the goal.
-                # GitHub disables it for ~5-10s as anti-clickjacking; wait it out.
+                # Look for the Authorize button — that's the goal.
+                # CAUTION: there are two buttons with name='authorize' (Cancel
+                # has value='0' and is listed first). Target value='1' explicitly.
+                # The button is disabled for ~5-10s as anti-clickjacking; wait it out.
                 authorize = None
                 for sel in [
-                    "button[name='authorize']",
+                    "button[name='authorize'][value='1']",
                     "button.js-oauth-authorize-btn",
                     "button:has-text('Authorize')",
-                    "input[type=submit][value*='Authorize']",
                 ]:
                     try:
                         loc = page.locator(sel).first
@@ -140,7 +141,13 @@ def autofill_with_playwright(user_code: str, verify_url: str,
                             pass
                         page.wait_for_timeout(500)
                     authorize.click(force=False)
-                    page.wait_for_load_state("networkidle", timeout=30_000)
+                    # Don't insist on networkidle — GitHub keeps polling.
+                    # Just wait briefly for the navigation to start, then trust the polling loop.
+                    try:
+                        page.wait_for_load_state("load", timeout=15_000)
+                    except Exception:
+                        pass
+                    page.wait_for_timeout(2000)
                     print("playwright auto-authorized", flush=True)
                     return True
 

@@ -1,0 +1,42 @@
+[user]
+	name = Jonathan Cimadevilla
+	email = z5jonathan@icloud.com
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+	default = simple
+[core]
+	editor = code --wait
+	excludesfile = /Users/leonardofibonacci/.gitignore_global
+	pager = delta
+[rebase]
+	autosquash = true
+	autostash = true
+[fetch]
+	prune = true
+[diff]
+	algorithm = histogram
+	tool = difftastic
+[merge]
+	conflictstyle = zdiff3
+	tool = delta
+[rerere]
+	enabled = true
+[color]
+	ui = auto
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = true
+	syntax-theme = Monokai Extended
+[difftool "difftastic"]
+	cmd = difft \"$LOCAL\" \"$REMOTE\"
+[difftool]
+	prompt = false
+[alias]
+	dft = difftool

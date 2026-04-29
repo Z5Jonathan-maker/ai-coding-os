@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Fetch a token from 1Password by item name.
+# Usage: op-token GitHub          # reads op://Private/GitHub/token
+#        op-token GitHub password # reads op://Private/GitHub/password
+#        op-token GitHub api_key vault=Work
+#
+# Requires: 1Password desktop app + biometric unlock enabled
+#           (Settings → Developer → Integrate with 1Password CLI)
+set -euo pipefail
+
+ITEM="${1:?usage: op-token <item> [field] [vault=NAME]}"
+FIELD="${2:-token}"
+VAULT="Private"
+
+for arg in "${@:3}"; do
+  if [[ "$arg" == vault=* ]]; then
+    VAULT="${arg#vault=}"
+  fi
+done
+
+exec /opt/homebrew/bin/op read "op://${VAULT}/${ITEM}/${FIELD}"

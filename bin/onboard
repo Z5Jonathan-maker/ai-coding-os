@@ -24,25 +24,6 @@ prompt_ok() {
 
 # Try to fully grant Accessibility via System Events. Only works if osascript
 # already has Accessibility permission; if not, macOS blocks and we fall back.
-try_grant_accessibility() {
-  local app_path="$1" app_name
-  app_name="$(basename "$app_path" .app)"
-  /usr/bin/osascript <<APPLESCRIPT 2>/dev/null
-    tell application "System Settings"
-      activate
-      reveal anchor "Privacy_Accessibility" of pane id "com.apple.settings.PrivacySecurity.extension"
-    end tell
-    delay 1.5
-    tell application "System Events"
-      tell application process "System Settings"
-        try
-          click button "Add…" of group 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
-        end try
-      end tell
-    end tell
-APPLESCRIPT
-}
-
 # Step 1: Rectangle (window manager) — needs Accessibility
 echo "=== Rectangle accessibility ==="
 open -a Rectangle 2>/dev/null || true

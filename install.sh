@@ -22,7 +22,8 @@ link() {
     fi
     rm "$dst"
   elif [ -e "$dst" ]; then
-    local backup="$dst.backup.$(date +%Y%m%d%H%M%S)"
+    local backup
+    backup="$dst.backup.$(date +%Y%m%d%H%M%S)"
     echo "back $2 -> $backup"
     mv "$dst" "$backup"
   fi

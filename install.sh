@@ -41,6 +41,8 @@ link starship.toml        .config/starship.toml
 link ghostty_config       .config/ghostty/config
 link claude/CLAUDE.md     .claude/CLAUDE.md
 link claude/settings.json .claude/settings.json
+link claude/skills        .claude/skills
+link claude/agents        .claude/agents
 link git-config/allowed_signers .config/git/allowed_signers
 link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua

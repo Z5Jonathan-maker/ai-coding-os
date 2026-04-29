@@ -23,10 +23,10 @@ import urllib.parse
 from pathlib import Path
 
 GH_CLIENT_ID = "178c6fc778ccc68e1d6a"
-# Default to scopes that DON'T require password re-prompt on the consent page.
-# admin:* scopes can be granted via `gh-auto-auth repo,...,admin:public_key,...`
-# but those flows need manual confirmation.
-DEFAULT_SCOPES = "repo,read:org,workflow,gist"
+DEFAULT_SCOPES = (
+    "repo,read:org,workflow,gist,"
+    "admin:public_key,admin:ssh_signing_key"
+)
 PROFILE = str(Path.home() / ".cache" / "playwright-profile")
 
 def post(url: str, data: dict) -> dict:

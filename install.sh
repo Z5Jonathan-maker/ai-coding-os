@@ -42,6 +42,7 @@ link ghostty_config       .config/ghostty/config
 link claude/CLAUDE.md     .claude/CLAUDE.md
 link claude/settings.json .claude/settings.json
 link git-config/allowed_signers .config/git/allowed_signers
+link atuin/config.toml          .config/atuin/config.toml
 
 # ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
 chmod 600 "$DOTFILES_DIR/ssh_config" || true

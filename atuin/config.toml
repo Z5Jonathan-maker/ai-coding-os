@@ -1,0 +1,12 @@
+# atuin config — local-first; sign up later for cross-machine sync if wanted
+auto_sync = false
+update_check = false
+sync_frequency = "5m"
+search_mode = "fuzzy"
+filter_mode = "global"
+filter_mode_shell_up_key_binding = "session"
+inline_height = 20
+show_preview = true
+exit_mode = "return-original"
+keymap_mode = "auto"
+style = "compact"

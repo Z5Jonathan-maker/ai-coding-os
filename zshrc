@@ -1,4 +1,4 @@
-export PATH="$HOME/local/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/local/bin:$HOME/.local/bin:$HOME/dotfiles/bin:$PATH"
 
 # History
 HISTFILE=~/.zsh_history
@@ -71,3 +71,17 @@ else
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# atuin — magical shell history (replaces Ctrl-R; up-arrow stays as before)
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"
+
+# thefuck — typo correction (alias `fuck` retries last command)
+command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
+
+# zsh-autosuggestions — fish-like inline suggestions
+[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] \
+  && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# zsh-syntax-highlighting — must be sourced LAST
+[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
+  && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

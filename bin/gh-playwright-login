@@ -1,0 +1,40 @@
+#!/usr/bin/env -S uv run --quiet --with playwright python3
+"""One-time setup: open GitHub in Playwright's persistent profile so the user
+logs in (with 1Password 2FA autofill). After this, future `gh-auto-auth`
+runs reuse the session and authorize automatically.
+
+Usage:
+    gh-playwright-login
+"""
+import sys
+from pathlib import Path
+
+PROFILE = str(Path.home() / ".cache" / "playwright-profile")
+
+def main() -> int:
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("install playwright first: uv tool install playwright && playwright install chromium",
+              file=sys.stderr)
+        return 1
+
+    print(f"opening Chromium with persistent profile {PROFILE}")
+    print("log into github.com (1Password should auto-fill), then close the window.")
+    with sync_playwright() as p:
+        ctx = p.chromium.launch_persistent_context(
+            PROFILE, headless=False,
+            args=["--no-default-browser-check"],
+        )
+        page = ctx.new_page()
+        page.goto("https://github.com/login")
+        # Wait until the user closes all windows
+        try:
+            ctx.wait_for_event("close", timeout=0)
+        except Exception:
+            pass
+    print("done. now run `gh-auto-auth` for hands-off GitHub re-auth.")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

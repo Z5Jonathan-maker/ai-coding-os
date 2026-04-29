@@ -1,15 +1,13 @@
 #!/usr/bin/env -S uv run --quiet --with playwright python3
 """Hands-off GitHub re-auth.
 
-Runs the device-code flow against GitHub's API, then drives Playwright's
-persistent-profile Chromium to:
-  1. Visit https://github.com/login/device
-  2. Fill in the user code
-  3. Click 'Continue', then 'Authorize'
+Hits GitHub's device-code API, then navigates Chromium's persistent profile
+to the verification URL with the user code already embedded — skipping
+the code-entry form entirely. Clicks Authorize. Polls for the token.
 
-If you've logged into GitHub in this Playwright profile once before
-(see `gh-playwright-login`), no human is needed — the cookies are reused.
-1Password browser extension installed in the profile handles 2FA autofill.
+If anything blocks (no logged-in session, 2FA needed and 1Password not
+unlocked, GitHub UI changed), falls back to an osascript dialog so you
+can finish manually.
 
 Usage:
     gh-auto-auth                      # default scopes
@@ -55,31 +53,125 @@ def poll_for_token(device_code: str) -> dict:
         },
     )
 
-def autofill_with_playwright(user_code: str, verify_url: str) -> bool:
-    """Drive Chromium via Playwright to enter the code and authorize."""
+def clear_singleton_locks() -> None:
+    for lock in ("SingletonLock", "SingletonCookie", "SingletonSocket"):
+        p_lock = Path(PROFILE) / lock
+        try:
+            p_lock.unlink()
+        except (FileNotFoundError, IsADirectoryError):
+            pass
+
+def autofill_with_playwright(user_code: str, verify_url: str,
+                             verify_url_complete: str | None) -> bool:
+    """Walk the device-flow approve path. Multiple Continue clicks
+    (select-account, code-entry) may be required before the Authorize button
+    appears. Loops until Authorize is found and clicked, or gives up."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("playwright not installed; falling back to dialog", file=sys.stderr)
         return False
 
+    clear_singleton_locks()
+
+    target_url = verify_url_complete or f"{verify_url}?user_code={user_code}"
+
     with sync_playwright() as p:
         ctx = p.chromium.launch_persistent_context(
-            PROFILE,
-            headless=False,
+            PROFILE, headless=False,
             args=["--no-default-browser-check"],
         )
         page = ctx.new_page()
         try:
-            page.goto(verify_url, wait_until="domcontentloaded")
-            # The user-code input on github.com/login/device
-            page.locator("input[name='user_code']").fill(user_code)
-            page.locator("button:has-text('Continue')").first.click()
-            # Authorize button (may take a second to appear after code accepted)
-            page.locator("button:has-text('Authorize')").first.click(timeout=60_000)
-            page.wait_for_load_state("networkidle", timeout=30_000)
-            print("playwright auto-authorized", flush=True)
-            return True
+            page.goto(target_url, wait_until="domcontentloaded")
+            page.wait_for_timeout(1500)
+
+            for step in range(6):
+                # GitHub's device page uses 9 segmented inputs:
+                # #user-code-0..3 (chars), -4 (hidden dash), -5..8 (chars).
+                # Fill each char individually if the segmented form is present.
+                try:
+                    if page.locator("#user-code-0").count():
+                        first, second = (user_code.split("-") + [""])[:2]
+                        chars = list(first) + list(second)
+                        for i, ch in enumerate(chars):
+                            idx = i if i < 4 else i + 1  # skip the dash slot
+                            inp = page.locator(f"#user-code-{idx}")
+                            if inp.count():
+                                inp.fill(ch, timeout=2000)
+                        page.wait_for_timeout(500)
+                except Exception:
+                    pass
+
+                # Older / single-input variant
+                try:
+                    code_input = page.locator(
+                        "input[name='user_code'], input#user_code, input[autocomplete='one-time-code']"
+                    ).first
+                    if code_input.count() and code_input.is_visible() and not code_input.input_value():
+                        code_input.fill(user_code, timeout=3000)
+                        page.wait_for_timeout(500)
+                except Exception:
+                    pass
+
+                # Look for an Authorize button — that's the goal.
+                # GitHub disables it for ~5-10s as anti-clickjacking; wait it out.
+                authorize = None
+                for sel in [
+                    "button[name='authorize']",
+                    "button.js-oauth-authorize-btn",
+                    "button:has-text('Authorize')",
+                    "input[type=submit][value*='Authorize']",
+                ]:
+                    try:
+                        loc = page.locator(sel).first
+                        if loc.count() and loc.is_visible():
+                            authorize = loc
+                            break
+                    except Exception:
+                        continue
+                if authorize:
+                    # Wait for the button to become enabled (countdown ends)
+                    for _ in range(40):  # up to ~20s
+                        try:
+                            if authorize.is_enabled():
+                                break
+                        except Exception:
+                            pass
+                        page.wait_for_timeout(500)
+                    authorize.click(force=False)
+                    page.wait_for_load_state("networkidle", timeout=30_000)
+                    print("playwright auto-authorized", flush=True)
+                    return True
+
+                # No Authorize yet — click any visible Continue button and loop
+                clicked = False
+                for sel in [
+                    "input[type=submit][value='Continue']",
+                    "button:has-text('Continue')",
+                    "form[action*='device'] input[type=submit]",
+                    "form[action*='device'] button[type=submit]",
+                ]:
+                    try:
+                        loc = page.locator(sel).first
+                        if loc.count() and loc.is_visible():
+                            loc.click(timeout=3000)
+                            clicked = True
+                            break
+                    except Exception:
+                        continue
+                if not clicked:
+                    print(f"step {step}: nothing clickable at {page.url}",
+                          file=sys.stderr)
+                    return False
+                try:
+                    page.wait_for_load_state("domcontentloaded", timeout=10_000)
+                    page.wait_for_timeout(1200)
+                except Exception:
+                    pass
+
+            print("Authorize button not reached after 6 steps", file=sys.stderr)
+            return False
         except Exception as e:
             print(f"playwright autofill failed: {e}", file=sys.stderr)
             return False
@@ -104,12 +196,13 @@ def main() -> int:
     user_code = dc["user_code"]
     device_code = dc["device_code"]
     verify_url = dc["verification_uri"]
+    verify_url_complete = dc.get("verification_uri_complete")
     interval = int(dc.get("interval", 5))
     expires_in = int(dc.get("expires_in", 900))
 
     print(f"user code: {user_code}", flush=True)
 
-    autofilled = autofill_with_playwright(user_code, verify_url)
+    autofilled = autofill_with_playwright(user_code, verify_url, verify_url_complete)
     if not autofilled:
         fallback_dialog(user_code, verify_url)
 

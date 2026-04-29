@@ -1,6 +1,7 @@
 [user]
 	name = Jonathan Cimadevilla
 	email = z5jonathan@icloud.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKG544Vmb701NXqpXZXqlWAs0jmTYcLy1poo6kyhoiGj z5jonathan@icloud.com
 [init]
 	defaultBranch = main
 [pull]
@@ -46,3 +47,11 @@
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[gpg "ssh"]
+	allowedSignersFile = ~/.config/git/allowed_signers

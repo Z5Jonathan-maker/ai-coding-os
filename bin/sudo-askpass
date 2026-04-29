@@ -7,9 +7,9 @@
 set -euo pipefail
 
 # Try 1Password — needs Settings → Developer → "Integrate with 1Password CLI" enabled,
-# and an item named "macOS" with a "password" field in your Private vault.
+# and an item named "macOS" with a "password" field in your Personal vault.
 if command -v op >/dev/null 2>&1; then
-  if pw=$(op read 'op://Private/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
+  if pw=$(op read 'op://Personal/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
     printf '%s' "$pw"
     exit 0
   fi

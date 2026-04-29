@@ -25,7 +25,8 @@ from pathlib import Path
 GH_CLIENT_ID = "178c6fc778ccc68e1d6a"
 DEFAULT_SCOPES = (
     "repo,read:org,workflow,gist,"
-    "admin:public_key,admin:ssh_signing_key"
+    "admin:public_key,admin:ssh_signing_key,"
+    "user,notifications,read:packages,write:packages"
 )
 PROFILE = str(Path.home() / ".cache" / "playwright-profile")
 
@@ -86,7 +87,47 @@ def autofill_with_playwright(user_code: str, verify_url: str,
             page.goto(target_url, wait_until="domcontentloaded")
             page.wait_for_timeout(1500)
 
-            for step in range(6):
+            for step in range(8):
+                # ===== Email-verification (sudo-mode) page =====
+                # Triggered by sensitive scopes like `user`. GitHub mails an
+                # 8-digit code to the user's primary email; gh-mail-code
+                # reads it from Mail.app and prints it.
+                try:
+                    otp_input = page.locator(
+                        "input[name='otp'], input[autocomplete='one-time-code'], "
+                        "input[id='app_otp']"
+                    ).first
+                    if otp_input.count() and otp_input.is_visible():
+                        import subprocess as _sp
+                        # --since-now waits for a NEW email (the one this flow triggered)
+                        r = _sp.run(["/Users/leonardofibonacci/dotfiles/bin/gh-mail-code",
+                                     "--since-now", "--timeout=90"],
+                                    capture_output=True, text=True, timeout=120)
+                        code = (r.stdout or "").strip()
+                        if code:
+                            otp_input.fill(code, timeout=5000)
+                            page.wait_for_timeout(500)
+                            for sel in [
+                                "button:has-text('Verify')",
+                                "button[type=submit]",
+                                "input[type=submit]",
+                            ]:
+                                try:
+                                    btn = page.locator(sel).first
+                                    if btn.count() and btn.is_visible():
+                                        btn.click(timeout=3000)
+                                        break
+                                except Exception:
+                                    continue
+                            try:
+                                page.wait_for_load_state("domcontentloaded", timeout=10_000)
+                            except Exception:
+                                pass
+                            page.wait_for_timeout(1500)
+                            continue  # re-enter loop to handle next page
+                except Exception as e:
+                    print(f"otp handler: {e}", file=sys.stderr)
+
                 # GitHub's device page uses 9 segmented inputs:
                 # #user-code-0..3 (chars), -4 (hidden dash), -5..8 (chars).
                 # Fill each char individually if the segmented form is present.

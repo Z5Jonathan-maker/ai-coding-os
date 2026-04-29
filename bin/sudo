@@ -1,0 +1,18 @@
+#!/bin/bash
+# Wrapper that ensures sudo always uses our askpass when invoked without
+# -A or -n. Lets non-TTY callers (playwright, brew helpers, claude code
+# subprocesses) succeed by routing the password prompt through 1Password
+# (biometric) → osascript fallback. Programs hardcoding /usr/bin/sudo
+# bypass this; everyone else hits it via $PATH.
+set -e
+
+# If user already passed -A or -n, defer to the real sudo as-is
+for arg in "$@"; do
+  case "$arg" in
+    -A|-n|--askpass|--non-interactive) exec /usr/bin/sudo "$@" ;;
+    --) break ;;
+  esac
+done
+
+export SUDO_ASKPASS="${SUDO_ASKPASS:-$HOME/dotfiles/bin/sudo-askpass}"
+exec /usr/bin/sudo -A "$@"

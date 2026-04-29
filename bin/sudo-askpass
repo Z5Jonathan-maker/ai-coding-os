@@ -1,0 +1,21 @@
+#!/bin/bash
+# Universal askpass for sudo. Resolves macOS account password by:
+#   1. Trying 1Password CLI (biometric-unlocked, no plaintext anywhere)
+#   2. Falling back to an osascript GUI prompt if 1P isn't ready
+# Wired into /etc/sudoers.d/00-askpass so plain `sudo` honors it
+# without programs needing to pass -A explicitly.
+set -euo pipefail
+
+# Try 1Password — needs Settings → Developer → "Integrate with 1Password CLI" enabled,
+# and an item named "macOS" with a "password" field in your Private vault.
+if command -v op >/dev/null 2>&1; then
+  if pw=$(op read 'op://Private/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
+    printf '%s' "$pw"
+    exit 0
+  fi
+fi
+
+# Fallback: GUI dialog (Touch ID kicks in via pam_tid for the sudo itself,
+# this only fires if both 1P and Touch ID are unavailable)
+osascript -e 'Tell application "System Events" to display dialog "macOS password (sudo):" default answer "" with hidden answer with title "sudo"' \
+  -e 'text returned of result' 2>/dev/null

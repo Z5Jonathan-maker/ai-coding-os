@@ -46,15 +46,25 @@ done
 
 START_TS=$(date +%s)
 
-read_latest() {
-  local sender="$1"
+SCAN_LIMIT=10  # how many recent emails per sender to inspect for a code
+
+# Returns N most recent matching messages, one per line: "epoch|||body"
+read_recent() {
+  local sender="$1" limit="$2"
   /usr/bin/osascript <<APPLESCRIPT
 tell application "Mail"
   try
     set msgs to (messages of inbox whose sender contains "$sender")
-    if (count of msgs) is 0 then return ""
-    set m to item 1 of msgs
-    return ((date received of m) as string) & "|||" & (content of m)
+    set total to (count of msgs)
+    if total is 0 then return ""
+    set scanN to $limit
+    if total < scanN then set scanN to total
+    set out to ""
+    repeat with i from 1 to scanN
+      set m to item i of msgs
+      set out to out & ((date received of m) as string) & "|||" & (content of m) & "@@@END@@@"
+    end repeat
+    return out
   on error
     return ""
   end try
@@ -66,26 +76,45 @@ extract_code() {
   /usr/bin/grep -oE "\\b[0-9]{${DIGITS_MIN},${DIGITS_MAX}}\\b" | head -1
 }
 
-elapsed=0
-last_code=""
-while [ "$elapsed" -lt "$TIMEOUT" ]; do
-  out=$(read_latest "$SENDER")
-  if [ -n "$out" ]; then
-    msg_ts="${out%%|||*}"
-    msg_body="${out#*|||}"
-    msg_epoch=$(date -j -f "%A, %B %d, %Y at %l:%M:%S %p" "$msg_ts" +%s 2>/dev/null || echo 0)
-    if [ "$SINCE_NOW" -eq 0 ] || [ "$msg_epoch" -ge "$START_TS" ]; then
-      code=$(printf '%s\n' "$msg_body" | extract_code)
-      if [ -n "$code" ] && [ "$code" != "$last_code" ]; then
-        printf '%s\n' "$code"
-        exit 0
-      fi
-      last_code="$code"
+# Scan all-recent. Filter to "since-now" if set. Return first valid code.
+scan_for_code() {
+  local raw="$1" since_now="$2" start_ts="$3"
+  IFS=$'\n' read -r -d '' -a msgs < <(printf '%s' "$raw" | tr '\f' '\n' | awk -v RS='@@@END@@@' '{print}' && printf '\0')
+  for msg in "${msgs[@]}"; do
+    [ -z "$msg" ] && continue
+    local ts="${msg%%|||*}"
+    local body="${msg#*|||}"
+    local epoch
+    epoch=$(date -j -f "%A, %B %d, %Y at %l:%M:%S %p" "$ts" +%s 2>/dev/null || echo 0)
+    if [ "$since_now" -eq 1 ] && [ "$epoch" -lt "$start_ts" ]; then
+      continue
     fi
-  fi
+    local code
+    code=$(printf '%s\n' "$body" | extract_code)
+    if [ -n "$code" ]; then
+      printf '%s\n' "$code"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Fast path: non-poll mode — read once and bail
+if [ "$SINCE_NOW" -eq 0 ]; then
+  raw=$(read_recent "$SENDER" "$SCAN_LIMIT")
+  if scan_for_code "$raw" 0 0; then exit 0; fi
+  echo "no code found in $SCAN_LIMIT most recent emails from '$SENDER'" >&2
+  exit 1
+fi
+
+# Poll path: --since-now, wait for a fresh email
+elapsed=0
+while [ "$elapsed" -lt "$TIMEOUT" ]; do
+  raw=$(read_recent "$SENDER" "$SCAN_LIMIT")
+  if scan_for_code "$raw" 1 "$START_TS"; then exit 0; fi
   sleep 3
   elapsed=$((elapsed + 3))
 done
 
-echo "timeout: no code from sender '$SENDER' in ${TIMEOUT}s" >&2
+echo "timeout: no fresh code from sender '$SENDER' in ${TIMEOUT}s" >&2
 exit 1

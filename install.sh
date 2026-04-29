@@ -31,12 +31,19 @@ link() {
   echo "link $2 -> $src"
 }
 
-link zshrc            .zshrc
-link zprofile         .zprofile
-link gitconfig        .gitconfig
-link gitignore_global .gitignore_global
-link claude/CLAUDE.md .claude/CLAUDE.md
+link zshrc                .zshrc
+link zprofile             .zprofile
+link gitconfig            .gitconfig
+link gitignore_global     .gitignore_global
+link tmux.conf            .tmux.conf
+link ssh_config           .ssh/config
+link starship.toml        .config/starship.toml
+link ghostty_config       .config/ghostty/config
+link claude/CLAUDE.md     .claude/CLAUDE.md
 link claude/settings.json .claude/settings.json
+
+# ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
+chmod 600 "$DOTFILES_DIR/ssh_config" || true
 
 echo
 echo "Done. Open a new shell to pick up changes."

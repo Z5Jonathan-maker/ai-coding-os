@@ -1,0 +1,27 @@
+# Ghostty terminal config
+
+font-family = JetBrains Mono
+font-size = 13
+
+theme = GruvboxDarkHard
+
+window-padding-x = 12
+window-padding-y = 12
+window-decoration = true
+window-save-state = always
+
+cursor-style = block
+cursor-style-blink = false
+
+scrollback-limit = 100000
+
+# Pasting / shell integration
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# Make ⌘W ask before closing if a process is running
+confirm-close-surface = true
+
+# macOS niceties
+macos-titlebar-style = tabs
+macos-option-as-alt = true

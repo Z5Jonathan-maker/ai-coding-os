@@ -1,4 +1,4 @@
-export PATH="$HOME/local/bin:$PATH"
+export PATH="$HOME/local/bin:$HOME/.local/bin:$PATH"
 
 # History
 HISTFILE=~/.zsh_history

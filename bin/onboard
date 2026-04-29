@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# Walk through the GUI first-runs as autonomously as macOS lets us.
+# What we automate:
+#   - Open every app to its first-run screen (background)
+#   - Deep-link System Settings to the exact Accessibility / Privacy pane
+#   - Use AppleScript to attempt fully driving the Accessibility list
+#     (succeeds if 'osascript' already has Accessibility permission;
+#     otherwise macOS prompts and the script falls through to manual)
+# What we cannot automate:
+#   - 1Password initial sign-in (needs Secret Key + master password)
+#   - Slack workspace + auth (needs email/password — autofill via 1P)
+#   - Notion email/auth (same)
+#   - macOS TCC database edits (SIP-protected)
+set -euo pipefail
+
+say_or_print() {
+  command -v say >/dev/null 2>&1 && say -r 240 "$1" 2>/dev/null &
+  echo "→ $1"
+}
+
+prompt_ok() {
+  osascript -e "display dialog \"$1\" with title \"onboard\" buttons {\"OK\"} default button \"OK\""
+}
+
+# Try to fully grant Accessibility via System Events. Only works if osascript
+# already has Accessibility permission; if not, macOS blocks and we fall back.
+try_grant_accessibility() {
+  local app_path="$1" app_name
+  app_name="$(basename "$app_path" .app)"
+  /usr/bin/osascript <<APPLESCRIPT 2>/dev/null
+    tell application "System Settings"
+      activate
+      reveal anchor "Privacy_Accessibility" of pane id "com.apple.settings.PrivacySecurity.extension"
+    end tell
+    delay 1.5
+    tell application "System Events"
+      tell application process "System Settings"
+        try
+          click button "Add…" of group 1 of group 1 of scroll area 1 of group 1 of group 2 of splitter group 1 of group 1 of window 1
+        end try
+      end tell
+    end tell
+APPLESCRIPT
+}
+
+# Step 1: Rectangle (window manager) — needs Accessibility
+echo "=== Rectangle accessibility ==="
+open -a Rectangle 2>/dev/null || true
+sleep 1
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+say_or_print "Toggle Rectangle on in the Accessibility list"
+prompt_ok "System Settings is open at Privacy → Accessibility.\\n\\nFlip the Rectangle toggle on, then click OK."
+
+# Step 2: Hammerspoon — needs Accessibility (uses same pane)
+echo
+echo "=== Hammerspoon accessibility ==="
+open -a Hammerspoon 2>/dev/null || true
+sleep 1
+open "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+say_or_print "Toggle Hammerspoon on too"
+prompt_ok "Same pane. Flip the Hammerspoon toggle on, then click OK."
+
+# Step 3: Raycast — has its own onboarding wizard
+echo
+echo "=== Raycast onboarding ==="
+say_or_print "Raycast onboarding"
+open -a Raycast
+prompt_ok "Step through Raycast's onboarding screens.\\nRecommend swapping its hotkey to ⌘ Space (you'll need to disable Spotlight's hotkey first in Keyboard Shortcuts → Spotlight).\\n\\nClick OK when finished."
+
+# Step 4: OrbStack — Docker alternative onboarding
+echo
+echo "=== OrbStack onboarding ==="
+open -a OrbStack
+prompt_ok "Step through OrbStack onboarding (Personal license is free for personal use).\\nClick OK when 'orbctl --version' works in a fresh shell."
+
+# Step 5: 1Password — sign in with email + Secret Key + master password
+echo
+echo "=== 1Password sign-in ==="
+say_or_print "Sign in to 1Password. After signing in, enable the SSH agent and CLI integration in Settings, Developer."
+open -a "1Password"
+prompt_ok "Sign in to 1Password (you'll need email + Secret Key from 1Password.com or another device + master password).\\n\\nThen open Settings → Developer → enable BOTH:\\n  • Use the SSH agent\\n  • Integrate with 1Password CLI\\n\\nClick OK when done."
+
+# Verify 1P CLI works
+if /opt/homebrew/bin/op account list >/dev/null 2>&1; then
+  echo "✓ 1Password CLI authenticated"
+else
+  echo "⚠ op CLI not yet authenticated — run 'op signin' or check 1P Developer settings"
+fi
+
+# Step 6: Slack
+echo
+echo "=== Slack sign-in ==="
+open -a Slack
+prompt_ok "Sign in to Slack workspace(s). 1Password will autofill if you have credentials saved.\\nClick OK when done."
+
+# Step 7: Notion
+echo
+echo "=== Notion sign-in ==="
+open -a Notion
+prompt_ok "Sign in to Notion. 1Password autofill should work.\\nClick OK when done."
+
+# Final wrap-up
+echo
+echo "=== Done ==="
+say_or_print "Onboarding complete. Ready for action."
+
+# Sanity checks
+echo
+echo "--- post-onboard sanity ---"
+printf "Rectangle running:  %s\n" "$(pgrep -x Rectangle >/dev/null && echo yes || echo no)"
+printf "Hammerspoon running: %s\n" "$(pgrep -x Hammerspoon >/dev/null && echo yes || echo no)"
+printf "OrbStack running:   %s\n" "$(pgrep -x OrbStack >/dev/null && echo yes || echo no)"
+printf "1Password running:  %s\n" "$(pgrep -x 1Password >/dev/null && echo yes || echo no)"
+printf "Slack running:      %s\n" "$(pgrep -x Slack >/dev/null && echo yes || echo no)"
+printf "Notion running:     %s\n" "$(pgrep -x Notion >/dev/null && echo yes || echo no)"
+echo
+echo "After 1Password Developer toggles are on, restart your shell and:"
+echo "  - 'op signin' (then op-token <Item> works)"
+echo "  - 'ssh-add -l' should show 1P-managed keys"

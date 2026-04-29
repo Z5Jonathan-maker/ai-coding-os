@@ -55,6 +55,9 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 # fnm — fast Node version manager
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 
+# direnv — per-directory env vars
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
 # starship — fancy prompt (replaces vcs_info prompt above if installed)
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"

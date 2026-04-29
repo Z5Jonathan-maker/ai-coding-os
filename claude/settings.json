@@ -209,7 +209,8 @@
       "Bash(:(){:|:&};:)",
       "Bash(dd of=/dev/:*)",
       "Bash(mkfs:*)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "env": {},
   "agentPushNotifEnabled": true

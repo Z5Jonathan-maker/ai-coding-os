@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# Fetch the latest verification/OTP code from a Mail.app email matching a
+# sender filter. Polls until a fresh code arrives or timeout.
+#
+# Used by any auth flow that emails OTP codes — GitHub, AWS, Cloudflare,
+# Stripe, banks, etc. Mail.app must be running and signed in to the iCloud
+# account that receives the codes.
+#
+# Usage:
+#   mail-code <sender-substring> [--since-now] [--timeout=N] [--digits=MIN-MAX]
+#
+# Examples:
+#   mail-code github.com                   # latest code from any github.com sender
+#   mail-code github.com --since-now       # wait up to 60s for a NEW email
+#   mail-code aws.amazon.com --timeout=120
+#   mail-code stripe.com --digits=6        # exactly 6 digits
+#   mail-code cloudflare.com --digits=6-8  # 6 to 8 digits
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+  echo "usage: mail-code <sender-substring> [--since-now] [--timeout=N] [--digits=MIN-MAX]" >&2
+  exit 2
+fi
+
+SENDER="$1"; shift
+SINCE_NOW=0
+TIMEOUT=60
+DIGITS_MIN=6
+DIGITS_MAX=8
+for arg in "$@"; do
+  case "$arg" in
+    --since-now) SINCE_NOW=1 ;;
+    --timeout=*) TIMEOUT="${arg#--timeout=}" ;;
+    --digits=*)
+      spec="${arg#--digits=}"
+      if [[ "$spec" == *-* ]]; then
+        DIGITS_MIN="${spec%-*}"
+        DIGITS_MAX="${spec#*-}"
+      else
+        DIGITS_MIN="$spec"
+        DIGITS_MAX="$spec"
+      fi
+      ;;
+  esac
+done
+
+START_TS=$(date +%s)
+
+read_latest() {
+  local sender="$1"
+  /usr/bin/osascript <<APPLESCRIPT
+tell application "Mail"
+  try
+    set msgs to (messages of inbox whose sender contains "$sender")
+    if (count of msgs) is 0 then return ""
+    set m to item 1 of msgs
+    return ((date received of m) as string) & "|||" & (content of m)
+  on error
+    return ""
+  end try
+end tell
+APPLESCRIPT
+}
+
+extract_code() {
+  /usr/bin/grep -oE "\\b[0-9]{${DIGITS_MIN},${DIGITS_MAX}}\\b" | head -1
+}
+
+elapsed=0
+last_code=""
+while [ "$elapsed" -lt "$TIMEOUT" ]; do
+  out=$(read_latest "$SENDER")
+  if [ -n "$out" ]; then
+    msg_ts="${out%%|||*}"
+    msg_body="${out#*|||}"
+    msg_epoch=$(date -j -f "%A, %B %d, %Y at %l:%M:%S %p" "$msg_ts" +%s 2>/dev/null || echo 0)
+    if [ "$SINCE_NOW" -eq 0 ] || [ "$msg_epoch" -ge "$START_TS" ]; then
+      code=$(printf '%s\n' "$msg_body" | extract_code)
+      if [ -n "$code" ] && [ "$code" != "$last_code" ]; then
+        printf '%s\n' "$code"
+        exit 0
+      fi
+      last_code="$code"
+    fi
+  fi
+  sleep 3
+  elapsed=$((elapsed + 3))
+done
+
+echo "timeout: no code from sender '$SENDER' in ${TIMEOUT}s" >&2
+exit 1

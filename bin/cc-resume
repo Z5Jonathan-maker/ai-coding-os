@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Resume cc-loop by removing ~/.cc-paused. The loop will pick up on its
+# next pause-poll interval (default 30s).
+set -euo pipefail
+flag="$HOME/.cc-paused"
+if [ -f "$flag" ]; then
+  rm "$flag"
+  echo "cc-loop resumed (flag removed: $flag)."
+else
+  echo "cc-loop not paused (no flag at $flag)."
+fi

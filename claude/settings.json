@@ -248,6 +248,17 @@
   "env": {},
   "agentPushNotifEnabled": true,
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/secret-paste-guard.sh"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "",
@@ -255,6 +266,17 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/loop-guard.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/context-monitor.sh"
           }
         ]
       }
@@ -270,6 +292,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/no-ask-human.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/wired-up-stop.sh"
           }
         ]
       }

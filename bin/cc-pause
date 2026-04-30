@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Pause cc-loop. Touches ~/.cc-paused — the loop polls this and sleeps
+# while present. In-flight cycle is not killed. Use cc-resume to lift.
+set -euo pipefail
+flag="$HOME/.cc-paused"
+touch "$flag"
+echo "cc-loop paused (flag: $flag). Run cc-resume to lift."

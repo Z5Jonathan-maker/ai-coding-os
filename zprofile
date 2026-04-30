@@ -25,3 +25,10 @@ if [ -f "$HOME/Claude Code/.env" ]; then
   # Hand DeepSeek to browser-use's native ChatDeepSeek provider.
   export BROWSER_USE_LLM_MODEL="${BROWSER_USE_LLM_MODEL:-deepseek-chat}"
 fi
+
+# ntfy.sh push topic — installed by cc-bootstrap 2026-04-30
+export NTFY_TOPIC="cc-imac-c1ac6b58f282"
+
+# Source local-only secret env file (NOT committed to dotfiles).
+# Currently holds Langfuse API keys until they're moved to 1P.
+[ -f "$HOME/.langfuse.local" ] && . "$HOME/.langfuse.local"

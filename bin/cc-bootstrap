@@ -196,8 +196,8 @@ do_mercury() {
   fi
   ok "apiKey is populated"
 
-  if confirm "verify with: mercury start --foreground (Ctrl-C to exit)?"; then
-    "$mbin" start --foreground
+  if confirm "verify with: cc-mercury start --foreground (Ctrl-C to exit)?"; then
+    "$HOME/dotfiles/bin/cc-mercury" start --foreground
   fi
 }
 
@@ -322,12 +322,12 @@ do_doctor() {
     warn "cc-loop: runner not built (needs explicit named-scope auth from user)"
   fi
 
-  # mercury
+  # mercury (wrap with cc-mercury for runtime DEEPSEEK_API_KEY injection)
   if [ -x "$HOME/local/bin/mercury" ]; then
-    if [ -f "$HOME/.mercury/mercury.yaml" ] && ! grep -qE '^\s*apiKey:\s*""\s*$' "$HOME/.mercury/mercury.yaml"; then
-      ok "mercury: installed + configured"
+    if [ -x "$HOME/dotfiles/bin/cc-mercury" ]; then
+      ok "mercury: installed; use 'cc-mercury start' for runtime apiKey injection"
     else
-      warn "mercury: installed but apiKey empty (run: mercury setup OR edit ~/.mercury/mercury.yaml)"
+      warn "mercury: installed; cc-mercury wrapper missing"
     fi
   else
     warn "mercury: not installed (run cc-bootstrap mercury for hints)"

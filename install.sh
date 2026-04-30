@@ -55,6 +55,8 @@ link claude/hooks/session-resume.sh     .claude/hooks/session-resume.sh
 link claude/hooks/error-gate.sh         .claude/hooks/error-gate.sh
 link claude/hooks/ntfy-notify.sh        .claude/hooks/ntfy-notify.sh
 link claude/hooks/bootstrap-check.sh    .claude/hooks/bootstrap-check.sh
+# bin/cc-mercury is on PATH via ~/local/bin; symlink it there:
+# (handled by users symlinking ~/dotfiles/bin into PATH; no install.sh entry needed)
 # Note: individual skills are already covered by `link claude/skills .claude/skills`
 # above (it links the entire directory). Adding sub-symlinks for each skill creates
 # self-loops because ~/.claude/skills resolves through the parent symlink to the

@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+# cc-new-editorial — scaffold a new editorial-Swiss-minimal website
+# project from Wassim's augen-clone starter.
+#
+# Usage:
+#   cc-new-editorial <name>
+#   cc-new-editorial my-client-2026
+#
+# What it does (idempotent — safe to re-run, will refuse to clobber):
+#   1. Verifies augen-clone source is present
+#   2. cp -r the starter into ~/code/projects/<name>
+#   3. cd, git init, first commit
+#   4. npm install (Next.js 14 + Tailwind + Framer Motion + GSAP + Lenis)
+#   5. Drops a /design-ready DESIGN.md scaffold if missing
+#   6. Opens the project in VS Code
+#
+# After this:
+#   - Edit lib/brand.ts to swap brand identity
+#   - Edit DESIGN.md to anchor the visual spec
+#   - Run `npm run dev` (port 3000)
+#   - Use /design and /huashu-design skills to iterate
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+  echo "usage: cc-new-editorial <name>" >&2
+  echo "example: cc-new-editorial acme-redesign" >&2
+  exit 2
+fi
+
+NAME="$1"
+SRC="$HOME/code/research/wassim-augen/augen-extracted/augen-clone"
+PROJECTS="$HOME/code/projects"
+DST="$PROJECTS/$NAME"
+
+# Sanity
+[ -d "$SRC" ] || { echo "cc-new-editorial: source not found at $SRC" >&2
+                   echo "  cc-bootstrap doctor will tell you whether augen is downloaded." >&2
+                   exit 1; }
+
+if [ -e "$DST" ]; then
+  echo "cc-new-editorial: $DST already exists — refusing to clobber" >&2
+  echo "  pick a different name OR rm -rf the existing project first" >&2
+  exit 1
+fi
+
+mkdir -p "$PROJECTS"
+
+echo "→ scaffolding from augen-clone..."
+cp -R "$SRC" "$DST"
+
+cd "$DST"
+
+# Git init + first commit (only if not already a repo)
+if [ ! -d .git ]; then
+  git init -q
+  git add -A
+  git -c user.email=noreply@local -c user.name="cc-new-editorial" \
+    commit -q -m "init from augen-clone (Wassim Younes free starter)"
+  echo "  ✓ git initialized, first commit at $(git rev-parse --short HEAD)"
+fi
+
+# DESIGN.md scaffold so /design has a spec to anchor against
+if [ ! -f DESIGN.md ]; then
+  cat > DESIGN.md <<'DESIGN'
+# DESIGN.md
+
+Visual identity spec for this site. /design reads this as source of truth.
+Format: https://github.com/google-labs-code/design.md
+
+## Brand
+- name: <project name>
+- voice: <one word — serious / playful / quiet / precise / warm>
+- tagline: <one sentence>
+
+## Color tokens
+- bg:        #F5F3EE
+- fg:        #111111
+- hairline:  #D9D6CF
+- accent:    #<set per brand>
+- state-ok:  #2E7D32
+- state-warn:#C77C00
+- state-err: #B0271E
+
+## Typography
+- display: Inter Tight (or Space Grotesk)
+- body:    Inter
+- mono:    JetBrains Mono
+- scale:   1.25 (major third)
+
+## Spacing
+- base:    4px
+- scale:   4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128
+
+## Grid
+- columns:  12
+- gutter:   24px
+- container max: 1280px
+
+## Motion
+- easing:   cubic-bezier(0.16, 1, 0.3, 1)  (expo-out)
+- duration: 220ms (fast) / 480ms (default) / 840ms (slow)
+
+## Hard rules (Augen heritage — flat, quiet, engineered)
+- no gradients
+- no glassmorphism
+- no shadow > 1px
+- no radius > 4px
+- no emoji in production copy
+
+## Accessibility floor
+- WCAG: AA
+- focus styles: 2px outline, accent color, 2px offset
+- contrast: text ≥ 4.5:1, large text ≥ 3:1
+DESIGN
+  echo "  ✓ DESIGN.md scaffold written"
+fi
+
+# npm install (skip if node_modules already)
+if [ ! -d node_modules ]; then
+  echo "→ npm install (Next 14 + Tailwind + Framer Motion + GSAP + Lenis)..."
+  npm install --silent
+  echo "  ✓ deps installed"
+else
+  echo "  ✓ node_modules already present"
+fi
+
+# Open in VS Code (or other editor via $EDITOR if VS Code not present)
+if command -v code >/dev/null 2>&1; then
+  code "$DST"
+  echo "  ✓ opened in VS Code"
+fi
+
+cat <<NEXT
+
+══════════════════════════════════════════════════════════════
+  ✓ ready: $DST
+
+  Next:
+    cd $DST
+    npm run dev          # http://localhost:3000
+    \$EDITOR lib/brand.ts # swap brand content
+    \$EDITOR DESIGN.md    # anchor visual spec for /design
+
+  In Claude Code:
+    /design <thing>      # iterate against DESIGN.md
+    /huashu-design       # explore design directions
+    /ui-ux-pro-max       # search the design-intelligence DB
+══════════════════════════════════════════════════════════════
+NEXT

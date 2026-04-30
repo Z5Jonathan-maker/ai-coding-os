@@ -66,6 +66,21 @@ link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua
 link editorconfig               .editorconfig
 
+# Vendored skills cloned outside dotfiles. The symlinks tracked under
+# claude/skills/ point at these paths; clone them if missing so the
+# symlinks resolve on a fresh machine.
+clone_if_missing() {
+  local repo_url="$1" dest="$2"
+  if [ -d "$dest/.git" ]; then
+    echo "ok   vendor: $dest"
+  else
+    mkdir -p "$(dirname "$dest")"
+    git clone --depth=1 "$repo_url" "$dest" && echo "vendor cloned: $dest"
+  fi
+}
+clone_if_missing https://github.com/alchaincyf/huashu-design.git "$HOME/code/research/huashu-design"
+clone_if_missing https://github.com/browser-use/browser-harness.git "$HOME/code/research/browser-harness"
+
 # ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
 chmod 600 "$DOTFILES_DIR/ssh_config" || true
 

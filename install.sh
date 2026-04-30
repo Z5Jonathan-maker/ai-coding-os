@@ -53,6 +53,7 @@ link claude/hooks/secret-paste-guard.sh .claude/hooks/secret-paste-guard.sh
 link claude/hooks/session-handover.sh   .claude/hooks/session-handover.sh
 link claude/hooks/session-resume.sh     .claude/hooks/session-resume.sh
 link claude/hooks/error-gate.sh         .claude/hooks/error-gate.sh
+link claude/hooks/ntfy-notify.sh        .claude/hooks/ntfy-notify.sh
 link claude/skills/nonstop              .claude/skills/nonstop
 link claude/skills/wired-up             .claude/skills/wired-up
 link claude/skills/checkpoint           .claude/skills/checkpoint

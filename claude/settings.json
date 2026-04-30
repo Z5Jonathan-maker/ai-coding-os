@@ -245,7 +245,11 @@
     ],
     "defaultMode": "bypassPermissions"
   },
-  "env": {},
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc"
+  },
   "agentPushNotifEnabled": true,
   "hooks": {
     "SessionStart": [
@@ -315,6 +319,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/session-handover.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/ntfy-notify.sh"
           }
         ]
       }

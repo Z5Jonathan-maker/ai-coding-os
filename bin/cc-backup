@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+# cc-backup — restic backup of operational state to an offsite repo.
+#
+# What gets backed up (NOT just dotfiles, which are already on GitHub):
+#   ~/.claude/checkpoints/        manual + auto session checkpoints
+#   ~/.claude/projects/           per-project transcripts (most recent N days)
+#   ~/.claude/skills/             user-installed skills (if not symlinked)
+#   ~/.claude/agents/             user agents
+#   ~/.claude/settings.json       global settings
+#   ~/.claude/hooks/state/        hook state files
+#   ~/.claude/CLAUDE.md           global instructions
+#   ~/dotfiles/                   the dotfiles repo itself (git-clean state too)
+#
+# Excluded: ~/.claude/debug/ (regenerable), ~/.claude/file-history/ (regenerable),
+#          *.log, MCP auth tokens (regenerable via re-auth).
+#
+# First-time setup (one shot):
+#   1. brew install restic
+#   2. Create a B2 bucket "cc-backup-imac" (or S3, etc.)
+#   3. Add a 1P item "Restic B2 backup" with fields:
+#        - password         (random 32-byte string, generate in 1P)
+#        - b2_account_id    (your B2 application key ID)
+#        - b2_account_key   (your B2 application key)
+#   4. Run: cc-backup init
+#   5. Run: cc-backup once     (test)
+#   6. Run: cc-backup install  (LaunchAgent for daily 03:30 run)
+#
+# Daily ops:
+#   cc-backup once       # one snapshot now
+#   cc-backup snapshots  # list snapshots
+#   cc-backup restore    # interactive restore wizard
+#   cc-backup forget     # apply retention policy (--keep-daily 7 --keep-weekly 4 --keep-monthly 6)
+set -u
+
+REPO_NAME="${CC_BACKUP_REPO_NAME:-cc-backup-imac}"
+OP_ITEM="${CC_BACKUP_OP_ITEM:-Restic B2 backup}"
+OP_VAULT="${CC_BACKUP_OP_VAULT:-Personal}"
+
+OP_BIN=""
+for cand in /opt/homebrew/bin/op /usr/local/bin/op; do
+  [ -x "$cand" ] && { OP_BIN="$cand"; break; }
+done
+
+RESTIC_BIN=""
+for cand in /opt/homebrew/bin/restic /usr/local/bin/restic; do
+  [ -x "$cand" ] && { RESTIC_BIN="$cand"; break; }
+done
+
+LOG_FILE="$HOME/.claude/cc-backup.log"
+EXCLUDE_FILE="$HOME/dotfiles/etc/cc-backup-excludes.txt"
+
+log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG_FILE"; }
+
+require() {
+  [ -n "$RESTIC_BIN" ] || { echo "cc-backup: restic not installed (brew install restic)" >&2; exit 127; }
+  [ -n "$OP_BIN" ]     || { echo "cc-backup: op (1Password CLI) not found" >&2; exit 127; }
+}
+
+load_creds() {
+  require
+  RESTIC_PASSWORD=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/password" 2>/dev/null) \
+    || { echo "cc-backup: cannot read 1P password (item: $OP_ITEM in vault: $OP_VAULT)" >&2; exit 1; }
+  B2_ACCOUNT_ID=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/b2_account_id" 2>/dev/null) || true
+  B2_ACCOUNT_KEY=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/b2_account_key" 2>/dev/null) || true
+  export RESTIC_PASSWORD B2_ACCOUNT_ID B2_ACCOUNT_KEY
+  export RESTIC_REPOSITORY="b2:${REPO_NAME}:imac"
+}
+
+cmd_init() {
+  load_creds
+  log "init repository $RESTIC_REPOSITORY"
+  "$RESTIC_BIN" init
+}
+
+cmd_once() {
+  load_creds
+  log "snapshot starting"
+  local args=(
+    backup
+    "$HOME/.claude/checkpoints"
+    "$HOME/.claude/projects"
+    "$HOME/.claude/skills"
+    "$HOME/.claude/agents"
+    "$HOME/.claude/settings.json"
+    "$HOME/.claude/hooks/state"
+    "$HOME/.claude/CLAUDE.md"
+    "$HOME/dotfiles"
+    --tag imac --tag cc-state
+    --exclude '*.log'
+    --exclude '*.stdout'
+    --exclude '*.stderr'
+    --exclude 'debug/'
+    --exclude 'file-history/'
+    --exclude '.DS_Store'
+    --exclude 'node_modules'
+  )
+  [ -f "$EXCLUDE_FILE" ] && args+=(--exclude-file "$EXCLUDE_FILE")
+  "$RESTIC_BIN" "${args[@]}" 2>&1 | tee -a "$LOG_FILE"
+  log "snapshot done"
+}
+
+cmd_snapshots() {
+  load_creds
+  "$RESTIC_BIN" snapshots --tag cc-state
+}
+
+cmd_forget() {
+  load_creds
+  log "applying retention policy"
+  "$RESTIC_BIN" forget --tag cc-state \
+    --keep-daily 7 --keep-weekly 4 --keep-monthly 6 \
+    --prune
+}
+
+cmd_restore() {
+  load_creds
+  echo "Recent snapshots:"
+  "$RESTIC_BIN" snapshots --tag cc-state --compact | tail -10
+  echo
+  read -rp "Snapshot ID to restore (or 'latest'): " sid
+  read -rp "Target dir [default ~/cc-backup-restore]: " target
+  target="${target:-$HOME/cc-backup-restore}"
+  mkdir -p "$target"
+  "$RESTIC_BIN" restore "$sid" --target "$target"
+  echo "Restored to $target"
+}
+
+cmd_install() {
+  local plist_src="$HOME/dotfiles/launchd/com.user.cc-backup.plist"
+  local plist_dst="$HOME/Library/LaunchAgents/com.user.cc-backup.plist"
+  [ -f "$plist_src" ] || { echo "cc-backup: plist source missing: $plist_src" >&2; exit 1; }
+  cp "$plist_src" "$plist_dst"
+  launchctl load -w "$plist_dst"
+  echo "installed: $plist_dst (daily 03:30 local)"
+}
+
+cmd_status() {
+  echo "RESTIC_BIN: ${RESTIC_BIN:-<not installed; brew install restic>}"
+  echo "OP_BIN:     ${OP_BIN:-<not installed>}"
+  echo "REPO_NAME:  $REPO_NAME"
+  echo "OP_ITEM:    $OP_ITEM (vault: $OP_VAULT)"
+  echo
+  if [ -n "$RESTIC_BIN" ] && [ -n "$OP_BIN" ]; then
+    if "$OP_BIN" item get "$OP_ITEM" --vault "$OP_VAULT" >/dev/null 2>&1; then
+      echo "1P:         item '$OP_ITEM' exists in vault '$OP_VAULT'"
+    else
+      echo "1P:         item '$OP_ITEM' NOT found in vault '$OP_VAULT' (or op session locked)"
+    fi
+  else
+    echo "1P:         skipped (restic or op missing)"
+  fi
+  echo
+  if launchctl list | grep -q com.user.cc-backup; then
+    echo "LAUNCHD:    com.user.cc-backup loaded"
+  else
+    echo "LAUNCHD:    com.user.cc-backup NOT loaded (run cc-backup install)"
+  fi
+  echo
+  echo "Recent log:"
+  if [ -f "$LOG_FILE" ]; then
+    tail -10 "$LOG_FILE" | sed 's/^/  /'
+  else
+    echo "  (no log yet at $LOG_FILE)"
+  fi
+}
+
+[ $# -eq 0 ] && { sed -n '2,40p' "$0"; exit 0; }
+case "$1" in
+  init)      cmd_init ;;
+  once)      cmd_once ;;
+  snapshots) cmd_snapshots ;;
+  forget)    cmd_forget ;;
+  restore)   cmd_restore ;;
+  install)   cmd_install ;;
+  status)    cmd_status ;;
+  *)         echo "cc-backup: unknown subcommand: $1" >&2; sed -n '2,40p' "$0" >&2; exit 2 ;;
+esac

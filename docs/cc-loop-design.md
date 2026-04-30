@@ -79,6 +79,66 @@ while true:
     sleep INTER_CYCLE
 ```
 
+## v1 must-have: outcome-bound circuit breaker (Ralph pattern)
+
+Before cc-loop ships, the cycle MUST gate completion on real outcomes,
+not just `claude -p` exit code. The current `loop-guard.sh` /
+`error-gate.sh` / `wired-up-stop.sh` hooks catch *in-session* misbehavior
+but cannot detect "the agent thinks it's done but the build is broken."
+
+Per the Ralph pattern (https://github.com/frankbria/ralph-claude-code),
+each cycle should also:
+
+1. **Run the project's verifier** after the cycle exits 0 — typically the
+   project's `make check` or `npm test` or whatever `tools.verify` is
+   configured to. Cycle outcome = `claude_rc == 0 AND verifier_rc == 0`.
+2. **Detect a no-progress condition** — if the cycle did not modify any
+   tracked files AND did not emit a checkpoint, count that as a "no-op"
+   cycle. After N consecutive no-ops, deactivate (probably done OR stuck).
+3. **Detect output decline** — keep a rolling 5-cycle window of cycle
+   stdout length. If the average drops below a threshold, that's a tell
+   the agent is repeating itself and not advancing.
+4. **Honor an explicit EXIT_SIGNAL** — accept a sentinel like
+   `EXIT_SIGNAL: TASK_COMPLETE` or `EXIT_SIGNAL: BLOCKED` in the cycle
+   output as a clean shutdown signal that bypasses the verifier.
+
+Implementation sketch — added to `run_one_cycle`:
+
+```bash
+# After existing rate-limit + breaker checks:
+if [ "$rc" -eq 0 ]; then
+  # Outcome verification
+  if [ -n "$CC_LOOP_VERIFIER" ]; then
+    if ! bash -c "$CC_LOOP_VERIFIER" >> "$LOG_FILE" 2>&1; then
+      log "VERIFIER failed; treating cycle as failure"
+      rc=1
+    fi
+  fi
+  # No-progress detection
+  if ! git -C "$CC_LOOP_REPO" diff --quiet HEAD 2>/dev/null \
+     && [ ! -f "$HOME/.claude/checkpoints/$(ls -t $HOME/.claude/checkpoints | head -1)" ]; then
+    state_set noop_cycles 0
+  else
+    nc=$(state_get noop_cycles 0); nc=$((nc+1))
+    state_set noop_cycles "$nc"
+    if [ "$nc" -ge "${CC_LOOP_NOOP_LIMIT:-3}" ]; then
+      log "no-progress for $nc consecutive cycles; deactivating"
+      touch "$HOME/.cc-paused"
+      return 0
+    fi
+  fi
+fi
+# EXIT_SIGNAL detection
+if grep -qE 'EXIT_SIGNAL:\s*TASK_COMPLETE' "$out"; then
+  log "EXIT_SIGNAL TASK_COMPLETE; pausing loop"
+  touch "$HOME/.cc-paused"
+fi
+```
+
+This is the difference between "unattended Claude" and "unattended Claude
+that knows when it's actually done." Shipping cc-loop without it is the
+single biggest autonomy footgun in the stack.
+
 ## Risk acknowledgement
 
 This design intentionally creates an always-on autonomous agent on the iMac.

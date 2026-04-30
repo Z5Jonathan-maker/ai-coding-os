@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+# cc-health-weekly — automated weekly health check for the platform.
+# Runs via LaunchAgent every Sunday 09:00. ntfy-pushes a one-line
+# summary: ✓ all green, OR ⚠ N items need attention with detail.
+#
+# Designed to be silent if everything is fine. Only nudges your phone
+# when something actually needs you.
+#
+# Manual invocation: cc-health-weekly [--verbose]
+set -u
+
+VERBOSE=0
+[ "${1:-}" = "--verbose" ] && VERBOSE=1
+
+LOG="$HOME/.claude/cc-health-weekly.log"
+mkdir -p "$(dirname "$LOG")"
+
+ts=$(date '+%Y-%m-%d %H:%M:%S')
+echo "=== $ts cc-health-weekly start ===" >> "$LOG"
+
+issues=()
+checks_passed=0
+
+check() {
+  local name="$1" cmd="$2" expect="$3"
+  local out
+  out=$(eval "$cmd" 2>&1 || true)
+  if echo "$out" | grep -qE "$expect"; then
+    checks_passed=$((checks_passed + 1))
+    [ "$VERBOSE" -eq 1 ] && echo "  ✓ $name"
+    echo "  ✓ $name" >> "$LOG"
+  else
+    issues+=("$name")
+    [ "$VERBOSE" -eq 1 ] && echo "  ✗ $name — $out" | head -2
+    echo "  ✗ $name — $(echo "$out" | head -1)" >> "$LOG"
+  fi
+}
+
+# 1. Platform doctor
+check "doctor: cc-prune loaded" \
+  "launchctl list 2>/dev/null | grep com.user.cc-prune" \
+  "com.user.cc-prune"
+
+check "doctor: mempalace initialized" \
+  "[ -f $HOME/mempalace/mempalace.yaml ] && echo ok" \
+  "ok"
+
+check "doctor: cc-loop runner installed" \
+  "[ -x $HOME/dotfiles/bin/cc-loop ] && echo ok" \
+  "ok"
+
+# 2. Daemons
+check "daemon: mercury running" \
+  "pgrep -f 'mercury.*start' || echo no" \
+  "[0-9]"
+
+check "daemon: langfuse-web container" \
+  "docker ps --format '{{.Names}}' 2>/dev/null | grep langfuse-web || echo no" \
+  "langfuse-web"
+
+check "daemon: auto-browser containers" \
+  "docker ps --format '{{.Names}}' 2>/dev/null | grep auto-browser || echo no" \
+  "auto-browser"
+
+# 3. Connectivity
+check "tailscale: authed + on tailnet" \
+  "/opt/homebrew/bin/tailscale status 2>&1 | head -1" \
+  "^100\\."
+
+check "1P CLI: signed in" \
+  "/opt/homebrew/bin/op whoami 2>&1" \
+  "@"
+
+# 4. Dotfiles in sync
+check "dotfiles: in sync with origin" \
+  "cd $HOME/dotfiles && git fetch -q && [ \$(git rev-list --count HEAD..origin/main) -eq 0 ] && [ \$(git rev-list --count origin/main..HEAD) -eq 0 ] && echo ok" \
+  "ok"
+
+# 5. Disk space
+disk_pct=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
+if [ "${disk_pct:-100}" -gt 85 ]; then
+  issues+=("disk: ${disk_pct}% full")
+  echo "  ✗ disk: ${disk_pct}% full" >> "$LOG"
+else
+  checks_passed=$((checks_passed + 1))
+  echo "  ✓ disk: ${disk_pct}% full" >> "$LOG"
+fi
+
+# 6. ~/.claude size (cc-prune should keep this in check)
+claude_size_mb=$(du -sm "$HOME/.claude" 2>/dev/null | awk '{print $1}')
+if [ "${claude_size_mb:-0}" -gt 5000 ]; then
+  issues+=("\$HOME/.claude: ${claude_size_mb}MB (cc-prune may be misconfigured)")
+fi
+
+# Summary
+total=$((checks_passed + ${#issues[@]}))
+echo "=== $ts result: ${checks_passed}/${total} green ===" >> "$LOG"
+
+if [ ${#issues[@]} -eq 0 ]; then
+  msg="✓ cc-health: all ${total} green"
+  [ "$VERBOSE" -eq 1 ] && echo "$msg"
+else
+  msg="⚠ cc-health: $(echo ${#issues[@]}) of ${total} need attention"
+  detail=$(printf '\n  • %s' "${issues[@]}")
+  msg="${msg}${detail}"
+  [ "$VERBOSE" -eq 1 ] && echo -e "$msg"
+fi
+
+# ntfy push if topic configured
+if [ -n "${NTFY_TOPIC:-}" ] && [ ${#issues[@]} -gt 0 ]; then
+  curl -fsSL --max-time 5 \
+    -H "Title: cc-health-weekly" \
+    -H "Priority: 3" \
+    -H "Tags: stethoscope" \
+    -d "$msg" \
+    "https://ntfy.sh/${NTFY_TOPIC}" >/dev/null 2>&1 &
+fi

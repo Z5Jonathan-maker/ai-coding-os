@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Monthly platform update sweep. Runs 1st of each month at 06:00.
+  Pulls latest for: brew, cloned skill/tool repos, docker images,
+  uv tools, npm cache. ntfy-pushes summary.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.cc-self-update</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>/Users/leonardofibonacci/dotfiles/bin/cc-self-update</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Day</key>
+    <integer>1</integer>
+    <key>Hour</key>
+    <integer>6</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/leonardofibonacci/.claude/cc-self-update.stdout</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/leonardofibonacci/.claude/cc-self-update.stderr</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/Users/leonardofibonacci</string>
+  </dict>
+</dict>
+</plist>

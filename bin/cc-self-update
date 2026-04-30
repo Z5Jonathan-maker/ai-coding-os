@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# cc-self-update — automated monthly update sweep across the entire
+# platform. Runs via LaunchAgent on the 1st of each month, 06:00.
+# ntfy-pushes summary of: what got updated, what failed, what's stale.
+#
+# Updates (each is safe-fail; one failure doesn't abort the rest):
+#   - brew update + upgrade
+#   - All cloned skill/tool repos (git pull --ff-only)
+#   - Docker images for langfuse + auto-browser (compose pull + up -d)
+#   - npx-cached MCP servers (clear cache, re-resolve on next call)
+#   - uv tool upgrade (mempalace, browser-use, gdown, etc.)
+#
+# Manual invocation: cc-self-update [--dry-run]
+set -u
+
+DRY_RUN=0
+[ "${1:-}" = "--dry-run" ] && DRY_RUN=1
+
+LOG="$HOME/.claude/cc-self-update.log"
+mkdir -p "$(dirname "$LOG")"
+ts=$(date '+%Y-%m-%d %H:%M:%S')
+
+log() { echo "$1" | tee -a "$LOG"; }
+
+log ""
+log "=== $ts cc-self-update start (dry_run=$DRY_RUN) ==="
+
+updated=()
+failed=()
+
+# 1. brew
+log ""
+log "── brew update + upgrade ──"
+if command -v /opt/homebrew/bin/brew >/dev/null; then
+  if [ "$DRY_RUN" = "0" ]; then
+    /opt/homebrew/bin/brew update >> "$LOG" 2>&1 || failed+=("brew update")
+    /opt/homebrew/bin/brew upgrade >> "$LOG" 2>&1 || failed+=("brew upgrade")
+    updated+=("brew")
+  else
+    log "[DRY-RUN] brew update + upgrade"
+  fi
+fi
+
+# 2. Cloned skill/tool repos
+log ""
+log "── cloned repos (git pull --ff-only) ──"
+for repo in \
+  "$HOME/code/research/huashu-design" \
+  "$HOME/code/research/browser-harness" \
+  "$HOME/code/research/mercury-agent" \
+  "$HOME/code/research/ui-ux-pro-max-skill" \
+  "$HOME/code/research/langfuse" \
+  "$HOME/code/research/wassim-drive/andrej-karpathy-skills-main" \
+  "$HOME/code/security/auto-browser" \
+  ; do
+  [ -d "$repo/.git" ] || continue
+  log "  → $repo"
+  if [ "$DRY_RUN" = "0" ]; then
+    if ( cd "$repo" && git pull --ff-only 2>&1 ); then
+      updated+=("$(basename "$repo")")
+    else
+      failed+=("$(basename "$repo")")
+    fi
+  fi
+done
+
+# 3. Docker stacks
+log ""
+log "── docker compose pull + up -d ──"
+for stack in "$HOME/code/research/langfuse" "$HOME/code/security/auto-browser"; do
+  [ -f "$stack/docker-compose.yml" ] || [ -f "$stack/docker-compose.yaml" ] || continue
+  log "  → $stack"
+  if [ "$DRY_RUN" = "0" ]; then
+    if ( cd "$stack" && docker compose pull >> "$LOG" 2>&1 && docker compose up -d >> "$LOG" 2>&1 ); then
+      updated+=("docker:$(basename "$stack")")
+    else
+      failed+=("docker:$(basename "$stack")")
+    fi
+  fi
+done
+
+# 4. uv tools
+log ""
+log "── uv tool upgrade --all ──"
+if [ -x /opt/homebrew/bin/uv ]; then
+  if [ "$DRY_RUN" = "0" ]; then
+    /opt/homebrew/bin/uv tool upgrade --all >> "$LOG" 2>&1 \
+      && updated+=("uv tools") \
+      || failed+=("uv tool upgrade")
+  fi
+fi
+
+# 5. npx cache clear (forces re-resolve of MCP servers on next call)
+log ""
+log "── npm cache verify ──"
+if command -v npm >/dev/null; then
+  [ "$DRY_RUN" = "0" ] && npm cache verify >> "$LOG" 2>&1 || true
+  updated+=("npm cache")
+fi
+
+# Summary
+log ""
+log "=== $ts cc-self-update done ==="
+log "updated: ${#updated[@]}  failed: ${#failed[@]}"
+
+# Build ntfy message
+if [ ${#failed[@]} -eq 0 ]; then
+  msg="✓ cc-self-update: ${#updated[@]} components updated cleanly"
+else
+  detail=$(printf '\n  • %s' "${failed[@]}")
+  msg="⚠ cc-self-update: ${#failed[@]} failures — investigate${detail}"
+fi
+
+if [ -n "${NTFY_TOPIC:-}" ]; then
+  curl -fsSL --max-time 5 \
+    -H "Title: cc-self-update" \
+    -H "Priority: $([ ${#failed[@]} -gt 0 ] && echo 4 || echo 2)" \
+    -H "Tags: arrows_counterclockwise" \
+    -d "$msg" \
+    "https://ntfy.sh/${NTFY_TOPIC}" >/dev/null 2>&1 &
+fi

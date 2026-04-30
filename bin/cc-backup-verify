@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# cc-backup-verify — quarterly verification that cc-backup actually
+# restores. Untested backups = no backup. Runs via LaunchAgent on the
+# 1st of every quarter (Jan/Apr/Jul/Oct), 03:00.
+#
+# Strategy:
+#   1. Run `restic check --read-data-subset=5%` (verifies 5% of data is
+#      readable from B2, not just the index)
+#   2. Restore the latest snapshot to /tmp/cc-backup-restore-test/
+#   3. Diff a known-stable file (~/.zprofile) between restored vs current
+#   4. Cleanup
+#   5. ntfy summary
+#
+# Manual: cc-backup-verify [--full]
+set -u
+
+FULL=0
+[ "${1:-}" = "--full" ] && FULL=1
+
+LOG="$HOME/.claude/cc-backup-verify.log"
+mkdir -p "$(dirname "$LOG")"
+ts=$(date '+%Y-%m-%d %H:%M:%S')
+
+log() { echo "$1" | tee -a "$LOG"; }
+
+log ""
+log "=== $ts cc-backup-verify (full=$FULL) ==="
+
+if [ ! -x "$HOME/dotfiles/bin/cc-backup" ]; then
+  log "✗ cc-backup not installed; skipping"
+  exit 0
+fi
+
+issues=()
+
+# 1. Restic check
+log "── restic check ──"
+SUBSET="5%"
+[ "$FULL" = "1" ] && SUBSET="100%"
+
+if "$HOME/dotfiles/bin/cc-backup" snapshots >/dev/null 2>&1; then
+  if ! "$HOME/dotfiles/bin/cc-backup" check --read-data-subset="$SUBSET" >> "$LOG" 2>&1; then
+    issues+=("restic check failed (${SUBSET})")
+  else
+    log "  ✓ restic check passed (${SUBSET} verified)"
+  fi
+else
+  issues+=("cc-backup snapshots failed — credentials or B2 connectivity")
+fi
+
+# 2. Restore-test (latest snapshot, ~/.zprofile only)
+log "── restore-test ──"
+TARGET=$(mktemp -d -t cc-backup-test.XXXXXX)
+trap 'rm -rf "$TARGET"' EXIT
+
+if [ ${#issues[@]} -eq 0 ]; then
+  if "$HOME/dotfiles/bin/cc-backup" restore latest --target "$TARGET" --include "/Users/leonardofibonacci/dotfiles/zprofile" >> "$LOG" 2>&1; then
+    if [ -f "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" ]; then
+      if cmp -s "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" "$HOME/dotfiles/zprofile"; then
+        log "  ✓ restored zprofile matches current"
+      else
+        log "  ⚠ restored zprofile differs from current (expected if local changes since backup)"
+      fi
+    else
+      issues+=("restored zprofile not found at expected path")
+    fi
+  else
+    issues+=("restore-test failed")
+  fi
+fi
+
+# Summary
+log ""
+if [ ${#issues[@]} -eq 0 ]; then
+  msg="✓ cc-backup-verify: backup is restorable"
+  prio=2
+else
+  detail=$(printf '\n  • %s' "${issues[@]}")
+  msg="🔴 cc-backup-verify FAILED — backup may not be recoverable${detail}"
+  prio=5
+fi
+
+log "$msg"
+
+if [ -n "${NTFY_TOPIC:-}" ]; then
+  curl -fsSL --max-time 5 \
+    -H "Title: cc-backup-verify" \
+    -H "Priority: $prio" \
+    -H "Tags: floppy_disk" \
+    -d "$msg" \
+    "https://ntfy.sh/${NTFY_TOPIC}" >/dev/null 2>&1 &
+fi

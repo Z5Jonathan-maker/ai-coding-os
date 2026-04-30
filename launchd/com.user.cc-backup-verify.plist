@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Quarterly cc-backup verification. Runs 1st of Jan/Apr/Jul/Oct at 03:00.
+  Verifies restic check passes + restore-test produces a known file.
+  ntfy-pushes summary; high-priority alert on failure (untested
+  backups = no backup).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.cc-backup-verify</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>/Users/leonardofibonacci/dotfiles/bin/cc-backup-verify</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Month</key><integer>1</integer><key>Day</key><integer>1</integer><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Month</key><integer>4</integer><key>Day</key><integer>1</integer><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Month</key><integer>7</integer><key>Day</key><integer>1</integer><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+    <dict><key>Month</key><integer>10</integer><key>Day</key><integer>1</integer><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+  </array>
+  <key>StandardOutPath</key>
+  <string>/Users/leonardofibonacci/.claude/cc-backup-verify.stdout</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/leonardofibonacci/.claude/cc-backup-verify.stderr</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/Users/leonardofibonacci</string>
+  </dict>
+</dict>
+</plist>

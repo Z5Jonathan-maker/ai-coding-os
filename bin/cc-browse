@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# cc-browse — autonomous browser navigation via browser-use against the
+# persistent Playwright profile (so logged-in sessions are reused).
+#
+# This is the "let Claude figure out arbitrary websites" axis your stack
+# was missing — different from the playwright/chrome-devtools MCPs which
+# require pre-scripted flows. browser-use uses an LLM to decide clicks
+# and inputs from the live DOM, so it can navigate sites it has never
+# seen before to accomplish a natural-language task.
+#
+# Usage:
+#   cc-browse "task description"           # autonomous task
+#   cc-browse open https://example.com      # just open URL in profile
+#   cc-browse extract "all PR titles"       # extract data from current page
+#   cc-browse state                         # current URL + DOM snapshot
+#   cc-browse setup                         # one-time interactive setup
+#   cc-browse doctor                        # check install
+#   cc-browse mcp                           # run as MCP server (stdio)
+#   cc-browse profile                       # open the profile in headed mode
+#
+# Env (must be set BEFORE first run):
+#   ANTHROPIC_API_KEY   to use Claude (recommended; pay-per-token, separate from Max)
+#   OPENAI_API_KEY      to use GPT (alternative)
+#   BROWSER_USE_LLM_MODEL  optional, e.g. "claude-sonnet-4-6" or "gpt-4.1"
+#   BROWSER_USE_PROFILE  override profile path (default ~/.cache/playwright-profile)
+#
+# Example:
+#   export ANTHROPIC_API_KEY=sk-ant-...    # add to ~/.zprofile
+#   cc-browse "go to news.ycombinator.com and tell me the top 3 stories"
+#   cc-browse "log into github.com (profile already authed) and star anthropics/claude-code"
+set -u
+
+BU_BIN="${BU_BIN:-$HOME/.local/bin/browser-use}"
+# CC_BROWSE_PROFILE: name of a real Chrome profile to attach to (e.g. "Default"
+# for the main one). Empty (default) → browser-use uses its own clean instance.
+# Set this if you want logged-in sessions from your everyday Chrome.
+CC_BROWSE_PROFILE="${CC_BROWSE_PROFILE:-}"
+
+[ -x "$BU_BIN" ] || { echo "cc-browse: browser-use not found at $BU_BIN" >&2
+                      echo "  install: uv tool install browser-use" >&2
+                      exit 127; }
+
+# Warn (not fail) if no LLM key is set — some subcommands don't need one
+if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ] \
+   && [ -z "${GOOGLE_API_KEY:-}" ] && [ -z "${AZURE_OPENAI_KEY:-}" ]; then
+  case "${1:-}" in
+    open|state|cookies|screenshot|profile|doctor|setup|mcp|''|-h|--help) ;;
+    *)
+      echo "cc-browse: warning — no LLM key in env (ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, AZURE_OPENAI_KEY)." >&2
+      echo "          autonomous tasks will fail. add a key to ~/.zprofile and re-source." >&2
+      ;;
+  esac
+fi
+
+# If CC_BROWSE_PROFILE is set, attach to that real-Chrome profile (gives
+# you logged-in sessions). Default: clean isolated browser-use instance.
+ARGS=()
+[ -n "$CC_BROWSE_PROFILE" ] && ARGS+=(--profile "$CC_BROWSE_PROFILE")
+
+[ $# -eq 0 ] && { sed -n '2,30p' "$0"; exit 0; }
+
+case "$1" in
+  -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
+  open|click|type|input|scroll|back|screenshot|state|switch|close-tab|keys|select|upload|eval|extract|hover|dblclick|rightclick|cookies|wait|get|python|tunnel|close|sessions|cloud|profile|install|init|setup|doctor)
+    # known subcommand — pass through
+    exec "$BU_BIN" ${ARGS[@]+"${ARGS[@]}"} "$@"
+    ;;
+  mcp)
+    # run browser-use as an MCP server over stdio (for `claude mcp add`)
+    exec "$BU_BIN" ${ARGS[@]+"${ARGS[@]}"} --mcp
+    ;;
+  *)
+    # treat the whole arg list as a natural-language task and run the
+    # default agent. browser-use's CLI doesn't have a "run task" verb;
+    # use the python -c bridge to spin up an Agent.
+    task="$*"
+    if [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}" ]; then
+      echo "cc-browse: cannot run task — no LLM key in env. Set ANTHROPIC_API_KEY (or OPENAI_API_KEY / GOOGLE_API_KEY) and retry." >&2
+      exit 2
+    fi
+    exec "$BU_BIN" ${ARGS[@]+"${ARGS[@]}"} python -c "
+import asyncio
+from browser_use import Agent
+
+async def main():
+    agent = Agent(task=${task@Q})
+    result = await agent.run()
+    print(result)
+
+asyncio.run(main())
+"
+    ;;
+esac

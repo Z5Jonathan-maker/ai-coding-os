@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# cc-grant-access — guides user through the Accessibility toggles for
+# Hammerspoon + Rectangle. The toggle itself requires Touch ID (no
+# automation path on Sequoia), but this script:
+#   1. Opens System Settings to the right pane
+#   2. Sends a native macOS notification with summary
+#   3. Prints the apps to add + their bundle IDs (helpful if user
+#      needs to pick them from a file dialog)
+#
+# After the toggles, those apps' window-management hotkeys + global
+# triggers actually work.
+set -euo pipefail
+
+# 1. Open the pane
+/usr/bin/osascript <<'AS'
+tell application "System Settings"
+  activate
+  reveal anchor "Privacy_Accessibility" of pane id "com.apple.settings.PrivacySecurity.extension"
+end tell
+AS
+
+# 2. Native notification (Notification Center)
+/usr/bin/osascript -e 'display notification "Toggle Hammerspoon + Rectangle in the open pane (Touch ID required per app)." with title "Accessibility setup" sound name "Glass"'
+
+# 3. Print app + bundle ID list to terminal for reference
+echo
+echo "Apps to grant Accessibility (toggle each ON in the open pane):"
+for app in Hammerspoon Rectangle; do
+  app_path="/Applications/${app}.app"
+  if [ -d "$app_path" ]; then
+    bundle=$(grep -A1 'CFBundleIdentifier' "$app_path/Contents/Info.plist" 2>/dev/null \
+      | grep -oE '<string>[^<]+</string>' | sed 's|<[^>]*>||g' | head -1)
+    printf '  %-12s %s   (bundle: %s)\n' "$app:" "$app_path" "${bundle:-?}"
+  else
+    printf '  %-12s NOT FOUND at %s\n' "$app:" "$app_path"
+  fi
+done
+echo
+echo "After toggling each: re-launch the app for the grant to take effect."
+echo "Verify Hammerspoon: osascript -e 'tell application \"Hammerspoon\" to execute lua code \"return tostring(hs.accessibilityState(false))\"'"

@@ -42,11 +42,12 @@ CC_BROWSE_PROFILE="${CC_BROWSE_PROFILE:-}"
 
 # Warn (not fail) if no LLM key is set — some subcommands don't need one
 if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ] \
-   && [ -z "${GOOGLE_API_KEY:-}" ] && [ -z "${AZURE_OPENAI_KEY:-}" ]; then
+   && [ -z "${GOOGLE_API_KEY:-}" ] && [ -z "${AZURE_OPENAI_KEY:-}" ] \
+   && [ -z "${DEEPSEEK_API_KEY:-}" ]; then
   case "${1:-}" in
     open|state|cookies|screenshot|profile|doctor|setup|mcp|''|-h|--help) ;;
     *)
-      echo "cc-browse: warning — no LLM key in env (ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY, AZURE_OPENAI_KEY)." >&2
+      echo "cc-browse: warning — no LLM key in env (ANTHROPIC/OPENAI/GOOGLE/AZURE/DEEPSEEK API_KEY)." >&2
       echo "          autonomous tasks will fail. add a key to ~/.zprofile and re-source." >&2
       ;;
   esac
@@ -74,20 +75,58 @@ case "$1" in
     # default agent. browser-use's CLI doesn't have a "run task" verb;
     # use the python -c bridge to spin up an Agent.
     task="$*"
-    if [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}" ]; then
-      echo "cc-browse: cannot run task — no LLM key in env. Set ANTHROPIC_API_KEY (or OPENAI_API_KEY / GOOGLE_API_KEY) and retry." >&2
+    if [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}${DEEPSEEK_API_KEY:-}" ]; then
+      echo "cc-browse: cannot run task — no LLM key in env. Set DEEPSEEK_API_KEY (or ANTHROPIC/OPENAI/GOOGLE/AZURE) and retry." >&2
       exit 2
     fi
-    exec "$BU_BIN" ${ARGS[@]+"${ARGS[@]}"} python -c "
-import asyncio
+
+    # browser-use's `python` subcommand needs a script file (no -c).
+    # Write a runner to a temp file, run, clean up.
+    runner=$(mktemp -t cc-browse-runner.XXXXXX.py)
+    trap 'rm -f "$runner"' EXIT
+    export _CC_BROWSE_TASK="$task"
+
+    # Prefer DeepSeek when available (cheapest + matches the user's
+    # Tier-2 router). Otherwise let browser-use auto-pick.
+    if [ -n "${DEEPSEEK_API_KEY:-}" ] \
+       && [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}" ]; then
+      export _CC_BROWSE_MODEL="${BROWSER_USE_LLM_MODEL:-deepseek-chat}"
+      cat > "$runner" <<'PY'
+import asyncio, os
+from browser_use import Agent
+from browser_use.llm import ChatDeepSeek
+
+async def main():
+    llm = ChatDeepSeek(
+        model=os.environ['_CC_BROWSE_MODEL'],
+        api_key=os.environ['DEEPSEEK_API_KEY'],
+        base_url=os.environ.get('DEEPSEEK_BASE_URL', 'https://api.deepseek.com/v1'),
+    )
+    agent = Agent(
+        task=os.environ['_CC_BROWSE_TASK'],
+        llm=llm,
+        page_extraction_llm=llm,
+    )
+    print(await agent.run())
+
+asyncio.run(main())
+PY
+    else
+      cat > "$runner" <<'PY'
+import asyncio, os
 from browser_use import Agent
 
 async def main():
-    agent = Agent(task=${task@Q})
-    result = await agent.run()
-    print(result)
+    agent = Agent(task=os.environ['_CC_BROWSE_TASK'])
+    print(await agent.run())
 
 asyncio.run(main())
-"
+PY
+    fi
+
+    # Find the venv python that ships with the uv-installed browser-use.
+    BU_PY="$HOME/.local/share/uv/tools/browser-use/bin/python"
+    [ -x "$BU_PY" ] || BU_PY="python3"
+    "$BU_PY" "$runner"
     ;;
 esac

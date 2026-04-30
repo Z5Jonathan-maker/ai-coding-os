@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Tiny shim that loads the user's env (DeepSeek API key, BROWSER_USE_LLM_MODEL,
+# etc.) then execs browser-use's MCP server. Registered with claude as the
+# stdio command for the browser-use MCP server, so the spawned subprocess
+# inherits the right env without keys ending up in ~/.claude.json.
+set -u
+
+if [ -f "$HOME/.zprofile" ]; then
+  set -a
+  . "$HOME/.zprofile"
+  set +a
+fi
+
+exec "$HOME/.local/bin/browser-use" --mcp

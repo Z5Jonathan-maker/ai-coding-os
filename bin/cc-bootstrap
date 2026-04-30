@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+# cc-bootstrap — one-shot installer for all the pending operational
+# steps the harness blocks me from running on your behalf.
+#
+# Each subcommand is idempotent. Run the whole thing as `cc-bootstrap all`
+# or pick individual targets. Logs everything to ~/.claude/cc-bootstrap.log.
+#
+# Usage:
+#   cc-bootstrap all           # run every pending step
+#   cc-bootstrap status        # show what's done vs pending
+#   cc-bootstrap mempalace     # init + mine + register MCP
+#   cc-bootstrap sudoers       # install /etc/sudoers.d/00-askpass
+#   cc-bootstrap restic        # install + init + LaunchAgent (needs B2 creds in 1P)
+#   cc-bootstrap launchd       # install cc-prune (always-safe)
+#   cc-bootstrap ntfy-prompt   # interactively pick + persist NTFY_TOPIC
+#   cc-bootstrap doctor        # check every pending item without changing state
+#
+# Designed to run on a quiet Sunday morning. No surprises, no destructive
+# defaults, every step prompts before it does the thing if there's any
+# possibility of side effects.
+set -u
+
+LOG="$HOME/.claude/cc-bootstrap.log"
+mkdir -p "$(dirname "$LOG")"
+log() {
+  local line
+  line="$(date '+%Y-%m-%d %H:%M:%S') $*"
+  echo "$line" | tee -a "$LOG"
+}
+
+ok()    { printf '  \033[32m✓\033[0m %s\n' "$*"; }
+warn()  { printf '  \033[33m○\033[0m %s\n' "$*"; }
+fail()  { printf '  \033[31m✗\033[0m %s\n' "$*"; }
+hdr()   { printf '\n\033[1m== %s ==\033[0m\n' "$*"; }
+
+confirm() {
+  local prompt="${1:-proceed?}"
+  if [ "${CC_BOOTSTRAP_YES:-0}" = "1" ]; then return 0; fi
+  read -rp "  $prompt [y/N] " ans
+  [[ "$ans" =~ ^[yY] ]]
+}
+
+# ─────────────────────────────────────────────────────────────────
+# mempalace: init + mine + register MCP
+# ─────────────────────────────────────────────────────────────────
+do_mempalace() {
+  hdr "mempalace"
+  local mp="$HOME/.local/bin/mempalace"
+  local mpmcp="$HOME/.local/bin/mempalace-mcp"
+
+  if [ ! -x "$mp" ]; then
+    fail "mempalace not installed. Run: uv tool install mempalace"
+    return 1
+  fi
+  ok "mempalace binary at $mp"
+
+  local palace="$HOME/mempalace"
+  if [ -d "$palace" ] && [ -n "$(ls -A "$palace" 2>/dev/null)" ]; then
+    ok "palace already initialized at $palace"
+  else
+    log "initializing palace at $palace"
+    "$mp" --palace "$palace" init || { fail "init failed"; return 1; }
+    ok "palace initialized"
+  fi
+
+  local proj="$HOME/.claude/projects"
+  if [ -d "$proj" ]; then
+    if confirm "mine $proj into palace? (slow first time, idempotent after)"; then
+      log "mining $proj --mode convos"
+      "$mp" --palace "$palace" mine "$proj" --mode convos | tail -5
+      ok "mined session history"
+    else
+      warn "skipped mining"
+    fi
+  else
+    warn "no $proj to mine"
+  fi
+
+  if claude mcp list 2>/dev/null | grep -q '^mempalace:'; then
+    ok "mempalace MCP server already registered"
+  else
+    log "registering mempalace MCP"
+    claude mcp add -s user mempalace -- "$mpmcp" --palace "$palace"
+    ok "mempalace MCP registered"
+  fi
+
+  hdr "mempalace status"
+  "$mp" --palace "$palace" status 2>/dev/null | head -10
+}
+
+# ─────────────────────────────────────────────────────────────────
+# sudoers: install /etc/sudoers.d/00-askpass
+# ─────────────────────────────────────────────────────────────────
+do_sudoers() {
+  hdr "sudoers drop-in"
+  local src="$HOME/dotfiles/etc/sudoers.d/00-askpass"
+  local dst="/etc/sudoers.d/00-askpass"
+
+  if [ -f "$dst" ] && cmp -s "$src" "$dst" 2>/dev/null; then
+    ok "$dst already installed and matches dotfiles"
+    return 0
+  fi
+  [ -f "$src" ] || { fail "$src not found"; return 1; }
+
+  if confirm "install $dst (requires sudo password)?"; then
+    log "validating $src"
+    sudo visudo -cf "$src" || { fail "visudo validation failed; aborting"; return 1; }
+    log "installing $dst"
+    sudo install -m 440 -o root -g wheel "$src" "$dst"
+    ok "installed $dst"
+  else
+    warn "skipped sudoers install"
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────────
+# launchd cc-prune (safe, daily, no creds needed)
+# ─────────────────────────────────────────────────────────────────
+do_launchd() {
+  hdr "cc-prune LaunchAgent"
+  local src="$HOME/dotfiles/launchd/com.user.cc-prune.plist"
+  local dst="$HOME/Library/LaunchAgents/com.user.cc-prune.plist"
+
+  if launchctl list 2>/dev/null | grep -q com.user.cc-prune; then
+    ok "cc-prune already loaded in launchd"
+    return 0
+  fi
+  [ -f "$src" ] || { fail "$src not found"; return 1; }
+
+  cp "$src" "$dst"
+  launchctl load -w "$dst" || { fail "launchctl load failed"; return 1; }
+  ok "cc-prune loaded; runs daily 04:30"
+}
+
+# ─────────────────────────────────────────────────────────────────
+# restic: install + init + LaunchAgent (needs B2 creds pre-existing in 1P)
+# ─────────────────────────────────────────────────────────────────
+do_restic() {
+  hdr "cc-backup (restic)"
+
+  if ! command -v restic >/dev/null && ! [ -x /opt/homebrew/bin/restic ]; then
+    if confirm "brew install restic?"; then
+      brew install restic || { fail "brew install failed"; return 1; }
+    else
+      warn "skipped restic install"
+      return 0
+    fi
+  fi
+  ok "restic available"
+
+  local op_bin=/opt/homebrew/bin/op
+  if ! "$op_bin" item get 'Restic B2 backup' --vault Personal >/dev/null 2>&1; then
+    warn "1P item 'Restic B2 backup' missing — create it first with fields:"
+    warn "  password (random 32 bytes), b2_account_id, b2_account_key"
+    warn "then re-run: cc-bootstrap restic"
+    return 0
+  fi
+  ok "1P item 'Restic B2 backup' present"
+
+  if confirm "run cc-backup init (creates B2 repo if missing)?"; then
+    "$HOME/dotfiles/bin/cc-backup" init || { fail "cc-backup init failed"; return 1; }
+    ok "repo initialized"
+  fi
+
+  if confirm "install cc-backup LaunchAgent (daily 03:30)?"; then
+    "$HOME/dotfiles/bin/cc-backup" install
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────────
+# ntfy: pick a topic, persist to ~/.zprofile
+# ─────────────────────────────────────────────────────────────────
+do_ntfy() {
+  hdr "ntfy notifications"
+
+  if grep -q '^export NTFY_TOPIC' "$HOME/.zprofile" 2>/dev/null; then
+    ok "NTFY_TOPIC already set in ~/.zprofile"
+    return 0
+  fi
+
+  local topic
+  topic="cc-imac-$(openssl rand -hex 6)"
+  if confirm "add 'export NTFY_TOPIC=\"$topic\"' to ~/.zprofile?"; then
+    {
+      echo ""
+      echo "# ntfy.sh push topic — installed by cc-bootstrap $(date +%Y-%m-%d)"
+      echo "export NTFY_TOPIC=\"$topic\""
+    } >> "$HOME/.zprofile"
+    ok "added NTFY_TOPIC. Subscribe in the ntfy iOS app to topic: $topic"
+  else
+    warn "skipped"
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────────
+# doctor: check every pending step without changing state
+# ─────────────────────────────────────────────────────────────────
+do_doctor() {
+  hdr "doctor"
+
+  # mempalace
+  if [ -x "$HOME/.local/bin/mempalace" ]; then
+    if [ -d "$HOME/mempalace" ] && [ -n "$(ls -A "$HOME/mempalace" 2>/dev/null)" ]; then
+      ok "mempalace: installed + initialized"
+    else
+      warn "mempalace: installed but palace empty (run cc-bootstrap mempalace)"
+    fi
+  else
+    warn "mempalace: not installed (uv tool install mempalace)"
+  fi
+
+  # sudoers
+  if [ -f /etc/sudoers.d/00-askpass ]; then
+    ok "sudoers: 00-askpass installed"
+  else
+    warn "sudoers: 00-askpass NOT installed (run cc-bootstrap sudoers)"
+  fi
+
+  # launchd cc-prune
+  if launchctl list 2>/dev/null | grep -q com.user.cc-prune; then
+    ok "launchd: cc-prune loaded"
+  else
+    warn "launchd: cc-prune not loaded (run cc-bootstrap launchd)"
+  fi
+
+  # restic
+  if command -v restic >/dev/null || [ -x /opt/homebrew/bin/restic ]; then
+    if launchctl list 2>/dev/null | grep -q com.user.cc-backup; then
+      ok "restic: installed + LaunchAgent loaded"
+    else
+      warn "restic: installed but no LaunchAgent (run cc-bootstrap restic)"
+    fi
+  else
+    warn "restic: not installed (run cc-bootstrap restic)"
+  fi
+
+  # ntfy
+  if grep -q '^export NTFY_TOPIC' "$HOME/.zprofile" 2>/dev/null; then
+    ok "ntfy: NTFY_TOPIC set in ~/.zprofile"
+  else
+    warn "ntfy: NTFY_TOPIC not set (run cc-bootstrap ntfy-prompt)"
+  fi
+
+  # tailscale
+  if /opt/homebrew/bin/tailscale status 2>&1 | grep -q '^100\.'; then
+    ok "tailscale: authed and on tailnet"
+  else
+    warn "tailscale: not authed (run: tailscale up --hostname=imac --ssh --accept-routes)"
+  fi
+
+  # 1P service account
+  if grep -q '^export OP_SERVICE_ACCOUNT_TOKEN' "$HOME/.zprofile" 2>/dev/null; then
+    ok "1P: service account token set"
+  else
+    warn "1P: service account token NOT set (uncomment line in ~/.zprofile)"
+  fi
+
+  # cc-loop runner
+  if [ -x "$HOME/dotfiles/bin/cc-loop" ]; then
+    ok "cc-loop: runner installed"
+  else
+    warn "cc-loop: runner not built (needs explicit named-scope auth from user)"
+  fi
+}
+
+cmd_all() {
+  do_launchd
+  do_mempalace
+  do_sudoers
+  do_ntfy
+  do_restic
+  hdr "summary"
+  do_doctor
+}
+
+[ $# -eq 0 ] && { sed -n '2,20p' "$0"; exit 0; }
+case "$1" in
+  all)          cmd_all ;;
+  status|doctor) do_doctor ;;
+  mempalace)    do_mempalace ;;
+  sudoers)      do_sudoers ;;
+  launchd)      do_launchd ;;
+  restic)       do_restic ;;
+  ntfy|ntfy-prompt) do_ntfy ;;
+  -h|--help)    sed -n '2,20p' "$0" ;;
+  *)            echo "unknown subcommand: $1" >&2; sed -n '2,20p' "$0" >&2; exit 2 ;;
+esac

@@ -259,6 +259,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/session-resume.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/bootstrap-check.sh"
           }
         ]
       }

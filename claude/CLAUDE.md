@@ -24,3 +24,7 @@ This file is loaded into every Claude Code session on this machine. Keep it shor
 
 <!-- Add project-agnostic preferences here as they come up. Project-specific
      conventions belong in a CLAUDE.md inside that project's directory. -->
+
+## Imported skills
+
+@~/code/research/browser-harness/SKILL.md

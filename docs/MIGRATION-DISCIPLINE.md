@@ -76,6 +76,32 @@ For each of: ClaimPilot → Aurex → dosecraft → Care Claims website (rough o
 - Internal-only → no public risk while learning the rehab process
 - Has a separate `backend/` dir → first real backend work on the new config
 
+## Aesthetic + stack standard
+
+The "new config" aesthetic comes from the Wassim/$50K-website lineage:
+**augen-clone** as the editorial starter, the Wassim `website-repos`
+local library (shadcn-ui / magicui / motion / gsap / hyperui / drei /
+R3F) as a grep-target reference, `/design` (DESIGN.md anchored) +
+`/huashu-design` (expressive hi-fi exploration) + `/ui-ux-pro-max`
+(67 styles + 161 palettes + 99 UX guidelines) + `cc-image` (GPT-Image-2)
+as the working surface.
+
+**The old cinematic-starter pattern** (Windows-era gsap + lenis + R3F as
+primary aesthetic, embedded in `cinematic-starter`, `thepurelycompany`,
+`thepurelycompany-v7`, `studio-site`, `shipwithstudio`, `careclaims-next`,
+`aurex-website` v1) is **explicitly Tier-3 do-not-bring-forward**.
+Don't import its components. Don't extend its style system. Don't seed
+new projects from it. If a Tier-1 project (e.g. `aurex-website-v3`)
+inherits cinematic patterns from its v1, treat them as legacy debt —
+keep what works in the rehab, but the *new* aesthetic decisions go
+through `/design` + DESIGN.md, not by extending the cinematic-starter
+defaults.
+
+**Why:** the old cinematic pattern is part of the "mess" the user is
+explicitly leaving behind. New aesthetic comes from intentional
+design-system thinking (DESIGN.md → tokens → primitives), not from
+re-deriving cinematic patterns built under different constraints.
+
 ## What does NOT get onboarded (and stays out of /audit, /maintain, etc.)
 
 Tier-3 projects. Period.

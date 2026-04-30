@@ -44,7 +44,9 @@ link claude/CLAUDE.md     .claude/CLAUDE.md
 link claude/settings.json .claude/settings.json
 link claude/skills        .claude/skills
 link claude/agents        .claude/agents
-link claude/hooks/nonstop.sh .claude/hooks/nonstop.sh
+link claude/hooks/nonstop.sh      .claude/hooks/nonstop.sh
+link claude/hooks/loop-guard.sh   .claude/hooks/loop-guard.sh
+link claude/hooks/no-ask-human.sh .claude/hooks/no-ask-human.sh
 link git-config/allowed_signers .config/git/allowed_signers
 link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua

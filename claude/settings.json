@@ -248,6 +248,17 @@
   "env": {},
   "agentPushNotifEnabled": true,
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/loop-guard.sh"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
@@ -255,6 +266,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/nonstop.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/no-ask-human.sh"
           }
         ]
       }

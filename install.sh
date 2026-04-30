@@ -80,6 +80,7 @@ clone_if_missing() {
 }
 clone_if_missing https://github.com/alchaincyf/huashu-design.git "$HOME/code/research/huashu-design"
 clone_if_missing https://github.com/browser-use/browser-harness.git "$HOME/code/research/browser-harness"
+clone_if_missing https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git "$HOME/code/research/ui-ux-pro-max-skill"
 
 # ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
 chmod 600 "$DOTFILES_DIR/ssh_config" || true

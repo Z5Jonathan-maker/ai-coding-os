@@ -53,6 +53,9 @@ link claude/hooks/secret-paste-guard.sh .claude/hooks/secret-paste-guard.sh
 link claude/hooks/session-handover.sh   .claude/hooks/session-handover.sh
 link claude/hooks/session-resume.sh     .claude/hooks/session-resume.sh
 link claude/hooks/error-gate.sh         .claude/hooks/error-gate.sh
+link claude/skills/nonstop              .claude/skills/nonstop
+link claude/skills/wired-up             .claude/skills/wired-up
+link claude/skills/checkpoint           .claude/skills/checkpoint
 link git-config/allowed_signers .config/git/allowed_signers
 link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua

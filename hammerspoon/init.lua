@@ -107,5 +107,10 @@ end)
 require("hs.ipc")
 hs.ipc.cliInstall()
 
+-- =============== Allow AppleScript control (for cc-bootstrap doctor / ad-hoc verification) ===============
+-- Lets `osascript -e 'tell application "Hammerspoon" to execute lua code "..."'` work.
+-- Without this, AppleScript probes return -50 errors.
+hs.allowAppleScript(true)
+
 -- =============== Notification on load ===============
 hs.notify.new({title = "Hammerspoon", informativeText = "Config loaded — ⌘⌥⌃ R to reload"}):send()

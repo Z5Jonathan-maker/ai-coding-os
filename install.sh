@@ -57,6 +57,7 @@ link claude/hooks/ntfy-notify.sh        .claude/hooks/ntfy-notify.sh
 link claude/skills/nonstop              .claude/skills/nonstop
 link claude/skills/wired-up             .claude/skills/wired-up
 link claude/skills/checkpoint           .claude/skills/checkpoint
+link claude/skills/caveman              .claude/skills/caveman
 link git-config/allowed_signers .config/git/allowed_signers
 link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua

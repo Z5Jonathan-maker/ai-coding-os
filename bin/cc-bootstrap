@@ -168,6 +168,66 @@ do_restic() {
 }
 
 # ─────────────────────────────────────────────────────────────────
+# mercury: configure + verify (apiKey paste is interactive only)
+# ─────────────────────────────────────────────────────────────────
+do_mercury() {
+  hdr "mercury (cosmicstack-labs/mercury-agent)"
+  local mbin="$HOME/local/bin/mercury"
+
+  if [ ! -x "$mbin" ]; then
+    fail "mercury not installed at $mbin"
+    warn "install: cd ~/code/research/mercury-agent && npm install && npm run build && npm install -g ."
+    return 1
+  fi
+  ok "mercury binary at $mbin ($("$mbin" --version 2>/dev/null))"
+
+  local cfg="$HOME/.mercury/mercury.yaml"
+  if [ ! -f "$cfg" ]; then
+    fail "config file missing at $cfg — run: mercury setup"
+    return 1
+  fi
+  ok "config exists at $cfg"
+
+  if grep -qE '^\s*apiKey:\s*""\s*$|^\s*apiKey:\s*$' "$cfg"; then
+    warn "deepseek apiKey is empty in $cfg"
+    warn "run interactively: mercury setup  (pick deepseek, paste \$DEEPSEEK_API_KEY value)"
+    warn "or edit $cfg directly and put your key in the apiKey: field"
+    return 0
+  fi
+  ok "apiKey is populated"
+
+  if confirm "verify with: mercury start --foreground (Ctrl-C to exit)?"; then
+    "$mbin" start --foreground
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────────
+# browser-harness: install + verify SKILL.md is loaded by Claude Code
+# ─────────────────────────────────────────────────────────────────
+do_browser_harness() {
+  hdr "browser-harness (browser-use/browser-harness)"
+  local bbin="$HOME/local/bin/browser-harness"
+
+  if [ ! -x "$bbin" ]; then
+    fail "browser-harness not installed at $bbin"
+    warn "install: cd ~/code/research/browser-harness && /opt/homebrew/bin/uv tool install -e ."
+    return 1
+  fi
+  ok "browser-harness binary at $bbin"
+
+  if grep -q 'browser-harness/SKILL.md' "$HOME/.claude/CLAUDE.md" 2>/dev/null; then
+    ok "SKILL.md import in CLAUDE.md"
+  else
+    warn "SKILL.md import missing from ~/.claude/CLAUDE.md"
+    warn "add: @~/code/research/browser-harness/SKILL.md"
+  fi
+
+  if confirm "verify with: browser-harness --help?"; then
+    "$bbin" --help
+  fi
+}
+
+# ─────────────────────────────────────────────────────────────────
 # ntfy: pick a topic, persist to ~/.zprofile
 # ─────────────────────────────────────────────────────────────────
 do_ntfy() {
@@ -261,6 +321,31 @@ do_doctor() {
   else
     warn "cc-loop: runner not built (needs explicit named-scope auth from user)"
   fi
+
+  # mercury
+  if [ -x "$HOME/local/bin/mercury" ]; then
+    if [ -f "$HOME/.mercury/mercury.yaml" ] && ! grep -qE '^\s*apiKey:\s*""\s*$' "$HOME/.mercury/mercury.yaml"; then
+      ok "mercury: installed + configured"
+    else
+      warn "mercury: installed but apiKey empty (run: mercury setup OR edit ~/.mercury/mercury.yaml)"
+    fi
+  else
+    warn "mercury: not installed (run cc-bootstrap mercury for hints)"
+  fi
+
+  # browser-harness
+  if [ -x "$HOME/local/bin/browser-harness" ]; then
+    ok "browser-harness: installed"
+  else
+    warn "browser-harness: not installed (run cc-bootstrap browser-harness for hints)"
+  fi
+
+  # auto-browser
+  if docker ps --format '{{.Names}}' 2>/dev/null | grep -q auto-browser; then
+    ok "auto-browser: containers running"
+  else
+    warn "auto-browser: containers not running (cd ~/code/security/auto-browser && docker compose up -d)"
+  fi
 }
 
 cmd_all() {
@@ -269,6 +354,8 @@ cmd_all() {
   do_sudoers
   do_ntfy
   do_restic
+  do_mercury
+  do_browser_harness
   hdr "summary"
   do_doctor
 }
@@ -282,6 +369,8 @@ case "$1" in
   launchd)      do_launchd ;;
   restic)       do_restic ;;
   ntfy|ntfy-prompt) do_ntfy ;;
+  mercury)      do_mercury ;;
+  browser-harness|harness) do_browser_harness ;;
   -h|--help)    sed -n '2,20p' "$0" ;;
   *)            echo "unknown subcommand: $1" >&2; sed -n '2,20p' "$0" >&2; exit 2 ;;
 esac

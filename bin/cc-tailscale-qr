@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# cc-tailscale-qr — phone-side Tailscale auth flow.
+#
+# When `tailscale up` prints an auth URL that needs a click, this
+# script:
+#   1. Reads the latest auth URL from `tailscale status`
+#   2. Generates a QR code via api.qrserver.com (free, no auth)
+#   3. Opens the PNG in Preview
+#
+# Scan with your phone camera — Safari opens the URL on mobile, where
+# your GitHub session is already live. OAuth completes on the phone.
+# The local `tailscale up` daemon (still running in background) picks
+# up the auth automatically.
+#
+# Why this works around the wall: the agent can't drive the OAuth in
+# Chrome (saved memory blocks browser-based OAuth automation), but it
+# CAN render a QR your phone can scan. Phone-side OAuth completes
+# server-side; the iMac daemon discovers the auth on its next poll.
+set -euo pipefail
+
+URL=""
+if /opt/homebrew/bin/tailscale status 2>&1 | grep -q '^Logged out'; then
+  URL=$(/opt/homebrew/bin/tailscale status 2>&1 | grep -oE 'https://login.tailscale.com/a/[a-zA-Z0-9]+' | head -1)
+fi
+
+if [ -z "$URL" ]; then
+  echo "cc-tailscale-qr: no pending auth URL — already authed?"
+  /opt/homebrew/bin/tailscale status 2>&1 | head -3
+  exit 0
+fi
+
+ENC=$(python3 -c 'import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))' "$URL")
+PNG="/tmp/tailscale-qr-$(date +%s).png"
+
+curl -fsSL "https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${ENC}" -o "$PNG"
+
+echo "URL:    $URL"
+echo "QR PNG: $PNG"
+echo
+echo "Opening in Preview — scan with phone camera."
+echo "After you sign in on phone, run:"
+echo "  /opt/homebrew/bin/tailscale status"
+echo "to confirm the device is on the tailnet."
+
+open "$PNG"

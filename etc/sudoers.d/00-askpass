@@ -1,10 +1,14 @@
-# Wire sudo-askpass for ALL sudo invocations (including /usr/bin/sudo
-# called directly by brew/system tools that bypass the PATH wrapper).
-# Without this, non-TTY callers fail because there's nowhere to type the
-# password. With it, sudo runs the askpass helper, which resolves via
-# 1Password (biometric or service-account token) without prompting.
-Defaults askpass="/Users/leonardofibonacci/dotfiles/bin/sudo-askpass"
+# Allow sudo from non-TTY contexts (claude code subprocesses, brew helpers,
+# launchd jobs, etc.) AND preserve SUDO_ASKPASS env var across sudo calls so
+# our ~/dotfiles/bin/sudo-askpass (1Password biometric → osascript fallback)
+# can resolve the password without an interactive TTY.
+#
+# Note: sudo does NOT have a `Defaults askpass=...` directive — askpass is
+# resolved from $SUDO_ASKPASS env (set in ~/.zprofile) at call time. This
+# file just clears the path: !requiretty so non-TTY callers don't bounce,
+# and env_keep so SUDO_ASKPASS survives sudo's env_reset.
 Defaults:leonardofibonacci !requiretty
+Defaults env_keep += "SUDO_ASKPASS"
 
 # Install via:
 #   sudo visudo -cf /Users/leonardofibonacci/dotfiles/etc/sudoers.d/00-askpass \

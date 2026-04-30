@@ -248,6 +248,17 @@
   "env": {},
   "agentPushNotifEnabled": true,
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/session-resume.sh"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "matcher": "",
@@ -277,6 +288,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/context-monitor.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/error-gate.sh"
           }
         ]
       }
@@ -296,6 +311,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/wired-up-stop.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/session-handover.sh"
           }
         ]
       }

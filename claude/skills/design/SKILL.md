@@ -111,15 +111,48 @@ Run the chrome-devtools MCP audit suite against the URL/file and report:
 Save the audit to `./.design-mocks/audits/<ts>.md` so successive audits
 form a quality timeline.
 
+## When the user asks for image assets
+
+Use **`cc-image`** (wrapper at `~/dotfiles/bin/cc-image`). It calls
+OpenAI GPT-Image-2 with the API key auto-resolved from
+`op://Personal/OpenAI/credential` at runtime. Outputs land under
+`~/.claude/images/<ts>-<slug>.png` and auto-open in Preview.
+
+```bash
+# Hero image, landscape
+cc-image -s 1536x1024 "brutalist landing page hero, axonometric isometric, sage and ochre"
+
+# Icon set, transparent background
+cc-image --transparent -s 1024x1024 "minimal line-art icon: cloud upload, single weight, sage"
+
+# 4 variants of one prompt for selection
+cc-image -n 4 "<prompt>"
+
+# Save to a specific path for embedding in the mockup
+cc-image -o ./.design-mocks/img/hero.png -s 1536x1024 "<prompt>"
+```
+
+After generating, REFERENCE the asset from the mockup HTML via
+`<img src="img/hero.png">` (relative path inside `./.design-mocks/`).
+The asset and the mockup live together in the project, so the visual
+iteration cycle is one directory.
+
+If the 1P "OpenAI" item doesn't exist yet, surface the one-time setup:
+```bash
+op item create --category="API Credential" --vault=Personal \
+  --title="OpenAI" credential[concealed]=sk-...
+```
+
 ## What this skill EXPLICITLY does not do
 
-- Generate raster images (no DALL-E / Imagen / Flux integration here —
-  needs a separate image-gen API key the user hasn't wired)
 - Replace Figma — when the user works in Figma, USE the Figma MCP to
   read the source of truth, don't reinvent it
 - Write framework code — generates VANILLA HTML/CSS/SVG. Translating to
   React/Vue/Svelte is a separate step. The mockup is for *visual*
   iteration; the framework binding happens after the visual is approved.
+- Local image gen (no ComfyUI / Flux / SD) — gpt-image-2 via OpenAI is
+  the wired path. Local would be a separate setup if cost becomes the
+  driver (~$0.04/image at high quality).
 
 ## Composition with the rest of the stack
 

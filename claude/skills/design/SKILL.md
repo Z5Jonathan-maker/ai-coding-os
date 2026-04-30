@@ -154,6 +154,62 @@ op item create --category="API Credential" --vault=Personal \
   the wired path. Local would be a separate setup if cost becomes the
   driver (~$0.04/image at high quality).
 
+## Local reference library (Wassim Younes' bundle)
+
+A 1.5GB local mirror of 10 cloned UI/animation libraries lives at
+`~/code/research/wassim-augen/augen-extracted/website-repos/`. Read,
+don't run — these are grep/Read targets, not buildable from this folder.
+
+Canonical entry paths (verified):
+
+| Library | Source path | Use for |
+|---|---|---|
+| `shadcn-ui/` | `apps/v4/registry/new-york-v4/ui/*.tsx` | Base primitives — every site |
+| `magicui/` | `apps/www/registry/magicui/*.tsx` (index: `registry.json`) | Marquee, bento, beams, particles, orbiting circles |
+| `syntaxui/` | `src/components/` | Custom keyframes (hover-tada, hover-vibrate, skew-scroll) |
+| `react-bits/` | `src/` | 3D / WebGL / physics — flagship hero only |
+| `hyperui/` | `src/components/*.astro` (catalog: `src/pages/components/`) | Static Astro/Tailwind sections, zero JS |
+| `motion/` | `packages/framer-motion/src/` | Every enter/exit + micro-interaction |
+| `gsap/` | `src/` (plugins: `ScrollTrigger.js`, `Draggable.js`, `Flip.js`); `esm/` (built) | Scroll-driven timelines, SVG morphs |
+| `three-js/` | `src/` (core); `examples/jsm/` (addons) | Reference only — wrap in R3F |
+| `react-three-fiber/` | `packages/fiber/src/` | Every 3D scene |
+| `drei/` | `src/` (catalog: `src/index.ts`) | R3F helpers — Bounds, Center, OrbitControls |
+
+Rule: never `npm install` what's already in this bundle — read the
+source, lift the pattern, compose from primitives.
+
+### Site-type classifier (from Wassim's CLAUDE.md, adapted)
+
+Pick the animation tier from the brief BEFORE generating:
+
+| Site type | Animation tier | Lib mix |
+|---|---|---|
+| B2B / dashboard / productized service | Conservative | shadcn-ui + motion (minimal) |
+| Landing page (default) | Moderate | shadcn-ui + magicui + motion |
+| Editorial / Swiss / hardware-adjacent | Minimal + typographic | shadcn-ui primitives stripped of gradients/shadows; Inter Tight or Space Grotesk; GSAP only if scroll-needed |
+| Flagship / launch / hero showcase | Aggressive | + react-bits + R3F + drei + gsap + lenis |
+| Docs / blog / static marketing | None | hyperui + Astro, or shadcn-ui + Next.js |
+
+**Editorial triggers:** brief mentions "editorial," "Swiss," "Bauhaus,"
+"journal," "instrument," "hardware," "quiet," "considered," or
+references like augen.pro / linear.app / teenage.engineering. Palette:
+`#F5F3EE` bg, `#111111` fg, hairline `#D9D6CF`, zero gradients,
+radii ≤4px.
+
+**Never mix tiers on one page.** Consistency beats maximalism.
+
+### Editorial / Swiss starter
+
+When the brief is editorial-Swiss, the best starting point is:
+```
+cp -r ~/code/research/wassim-augen/augen-extracted/augen-clone ~/code/projects/<new-site>
+```
+That gives you Lenis + GSAP scroll choreography pre-wired (the actually-
+hard pattern), `lib/brand.ts` single-source-of-truth, hand-rolled
+primitives (Link, SectionLabel, HairlineRow, CursorDot), and the full
+animation hooks (scroll-velocity, mouse-parallax, splitChars). Then
+edit `lib/brand.ts` for the new brand and rip what you don't need.
+
 ## Composition with the rest of the stack
 
 | Tool | Role in the design loop |

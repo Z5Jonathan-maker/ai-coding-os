@@ -55,6 +55,8 @@ link claude/hooks/session-resume.sh     .claude/hooks/session-resume.sh
 link claude/hooks/error-gate.sh         .claude/hooks/error-gate.sh
 link claude/hooks/ntfy-notify.sh        .claude/hooks/ntfy-notify.sh
 link claude/hooks/bootstrap-check.sh    .claude/hooks/bootstrap-check.sh
+link claude/hooks/git-shadow-checkpoint.sh .claude/hooks/git-shadow-checkpoint.sh
+link claude/hooks/environment-details.sh   .claude/hooks/environment-details.sh
 # bin/cc-mercury is on PATH via ~/local/bin; symlink it there:
 # (handled by users symlinking ~/dotfiles/bin into PATH; no install.sh entry needed)
 # Note: individual skills are already covered by `link claude/skills .claude/skills`

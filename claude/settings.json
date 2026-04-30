@@ -274,6 +274,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/secret-paste-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/environment-details.sh"
           }
         ]
       }
@@ -300,6 +304,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/error-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/git-shadow-checkpoint.sh"
           }
         ]
       }

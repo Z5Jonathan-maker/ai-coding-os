@@ -1,0 +1,267 @@
+#!/usr/bin/env bash
+# cc-loop — 24/7 unattended Claude runner with Ralph-style outcome gates.
+#
+# Per the design doc at ~/dotfiles/docs/cc-loop-design.md.
+#
+# Survives:
+#   - Hung sessions (per-cycle watchdog: SIGTERM at timeout, SIGKILL +30s)
+#   - Anthropic 429 / quota / overloaded (greps output → long backoff)
+#   - Crash loops (consecutive-error circuit breaker → cooldown)
+#   - User pause (~/.cc-paused → loop sleeps until removed)
+#   - Stuck agent (no-progress detector: N cycles with no git diff +
+#     no checkpoint write → auto-pause)
+#   - "I'm done" — sentinel `EXIT_SIGNAL: TASK_COMPLETE` in cycle output
+#     touches ~/.cc-paused
+#   - Verifier failures (CC_LOOP_VERIFIER command must exit 0 to count
+#     a cycle as successful)
+#
+# Usage:
+#   cc-loop <prompt-file>                 loop the contents of <prompt-file>
+#   cc-loop --foreground <prompt-file>    debug, log to stdout too
+#   cc-loop --once <prompt-file>          single cycle, exit (for testing)
+#
+# Tunables (env, with defaults):
+#   CC_LOOP_TIMEOUT=1800           per-cycle hard kill (s); 30 min
+#   CC_LOOP_MAX_ERRORS=5           consecutive non-zero exits → trip breaker
+#   CC_LOOP_COOLDOWN=300           breaker cooldown (s)
+#   CC_LOOP_RATE_BACKOFF=3600      sleep when rate-limit detected (s)
+#   CC_LOOP_PAUSE_POLL=30          pause-flag check interval (s)
+#   CC_LOOP_INTER_CYCLE=10         pause between successful cycles (s)
+#   CC_LOOP_MODEL=opus             claude --model arg ("" → use default)
+#   CC_LOOP_PERMISSION=bypassPermissions
+#   CC_LOOP_REPO=$PWD              repo to detect git diff against
+#   CC_LOOP_VERIFIER=""            shell cmd to run after rc==0; e.g.
+#                                  "cd ~/myproj && npm test"
+#   CC_LOOP_NOOP_LIMIT=3           consecutive no-progress cycles → auto-pause
+#
+# Killswitches (priority order):
+#   touch ~/.cc-paused                non-destructive pause
+#   launchctl unload ~/Library/LaunchAgents/com.user.cc-loop.plist
+#   pkill -TERM -f cc-loop            kill in-flight cycle
+#
+# Files:
+#   ~/.cc-paused                  touch-flag killswitch
+#   ~/.claude/cc-loop.log         rolling log (truncated by cc-prune)
+#   ~/.claude/cc-loop.state       KV state (last_exit, consecutive_errors,
+#                                 noop_cycles, last_run, last_event, started)
+set -u
+
+CC_LOOP_TIMEOUT="${CC_LOOP_TIMEOUT:-1800}"
+CC_LOOP_MAX_ERRORS="${CC_LOOP_MAX_ERRORS:-5}"
+CC_LOOP_COOLDOWN="${CC_LOOP_COOLDOWN:-300}"
+CC_LOOP_RATE_BACKOFF="${CC_LOOP_RATE_BACKOFF:-3600}"
+CC_LOOP_PAUSE_POLL="${CC_LOOP_PAUSE_POLL:-30}"
+CC_LOOP_INTER_CYCLE="${CC_LOOP_INTER_CYCLE:-10}"
+CC_LOOP_MODEL="${CC_LOOP_MODEL:-opus}"
+CC_LOOP_PERMISSION="${CC_LOOP_PERMISSION:-bypassPermissions}"
+CC_LOOP_REPO="${CC_LOOP_REPO:-$PWD}"
+CC_LOOP_VERIFIER="${CC_LOOP_VERIFIER:-}"
+CC_LOOP_NOOP_LIMIT="${CC_LOOP_NOOP_LIMIT:-3}"
+
+PAUSE_FLAG="$HOME/.cc-paused"
+STATE_DIR="$HOME/.claude"
+LOG_FILE="$STATE_DIR/cc-loop.log"
+STATE_FILE="$STATE_DIR/cc-loop.state"
+mkdir -p "$STATE_DIR"
+
+FOREGROUND=0
+ONCE=0
+PROMPT_FILE=""
+for arg in "$@"; do
+  case "$arg" in
+    --foreground) FOREGROUND=1 ;;
+    --once)       ONCE=1 ;;
+    -h|--help)    sed -n '2,40p' "$0"; exit 0 ;;
+    *)            PROMPT_FILE="$arg" ;;
+  esac
+done
+
+if [ -z "$PROMPT_FILE" ] || [ ! -f "$PROMPT_FILE" ]; then
+  echo "cc-loop: prompt file missing or not provided. Usage: cc-loop <prompt-file>" >&2
+  exit 2
+fi
+
+log() {
+  local line
+  line="$(date '+%Y-%m-%d %H:%M:%S') $*"
+  echo "$line" >> "$LOG_FILE"
+  [ "$FOREGROUND" -eq 1 ] && echo "$line"
+}
+
+state_get() {
+  local key="$1" default="$2" v=""
+  [ -f "$STATE_FILE" ] && v=$(grep -E "^${key}=" "$STATE_FILE" | tail -1 | cut -d= -f2-)
+  [ -z "$v" ] && v="$default"
+  echo "$v"
+}
+
+state_set() {
+  local key="$1" val="$2"
+  local tmp
+  tmp=$(mktemp)
+  if [ -f "$STATE_FILE" ]; then
+    grep -vE "^${key}=" "$STATE_FILE" > "$tmp" || true
+  fi
+  echo "${key}=${val}" >> "$tmp"
+  mv "$tmp" "$STATE_FILE"
+}
+
+# Resolve `claude` CLI; brew on Apple Silicon installs to /opt/homebrew/bin.
+CLAUDE_BIN=""
+for cand in "$(command -v claude 2>/dev/null)" /opt/homebrew/bin/claude /usr/local/bin/claude "$HOME/local/bin/claude"; do
+  [ -n "$cand" ] && [ -x "$cand" ] && { CLAUDE_BIN="$cand"; break; }
+done
+if [ -z "$CLAUDE_BIN" ]; then
+  log "FATAL: claude binary not found on PATH or in standard prefixes"
+  exit 127
+fi
+
+# Snapshot tree state (for no-progress detection)
+git_head_hash() {
+  ( cd "$CC_LOOP_REPO" 2>/dev/null && git rev-parse HEAD 2>/dev/null && git status --porcelain 2>/dev/null | wc -l ) || echo "no-git"
+}
+
+run_one_cycle() {
+  local prompt
+  prompt=$(cat "$PROMPT_FILE")
+
+  local args=(-p "$prompt" --permission-mode "$CC_LOOP_PERMISSION")
+  [ -n "$CC_LOOP_MODEL" ] && args+=(--model "$CC_LOOP_MODEL")
+
+  local before_state
+  before_state=$(git_head_hash)
+  local before_ckpt_count
+  before_ckpt_count=$(ls "$HOME/.claude/checkpoints" 2>/dev/null | wc -l | tr -d ' ')
+
+  log "CYCLE start (timeout=${CC_LOOP_TIMEOUT}s, model=${CC_LOOP_MODEL:-default}, repo=${CC_LOOP_REPO})"
+
+  local out
+  out=$(mktemp)
+
+  # Run claude with watchdog: TERM at timeout, KILL 30s later
+  local pid wd_pid
+  "$CLAUDE_BIN" "${args[@]}" >"$out" 2>&1 &
+  pid=$!
+  ( sleep "$CC_LOOP_TIMEOUT" && kill -TERM "$pid" 2>/dev/null \
+      && sleep 30 && kill -KILL "$pid" 2>/dev/null ) &
+  wd_pid=$!
+
+  wait "$pid"
+  local rc=$?
+
+  kill "$wd_pid" 2>/dev/null || true
+  wait "$wd_pid" 2>/dev/null || true
+
+  # Append tail of cycle output to log
+  echo "--- cycle output (tail 4kb) ---" >> "$LOG_FILE"
+  tail -c 4000 "$out" >> "$LOG_FILE"
+  echo "" >> "$LOG_FILE"
+
+  # 1. Rate-limit detection — back off, count as not-failure
+  if grep -qiE '429|rate.?limit|usage.?limit|overloaded|quota|insufficient.?credits|too many requests' "$out"; then
+    log "CYCLE rate-limit detected, sleeping ${CC_LOOP_RATE_BACKOFF}s"
+    state_set last_event rate_limit
+    rm -f "$out"
+    sleep "$CC_LOOP_RATE_BACKOFF"
+    return 0
+  fi
+
+  # 2. EXIT_SIGNAL detection — clean shutdown if Claude says it's done
+  if grep -qE 'EXIT_SIGNAL:[[:space:]]*TASK_COMPLETE' "$out"; then
+    log "EXIT_SIGNAL TASK_COMPLETE detected; pausing loop"
+    state_set last_event exit_signal_complete
+    touch "$PAUSE_FLAG"
+    rm -f "$out"
+    return 0
+  fi
+  if grep -qE 'EXIT_SIGNAL:[[:space:]]*BLOCKED' "$out"; then
+    log "EXIT_SIGNAL BLOCKED detected; pausing loop"
+    state_set last_event exit_signal_blocked
+    touch "$PAUSE_FLAG"
+    rm -f "$out"
+    return 0
+  fi
+
+  rm -f "$out"
+
+  state_set last_exit "$rc"
+  state_set last_run "$(date +%s)"
+
+  # 3. Outcome verification — if rc==0 and a verifier is configured,
+  # treat verifier exit as the source of truth.
+  if [ "$rc" -eq 0 ] && [ -n "$CC_LOOP_VERIFIER" ]; then
+    log "VERIFIER running: $CC_LOOP_VERIFIER"
+    if bash -c "$CC_LOOP_VERIFIER" >> "$LOG_FILE" 2>&1; then
+      log "VERIFIER passed"
+    else
+      log "VERIFIER failed; treating cycle as failure"
+      rc=1
+    fi
+  fi
+
+  if [ "$rc" -ne 0 ]; then
+    local errs
+    errs=$(state_get consecutive_errors 0)
+    errs=$((errs + 1))
+    state_set consecutive_errors "$errs"
+    log "CYCLE failed exit=$rc consecutive_errors=$errs"
+
+    if [ "$errs" -ge "$CC_LOOP_MAX_ERRORS" ]; then
+      log "BREAKER tripped (consecutive_errors=$errs ≥ $CC_LOOP_MAX_ERRORS), cooling ${CC_LOOP_COOLDOWN}s"
+      state_set last_event breaker_tripped
+      sleep "$CC_LOOP_COOLDOWN"
+      state_set consecutive_errors 0
+    fi
+    return 0
+  fi
+
+  # rc==0 (and verifier passed if applicable). Reset error counter.
+  state_set consecutive_errors 0
+
+  # 4. No-progress detection — if no git diff AND no new checkpoint,
+  # count a no-op cycle. After CC_LOOP_NOOP_LIMIT in a row, auto-pause.
+  local after_state after_ckpt_count
+  after_state=$(git_head_hash)
+  after_ckpt_count=$(ls "$HOME/.claude/checkpoints" 2>/dev/null | wc -l | tr -d ' ')
+
+  if [ "$before_state" = "$after_state" ] && [ "$before_ckpt_count" = "$after_ckpt_count" ]; then
+    local nc
+    nc=$(state_get noop_cycles 0)
+    nc=$((nc + 1))
+    state_set noop_cycles "$nc"
+    log "CYCLE ok exit=0 NO-OP (noop_cycles=$nc, limit=$CC_LOOP_NOOP_LIMIT)"
+    if [ "$nc" -ge "$CC_LOOP_NOOP_LIMIT" ]; then
+      log "NO-PROGRESS for $nc consecutive cycles; pausing loop"
+      state_set last_event noop_paused
+      touch "$PAUSE_FLAG"
+      state_set noop_cycles 0
+    fi
+  else
+    state_set noop_cycles 0
+    log "CYCLE ok exit=0 (changes: $before_state → $after_state, ckpts: $before_ckpt_count → $after_ckpt_count)"
+  fi
+  return 0
+}
+
+wait_if_paused() {
+  while [ -f "$PAUSE_FLAG" ]; do
+    log "PAUSED ($PAUSE_FLAG present); sleeping ${CC_LOOP_PAUSE_POLL}s"
+    state_set last_event paused
+    sleep "$CC_LOOP_PAUSE_POLL"
+  done
+}
+
+log "cc-loop START prompt=$PROMPT_FILE pid=$$ claude=$CLAUDE_BIN repo=$CC_LOOP_REPO"
+state_set started "$(date +%s)"
+
+if [ "$ONCE" -eq 1 ]; then
+  wait_if_paused
+  run_one_cycle
+  exit 0
+fi
+
+while true; do
+  wait_if_paused
+  run_one_cycle
+  sleep "$CC_LOOP_INTER_CYCLE"
+done

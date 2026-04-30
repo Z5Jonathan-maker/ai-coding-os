@@ -206,12 +206,58 @@
       "Bash(rm -rf /:*)",
       "Bash(rm -rf ~:*)",
       "Bash(rm -rf $HOME:*)",
+      "Bash(rm -rf .:*)",
+      "Bash(rm -r .:*)",
+      "Bash(rm -rf *:*)",
       "Bash(:(){:|:&};:)",
       "Bash(dd of=/dev/:*)",
-      "Bash(mkfs:*)"
+      "Bash(dd if=*of=/dev/:*)",
+      "Bash(mkfs:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chmod -R 777:*)",
+      "Bash(curl*|*sh)*",
+      "Bash(wget*|*sh)*",
+      "Bash(curl*|*bash)*",
+      "Bash(wget*|*bash)*",
+      "Bash(*>~/.ssh/*)*",
+      "Bash(*>~/.zshrc)*",
+      "Bash(*>~/.zprofile)*",
+      "Bash(*>~/.bashrc)*",
+      "Bash(*>~/.profile)*",
+      "Bash(*>/etc/sudoers*)*",
+      "Bash(git push --force*main)*",
+      "Bash(git push -f*main)*",
+      "Bash(git push --force*master)*",
+      "Bash(git push -f*master)*",
+      "Bash(git push --force-with-lease*main)*",
+      "Bash(git push --force-with-lease*master)*",
+      "Bash(git push origin +main)*",
+      "Bash(git push origin +master)*",
+      "Bash(git reset --hard origin/*)*",
+      "Bash(git clean -f*)*",
+      "Bash(git clean -fd*)*",
+      "Bash(git checkout -- .)*",
+      "Bash(git restore .)*",
+      "Bash(npm publish)*",
+      "Bash(pnpm publish)*",
+      "Bash(yarn publish)*",
+      "Bash(docker system prune*)*"
     ],
     "defaultMode": "bypassPermissions"
   },
   "env": {},
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/nonstop.sh"
+          }
+        ]
+      }
+    ]
+  }
 }

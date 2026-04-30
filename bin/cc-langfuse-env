@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# cc-langfuse-env — runtime env injection for Langfuse keys (read from
+# 1P at invocation), then exec the requested command. Same pattern as
+# cc-mercury: agent never persists the credentials, the wrapper does
+# the lookup at runtime in the user's shell.
+#
+# Usage:
+#   cc-langfuse-env claude                    # start claude with langfuse env loaded
+#   cc-langfuse-env env | grep CC_LANGFUSE    # inspect what got loaded
+#   cc-langfuse-env <any command>             # any command with the env present
+#
+# 1P item layout:
+#   op://Personal/Langfuse/public_key
+#   op://Personal/Langfuse/secret_key
+set -euo pipefail
+
+OP_BIN=""
+for cand in /opt/homebrew/bin/op /usr/local/bin/op; do
+  [ -x "$cand" ] && { OP_BIN="$cand"; break; }
+done
+[ -n "$OP_BIN" ] || { echo "cc-langfuse-env: op not found" >&2; exit 127; }
+
+if pk=$("$OP_BIN" read 'op://Personal/Langfuse/public_key' 2>/dev/null); then
+  export CC_LANGFUSE_PUBLIC_KEY="$pk"
+else
+  echo "cc-langfuse-env: warn — couldn't read op://Personal/Langfuse/public_key (item missing or 1P locked)" >&2
+fi
+if sk=$("$OP_BIN" read 'op://Personal/Langfuse/secret_key' 2>/dev/null); then
+  export CC_LANGFUSE_SECRET_KEY="$sk"
+else
+  echo "cc-langfuse-env: warn — couldn't read op://Personal/Langfuse/secret_key" >&2
+fi
+
+export CC_LANGFUSE_BASE_URL="${CC_LANGFUSE_BASE_URL:-http://127.0.0.1:3000}"
+export CC_LANGFUSE_TRACE_DEFAULT="${CC_LANGFUSE_TRACE_DEFAULT:-true}"
+
+exec "$@"

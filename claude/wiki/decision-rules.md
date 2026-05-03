@@ -52,9 +52,10 @@ The "when X, pick Y not Z" logic. Captures non-obvious routing decisions so the 
 ## D8: When MCP fails
 
 1. Check daily MCP probe report at `~/.claude/audits/mcp-probe-<date>.md` — is it disconnected?
-2. If yes: surface to user (re-auth or restart needed)
-3. If yes AND task can use a fallback MCP (per tool-registry): swap and continue
+2. Run `~/.claude/scripts/mcp-fallback-resolver.sh <failing-mcp>` — outputs the best healthy fallback OR empty
+3. If fallback exists: swap and continue (resolver guarantees the alternative is currently ✓ Connected)
 4. If no fallback: stage the work as READY-TO-RUN with clear instruction for when MCP returns
+5. Either way: surface to user so they know to re-auth/restart the failed primary
 
 ## D9: When auto-memory grows past 180 lines
 

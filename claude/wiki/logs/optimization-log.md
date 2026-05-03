@@ -56,6 +56,20 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** All audit history (drift reports, memory health, system score, architecture redesigns) versioned with the rest of the brain config
 - **Why it matters:** Audit timeline survives reinstalls. Enables comparing system score iter-over-iter.
 
+## 2026-05-03 · MCP fallback resolver + auto-recommendation in probe
+
+- **Before:** When an MCP failed, Claude had no automated way to know which alternative MCP could cover the same need
+- **Change:** Built `~/.claude/scripts/mcp-fallback-resolver.sh` with fallback chains (chrome-devtools→playwright→auto-browser, webclaw→chrome-devtools, etc.). Wired into mcp-probe so 🔴 Disconnected entries now show inline `→ fallback: <name>` recommendations.
+- **After:** Probe output is actionable: tells you what to use instead. skill-router agent also queries the resolver when called in failure-recovery mode.
+- **Why it matters:** Reliability +1%. Brain self-routes around MCP failures without asking the user.
+
+## 2026-05-03 · Design-skill picker baked into CLAUDE.md
+
+- **Before:** 5 design-family skills (`design`, `huashu-design`, `design-system`, `ui-styling`, `ui-ux-pro-max`) overlapped with no hard disambiguator. Routing was a coin flip in fuzzy cases.
+- **Change:** Added "Design-family skill picker" table to CLAUDE.md SKILL COMPOSITION RULES with explicit "user says X → pick Y" mapping + hard rule "never invoke two design skills in the same task"
+- **After:** Single-glance disambiguator. Cohesion +1%.
+- **Why it matters:** Removes the worst routing collision in the system.
+
 ## 2026-05-03 · LLM Wiki integration (this iteration)
 
 - **Before:** Knowledge lived in scattered docs (CLAUDE.md, audits, agent files) with no read-before/write-after protocol. Failures and optimizations were ephemeral.

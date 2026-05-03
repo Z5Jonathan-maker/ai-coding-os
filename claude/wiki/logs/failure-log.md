@@ -39,6 +39,14 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Probe now reports re-auth-needed servers in daily output + at SessionStart. User re-auths via `claude mcp` UI.
 - **Lesson:** OAuth-gated MCPs need active monitoring. Silent expiration is the default failure mode; visibility solves it.
 
+## 2026-05-03 · Pre-commit hook blocked dotfiles commit on shellcheck SC2010
+
+- **Context:** First commit of iter 1-5 work to `~/dotfiles/`
+- **Failure:** Pre-commit hook ran shellcheck on the staged `skill-usage-tracker.sh` and rejected `ls -1 ... | grep -v "^backup"` with SC2010
+- **Root cause:** `ls | grep` pattern is fragile against non-alphanumeric filenames + shellcheck enforces this even when the alternative is a fallback path
+- **Fix:** Replaced the `||` fallback with a glob-based `for d in dir/*/` loop with `case` skip for `backup*`
+- **Lesson:** Dotfiles repo has shellcheck in pre-commit. Run shellcheck on every new bash script BEFORE committing. Avoid `ls | grep` always — use globs + case statements.
+
 ## (Aurex) 2026-04-30 · Vercel two-project domain drift
 
 - **Context:** Pushing to main on Aurex, expected aurex.bio to update

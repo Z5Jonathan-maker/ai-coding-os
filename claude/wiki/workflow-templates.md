@@ -11,7 +11,8 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 3. For 🟡 High items: dispatch via parallel `general-purpose` agents (one per item, when independent)
 4. Run `code-reviewer` agent on the bundled diff before push
 5. Push → Vercel auto-deploys → invoke `deploy-runner` agent for alias chain
-6. Write outcome to `wiki/logs/optimization-log.md` (what got better)
+6. If audit flagged outdated/CVE deps: chain into **W7** (Dependency upgrade) before step 5
+7. Write outcome to `wiki/logs/optimization-log.md` (what got better)
 
 ## W2: New feature on Aurex (or any Next.js project)
 

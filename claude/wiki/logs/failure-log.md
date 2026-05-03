@@ -39,6 +39,15 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Probe now reports re-auth-needed servers in daily output + at SessionStart. User re-auths via `claude mcp` UI.
 - **Lesson:** OAuth-gated MCPs need active monitoring. Silent expiration is the default failure mode; visibility solves it.
 
+## 2026-05-03 · Dismissed without install: OpenFang + free-claude-code (recurring social-media discovery noise)
+
+- **Context:** User shared two GitHub repos via Instagram screenshots during the Aurex production audit
+- **Repos evaluated:** github.com/RightNow-AI/openfang ("Agent OS" in 137K-line Rust binary, 7 capability "Hands"); github.com/Alishahryar1/free-claude-code (47 open issues, dependabot-only commits, OpenAI-compatible proxy structure)
+- **Why dismissed (OpenFang):** Architecturally duplicates the user's existing 8 custom agents (deploy-runner, code-reviewer, design-director, research-scout, dependency-warden, memory-curator, skill-router, wiki-curator) in a foreign language (Rust) with multi-tenant security primitives (WASM dual-metered sandbox) the user doesn't need (single-user setup). Marketing flexes "137K lines, zero Clippy warnings, single binary" are developer-pride signals not user-benefit signals.
+- **Why dismissed (free-claude-code):** Name implies bypassing Anthropic billing. Repo structure (api/cli/providers/messaging) screams credential-proxy. User has Claude Max — not the audience. Skirts the existing `feedback_no_uncensored_models.md` rule.
+- **Pattern:** Social-media-discovered tooling triggers recurring "should I install this" cycles. Most fail the brain's existing-capability + audience-fit check.
+- **Lesson:** When user shares a screenshot of an "amazing new agent tool", apply this filter BEFORE recommending install: (1) does it duplicate an existing custom agent? (2) does it require a runtime not already in the stack? (3) is the marketing audience-mismatched (multi-tenant features for single-user, "free X" implying TOS bypass)? If any (1)(2)(3) → recommend skip. Don't auto-install novelty over fit.
+
 ## 2026-05-03 · Accepted security risk: installed `autobrowse` skill despite 3-scanner warnings
 
 - **Context:** User explicitly authorized installing `browserbase/skills/autobrowse` after I surfaced security warnings from Agent Trust Hub, Socket, and Snyk

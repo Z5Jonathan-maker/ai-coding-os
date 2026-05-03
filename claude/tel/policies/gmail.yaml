@@ -1,0 +1,43 @@
+service: gmail
+base_url: https://gmail.googleapis.com
+notes: |
+  Gmail read-only by default. The claude_ai_Gmail MCP handles write
+  operations interactively. TEL handles structured read queries from
+  Claude that don't need user confirmation per-call.
+  OAuth token at op://Personal/Gmail-OAuth/access_token (refresh
+  via op://Personal/Gmail-OAuth/refresh_token — TEL refresh logic in v0.2).
+
+actions:
+  search_threads:
+    description: Search Gmail threads with a query string
+    method: GET
+    endpoint: /gmail/v1/users/me/threads
+    required_args: [q]
+    optional_args: [maxResults, pageToken, labelIds]
+    reversible: false
+    rate_limit_per_hour: 100
+    auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  get_message:
+    description: Read a single message body + headers
+    method: GET
+    endpoint: /gmail/v1/users/me/messages/{id}
+    required_args: [id]
+    optional_args: [format]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  list_labels:
+    description: List user's Gmail labels
+    method: GET
+    endpoint: /gmail/v1/users/me/labels
+    reversible: false
+    rate_limit_per_hour: 60
+    auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_header: Authorization
+    auth_prefix: Bearer

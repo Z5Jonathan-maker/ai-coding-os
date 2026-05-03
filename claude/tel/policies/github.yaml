@@ -1,0 +1,44 @@
+service: github
+base_url: https://api.github.com
+notes: |
+  GitHub REST API via personal access token at op://Personal/GitHub/token.
+  This complements the github MCP server — use TEL when you need strict
+  whitelisting (e.g. read-only for a specific repo) or the MCP is down.
+  Mutating actions limited to PR creation; no direct push to main.
+
+actions:
+  list_issues:
+    description: List issues in a repo
+    method: GET
+    endpoint: /repos/{owner}/{repo}/issues
+    required_args: [owner, repo]
+    optional_args: [state, labels, sort, direction, per_page, page]
+    reversible: false
+    rate_limit_per_hour: 500
+    auth_op_path: op://Personal/GitHub/token
+    auth_header: Authorization
+    auth_prefix: token
+
+  get_pr:
+    description: Read a single PR's metadata
+    method: GET
+    endpoint: /repos/{owner}/{repo}/pulls/{number}
+    required_args: [owner, repo, number]
+    reversible: false
+    rate_limit_per_hour: 500
+    auth_op_path: op://Personal/GitHub/token
+    auth_header: Authorization
+    auth_prefix: token
+
+  create_pr:
+    description: Open a PR (head → base)
+    method: POST
+    endpoint: /repos/{owner}/{repo}/pulls
+    required_args: [owner, repo, title, head, base]
+    optional_args: [body, draft]
+    reversible: true
+    undo_window_seconds: 300
+    rate_limit_per_hour: 30
+    auth_op_path: op://Personal/GitHub/token
+    auth_header: Authorization
+    auth_prefix: token

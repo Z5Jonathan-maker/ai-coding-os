@@ -1,0 +1,42 @@
+service: gamma
+base_url: https://api.gamma.app
+notes: |
+  Gamma slide generation. OAuth credential stored at op://Personal/Gamma/credential
+  (currently using OAuth refresh token flow — re-auth via claude mcp UI captures it).
+  Endpoints inferred from public Gamma API as of 2026-05; verify when first call runs.
+
+actions:
+  create_presentation:
+    description: Generate a new Gamma presentation from an outline
+    method: POST
+    endpoint: /v0/presentations
+    required_args: [title, outline]
+    optional_args: [theme, format, audience, tone]
+    reversible: true
+    undo_window_seconds: 600
+    rate_limit_per_hour: 20
+    auth_op_path: op://Personal/Gamma/credential
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  get_presentation:
+    description: Read presentation metadata + status
+    method: GET
+    endpoint: /v0/presentations/{id}
+    required_args: [id]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Gamma/credential
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  list_presentations:
+    description: List recent presentations in the user's account
+    method: GET
+    endpoint: /v0/presentations
+    optional_args: [limit, cursor]
+    reversible: false
+    rate_limit_per_hour: 100
+    auth_op_path: op://Personal/Gamma/credential
+    auth_header: Authorization
+    auth_prefix: Bearer

@@ -164,6 +164,23 @@ After delivery: log to `design/logs/winning-patterns.md` (≥95% scored) or `des
 
 The `design-director` agent orchestrates the full Phase 1-6 design loop end-to-end when the task spans multiple steps.
 
+## TRUSTED EXECUTION LAYER (TEL) — credentialed action gateway
+
+Source of truth: `~/.claude/tel/` (symlinked from `~/dotfiles/claude/tel/`).
+
+**Why it exists:** The harness (correctly) blocks programmatic credential capture from transcripts. TEL removes the need to bypass this by separating planning from credentials. Claude never sees secrets — TEL holds them via 1Password and executes whitelisted actions on Claude's behalf.
+
+**Status:** Architecture + code shipped. **Not yet running** — requires `pip install` + `launchctl load` (see [tel/ops/INSTALL.md](file:///Users/leonardofibonacci/.claude/tel/ops/INSTALL.md), needs your nod for the dep install).
+
+**Routing rule:** Use TEL when:
+- A service has no working MCP and you have credentials for it
+- An MCP is down and you need a fallback for the same service
+- You want strict whitelisting on a credentialed service (audit + rate limits + undo tokens)
+
+**Use directly via shell:** `~/.claude/tel/client/tel-call.sh <service> <action> '<args-json>'`. Returns structured JSON with `audit_id` and optional `undo_token`. The credential never enters this conversation.
+
+See [wiki/decision-rules.md](file:///Users/leonardofibonacci/.claude/wiki/decision-rules.md) D13 for the full TEL-vs-MCP-vs-Bash routing rule.
+
 ## IMPORTED SKILLS
 
 @~/code/research/browser-harness/SKILL.md

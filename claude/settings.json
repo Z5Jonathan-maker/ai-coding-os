@@ -265,6 +265,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/mcp-session-probe.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/tel-health.sh"
           }
         ]
       }

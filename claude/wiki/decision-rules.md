@@ -78,3 +78,16 @@ The "when X, pick Y not Z" logic. Captures non-obvious routing decisions so the 
 - **mempalace + recall skill** = "what did we discuss / decide in past sessions" (episodic)
 - **auto-memory** = "who is the user / what's their stack / what feedback have they given" (factual)
 - Never put episodic in auto-memory or factual in mempalace
+
+## D13: When to use TEL vs MCP vs direct Bash for credentialed actions
+
+- **MCP** = default. The service has a working MCP, OAuth fresh, action is supported. (e.g. github MCP for issue ops, claude_ai_Figma for design reads.)
+- **TEL** = use when:
+  - Service has no MCP but has REST/SDK
+  - MCP exists but is down + you have credentials in 1Password (TEL is the failover)
+  - You want strict whitelisting on a credentialed service (per-action rate limits, audit log, undo tokens)
+  - The action is mutating + you want forced approval gates documented in `policies/<service>.yaml`
+- **Bash + `op read` inline** = read-only single-shot, throwaway, no need for whitelisting (e.g. `curl -H "Authorization: Bearer $(op read op://Personal/X/credential)" ...`)
+- **NEVER** = ask the user to paste a credential into chat. The harness blocks transcript-based credential capture for good reason. Use the OAuth flow (`claude mcp` UI) or 1Password — that's it.
+
+Invocation: `~/.claude/tel/client/tel-call.sh <service> <action> '<args-json>'`. Returns audit_id + optional undo_token. Credential never touches the transcript.

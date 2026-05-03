@@ -39,6 +39,21 @@ Every agent — when to invoke, what they do, what they NEVER do. Source files a
 - **Output:** Findings + verbatim quotes + URLs + retrieved date + confidence + gaps
 - **Never:** Cite a URL it didn't fetch, paraphrase as quote, claim consensus without showing evidence
 
+### wiki-curator
+- **When:** Monthly OR after long autonomous sessions that wrote multiple wiki entries
+- **Tools:** Read, Edit, Grep, Bash
+- **Model:** haiku (low-cost structural validation)
+- **Output:** Curator proposals file at `~/.claude/wiki/logs/curator-proposals-<date>.md`
+- **Never:** Delete a log entry (failure/optimization are append-only forever); modify entry content (only mark superseded); auto-apply proposals (always propose, wait for nod)
+
+### design-director
+- **When:** Multi-step design tasks needing brand memory + tool routing + QC scoring + winning-pattern logging
+- **Tools:** Read, Edit, Write, Bash, Grep, Skill, Agent
+- **Model:** sonnet
+- **Output:** Six-phase report (Brief / Creative direction / Execution plan / Output / QC table / Learning)
+- **Never:** Skip brand memory loading (Phase 1); fabricate brand details; ship a print asset under 98%; let cc-image render text (warps); use generic AI-slop (purple/emoji/Inter-as-display)
+- **Composes:** design / ui-styling / huashu-design / slides / banner-design + cc-image + chrome-devtools/Figma MCPs
+
 ### dependency-warden
 - **When:** Pre-release, weekly on shipped projects, "what's outdated"
 - **Tools:** Bash, Read, Grep

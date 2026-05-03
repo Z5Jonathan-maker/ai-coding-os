@@ -55,6 +55,21 @@ When multiple tools could do a job, prefer in this order:
 3. **Agent** over inline work — when context isolation or parallelism helps
 4. **WebSearch + WebFetch** as last resort — most token-expensive, hallucination-prone
 
+## Local execution layers (sibling brains)
+
+These aren't MCPs — they're filesystem-based knowledge + execution layers, queryable by Read/Grep, writable per the read-before/write-after protocol.
+
+| Layer | Path | Purpose | Read protocol |
+|---|---|---|---|
+| **wiki** | `~/.claude/wiki/` | Code + system intelligence (tool-registry, agent-definitions, workflow-templates W1-W9, decision-rules D1-D13, failure-log, optimization-log) | Before any non-trivial action |
+| **design** | `~/.claude/design/` | Visual + brand intelligence (routing, brands/aurex, prompts, exports, 8-axis QC, asset registry) | Before any design task |
+| **tel** | `~/.claude/tel/` | Trusted Execution Layer for credentialed actions. FastAPI server on 127.0.0.1:8765 (when daemonized). Whitelist policies in YAML. Audit + rollback. | Before any credentialed third-party action; see D13 |
+
+### Health monitoring of each layer
+- **wiki** — `routing-drift-check.sh` (Mon 09:05) catches drift between wiki references and reality
+- **design** — currently no auto-monitor; manual via `design-director` agent runs
+- **tel** — `tel-canary.sh` (called by daily `mcp-probe.sh` at 09:00) validates imports + policy parsing without starting the server
+
 ## Output contract conventions
 
 Every tool result Claude receives is a string. Tools that produce structured data should:

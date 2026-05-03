@@ -1,0 +1,52 @@
+service: vercel
+base_url: https://api.vercel.com
+notes: |
+  Vercel REST API for deploy/alias/inspect. Token at op://Personal/Vercel/token.
+  Pairs with the deploy-runner agent for the two-project alias drift workaround
+  (aurex push → aurex-bio domain, see W4 in workflow-templates).
+
+actions:
+  list_deployments:
+    description: List recent deployments for a project
+    method: GET
+    endpoint: /v6/deployments
+    optional_args: [projectId, limit, state, target]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Vercel/token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  get_deployment:
+    description: Get deployment details by ID or URL
+    method: GET
+    endpoint: /v13/deployments/{idOrUrl}
+    required_args: [idOrUrl]
+    reversible: false
+    rate_limit_per_hour: 500
+    auth_op_path: op://Personal/Vercel/token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  alias_deployment:
+    description: Promote a deployment to a domain alias
+    method: POST
+    endpoint: /v2/deployments/{id}/aliases
+    required_args: [id, alias]
+    reversible: true
+    undo_window_seconds: 600
+    rate_limit_per_hour: 30
+    auth_op_path: op://Personal/Vercel/token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  list_projects:
+    description: List Vercel projects in the user's scope
+    method: GET
+    endpoint: /v9/projects
+    optional_args: [limit, search]
+    reversible: false
+    rate_limit_per_hour: 100
+    auth_op_path: op://Personal/Vercel/token
+    auth_header: Authorization
+    auth_prefix: Bearer

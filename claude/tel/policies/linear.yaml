@@ -1,0 +1,44 @@
+service: linear
+base_url: https://api.linear.app/graphql
+notes: |
+  Linear via GraphQL API. Personal API key at op://Personal/Linear/api_key.
+  Linear is GraphQL-only — endpoints below all POST to the same /graphql url
+  with different `query` bodies. The TEL passes args through as the GraphQL
+  variables payload. Add new actions by writing the query string in args.
+
+actions:
+  query:
+    description: Execute an arbitrary GraphQL query/mutation against Linear
+    method: POST
+    endpoint: /
+    required_args: [query]
+    optional_args: [variables, operationName]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Linear/api_key
+    auth_header: Authorization
+    auth_prefix: ""
+
+  list_issues:
+    description: Convenience wrapper — list issues with optional filter
+    method: POST
+    endpoint: /
+    required_args: [query]
+    optional_args: [variables]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Linear/api_key
+    auth_header: Authorization
+    auth_prefix: ""
+
+  create_issue:
+    description: Create an issue (graphql mutation)
+    method: POST
+    endpoint: /
+    required_args: [query, variables]
+    reversible: true
+    undo_window_seconds: 600
+    rate_limit_per_hour: 30
+    auth_op_path: op://Personal/Linear/api_key
+    auth_header: Authorization
+    auth_prefix: ""

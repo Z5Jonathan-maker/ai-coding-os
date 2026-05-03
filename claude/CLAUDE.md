@@ -55,6 +55,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Be terse" | `caveman` | Strips conversational filler |
 | "Compress generated code" | `pulse` | Dense functions, no restate-comments |
 | "Apply Karpathy rules" | `karpathy-guidelines` | Surgical, simplicity-first |
+| "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action via 1Password — credential never enters transcript |
+| "Show me brain state / system snapshot" | (no skill — run `~/.claude/scripts/snapshot.sh`) | Single-command full state report |
 
 ## AGENT ROUTING TABLE
 

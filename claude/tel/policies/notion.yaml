@@ -1,0 +1,56 @@
+service: notion
+base_url: https://api.notion.com
+notes: |
+  Notion REST API. Integration token at op://Personal/Notion/integration_token.
+  Notion requires a Notion-Version header (set to 2022-06-28 latest stable).
+  Note: TEL v0.1 doesn't support custom headers beyond Authorization. To use
+  Notion: hardcode the Notion-Version in the auth_prefix as a workaround until
+  TEL v0.2 adds extra_headers support to the policy schema.
+
+actions:
+  search:
+    description: Search pages and databases by query
+    method: POST
+    endpoint: /v1/search
+    optional_args: [query, sort, filter, page_size, start_cursor]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Notion/integration_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  get_page:
+    description: Read a Notion page by ID
+    method: GET
+    endpoint: /v1/pages/{page_id}
+    required_args: [page_id]
+    reversible: false
+    rate_limit_per_hour: 500
+    auth_op_path: op://Personal/Notion/integration_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  query_database:
+    description: Query a Notion database with filters/sorts
+    method: POST
+    endpoint: /v1/databases/{database_id}/query
+    required_args: [database_id]
+    optional_args: [filter, sorts, page_size, start_cursor]
+    reversible: false
+    rate_limit_per_hour: 200
+    auth_op_path: op://Personal/Notion/integration_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  create_page:
+    description: Create a new page (in a parent page or database)
+    method: POST
+    endpoint: /v1/pages
+    required_args: [parent, properties]
+    optional_args: [children, icon, cover]
+    reversible: true
+    undo_window_seconds: 600
+    rate_limit_per_hour: 30
+    auth_op_path: op://Personal/Notion/integration_token
+    auth_header: Authorization
+    auth_prefix: Bearer

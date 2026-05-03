@@ -115,6 +115,32 @@
 - **PDP with stack-tier table inline:** Volume math visible pre-cart, lifted from competitor scrape (truepeptidelabs hides theirs) — converts better
 - **COA batch picker on PDP:** Trust element, every released batch links to its Janoshik verification
 
+## Pricing model (audit iter 17)
+
+**Per-vial pricing:** msrp ≥ list ≥ sale ≥ subscribe ≥ stackFloor (verified monotonic across all 18 SKUs).
+
+**Stack pricing — CURATION PREMIUM, not items-savings.** All 7 stacks cost MORE than buying their included SKUs à la carte at `pricing.sale`. Examples:
+- healing-stack: $289.97 stack vs $150 items + $118 bonusItems = $268. Premium = $22.
+- longevity-stack: $329.97 stack vs $136 items.
+- flagship-bundle: $1,299.97 stack vs $566 items.
+
+**This is intentional brand model**: stacks are curated kits with bonus value (bac water, syringes, protocol guides, replacement guarantees, COA QR lookup). The `perceivedStackValue` field on each stack ($494 for healing) reflects marketing-claimed total worth.
+
+**Audit finding flagged for product-strategy review:** A skeptical buyer who computes items-at-sale will see the stack costs more. Two paths to resolve:
+1. Reprice stacks down so itemized + bonuses ≤ stack price (real savings)
+2. Tighten copy: never claim "save vs itemized" — only frame as "curated kit + bonuses + protocol"
+
+Until decided: do NOT add "save vs itemized" framing to any stack PDP. Use "curated research kit" / "co-formulated for protocol X" framing only.
+
+**Discount stacking order** (`lib/pricing.ts` + `lib/preorder-derive.ts`):
+1. Stack-tier discount (3+ unique non-accessory vials → stackFloor pricing)
+2. Coupon (% off post-stack subtotal)
+3. Gift card (clamped to remaining balance + remaining due)
+4. Rail discount (-8% crypto only, on post-everything-else)
+5. Shipping (free at $200+ post-discount, else $18 flat)
+
+**Hard rule:** Server-side recompute via `deriveOrderTotals()` in `/api/preorder` — client subtotal/total fields NEVER trusted. Discrepancy >$1 = 409.
+
 ## Provisional / TBD
 
 - Custom display typeface — current site uses `next/font` choice; capture exact font name once verified

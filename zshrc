@@ -85,3 +85,6 @@ command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
 # zsh-syntax-highlighting — must be sourced LAST
 [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
   && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Node global bin (ruflo, codex, webclaw-mcp, etc.)
+export PATH="/Users/leonardofibonacci/local/opt/node/bin:$PATH"

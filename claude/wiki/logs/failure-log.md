@@ -39,6 +39,19 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Probe now reports re-auth-needed servers in daily output + at SessionStart. User re-auths via `claude mcp` UI.
 - **Lesson:** OAuth-gated MCPs need active monitoring. Silent expiration is the default failure mode; visibility solves it.
 
+## 2026-05-03 · Accepted security risk: installed `autobrowse` skill despite 3-scanner warnings
+
+- **Context:** User explicitly authorized installing `browserbase/skills/autobrowse` after I surfaced security warnings from Agent Trust Hub, Socket, and Snyk
+- **What was the risk:** Third-party skill with `Bash Read Write Edit Glob Grep Agent` allowed-tools running iteratively against arbitrary websites. 1.5K stars, MIT license, 374 stars on the related `auto-browser` MCP repo (LvcidPsyche). Active project from Browserbase team.
+- **Mitigations applied:**
+  1. Cloned the source repo manually (`git clone github.com/browserbase/skills`) and inspected `SKILL.md` + `package.json` + `.env.example` before copying — no obfuscated payloads, only @anthropic-ai/sdk + dotenv deps
+  2. Installed only the `autobrowse` subdirectory (96K), not the rest of the multi-skill repo
+  3. Wrote `.env` template that sources secrets from 1Password at runtime via `op read` — no API keys persisted to disk
+  4. Added `.gitignore` to the skill dir excluding node_modules/.env/tasks/artifacts/
+  5. Documented the API-key model conflict (skill needs raw ANTHROPIC_API_KEY but user is on Claude Max — would require separate API account)
+- **Risk acceptance rationale:** User explicitly typed the install command back to me as authorization. Browserbase is a known infra company. Source code reviewable. Tools-allowed list is broad but not unbounded. The auto-browser MCP from the same person (LvcidPsyche) has been running in user's stack since iter 3 without issue.
+- **Lesson:** When a third-party skill is security-flagged, the install path is: (1) explicit user authorization, (2) clone-and-inspect source manually instead of `npx -y` which auto-executes, (3) sandbox secrets via 1Password not raw env, (4) document the accepted-risk in failure-log so future-Claude knows the trust call was made deliberately. Don't auto-install over scanner warnings.
+
 ## 2026-05-03 · TEL server import failed under macOS system Python (3.9)
 
 - **Context:** First-run validation of the TEL server in iter 9, using `python3 -m venv .venv` (which picks up macOS CommandLineTools Python 3.9.6)

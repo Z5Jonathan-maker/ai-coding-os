@@ -105,6 +105,32 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 
 **Hard rule:** Never paste credentials into chat to "help" — TEL's whole point is that the credential lives in 1Password and never enters Claude's transcript. See D13.
 
+## W10: Self-improving browser skill via autobrowse
+
+**Trigger:** User says "/autobrowse <task>", "build a browser skill for X site", "autobrowse google flights / amazon / linkedin / etc"
+
+1. Verify autobrowse is installed: `ls ~/.claude/skills/autobrowse/SKILL.md`
+2. Verify ANTHROPIC_API_KEY is reachable via 1Password: `op read op://Personal/Anthropic-API/credential | head -c 10` (note: separate from Claude Max OAuth — autobrowse needs the API key explicitly)
+3. If user gave a free-form URL or instruction (not `--task <name>`):
+   - Check `~/.claude/skills/autobrowse/tasks/<name>/task.md` for matching existing task
+   - Else create one in kebab-case using `references/example-task.md` as template
+4. Source secrets from 1Password into env:
+   ```bash
+   export ANTHROPIC_API_KEY=$(op read op://Personal/Anthropic-API/credential)
+   # Optional, for cloud browser via Browserbase:
+   export BROWSERBASE_API_KEY=$(op read op://Personal/Browserbase/api_key)
+   export BROWSERBASE_PROJECT_ID=$(op read op://Personal/Browserbase/project_id)
+   ```
+5. Run the skill: `cd ~/.claude/skills/autobrowse && npm run evaluate -- --task <name>`
+6. Inner agent attempts the browser task → produces a trace → outer agent (Claude) reads the trace → updates `tasks/<name>/strategy.md`
+7. Iterate until convergence (default: 5-10 iterations until consistent pass)
+8. Once converged: the `strategy.md` IS the reusable browser skill — graduate to `wiki/logs/winning-patterns.md` (browser-task domain) with the converged strategy
+9. Subsequent invocations of the same task use the converged strategy directly — no re-discovery
+
+**Composes with:** auto-browser MCP (the actual browser control surface, already loaded). The autobrowse skill is the orchestration layer; auto-browser MCP can be the underlying executor.
+
+**Security note:** This skill has accepted-risk status (3 scanner warnings) — see `wiki/logs/failure-log.md` 2026-05-03 entry. Don't extend its allowed-tools surface beyond the SKILL.md frontmatter. Audit task definitions in `tasks/<name>/task.md` before running against sites that handle PII or money.
+
 ## How to add a new workflow
 
 If during a session you build a multi-step recipe that worked well:

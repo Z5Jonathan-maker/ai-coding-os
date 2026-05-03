@@ -57,6 +57,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Apply Karpathy rules" | `karpathy-guidelines` | Surgical, simplicity-first |
 | "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action via 1Password — credential never enters transcript |
 | "Show me brain state / system snapshot" | (no skill — run `~/.claude/scripts/snapshot.sh`) | Single-command full state report |
+| "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop on browser tasks (browserbase/skills v0.1, MIT). Requires ANTHROPIC_API_KEY (separate from Claude Max — see skill .env). 3 security scanners flagged warnings — risk accepted 2026-05-03, see wiki/logs/failure-log.md. Composes with auto-browser MCP (already loaded). |
 
 ## AGENT ROUTING TABLE
 

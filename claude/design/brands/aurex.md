@@ -26,8 +26,16 @@
 | `--color-ink` | `#09090B` | Foreground / headlines (zinc-950) |
 | `--color-ink-2` | `#27272A` | Body copy (zinc-800) |
 | `--color-steel` | `#71717A` | Tertiary text, metadata (zinc-500) |
+| `--color-accent` | `#2563EB` | Blue-600 — single sanctioned accent (was lab-teal #006B6B, swapped per /ui-ux-pro-max recommendation) |
+| `--color-accent-2` | `#3B82F6` | Blue-500 hover lift |
+| `--color-accent-glow` | `rgb(37 99 235 / 0.35)` | Soft glow on accent surfaces |
+| `--color-cobalt` | alias of `--color-accent` | Legacy name kept for component compat |
 
-**Hard rule:** Components reference tokens only. No raw hex in components. The palette is monochromatic-on-paper — DO NOT introduce accent colors without explicit approval. Aurex earns visual interest through type, hierarchy, and density — not chroma.
+**Hard rule:** Components reference tokens only. No raw hex in components.
+
+**Accent policy (revised 2026-05-03 iter 17):** The palette is paper+ink dominant with a single sanctioned accent (blue `--color-accent`). Use accent sparingly — hero highlight word, primary CTA, batch-COA verification badge, link hover. Never as a fill on cards or page backgrounds. Do NOT introduce additional chromas (purple, teal, orange, pink) — those remain banned per the AI-slop rule.
+
+**History:** Original brand brain (iter 7) said "monochromatic-on-paper, no accents." Codebase evolved to add blue accent for hierarchy + UI affordance after the spec was seeded. Audit iter 17 self-corrected: the accent is intentional + load-bearing, not a violation. The brain is updated to reflect reality.
 
 ## Typography
 

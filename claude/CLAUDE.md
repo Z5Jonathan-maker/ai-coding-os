@@ -70,6 +70,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Map vague intent → skill+agent+MCP | `skill-router` | When user request is fuzzy |
 | Audit deps: outdated, unused, CVEs | `dependency-warden` | Weekly on shipped projects, pre-release |
 | Maintain LLM Wiki (dedupe, drift) | `wiki-curator` | Monthly, or after long autonomous sessions |
+| Orchestrate full design loop (Phase 1-6) | `design-director` | Multi-step design tasks needing brand memory + QC + logging |
 | Claude Code / API / SDK questions | `claude-code-guide` | Anything about Claude products |
 | Status line setup | `statusline-setup` | When user asks |
 
@@ -146,6 +147,22 @@ Source of truth: `~/.claude/wiki/` (symlinked from `~/dotfiles/claude/wiki/`).
 **Rule:** If knowledge isn't in the wiki, it doesn't exist for future intelligence.
 
 The Stop hook `wiki-writeback.sh` captures session heartbeats automatically; structured failure/optimization entries are written by Claude during the session via Edit on the log files.
+
+## DESIGN INTELLIGENCE SUITE — sibling to the wiki, dedicated to visual output
+
+Source of truth: `~/.claude/design/` (symlinked from `~/dotfiles/claude/design/`).
+
+For ANY design task (brand / social / vial label / box / web section / ad / deck / carousel / product photo / UI / marketing / print):
+
+1. **Read** [design/routing.md](file:///Users/leonardofibonacci/.claude/design/routing.md) — pick the tool/workflow
+2. **Read** [design/brands/<brand>.md](file:///Users/leonardofibonacci/.claude/design/brands/) — load brand memory
+3. **Read** [design/prompts/<type>.md](file:///Users/leonardofibonacci/.claude/design/prompts/) — start from proven prompt
+4. **Apply** [design/checks/quality-control.md](file:///Users/leonardofibonacci/.claude/design/checks/quality-control.md) — 95% threshold (98% for print)
+5. **Match** [design/exports/<platform>.md](file:///Users/leonardofibonacci/.claude/design/exports/) — exact dimensions/format
+
+After delivery: log to `design/logs/winning-patterns.md` (≥95% scored) or `design/logs/anti-patterns.md` (failed).
+
+The `design-director` agent orchestrates the full Phase 1-6 design loop end-to-end when the task spans multiple steps.
 
 ## IMPORTED SKILLS
 

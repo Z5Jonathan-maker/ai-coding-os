@@ -16,6 +16,14 @@ set -euo pipefail
 PROVIDER="${TEL_PROVIDER:-openrouter}"
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Hard prereq: browse CLI must be installed (the actual browser executor).
+# Without it, no model provider matters — autobrowse can't execute.
+if ! command -v browse >/dev/null 2>&1; then
+  echo "🔴 'browse' CLI not installed — autobrowse depends on it" >&2
+  echo "   Install with: npm install -g @browserbasehq/browse-cli" >&2
+  exit 1
+fi
+
 # Default model per provider
 DEFAULT_MODEL=""
 case "$PROVIDER" in
@@ -60,8 +68,34 @@ case "$PROVIDER" in
 esac
 
 # If user didn't pass --model, inject the provider default
-if ! printf '%s\n' "$@" | grep -qx -- "--model"; then
-  exec node "$SKILL_DIR/scripts/evaluate.mjs" --model "$DEFAULT_MODEL" "$@"
-else
-  exec node "$SKILL_DIR/scripts/evaluate.mjs" "$@"
+USER_PASSED_MODEL=false
+printf '%s\n' "$@" | grep -qx -- "--model" && USER_PASSED_MODEL=true
+
+run_evaluate() {
+  local model="$1"; shift
+  if [ "$USER_PASSED_MODEL" = "true" ]; then
+    node "$SKILL_DIR/scripts/evaluate.mjs" "$@"
+  else
+    node "$SKILL_DIR/scripts/evaluate.mjs" --model "$model" "$@"
+  fi
+}
+
+# Try the chosen provider's default model first
+if run_evaluate "$DEFAULT_MODEL" "$@"; then
+  exit 0
 fi
+
+# Fallback ladder when on openrouter (only — anthropic/litellm don't have a
+# meaningful sibling fallback within the same provider config).
+if [ "$PROVIDER" = "openrouter" ] && [ "$USER_PASSED_MODEL" = "false" ]; then
+  echo "🟡 deepseek-chat failed — falling back to deepseek-r1 (more reasoning)" >&2
+  if run_evaluate "deepseek/deepseek-r1" "$@"; then
+    exit 0
+  fi
+  echo "🟡 deepseek-r1 failed — final fallback to anthropic/claude-sonnet-4.5 via OpenRouter" >&2
+  echo "   (uses OpenRouter credits — routes to Claude without needing a direct Anthropic API key" >&2
+  echo "    or breaking your Claude Max subscription model)" >&2
+  exec node "$SKILL_DIR/scripts/evaluate.mjs" --model "anthropic/claude-sonnet-4.5" "$@"
+fi
+
+exit 1

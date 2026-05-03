@@ -184,6 +184,18 @@ Source of truth: `~/.claude/tel/` (symlinked from `~/dotfiles/claude/tel/`).
 
 See [wiki/decision-rules.md](file:///Users/leonardofibonacci/.claude/wiki/decision-rules.md) D13 for the full TEL-vs-MCP-vs-Bash routing rule.
 
+## OCTOGENT — multi-session orchestration
+
+Installed at `~/code/projects/octogent/` (cloned from github.com/hesamsheikh/octogent, 698 stars, MIT). Claude Code multi-session dashboard. Each "tentacle" = scoped job container with its own `CONTEXT.md`, `todo.md`, notes — agents read/write durable files instead of reconstructing chat history.
+
+**When to use vs. our brain's parallel agents:**
+- **Brain's Agent tool (current default)** — parallel agents WITHIN one session, single coordinator, results compose into one response
+- **Octogent (use when)** — running 3+ truly independent Claude Code sessions for different repos/scopes simultaneously (e.g. Aurex feature work + brain config + research scrape, all needing persistent state across days). Tentacles preserve context per-scope. Inter-session messaging coordinates handoffs.
+
+**Run:** `cd ~/code/projects/octogent && pnpm dev` — launches local API + UI. Bookmark for when the multi-session pattern is the right fit.
+
+**NOT a replacement** for the routing brain (CLAUDE.md, wiki, design, tel) — Octogent is the meta-coordinator across sessions; the brain is the in-session intelligence layer. They compose: Octogent spawns sessions, each session runs the brain.
+
 ## IMPORTED SKILLS
 
 @~/code/research/browser-harness/SKILL.md

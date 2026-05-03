@@ -39,6 +39,15 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Probe now reports re-auth-needed servers in daily output + at SessionStart. User re-auths via `claude mcp` UI.
 - **Lesson:** OAuth-gated MCPs need active monitoring. Silent expiration is the default failure mode; visibility solves it.
 
+## 2026-05-03 · Installed Scrapling (D4Vinci) — accepted-risk, brand-tension noted
+
+- **Context:** User shared screenshot of @wassimyounes_ post promoting Scrapling (#1 GitHub trending Python repo, 268K downloads, 43K stars). Initial assessment dismissed it (anti-bot ethical line vs. brand "calm authority, never hype"). User explicitly authorized install with "dl it".
+- **Install path:** Cloned + inspected source (BSD-3-Clause, karim.shoair@pm.me, v0.4.7 beta, Python ≥3.10). Created isolated venv at `~/code/projects/scrapling-lab/.venv/` (separate from TEL venv). `pip install scrapling[shell]` + `scrapling install` for Playwright browsers. Import + CLI verified working.
+- **Live smoke test failed** in this session — curl_cffi DNS resolution blocked in the harness sandbox (`Could not resolve host: example.com`). Not a Scrapling bug; the sandbox limits arbitrary HTTP egress for Python tools. User can run from their own shell to verify end-to-end.
+- **Brand-tension finding (load-bearing for future Claude):** Scrapling is positioned as "undetectable" with explicit Cloudflare Turnstile bypass. This conflicts with `~/.claude/design/brands/aurex.md` "calm authority, scientific precision, never hype" voice + the existing `auto-browser` MCP's explicit "no stealth, no anti-bot work" stance. **Don't suggest using Scrapling for Aurex competitor intelligence** — that crosses the same line auto-browser is positioned to avoid.
+- **Legitimate Scrapling use cases for Jonathan's stack:** (1) one-off research data extraction from sources without official APIs, (2) academic literature scraping from PubMed/etc. that allows automated retrieval per their TOS, (3) personal-archive scraping (his own sites/forums). NOT: competitor pricing, paywalled content, sites that explicitly block bots in robots.txt.
+- **Lesson:** When user explicitly authorizes a security-flagged tool install, follow the same protocol as autobrowse: clone-and-inspect manually (no `pip install scrapling` from a random source), use isolated venv, log accepted-risk + brand-tension here so future Claude doesn't re-litigate the trade-off.
+
 ## 2026-05-03 · Dismissed without install: OpenFang + free-claude-code (recurring social-media discovery noise)
 
 - **Context:** User shared two GitHub repos via Instagram screenshots during the Aurex production audit

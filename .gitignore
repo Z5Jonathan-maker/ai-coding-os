@@ -3,3 +3,5 @@
 *~
 .backup.*
 claude/skills/prompt-master/
+.venv/
+claude/tel/.venv/

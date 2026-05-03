@@ -4,14 +4,29 @@ Three steps. ~5 minutes. Then Claude can execute against any whitelisted service
 
 ## 1. Create a Python venv + install deps (needs your nod — adds Python deps)
 
+**Python ≥ 3.10 required** — the server uses PEP 604 `X | Y` union types in pydantic models. macOS system Python is 3.9 and will fail at import time. Use the user-installed 3.12 (already on your machine via uv at `~/.local/bin/python3.12`):
+
 ```bash
 cd ~/.claude/tel
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r server/requirements.txt
+~/.local/bin/python3.12 -m venv .venv
+.venv/bin/pip install -r server/requirements.txt
 ```
 
 This installs FastAPI + uvicorn + httpx + pyyaml + pydantic into an isolated venv at `~/.claude/tel/.venv/`. **Nothing pollutes the global Python.**
+
+Verify imports + units pass:
+
+```bash
+cd ~/.claude/tel
+.venv/bin/python -c "
+from server import server, auth_broker, tool_registry, policy, audit, rollback
+from pathlib import Path
+reg = tool_registry.ToolRegistry(Path('policies'))
+print('OK — policies parsed:', list(reg.services.keys()))
+"
+```
+
+Should print `OK — policies parsed: ['gamma', 'github', 'gmail']`.
 
 ## 2. Verify the server runs interactively
 
@@ -28,7 +43,7 @@ curl -s http://127.0.0.1:8765/health | jq .
 
 You should see `{"ok": true, "version": "0.1.0", "auth_broker": {...}, "services": ["gamma","github","gmail"]}`.
 
-If `auth_broker.ok` is false: you're not signed into 1Password CLI. Run `op signin` and retry.
+If `auth_broker.ok` is false: you're not signed into 1Password CLI. Run `eval $(op signin)` interactively and retry. **`op whoami` will time out if 1Password is locked** — this is the most common first-run hiccup. Sign in once before kicking the launchd agent.
 
 Stop the interactive server (Ctrl-C) and proceed to step 3.
 

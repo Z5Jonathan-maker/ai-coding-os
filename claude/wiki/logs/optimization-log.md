@@ -56,6 +56,13 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** All audit history (drift reports, memory health, system score, architecture redesigns) versioned with the rest of the brain config
 - **Why it matters:** Audit timeline survives reinstalls. Enables comparing system score iter-over-iter.
 
+## 2026-05-03 · TEL installed + validated under Python 3.12
+
+- **Before:** TEL existed as code in dotfiles but was never installed — the iter 8 commit was design-and-stage only
+- **Change:** Created Python 3.12 venv at `~/.claude/tel/.venv/`, installed pinned deps (fastapi 0.115.0, uvicorn 0.32.0, pydantic 2.9.2, httpx 0.27.2, pyyaml 6.0.2). Validated all 6 server modules import. Validated all 3 policy YAMLs parse with correct action counts. Validated redaction (tokens/api_keys → `<redacted>`, normal args preserved). Validated rate limiter. Validated rollback issue/consume/no-double-consume.
+- **After:** TEL is import-clean and unit-functional. Server NOT yet running (launching the long-running daemon is a separate approval gate the user hasn't cleared yet — correct harness behavior). The path to "live" is now: `op signin` → `launchctl load bio.tel.plist` → done.
+- **Why it matters:** Closes the architecture loop from iter 8. Future "use my login for X" requests have a code-validated answer waiting; only operational steps remain.
+
 ## 2026-05-03 · MCP fallback resolver + auto-recommendation in probe
 
 - **Before:** When an MCP failed, Claude had no automated way to know which alternative MCP could cover the same need

@@ -39,6 +39,22 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Probe now reports re-auth-needed servers in daily output + at SessionStart. User re-auths via `claude mcp` UI.
 - **Lesson:** OAuth-gated MCPs need active monitoring. Silent expiration is the default failure mode; visibility solves it.
 
+## 2026-05-03 · TEL server import failed under macOS system Python (3.9)
+
+- **Context:** First-run validation of the TEL server in iter 9, using `python3 -m venv .venv` (which picks up macOS CommandLineTools Python 3.9.6)
+- **Failure:** `TypeError: Unable to evaluate type annotation 'dict | None'` from pydantic model field collection
+- **Root cause:** Server uses PEP 604 union syntax (`X | Y`) in pydantic model annotations. Python 3.9 doesn't support this at runtime even with `from __future__ import annotations` because pydantic v2 re-evaluates annotations via `eval()` for validation.
+- **Fix:** Recreated venv with `~/.local/bin/python3.12` (uv-managed Python). All imports + unit tests pass clean. Updated `tel/ops/INSTALL.md` to document the 3.10+ requirement and call out the explicit python3.12 path on this machine.
+- **Lesson:** When shipping Python services that use modern type syntax, pin the Python version in install docs AND fail loud at startup if the running interpreter is too old. `from __future__ import annotations` is necessary but NOT sufficient for pydantic v2 + PEP 604.
+
+## 2026-05-03 · TEL 1Password broker timed out on `op whoami`
+
+- **Context:** Smoke-testing TEL auth_broker.health() during iter 9 install validation
+- **Failure:** `op whoami timed out` — the 1Password CLI was reachable but unresponsive within the 5s timeout
+- **Root cause:** 1Password CLI requires an interactive sign-in (`eval $(op signin)`) per shell session. The python venv subprocess inherited the env but not the auth state.
+- **Fix:** Documented `eval $(op signin)` as a prerequisite in `tel/ops/INSTALL.md` step 2. Future fix: TEL launchd plist should source 1Password's biometric/SSH-agent auth at startup; currently requires interactive session.
+- **Lesson:** Local CLI tools that need interactive auth (1Password, gh) don't carry across subprocess boundaries cleanly. Either use the SSH agent socket (already on for 1Password — `SSH_AUTH_SOCK` env var) or use a service account token + biometric unlock. For TEL v0.2: switch from `op read` to using the 1Password Connect server which is daemon-friendly.
+
 ## 2026-05-03 · Pre-commit hook blocked dotfiles commit on shellcheck SC2010
 
 - **Context:** First commit of iter 1-5 work to `~/dotfiles/`

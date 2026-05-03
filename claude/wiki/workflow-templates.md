@@ -88,6 +88,23 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 4. Apply any low-cost optimizations inline
 5. Append outcomes to `wiki/logs/optimization-log.md`
 
+## W9: Credentialed action via TEL
+
+**Trigger:** Need to invoke a third-party API on user's behalf where credential storage is required (Gmail send, Gamma create, GitHub PR, etc.) AND the MCP for that service is unavailable, missing, or you want strict whitelisting
+
+1. Check if a TEL policy exists: `ls ~/.claude/tel/policies/<service>.yaml`
+2. If yes: skip to step 5
+3. If no: **propose** a policy YAML to user (write to `tel/policies/<service>.yaml.proposal` — don't activate without approval)
+4. After user approves the policy: ensure the credential is stored at the policy's `auth_op_path` in 1Password
+5. Verify TEL is up: `tel-call.sh --health` (returns `{"ok":true,...}`)
+6. Dry-run the call first: `tel-call.sh --dry-run <service> <action> '<args>'` — validates request shape without executing
+7. Execute: `tel-call.sh <service> <action> '<args>'` — returns `{ok, result, audit_id, undo_token?}`
+8. If `undo_token` returned and user wants to reverse: `tel-call.sh --undo <token>` within the action's window
+9. Inspect audit log: `tel-call.sh --audit <service>` — last 20 calls
+10. If response was 401: TEL auto-invalidates the broker cache; user re-auths and retries
+
+**Hard rule:** Never paste credentials into chat to "help" — TEL's whole point is that the credential lives in 1Password and never enters Claude's transcript. See D13.
+
 ## How to add a new workflow
 
 If during a session you build a multi-step recipe that worked well:

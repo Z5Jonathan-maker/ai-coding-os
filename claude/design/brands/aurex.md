@@ -115,6 +115,82 @@
 - **PDP with stack-tier table inline:** Volume math visible pre-cart, lifted from competitor scrape (truepeptidelabs hides theirs) — converts better
 - **COA batch picker on PDP:** Trust element, every released batch links to its Janoshik verification
 
+## Canonical hero visual identity (2026-05-03 — user-supplied references)
+
+User supplied 16+ reference compositions establishing the canonical Aurex hero/marketing visual standard. Future image-gen work (ChatGPT Image 2.0 / gpt-image-1) MUST match this aesthetic.
+
+### Composition rules
+- **Subject:** single vial centered OR product family lineup on dark base/podium
+- **Vial spec:** clear glass body, brushed-silver textured label, black stippled rubber stopper, **single cobalt-blue accent stripe at base of label**, white lyophilized cake visible through glass
+- **Label hierarchy:** three-nested-triangular-strokes layered A mark → "AUREX RESEARCH SERIES" → boxed compound name → dose in cobalt blue → "LYOPHILIZED POWDER" → "PURITY > 99%" → divider → "RUO"
+- **Background:** dark navy/black with soft blue-lit lab glassware bokeh (Erlenmeyer flasks, beakers, test tubes, microscopes); often a faint Aurex monogram watermark on a back panel
+- **Lighting:** cinematic, premium, soft directional with cobalt rim/key light, occasional vertical light cone behind subject; high specular highlights on glass + cap
+- **Decorative elements (optional, never noisy):** DNA helix, molecular ball-and-stick structures, hexagonal HUD panels with faux-data, water droplets, glass shatter, particle dispersal — always cool blue, never warm
+
+### Typography lockup
+- **Wordmark + subtitle:** "AUREX" all-caps with three-nested-triangular-strokes layered A mark, "RESEARCH SERIES" subtitle in tracking
+- **Headline pattern:** "SCIENCE. PURIFIED. PERFORMANCE." (period-separated, all-caps, white) with cobalt rule beneath + "LYOPHILIZED PURITY > 99%" sublabel in cobalt
+- **Compound headline pattern:** compound name (white, large), dose (cobalt blue, same-size or slightly smaller) — e.g. "RETATRUTIDE 20MG", "MOTS-C 10MG", "KLOW 80MG"
+- **Trust badges (icon + label):** RESEARCH GRADE (shield), HIGH PURITY (DNA helix), LAB VERIFIED (microscope/flask), RUO RESEARCH USE ONLY (boxed)
+- **Alternate badges:** PRECISION MANUFACTURED, PREMIUM QUALITY, CONSISTENT PURITY, TRUSTED BY RESEARCHERS — same icon vocabulary
+- **Section headlines (used in collage layouts):** "ENGINEERED FOR EXCELLENCE", "RESEARCH WITHOUT COMPROMISE", "BUILT ON SCIENCE. BACKED BY PURITY.", "ADVANCED FORMULATIONS. PRECISE RESULTS. ELEVATED STANDARDS."
+- **Trust subline pattern:** "PURITY YOU CAN TRUST. RESULTS YOU CAN SEE." / "HIGH PURITY. SUPERIOR PERFORMANCE." / "FOR THOSE WHO DEMAND MORE."
+
+### Color palette (canonical for visual gen)
+- Background: `#0a0d14` to `#0f1521` (navy-black gradient)
+- Accent (cobalt): `#1e40af` to `#2563eb` range — note `--color-accent` removal is staged in audit P3 but the **brand visual reference DOES use cobalt** as the accent — this conflicts with audit's monochromatic-on-paper rule for web; resolve before web-side application
+- Vial silver: `#c0c4cc` brushed metal
+- Vial cap: `#1a1a1a` matte black with stipple texture
+- Vial cake: `#f5f5f5` warm off-white
+- Glass highlights: cool white `#e8f0ff` with cobalt fringing
+- Trust-badge icons: `#3b82f6` cobalt at 80% opacity
+
+### Composition variants observed
+1. **Hero portrait** — single vial centered, label specs panel left side, lab background bokeh right
+2. **Hero landscape** — single vial right-third, headline+specs+badges left-third, lab background full
+3. **Family lineup** — 5-7 vials staggered on dark podium, monogram + tagline above, badge bar below
+4. **Family scattered** — 7 vials in 3D scatter composition with DNA helix decorative + molecular structures
+5. **Collage / contact sheet** — 6-9 panels mixing hero + lifestyle + closeup label + lineup + microscope-context
+6. **Single product hero with full HUD** — vial centered, hexagonal data panels around it (molecular weight, peptide structure, advanced formulation, stability enhanced, lab grade)
+7. **Single vial on illuminated podium** — minimal black void, podium with under-glow ring, faint Aurex monogram watermark behind
+8. **Glass-shatter explosion** — vial mid-air with shattered crystal/glass particles dispersing, cinematic motion-frozen
+
+### Image-gen prompt template (for gpt-image-1)
+```
+Premium product photography of an Aurex Research Series peptide vial:
+clear glass cylindrical vial, brushed-silver textured label with stacked-arrows
+"A" monogram and "AUREX RESEARCH SERIES" wordmark, boxed compound name "{COMPOUND}"
+with cobalt-blue dose "{DOSE}MG" beneath, "LYOPHILIZED POWDER PURITY > 99%" sublabel,
+"RUO" research-use-only marker, single cobalt-blue accent stripe at label base,
+matte black stippled rubber stopper cap, white lyophilized cake visible inside.
+
+Composition: {COMPOSITION_VARIANT}
+Background: dark navy lab interior with soft blue-lit Erlenmeyer flasks and test
+tubes in shallow-DOF bokeh, faint Aurex monogram watermark on back wall.
+Lighting: cinematic premium, soft directional key with cobalt rim light,
+high specular highlights on glass and cap.
+Color grade: monochromatic blue-black with cobalt accents only, no warm tones.
+Style: photorealistic 8K product photography, ultra-detailed, sharp focus on
+label, shallow depth of field on background.
+
+Aspect ratio: {AR}
+Negative: warm light, gold/amber tints, hand-drawn elements, clip-art icons,
+photorealistic humans, off-brand fonts, decorative serifs in the label,
+liquid inside the vial (must be dry lyophilized cake), generic pharmacy aesthetic.
+```
+
+### Reference asset locations (to be populated)
+- **User-supplied source images:** `~/Pictures/aurex-references/` (user to drop originals from Photos.app — see image-gen workflow note)
+- **Generated assets (output dir):** `~/code/projects/aurex/public/marketing/<section>/<slug>.{webp,png}`
+- **Image-gen prompt scripts:** `~/.claude/design/prompts/aurex-website-section-<section>.md` (one per website section: hero, peptide-grid, science-section, evidence-section, footer-cta)
+
+### When using as reference inputs to gpt-image-1
+1. Pick 2-3 user-supplied originals as `image[]` inputs (style anchor)
+2. Use the prompt template above with `COMPOUND`/`DOSE`/`COMPOSITION_VARIANT` filled
+3. Set `quality: "high"`, `size: "1024x1536"` (portrait) or `"1536x1024"` (landscape) or `"1024x1024"` (square)
+4. Output to `~/code/projects/aurex/public/marketing/...` directly
+5. Optimize via `cwebp -q 85` before committing
+
 ## Pricing model (audit iter 17)
 
 **Per-vial pricing:** msrp ≥ list ≥ sale ≥ subscribe ≥ stackFloor (verified monotonic across all 18 SKUs).

@@ -27,6 +27,57 @@ This file is the **central routing layer**. Every session loads it. Keep it dens
 
 ---
 
+## MULTI-MODEL ROLE SPLIT
+
+This system is multi-model routed. Roles:
+
+- **Claude (you)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work. **PRIMARY for everything except design-first tasks.**
+- **KIMI (K2.6)** = UI/UX + design intelligence. **PRIMARY for layout composition, visual hierarchy, spacing/alignment, modern UI systems (glassmorphism, minimal, premium SaaS, biotech aesthetic), full-page and component-level design thinking.**
+- **Other models** may handle reasoning or local tasks.
+
+### When you detect a design-first task
+
+Triggers (any of):
+- "design a UI / mockup / landing page / dashboard"
+- layout composition / visual hierarchy / spacing-alignment / branding structure
+- "make it look better / more premium / more glassmorphism / more biotech"
+- net-new component design (vs editing existing components)
+- "redesign X"
+
+What you do:
+1. **Stop before generating design output.** Do NOT produce HTML/CSS/Tailwind layouts from scratch.
+2. **Surface the handoff** — tell the user: "This is a design-first task. KIMI (K2.6) is the design primary in this system. Run the design generation in your KIMI session and paste the output here; I'll translate it to production-ready code preserving spacing, hierarchy, component relationships, and responsiveness pixel-accurately."
+3. **When KIMI output arrives** (HTML, JSX, Figma export, screenshot, or natural-language design spec): translate to production stack (Next.js / React / Tailwind / shadcn). Preserve every spacing/sizing/color/breakpoint detail. Componentize intelligently. Don't simplify, approximate, or downgrade.
+4. **Refinement:** if KIMI's design is incomplete or ambiguous, you may propose variants or request clarification, but you do NOT replace KIMI as the generator.
+
+### When the task is NOT design-first
+
+Continue operating as primary, no deferral. This includes:
+- Backend logic, APIs, schemas, migrations
+- System architecture, infra, CI/CD, deploy pipelines
+- Data pipelines, scraping, ingestion (mega-brain-ingest etc.)
+- Automation, scripts, hooks, agents
+- Bug fixes inside existing UI code (vs net-new design)
+- Audit-driven content/copy fixes (e.g. correcting wrong product descriptions)
+- Brand-fidelity execution (rasterizing canonical SVG, swapping wrong refs to right files) — NOT generating new brand identity
+
+### KIMI handoff format expectations
+
+What you can accept from KIMI as design input:
+- Annotated screenshot (PNG / saved Figma)
+- HTML/JSX with Tailwind classes
+- Natural-language design spec with explicit measurements
+- Figma URL (if Figma MCP is available, you can pull `get_design_context`)
+
+What you produce in response:
+- Next.js / React / Tailwind component(s)
+- shadcn primitives where they exist; raw Tailwind otherwise
+- Responsive breakpoints matching the design's stated targets
+- Accessibility: focus-visible rings, aria-labels, prefers-reduced-motion guards
+- Single component file unless explicitly multi-file
+
+**Routing rule (one-line):** UI design / UX flows / layout composition / branding structure → DEFER to KIMI → translate output to code faithfully. Backend/system/data → Claude primary, no deferral.
+
 ## SKILL ROUTING TABLE (read this before invoking anything)
 
 When the user describes a task, match it against this table FIRST. Don't reinvent.
@@ -36,7 +87,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Write me a prompt for X tool" | `prompt-master` | Single-shot, never loop |
 | "Audit this project / what's broken" | `audit` | Outputs to `./audits/<date>.md` |
 | "Onboard / clean up this messy repo" | `onboard` | Generates CLAUDE.md/AGENTS.md/DESIGN.md |
-| "Design a UI / mockup / landing page" | `design` | HTML/CSS, browser-previewable |
+| **DESIGN-FIRST tasks (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition)** | **DEFER to KIMI (K2.6)** | Claude executes design → code faithfully; preserves spacing, hierarchy, components, responsiveness. Do NOT simplify or approximate KIMI's output. Claude remains primary for backend/APIs/automations/system architecture. |
+| "Design a UI / mockup / landing page" | KIMI primary; `design` skill if KIMI offline | HTML/CSS, browser-previewable |
 | "Chinese 高保真 hi-fi prototype style" | `huashu-design` | Only when explicitly asked |
 | "Build design tokens / design system" | `design-system` | primitive→semantic→component |
 | "Build this in shadcn/Tailwind/React" | `ui-styling` | Implementation, not mockup |

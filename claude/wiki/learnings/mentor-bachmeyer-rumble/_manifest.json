@@ -1,0 +1,721 @@
+{
+  "topic": "mentor-bachmeyer-rumble",
+  "created": "2026-05-04T00:48:22.651380+00:00",
+  "docs": {
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/bpc157-for-longevity-dr-leading-clinical-expert-v7718ro.md": {
+      "file": "bpc157-for-longevity-dr-leading-clinical-expert-v7718ro-e6ed2bf6ff.md",
+      "kind": "local_text",
+      "title": "bpc157-for-longevity-dr-leading-clinical-expert-v7718ro",
+      "words": 456,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/atherosclerosis-and-how-to-reverse-all-of-it-dr-leading-clinical-expert-v71nbou.md": {
+      "file": "atherosclerosis-and-how-to-reverse-all-of-it-dr-leading-clin-d14c10b8ad.md",
+      "kind": "local_text",
+      "title": "atherosclerosis-and-how-to-reverse-all-of-it-dr-leading-clinical-expert-v71nbou",
+      "words": 8756,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/are-blends-like-klow-glow-bad-dr-leading-clinical-expert-v740rdo.md": {
+      "file": "are-blends-like-klow-glow-bad-dr-leading-clinical-expert-v74-c23a976b79.md",
+      "kind": "local_text",
+      "title": "are-blends-like-klow-glow-bad-dr-leading-clinical-expert-v740rdo",
+      "words": 309,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/basic-crohn-s-solution-easy-version-dr-leading-clinical-expert-v74e8vg.md": {
+      "file": "basic-crohn-s-solution-easy-version-dr-leading-clinical-expe-4677d71075.md",
+      "kind": "local_text",
+      "title": "basic-crohn-s-solution-easy-version-dr-leading-clinical-expert-v74e8vg",
+      "words": 389,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/bpc157-cancer-and-big-pharma-s-lies-dr-leading-clinical-expert-v77181c.md": {
+      "file": "bpc157-cancer-and-big-pharma-s-lies-dr-leading-clinical-expe-540f8dd675.md",
+      "kind": "local_text",
+      "title": "bpc157-cancer-and-big-pharma-s-lies-dr-leading-clinical-expert-v77181c",
+      "words": 456,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/can-tesamorelin-ipamorelin-cjc-cause-cancer-dr-leading-clinical-expert-v76lfb2.md": {
+      "file": "can-tesamorelin-ipamorelin-cjc-cause-cancer-dr-leading-clini-d9ad4cef1f.md",
+      "kind": "local_text",
+      "title": "can-tesamorelin-ipamorelin-cjc-cause-cancer-dr-leading-clinical-expert-v76lfb2",
+      "words": 330,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/can-retatrutide-solve-every-disease-dr-leading-clinical-expert-v729kuc.md": {
+      "file": "can-retatrutide-solve-every-disease-dr-leading-clinical-expe-48290ab5b8.md",
+      "kind": "local_text",
+      "title": "can-retatrutide-solve-every-disease-dr-leading-clinical-expert-v729kuc",
+      "words": 6305,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/cardarine-unlimited-endurance-fat-loss-and-the-cancer-lie-dr-leading-clinical-ex-v71ilmg.md": {
+      "file": "cardarine-unlimited-endurance-fat-loss-and-the-cancer-lie-dr-0f929e4ddd.md",
+      "kind": "local_text",
+      "title": "cardarine-unlimited-endurance-fat-loss-and-the-cancer-lie-dr-leading-clinical-ex-v71ilmg",
+      "words": 4041,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/easy-mold-protocol-dr-leading-clinical-expert-v74e8s4.md": {
+      "file": "easy-mold-protocol-dr-leading-clinical-expert-v74e8s4-759beda3d5.md",
+      "kind": "local_text",
+      "title": "easy-mold-protocol-dr-leading-clinical-expert-v74e8s4",
+      "words": 437,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/cardarine-masterclass-and-debunking-the-cancer-lie-dr-leading-clinical-expert-v75rrfg.md": {
+      "file": "cardarine-masterclass-and-debunking-the-cancer-lie-dr-leadin-757cae8507.md",
+      "kind": "local_text",
+      "title": "cardarine-masterclass-and-debunking-the-cancer-lie-dr-leading-clinical-expert-v75rrfg",
+      "words": 8185,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/crohn-s-ulcerative-colitis-and-irritable-bowel-cured-dr-leading-clinical-expert-v71e8ks.md": {
+      "file": "crohn-s-ulcerative-colitis-and-irritable-bowel-cured-dr-lead-9296ec5880.md",
+      "kind": "local_text",
+      "title": "crohn-s-ulcerative-colitis-and-irritable-bowel-cured-dr-leading-clinical-expert-v71e8ks",
+      "words": 9143,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/chk-cu-copper-masterclass-for-you-dr-leading-clinical-expert-v74cgf4.md": {
+      "file": "chk-cu-copper-masterclass-for-you-dr-leading-clinical-expert-137abf0871.md",
+      "kind": "local_text",
+      "title": "chk-cu-copper-masterclass-for-you-dr-leading-clinical-expert-v74cgf4",
+      "words": 10232,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/how-to-reverse-cardiovascular-disease-dr-leading-clinical-expert-v73cn94.md": {
+      "file": "how-to-reverse-cardiovascular-disease-dr-leading-clinical-ex-1a8d627679.md",
+      "kind": "local_text",
+      "title": "how-to-reverse-cardiovascular-disease-dr-leading-clinical-expert-v73cn94",
+      "words": 5911,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/epitalon-does-so-much-more-than-you-know-dr-leading-clinical-expert-v72lcoa.md": {
+      "file": "epitalon-does-so-much-more-than-you-know-dr-leading-clinical-d77b483ff3.md",
+      "kind": "local_text",
+      "title": "epitalon-does-so-much-more-than-you-know-dr-leading-clinical-expert-v72lcoa",
+      "words": 8917,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/cjc-and-ipamorelin-and-reversing-age-dr-leading-clinical-expert-v71rfwk.md": {
+      "file": "cjc-and-ipamorelin-and-reversing-age-dr-leading-clinical-exp-2211b09e8e.md",
+      "kind": "local_text",
+      "title": "cjc-and-ipamorelin-and-reversing-age-dr-leading-clinical-expert-v71rfwk",
+      "words": 10520,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/growth-hormone-verses-growth-hormone-peptides-which-one-to-take-dr-leading-clini-v71g7uw.md": {
+      "file": "growth-hormone-verses-growth-hormone-peptides-which-one-to-t-2374915c95.md",
+      "kind": "local_text",
+      "title": "growth-hormone-verses-growth-hormone-peptides-which-one-to-take-dr-leading-clini-v71g7uw",
+      "words": 7255,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/how-to-improve-female-sex-drive-motivation-dr-leading-clinical-expert-v75cru2.md": {
+      "file": "how-to-improve-female-sex-drive-motivation-dr-leading-clinic-d425278283.md",
+      "kind": "local_text",
+      "title": "how-to-improve-female-sex-drive-motivation-dr-leading-clinical-expert-v75cru2",
+      "words": 313,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/if-i-could-only-choose-4-peptides-dr-leading-clinical-expert-v71wv4e.md": {
+      "file": "if-i-could-only-choose-4-peptides-dr-leading-clinical-expert-857a7a6aed.md",
+      "kind": "local_text",
+      "title": "if-i-could-only-choose-4-peptides-dr-leading-clinical-expert-v71wv4e",
+      "words": 7424,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/how-to-improve-ast-alt-numbers-dr-leading-clinical-expert-v740r6m.md": {
+      "file": "how-to-improve-ast-alt-numbers-dr-leading-clinical-expert-v7-d32884e894.md",
+      "kind": "local_text",
+      "title": "how-to-improve-ast-alt-numbers-dr-leading-clinical-expert-v740r6m",
+      "words": 330,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/is-hcg-good-at-raising-testosterone-dr-leading-clinical-expert-v745wny.md": {
+      "file": "is-hcg-good-at-raising-testosterone-dr-leading-clinical-expe-2933b33a21.md",
+      "kind": "local_text",
+      "title": "is-hcg-good-at-raising-testosterone-dr-leading-clinical-expert-v745wny",
+      "words": 315,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/improving-lung-health-and-precautions-dr-leading-clinical-expert-v74o6tk.md": {
+      "file": "improving-lung-health-and-precautions-dr-leading-clinical-ex-c36252349b.md",
+      "kind": "local_text",
+      "title": "improving-lung-health-and-precautions-dr-leading-clinical-expert-v74o6tk",
+      "words": 284,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/menopause-relief-with-mots-c-twice-a-week-dr-leading-clinical-expert-v71tdqw.md": {
+      "file": "menopause-relief-with-mots-c-twice-a-week-dr-leading-clinica-13006c6ecd.md",
+      "kind": "local_text",
+      "title": "menopause-relief-with-mots-c-twice-a-week-dr-leading-clinical-expert-v71tdqw",
+      "words": 4113,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/methylene-blue-the-complete-masterclass-dr-leading-clinical-expert-v74mc4u.md": {
+      "file": "methylene-blue-the-complete-masterclass-dr-leading-clinical--9809cf75e3.md",
+      "kind": "local_text",
+      "title": "methylene-blue-the-complete-masterclass-dr-leading-clinical-expert-v74mc4u",
+      "words": 8482,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/mots-c-is-it-the-ultimate-peptide-dr-leading-clinical-expert-v720hbe.md": {
+      "file": "mots-c-is-it-the-ultimate-peptide-dr-leading-clinical-expert-5535c57e0f.md",
+      "kind": "local_text",
+      "title": "mots-c-is-it-the-ultimate-peptide-dr-leading-clinical-expert-v720hbe",
+      "words": 4207,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/my-favorite-4-longevity-peptides-dr-leading-clinical-expert-v72ifbg.md": {
+      "file": "my-favorite-4-longevity-peptides-dr-leading-clinical-expert--4f53d2631b.md",
+      "kind": "local_text",
+      "title": "my-favorite-4-longevity-peptides-dr-leading-clinical-expert-v72ifbg",
+      "words": 5829,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/migraines-and-the-real-solution-dr-leading-clinical-expert-v728508.md": {
+      "file": "migraines-and-the-real-solution-dr-leading-clinical-expert-v-817f73d3ae.md",
+      "kind": "local_text",
+      "title": "migraines-and-the-real-solution-dr-leading-clinical-expert-v728508",
+      "words": 7247,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/methylene-blue-the-secret-weapon-dr-leading-clinical-expert-v71q5cs.md": {
+      "file": "methylene-blue-the-secret-weapon-dr-leading-clinical-expert--537fae523a.md",
+      "kind": "local_text",
+      "title": "methylene-blue-the-secret-weapon-dr-leading-clinical-expert-v71q5cs",
+      "words": 8788,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/multiple-sclerosis-how-to-cure-it-dr-leading-clinical-expert-v71mdoq.md": {
+      "file": "multiple-sclerosis-how-to-cure-it-dr-leading-clinical-expert-19a6b4a98a.md",
+      "kind": "local_text",
+      "title": "multiple-sclerosis-how-to-cure-it-dr-leading-clinical-expert-v71mdoq",
+      "words": 5452,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/mots-c-nad-and-ss31-repairing-broken-mitochondria-dr-leading-clinical-expert-v745u2m.md": {
+      "file": "mots-c-nad-and-ss31-repairing-broken-mitochondria-dr-leading-2150b0253a.md",
+      "kind": "local_text",
+      "title": "mots-c-nad-and-ss31-repairing-broken-mitochondria-dr-leading-clinical-expert-v745u2m",
+      "words": 7765,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-best-stack-for-brain-and-cognition-dr-leading-clinical-expert-v72tqj4.md": {
+      "file": "q-n-a-best-stack-for-brain-and-cognition-dr-leading-clinical-0b5067cbe5.md",
+      "kind": "local_text",
+      "title": "q-n-a-best-stack-for-brain-and-cognition-dr-leading-clinical-expert-v72tqj4",
+      "words": 320,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-best-peptides-after-years-of-bodybuilding-dr-leading-clinical-expert-v72tquk.md": {
+      "file": "q-n-a-best-peptides-after-years-of-bodybuilding-dr-leading-c-43b4c67633.md",
+      "kind": "local_text",
+      "title": "q-n-a-best-peptides-after-years-of-bodybuilding-dr-leading-clinical-expert-v72tquk",
+      "words": 447,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/nad-is-my-new-favorite-compound-dr-leading-clinical-expert-v71et72.md": {
+      "file": "nad-is-my-new-favorite-compound-dr-leading-clinical-expert-v-c0341ba1a3.md",
+      "kind": "local_text",
+      "title": "nad-is-my-new-favorite-compound-dr-leading-clinical-expert-v71et72",
+      "words": 7104,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/peptides-for-fatigue-and-burnout-dr-leading-clinical-expert-v75oovc.md": {
+      "file": "peptides-for-fatigue-and-burnout-dr-leading-clinical-expert--20ef3e5cae.md",
+      "kind": "local_text",
+      "title": "peptides-for-fatigue-and-burnout-dr-leading-clinical-expert-v75oovc",
+      "words": 374,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-ankylosing-spondylitis-solution-dr-leading-clinical-expert-v745we2.md": {
+      "file": "q-n-a-ankylosing-spondylitis-solution-dr-leading-clinical-ex-5001365e53.md",
+      "kind": "local_text",
+      "title": "q-n-a-ankylosing-spondylitis-solution-dr-leading-clinical-expert-v745we2",
+      "words": 322,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/oral-peptides-will-never-work-and-here-s-why-dr-leading-clinical-expert-v71e6uq.md": {
+      "file": "oral-peptides-will-never-work-and-here-s-why-dr-leading-clin-2a27337d61.md",
+      "kind": "local_text",
+      "title": "oral-peptides-will-never-work-and-here-s-why-dr-leading-clinical-expert-v71e6uq",
+      "words": 4469,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-best-stack-for-40-year-old-jiujitsu-athletes-leading-clinical-expert-v71uxck.md": {
+      "file": "q-n-a-best-stack-for-40-year-old-jiujitsu-athletes-leading-c-db70dfc061.md",
+      "kind": "local_text",
+      "title": "q-n-a-best-stack-for-40-year-old-jiujitsu-athletes-leading-clinical-expert-v71uxck",
+      "words": 329,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-does-kisspeptin-need-to-be-cycled-dr-leading-clinical-expert-v72nc7k.md": {
+      "file": "q-n-a-does-kisspeptin-need-to-be-cycled-dr-leading-clinical--61f6f27ab3.md",
+      "kind": "local_text",
+      "title": "q-n-a-does-kisspeptin-need-to-be-cycled-dr-leading-clinical-expert-v72nc7k",
+      "words": 479,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-exhausted-on-mots-c-dr-leading-clinical-expert-v72oy88.md": {
+      "file": "q-n-a-exhausted-on-mots-c-dr-leading-clinical-expert-v72oy88-f64ccaab7d.md",
+      "kind": "local_text",
+      "title": "q-n-a-exhausted-on-mots-c-dr-leading-clinical-expert-v72oy88",
+      "words": 427,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-crps-chronic-regional-pain-syndrome-solution-dr-leading-clinical-expert-v738u6w.md": {
+      "file": "q-n-a-crps-chronic-regional-pain-syndrome-solution-dr-leadin-e6e25ca148.md",
+      "kind": "local_text",
+      "title": "q-n-a-crps-chronic-regional-pain-syndrome-solution-dr-leading-clinical-expert-v738u6w",
+      "words": 425,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-can-i-take-peptides-after-cancer-dr-leading-clinical-expert-v72w4gw.md": {
+      "file": "q-n-a-can-i-take-peptides-after-cancer-dr-leading-clinical-e-5459caf23a.md",
+      "kind": "local_text",
+      "title": "q-n-a-can-i-take-peptides-after-cancer-dr-leading-clinical-expert-v72w4gw",
+      "words": 521,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-best-stack-for-women-s-fertility-dr-leading-clinical-expert-v71x6l0.md": {
+      "file": "q-n-a-best-stack-for-women-s-fertility-dr-leading-clinical-e-c7d60a3be7.md",
+      "kind": "local_text",
+      "title": "q-n-a-best-stack-for-women-s-fertility-dr-leading-clinical-expert-v71x6l0",
+      "words": 268,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-can-you-cure-type-2-diabetes-yep-dr-leading-clinical-expert-v71u4i4.md": {
+      "file": "q-n-a-can-you-cure-type-2-diabetes-yep-dr-leading-clinical-e-e286a57259.md",
+      "kind": "local_text",
+      "title": "q-n-a-can-you-cure-type-2-diabetes-yep-dr-leading-clinical-expert-v71u4i4",
+      "words": 383,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y.md": {
+      "file": "q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-abd10a7aae.md",
+      "kind": "local_text",
+      "title": "q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y",
+      "words": 750,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2.md": {
+      "file": "q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-e-bbeb10d83f.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2",
+      "words": 651,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-female-hairloss-dr-leading-clinical-expert-v72qoo4.md": {
+      "file": "q-n-a-female-hairloss-dr-leading-clinical-expert-v72qoo4-25f93fdd90.md",
+      "kind": "local_text",
+      "title": "q-n-a-female-hairloss-dr-leading-clinical-expert-v72qoo4",
+      "words": 331,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-handle-cancer-dr-leading-clinical-expert-v736na4.md": {
+      "file": "q-n-a-how-to-handle-cancer-dr-leading-clinical-expert-v736na-b565938a24.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-handle-cancer-dr-leading-clinical-expert-v736na4",
+      "words": 598,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-can-i-handle-asthma-dr-leading-clinical-expert-v7281r8.md": {
+      "file": "q-n-a-how-can-i-handle-asthma-dr-leading-clinical-expert-v72-3e0ed5099f.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-can-i-handle-asthma-dr-leading-clinical-expert-v7281r8",
+      "words": 301,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-build-muscle-at-40-without-trt-dr-leading-clinical-expert-v72h6xs.md": {
+      "file": "q-n-a-how-to-build-muscle-at-40-without-trt-dr-leading-clini-69db3b725b.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-build-muscle-at-40-without-trt-dr-leading-clinical-expert-v72h6xs",
+      "words": 460,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-hashimoto-s-basic-version-dr-leading-clinical-expert-v728qva.md": {
+      "file": "q-n-a-hashimoto-s-basic-version-dr-leading-clinical-expert-v-96b8843bc6.md",
+      "kind": "local_text",
+      "title": "q-n-a-hashimoto-s-basic-version-dr-leading-clinical-expert-v728qva",
+      "words": 326,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-cardiovascular-support-and-repair-dr-leading-clinical-expert-v72ww2c.md": {
+      "file": "q-n-a-cardiovascular-support-and-repair-dr-leading-clinical--73b3525bbc.md",
+      "kind": "local_text",
+      "title": "q-n-a-cardiovascular-support-and-repair-dr-leading-clinical-expert-v72ww2c",
+      "words": 305,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-help-autism-dr-leading-clinical-expert-v72qoqs.md": {
+      "file": "q-n-a-how-to-help-autism-dr-leading-clinical-expert-v72qoqs-00ef28a1b2.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-help-autism-dr-leading-clinical-expert-v72qoqs",
+      "words": 654,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-handle-lupus-dr-leading-clinical-expert-v73sk20.md": {
+      "file": "q-n-a-how-to-handle-lupus-dr-leading-clinical-expert-v73sk20-97dbf85919.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-handle-lupus-dr-leading-clinical-expert-v73sk20",
+      "words": 346,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-do-i-overcome-tinnitus-dr-leading-clinical-expert-v71src4.md": {
+      "file": "q-n-a-how-do-i-overcome-tinnitus-dr-leading-clinical-expert--d83e0e3ca7.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-do-i-overcome-tinnitus-dr-leading-clinical-expert-v71src4",
+      "words": 321,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-use-tesamorelin-and-retatrutide-together-dr-leading-clinical-expert-v73b8cy.md": {
+      "file": "q-n-a-how-to-use-tesamorelin-and-retatrutide-together-dr-lea-27719247a2.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-use-tesamorelin-and-retatrutide-together-dr-leading-clinical-expert-v73b8cy",
+      "words": 490,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-solve-rheumatoid-arthritis-dr-leading-clinical-expert-v72s8sq.md": {
+      "file": "q-n-a-how-to-solve-rheumatoid-arthritis-dr-leading-clinical--bca98f6b7f.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-solve-rheumatoid-arthritis-dr-leading-clinical-expert-v72s8sq",
+      "words": 658,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-to-solve-endometriosis-dr-leading-clinical-expert-v72z3za.md": {
+      "file": "q-n-a-how-to-solve-endometriosis-dr-leading-clinical-expert--5aa7d9454c.md",
+      "kind": "local_text",
+      "title": "q-n-a-how-to-solve-endometriosis-dr-leading-clinical-expert-v72z3za",
+      "words": 466,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-mk677-versus-tesamorelin-dr-leading-clinical-expert-v730tb0.md": {
+      "file": "q-n-a-mk677-versus-tesamorelin-dr-leading-clinical-expert-v7-2f339be17c.md",
+      "kind": "local_text",
+      "title": "q-n-a-mk677-versus-tesamorelin-dr-leading-clinical-expert-v730tb0",
+      "words": 327,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-is-retatrutide-safe-while-breastfeeding-dr-leading-clinical-expert-v72qok6.md": {
+      "file": "q-n-a-is-retatrutide-safe-while-breastfeeding-dr-leading-cli-7e76e0cc8b.md",
+      "kind": "local_text",
+      "title": "q-n-a-is-retatrutide-safe-while-breastfeeding-dr-leading-clinical-expert-v72qok6",
+      "words": 364,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-is-there-a-solution-for-dementia-dr-leading-clinical-expert-v71pn42.md": {
+      "file": "q-n-a-is-there-a-solution-for-dementia-dr-leading-clinical-e-0fa40b4a28.md",
+      "kind": "local_text",
+      "title": "q-n-a-is-there-a-solution-for-dementia-dr-leading-clinical-expert-v71pn42",
+      "words": 451,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-ibd-crohn-s-ulcerative-colitis-solution-dr-leading-clinical-expert-v738u26.md": {
+      "file": "q-n-a-ibd-crohn-s-ulcerative-colitis-solution-dr-leading-cli-09deec44eb.md",
+      "kind": "local_text",
+      "title": "q-n-a-ibd-crohn-s-ulcerative-colitis-solution-dr-leading-clinical-expert-v738u26",
+      "words": 407,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-mots-c-injection-reaction-and-pain-dr-leading-clinical-expert-v73b83c.md": {
+      "file": "q-n-a-mots-c-injection-reaction-and-pain-dr-leading-clinical-107e8c7dba.md",
+      "kind": "local_text",
+      "title": "q-n-a-mots-c-injection-reaction-and-pain-dr-leading-clinical-expert-v73b83c",
+      "words": 659,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-possible-to-stop-trt-and-recover-dr-leading-clinical-expert-v735tyw.md": {
+      "file": "q-n-a-possible-to-stop-trt-and-recover-dr-leading-clinical-e-2b48e73be4.md",
+      "kind": "local_text",
+      "title": "q-n-a-possible-to-stop-trt-and-recover-dr-leading-clinical-expert-v735tyw",
+      "words": 806,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-low-libido-on-retatrutide-dr-leading-clinical-expert-v72h70a.md": {
+      "file": "q-n-a-low-libido-on-retatrutide-dr-leading-clinical-expert-v-97cb6232bd.md",
+      "kind": "local_text",
+      "title": "q-n-a-low-libido-on-retatrutide-dr-leading-clinical-expert-v72h70a",
+      "words": 456,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-on-trt-and-hcg-but-lh-fsh-are-still-low-dr-leading-clinical-expert-v72e160.md": {
+      "file": "q-n-a-on-trt-and-hcg-but-lh-fsh-are-still-low-dr-leading-cli-d23a9ea1a4.md",
+      "kind": "local_text",
+      "title": "q-n-a-on-trt-and-hcg-but-lh-fsh-are-still-low-dr-leading-clinical-expert-v72e160",
+      "words": 392,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-post-menopause-libido-issues-dr-leading-clinical-expert-v720ury.md": {
+      "file": "q-n-a-post-menopause-libido-issues-dr-leading-clinical-exper-5f0d544cd8.md",
+      "kind": "local_text",
+      "title": "q-n-a-post-menopause-libido-issues-dr-leading-clinical-expert-v720ury",
+      "words": 320,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-taking-hgh-and-tesamorelin-at-the-same-time-dr-leading-clinical-expert-v72krji.md": {
+      "file": "q-n-a-taking-hgh-and-tesamorelin-at-the-same-time-dr-leading-bf1689b387.md",
+      "kind": "local_text",
+      "title": "q-n-a-taking-hgh-and-tesamorelin-at-the-same-time-dr-leading-clinical-expert-v72krji",
+      "words": 322,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-peptides-to-increase-testosterone-v72ncrm.md": {
+      "file": "q-n-a-peptides-to-increase-testosterone-v72ncrm-fda0b99020.md",
+      "kind": "local_text",
+      "title": "q-n-a-peptides-to-increase-testosterone-v72ncrm",
+      "words": 351,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-are-your-thoughts-on-cerebrolysin-dr-leading-clinical-expert-v71ivzs.md": {
+      "file": "q-n-a-what-are-your-thoughts-on-cerebrolysin-dr-leading-clin-b15e336f0d.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-are-your-thoughts-on-cerebrolysin-dr-leading-clinical-expert-v71ivzs",
+      "words": 302,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-retatrutide-weekly-or-daily-dr-leading-clinical-expert-v732opg.md": {
+      "file": "q-n-a-retatrutide-weekly-or-daily-dr-leading-clinical-expert-750cb9c508.md",
+      "kind": "local_text",
+      "title": "q-n-a-retatrutide-weekly-or-daily-dr-leading-clinical-expert-v732opg",
+      "words": 488,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-treatment-for-candida-dr-leading-clinical-expert-v73sjze.md": {
+      "file": "q-n-a-treatment-for-candida-dr-leading-clinical-expert-v73sj-130d20835f.md",
+      "kind": "local_text",
+      "title": "q-n-a-treatment-for-candida-dr-leading-clinical-expert-v73sjze",
+      "words": 395,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-do-i-do-for-lyme-disease-dr-leading-clinical-expert-v735vce.md": {
+      "file": "q-n-a-what-do-i-do-for-lyme-disease-dr-leading-clinical-expe-c78821bc56.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-do-i-do-for-lyme-disease-dr-leading-clinical-expert-v735vce",
+      "words": 479,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-can-i-take-with-retatrutide-for-menopause-dr-leading-clinical-expert-v72a22i.md": {
+      "file": "q-n-a-what-can-i-take-with-retatrutide-for-menopause-dr-lead-232e498fa0.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-can-i-take-with-retatrutide-for-menopause-dr-leading-clinical-expert-v72a22i",
+      "words": 325,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-weightloss-health-program-for-51-year-old-woman-dr-leading-clinical-expert-v738ub6.md": {
+      "file": "q-n-a-weightloss-health-program-for-51-year-old-woman-dr-lea-b8cd7e4838.md",
+      "kind": "local_text",
+      "title": "q-n-a-weightloss-health-program-for-51-year-old-woman-dr-leading-clinical-expert-v738ub6",
+      "words": 439,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-can-you-do-for-gout-dr-leading-clinical-expert-v72oy3k.md": {
+      "file": "q-n-a-what-can-you-do-for-gout-dr-leading-clinical-expert-v7-e3edb81c51.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-can-you-do-for-gout-dr-leading-clinical-expert-v72oy3k",
+      "words": 304,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/reversing-fibromyalgia-permanently-dr-leading-clinical-expert-v7568uq.md": {
+      "file": "reversing-fibromyalgia-permanently-dr-leading-clinical-exper-83e153f3e4.md",
+      "kind": "local_text",
+      "title": "reversing-fibromyalgia-permanently-dr-leading-clinical-expert-v7568uq",
+      "words": 12183,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-happens-if-you-don-t-take-clomid-after-sarms-dr-leading-clinical-expe-v72h6v8.md": {
+      "file": "q-n-a-what-happens-if-you-don-t-take-clomid-after-sarms-dr-l-bd8236ea30.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-happens-if-you-don-t-take-clomid-after-sarms-dr-leading-clinical-expe-v72h6v8",
+      "words": 371,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-s-a-good-stack-for-brain-health-dr-leading-clinical-expert-v71x04o.md": {
+      "file": "q-n-a-what-s-a-good-stack-for-brain-health-dr-leading-clinic-67f495feaf.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-s-a-good-stack-for-brain-health-dr-leading-clinical-expert-v71x04o",
+      "words": 315,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/reversing-dementia-dr-leading-clinical-expert-v761zvw.md": {
+      "file": "reversing-dementia-dr-leading-clinical-expert-v761zvw-b32c584d2a.md",
+      "kind": "local_text",
+      "title": "reversing-dementia-dr-leading-clinical-expert-v761zvw",
+      "words": 10261,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-what-s-the-best-stack-for-muscle-gain-for-men-and-women-dr-leading-clinica-v71pmzq.md": {
+      "file": "q-n-a-what-s-the-best-stack-for-muscle-gain-for-men-and-wome-c633f1db5b.md",
+      "kind": "local_text",
+      "title": "q-n-a-what-s-the-best-stack-for-muscle-gain-for-men-and-women-dr-leading-clinica-v71pmzq",
+      "words": 413,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/semax-and-reversing-cognitive-decline-dementia-etc-dr-leading-clinical-expert-v724coc.md": {
+      "file": "semax-and-reversing-cognitive-decline-dementia-etc-dr-leadin-781be8cc29.md",
+      "kind": "local_text",
+      "title": "semax-and-reversing-cognitive-decline-dementia-etc-dr-leading-clinical-expert-v724coc",
+      "words": 6300,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/retatrutide-and-cardarine-combined-dr-leading-clinical-expert-v76ua32.md": {
+      "file": "retatrutide-and-cardarine-combined-dr-leading-clinical-exper-8bc4af1462.md",
+      "kind": "local_text",
+      "title": "retatrutide-and-cardarine-combined-dr-leading-clinical-expert-v76ua32",
+      "words": 7198,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/solving-concussions-and-tbi-dr-leading-clinical-expert-v76zoe6.md": {
+      "file": "solving-concussions-and-tbi-dr-leading-clinical-expert-v76zo-bf7334424f.md",
+      "kind": "local_text",
+      "title": "solving-concussions-and-tbi-dr-leading-clinical-expert-v76zoe6",
+      "words": 415,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/should-you-stagger-peptides-5-days-on-2-days-off-dr-leading-clinical-expert-v740r08.md": {
+      "file": "should-you-stagger-peptides-5-days-on-2-days-off-dr-leading--9989ebcbcb.md",
+      "kind": "local_text",
+      "title": "should-you-stagger-peptides-5-days-on-2-days-off-dr-leading-clinical-expert-v740r08",
+      "words": 371,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/slu-pp-332-will-blow-your-mind-dr-leading-clinical-expert-v73gub4.md": {
+      "file": "slu-pp-332-will-blow-your-mind-dr-leading-clinical-expert-v7-224a7a6989.md",
+      "kind": "local_text",
+      "title": "slu-pp-332-will-blow-your-mind-dr-leading-clinical-expert-v73gub4",
+      "words": 10116,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/solving-lupus-the-full-playbook-dr-leading-clinical-expert-v73ug86.md": {
+      "file": "solving-lupus-the-full-playbook-dr-leading-clinical-expert-v-eebea9adeb.md",
+      "kind": "local_text",
+      "title": "solving-lupus-the-full-playbook-dr-leading-clinical-expert-v73ug86",
+      "words": 7968,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/solving-lyme-disease-short-version-dr-leading-clinical-expert-v75rb6e.md": {
+      "file": "solving-lyme-disease-short-version-dr-leading-clinical-exper-d1d0ef5b49.md",
+      "kind": "local_text",
+      "title": "solving-lyme-disease-short-version-dr-leading-clinical-expert-v75rb6e",
+      "words": 426,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/solving-fatigue-at-47-years-old-dr-leading-clinical-expert-v76w3uk.md": {
+      "file": "solving-fatigue-at-47-years-old-dr-leading-clinical-expert-v-399db3e0bb.md",
+      "kind": "local_text",
+      "title": "solving-fatigue-at-47-years-old-dr-leading-clinical-expert-v76w3uk",
+      "words": 345,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/ss-31-and-the-solution-to-cancer-dr-leading-clinical-expert-v72duai.md": {
+      "file": "ss-31-and-the-solution-to-cancer-dr-leading-clinical-expert--b640b31d2d.md",
+      "kind": "local_text",
+      "title": "ss-31-and-the-solution-to-cancer-dr-leading-clinical-expert-v72duai",
+      "words": 7762,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-cure-for-cancer-is-right-in-front-of-us-dr-leading-clinical-expert-v72r7ku.md": {
+      "file": "the-cure-for-cancer-is-right-in-front-of-us-dr-leading-clini-23685ff915.md",
+      "kind": "local_text",
+      "title": "the-cure-for-cancer-is-right-in-front-of-us-dr-leading-clinical-expert-v72r7ku",
+      "words": 9653,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/tb500-and-debunking-the-cancer-lie-dr-leading-clinical-expert-v72ztb8.md": {
+      "file": "tb500-and-debunking-the-cancer-lie-dr-leading-clinical-exper-fffafca36b.md",
+      "kind": "local_text",
+      "title": "tb500-and-debunking-the-cancer-lie-dr-leading-clinical-expert-v72ztb8",
+      "words": 6408,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-complete-retatrutide-playbook-dr-leading-clinical-expert-v71e79c.md": {
+      "file": "the-complete-retatrutide-playbook-dr-leading-clinical-expert-017e6f12fd.md",
+      "kind": "local_text",
+      "title": "the-complete-retatrutide-playbook-dr-leading-clinical-expert-v71e79c",
+      "words": 7822,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/staying-on-semax-forever-dr-leading-clinical-expert-v745wuw.md": {
+      "file": "staying-on-semax-forever-dr-leading-clinical-expert-v745wuw-d91cbd1219.md",
+      "kind": "local_text",
+      "title": "staying-on-semax-forever-dr-leading-clinical-expert-v745wuw",
+      "words": 305,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/stop-microdosing-retatrutide-just-listen-dr-leading-clinical-expert-v73r91m.md": {
+      "file": "stop-microdosing-retatrutide-just-listen-dr-leading-clinical-f774afc8c9.md",
+      "kind": "local_text",
+      "title": "stop-microdosing-retatrutide-just-listen-dr-leading-clinical-expert-v73r91m",
+      "words": 9240,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-secret-about-aod9604-you-need-to-know-dr-leading-clinical-expert-v73gorm.md": {
+      "file": "the-secret-about-aod9604-you-need-to-know-dr-leading-clinica-527b22190e.md",
+      "kind": "local_text",
+      "title": "the-secret-about-aod9604-you-need-to-know-dr-leading-clinical-expert-v73gorm",
+      "words": 4340,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-hidden-secret-of-aod-9604-they-re-hiding-this-from-you-dr-leading-clinical-e-v71gtdy.md": {
+      "file": "the-hidden-secret-of-aod-9604-they-re-hiding-this-from-you-d-65f7cd6afe.md",
+      "kind": "local_text",
+      "title": "the-hidden-secret-of-aod-9604-they-re-hiding-this-from-you-dr-leading-clinical-e-v71gtdy",
+      "words": 4344,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/three-biggest-bang-for-your-buck-peptides-dr-leading-clinical-expert-v71e6m0.md": {
+      "file": "three-biggest-bang-for-your-buck-peptides-dr-leading-clinica-803a579683.md",
+      "kind": "local_text",
+      "title": "three-biggest-bang-for-your-buck-peptides-dr-leading-clinical-expert-v71e6m0",
+      "words": 6270,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-solution-to-menstrual-cramps-dr-leading-clinical-expert-v76w3r6.md": {
+      "file": "the-solution-to-menstrual-cramps-dr-leading-clinical-expert--1b167ee14e.md",
+      "kind": "local_text",
+      "title": "the-solution-to-menstrual-cramps-dr-leading-clinical-expert-v76w3r6",
+      "words": 386,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/why-i-take-copper-every-day-forever-dr-leading-clinical-expert-v71e7zw.md": {
+      "file": "why-i-take-copper-every-day-forever-dr-leading-clinical-expe-427332b793.md",
+      "kind": "local_text",
+      "title": "why-i-take-copper-every-day-forever-dr-leading-clinical-expert-v71e7zw",
+      "words": 7395,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/the-war-against-peptides-the-fda-and-big-pharma-lie-v75rsz8.md": {
+      "file": "the-war-against-peptides-the-fda-and-big-pharma-lie-v75rsz8-6e3af136b7.md",
+      "kind": "local_text",
+      "title": "the-war-against-peptides-the-fda-and-big-pharma-lie-v75rsz8",
+      "words": 12417,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/tinnitus-and-stop-the-ringing-dr-leading-clinical-expert-v7238z8.md": {
+      "file": "tinnitus-and-stop-the-ringing-dr-leading-clinical-expert-v72-883ef49bdb.md",
+      "kind": "local_text",
+      "title": "tinnitus-and-stop-the-ringing-dr-leading-clinical-expert-v7238z8",
+      "words": 2946,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/what-is-tesamorelin-dr-leading-clinical-expert-v71eubq.md": {
+      "file": "what-is-tesamorelin-dr-leading-clinical-expert-v71eubq-70729f26a3.md",
+      "kind": "local_text",
+      "title": "what-is-tesamorelin-dr-leading-clinical-expert-v71eubq",
+      "words": 4704,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    },
+    "/Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/why-retatrutide-destroys-semaglutide-and-tirzepatide-dr-leading-clinical-expert-v738m72.md": {
+      "file": "why-retatrutide-destroys-semaglutide-and-tirzepatide-dr-lead-552fe06f52.md",
+      "kind": "local_text",
+      "title": "why-retatrutide-destroys-semaglutide-and-tirzepatide-dr-leading-clinical-expert-v738m72",
+      "words": 8600,
+      "ingested": "2026-05-04T00:48:22+00:00"
+    }
+  },
+  "last_run": "2026-05-04T00:48:22+00:00"
+}

@@ -64,6 +64,18 @@ These aren't MCPs — they're filesystem-based knowledge + execution layers, que
 | **wiki** | `~/.claude/wiki/` | Code + system intelligence (tool-registry, agent-definitions, workflow-templates W1-W9, decision-rules D1-D13, failure-log, optimization-log) | Before any non-trivial action |
 | **design** | `~/.claude/design/` | Visual + brand intelligence (routing, brands/aurex, prompts, exports, 8-axis QC, asset registry) | Before any design task |
 | **tel** | `~/.claude/tel/` | Trusted Execution Layer for credentialed actions. FastAPI server on 127.0.0.1:8765 (when daemonized). Whitelist policies in YAML. Audit + rollback. | Before any credentialed third-party action; see D13 |
+| **learnings** | `~/.claude/wiki/learnings/` | **Mega-brain catalog**: per-topic knowledge brains (mentor transcripts, research dossiers, ingested articles/PDFs/videos). 8 mentor brains + dosecraft-research as of 2026-05-03 = 843 videos / 4.1M words. See `_INDEX.md` (catalog) + `_COMPOUND_INDEX.md` (peptide → mentor coverage map). | Before answering domain questions where a mentor's voice / corpus is relevant |
+
+## Custom CLI tools (in ~/local/bin)
+
+| Tool | Purpose | Trigger | Output | Notes |
+|---|---|---|---|---|
+| `mega-brain-ingest` | Orchestrate scrape+normalize+ingest of articles/PDFs/YouTube/sitemaps/RSS/local-dirs into `~/.claude/wiki/learnings/<topic>/` | Building or expanding a topic brain | per-doc markdown + frontmatter + `_manifest.json` for dedupe | Auto-routes by source: trafilatura (article), pypdf (PDF), transcribe-video/faster-whisper (video). `--skip-video` for fast text pass. Source: `~/code/projects/scrapling-lab/bin/` |
+| `transcribe-video` | yt-dlp → faster-whisper → markdown transcript | Single video URL → standalone .md | markdown to `~/code/projects/scrapling-lab/transcripts/` | Models: tiny → large-v3, default `small`. CPU/int8 on Apple Silicon. |
+| `competitor-pricing` | Scrapling stealth fetch of vendor catalogs → pricing CSV | Vendor catalog URL(s) | CSV at `~/code/projects/scrapling-lab/pricing-runs/` | JSON-LD Product schema first, heuristic fallback. |
+| `pricing-vs-aurex` | Join competitor CSV against Aurex catalog → markdown gap report | Competitor CSV + Aurex `lib/products.ts` | Markdown table | Per-compound position + recommended action |
+| `video-learn` | `transcribe-video` + copy to wiki/learnings (legacy; prefer `mega-brain-ingest`) | Single URL → wiki | wiki .md | Shallow wrapper |
+| `neonctl` | Neon CLI (npm: `neonctl`, also `~/local/lib/neonctl-patched/cli.js` with 900s OAuth window) | Neon project ops | json/table | Auth via API key (`--api-key`) or GitHub OAuth (60s default, 900s in patched copy). Set `NEON_API_KEY` env to skip flag. |
 
 ### Health monitoring of each layer
 - **wiki** — `routing-drift-check.sh` (Mon 09:05) catches drift between wiki references and reality

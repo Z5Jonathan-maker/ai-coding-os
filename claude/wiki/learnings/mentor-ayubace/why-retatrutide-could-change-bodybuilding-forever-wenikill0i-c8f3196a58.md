@@ -1,0 +1,29 @@
+---
+source: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/ayubace/why-retatrutide-could-change-bodybuilding-forever-weNIKILL0iw.md
+kind: local_text
+title: why-retatrutide-could-change-bodybuilding-forever-weNIKILL0iw
+retrieved: "2026-05-04T00:48:23+00:00"
+word_count: 921
+char_count: 5069
+local_path: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/ayubace/why-retatrutide-could-change-bodybuilding-forever-weNIKILL0iw.md
+ext: .md
+---
+
+# why-retatrutide-could-change-bodybuilding-forever-weNIKILL0iw
+
+---
+source: https://www.youtube.com/watch?v=weNIKILL0iw
+kind: youtube_transcript
+title: "Why Retatrutide Could Change Bodybuilding Forever"
+creator: "Ayubace"
+channel: @ayubace
+video_id: weNIKILL0iw
+chunks: 2
+---
+
+# Why Retatrutide Could Change Bodybuilding Forever
+
+Retro True Tide. Is it the realing deal? When it came out and I was researching it, I was like, "Fuck this." Another thing on the market. You got anabolics, you got nutrition, you got training. Why would you need this? Well, when I delved a bit deeper, clients were asking me about it. I was like, "You know what? I researched this. It sounds really good, but does it do what it says on the [ __ ] tin? And I can tell you this now. This to me is going to be a gamecher in the health and fitness industry. And I tell you why. When you look at fat burners that are out there, a lot of them have side effects. When you use something like clenbuterol, you get shakes, you get anxiety, you get elevated heart rate, you your body ends up getting stressed, right? When you take T3, you can end up with thyroid issues. And other fat burners give you thermogenesis. So you get hot, you get sweaty and all these things lead to a more stressed physique or more stressed body. What I found with retride and there is a case study sitting on this camera. It's incredible because not only does it shift body fat, but it can suppress appetite. It doesn't stop you from eating because we want to eat to build a body, but it just keeps you good. And the reason why it does that is because it keeps your blood glucose levels stable all day. So that craving doesn't come. you're consistently satisfied. And on top of that, I've noticed better sleep with clients. I've noticed better mood and energy with clients. And at the same time, all these things are going on, they're dropping fat dramatically. And even after all the positives I've said to you, you look at a blood test using retatrite and the lipid profile has improved dramatically. the HBCA1, the diabetic range has improved dramatically and nothing else has been affected. Nothing, not your hormones, not your liver, not your kidneys. So, I feel like if you're responsible, it's not something you just take and you take more and more and more off and you increase your dosages like Clen or like T3 or other fat burners, you can literally sit pretty at a very reasonable dose and just let it do its thing in the background. And I'm talking a dosage of between 1 to 2 milligs per week. That's all you need. You don't need to go 3 4 5 6 7 8 1 or 2 milligrams running in the background alongside your nutrition and training will just start to pull fat off you. But at the same time it's pulling fat. You're not getting any side effects. You're getting actual health benefits. It's a wonder compound. And take it from somebody who looks at something when it comes out and it's like you know what? [ __ ] this. We
+
+fat off you. But at the same time it's pulling fat. You're not getting any side effects. You're getting actual health benefits. It's a wonder compound. And take it from somebody who looks at something when it comes out and it's like you know what? [ __ ] this. We got clen. We got T3. We got we got all these even things. All these anabolics. Why would you need this for? But this it doesn't interfere with anything. It's not jacking up your heart rate. It's not affecting your sleep. It's not giving you anxiety. It's not giving you mood speak. It's not putting pressure on your lipid profile. And the beautiful thing, it's good for naturals, too. It doesn't affect anything else in the body. And it can be used in two settings. It could be used in a cutting phase for all the reasons I said, but also in a growing phase because your body is more efficient at regulating blood glucose. So, when you're pushing up the carbohydrates, your insulin sensitivity is greater. It's great at keeping your body in a healthy state. not only from an energy standpoint, but from a recovery standpoint. And this is not to be taken to make up for a shitty diet. Understand this. This is not to be taken for you to sit on your ass and think something will do the work for you. This is part of a good nutrition and a good training plan. This is this is not for you to stop you from eating. This just suppresses your appetite enough for you to be okay on a cutting phase where normally people start to struggle with hunger and cravings and it just runs in the background. And I'm seeing fantastic results with clients that are just checking in. Their pictures are changing week by week, but there's no degragation in their physiques because it's about the physique, right? At the end of the day, it's about how that person's actually looking. Is their muscle mass coming down? Is the muscle not as full? Are they losing muscle, not fat, male and female, because at the end of the day, everyone's looking to build that healthy, strong body? And you need muscle tissue on your body for that to happen, right? Brilliant, brilliant, brilliant compound. Heat. Heat. [Music]
+

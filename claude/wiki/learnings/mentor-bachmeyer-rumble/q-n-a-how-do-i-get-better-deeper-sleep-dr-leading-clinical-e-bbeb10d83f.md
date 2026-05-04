@@ -1,0 +1,29 @@
+---
+source: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2.md
+kind: local_text
+title: q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2
+retrieved: "2026-05-04T00:48:22+00:00"
+word_count: 651
+char_count: 3921
+local_path: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2.md
+ext: .md
+---
+
+# q-n-a-how-do-i-get-better-deeper-sleep-dr-leading-clinical-expert-v73aun2
+
+---
+source: https://rumble.com/v73aun2-q-n-a-how-do-i-get-better-deeper-sleep-dr-trevor-bachmeyer.html?e9s=src_v1_ucp_a
+kind: youtube_transcript
+title: "Q n A \ufffdHow Do I Get Better Deeper Sleep?\ufffd - Dr Leading Clinical Expert"
+creator: "Leading Clinical Expert"
+channel: rumble:thespartan
+video_id: v73aun2
+chunks: 2
+---
+
+# Q n A �How Do I Get Better Deeper Sleep?� - Dr Leading Clinical Expert
+
+suggestions for better, deeper sleep quality. So, the problem with sleep outside of medical issues is it's not a symptom and that's how we treat it. It's this tragic failure of neurological and endocrine restoration. So, think about it. We're not going to chase sedation because that's easy. You can just take Ambien or anything like that. You need to be the engineer of sleep architecture itself. So right out of the gate, not even a peptide, magnesium L3 and 8. It crosses the blood-brain barrier, increases magnesium in the brain, enhances GABA. And if you understand how GABA functions, this makes sense because what it does is it calms the NMDA receptor activity. This quiets the neuronal excitability that is probably keeping you awake. De-SIP. Now we get into the peptides. Delta sleep inducing peptide. This stuff is amazing. It's not a sedative. This is a neuropeptide that directly resynchronizes your circadian rhythm. by stimulating serotonin and melatonin production in the pineal gland. It specifically increases the duration of stage three and REM sleep, the critical and restorative phases. It reprograms your brain for that depth that you're asking for. To salmonella, and this stuff's fantastic. Half hour before you go to bed, empty stomach, don't eat a bunch of food right before you go to bed. This gives a powerful endogenous growth hormone pulse that's naturally secreted while you sleep anyway. It creates this positive feedback loop. deeper sleep facilitates a stronger GH pulse. This is how you trigger the physical restoration that you need because otherwise you're just taking things that are going to shut you down. Now look at your sleep environment. This is where people screw this up. Complete darkness. I don't care if you can fall asleep on a ladder or not. It needs to be black. Get blackout curtains. Eye mask. Any light, any photons hitting the retina is going to disrupt melatonin production. Keep your room cool. Nobody sleeps well in a hot room. I don't care how you are. That's going to help maintain your sleep. Turn off all your Wi-Fi. Get your phone out of your room. Turn off your wireless in your system. A phone in airplane mode and in another room, EMF pollution disrupts the pineal gland function. It's been proven over and over and over again. And then again, like I said about eating, don't have a bunch of food. Like three to four hours before bed, you should be empty. Digestin raises core temperature, disrupts the circadian rhythm because it's how your body's designed. And then when you get up in the morning, this is what I do. I get up every morning and I get at one. I've been up within about 30 minutes 10 minutes at least of direct morning sunlight. I get it in my face No sunglasses. It doesn't give you wrinkles anyway. It's ridiculous reset your circadian clock by suppressing melatonin and setting the cortisol levels for the day This isn't
+
+at one. I've been up within about 30 minutes 10 minutes at least of direct morning sunlight. I get it in my face No sunglasses. It doesn't give you wrinkles anyway. It's ridiculous reset your circadian clock by suppressing melatonin and setting the cortisol levels for the day This isn't a sleeping pill knock me out thing. You want to do that. That's something else You're using neurochemistry and chronobiology to command your body to execute perfect sleep This is the difference between being knocked out and not really getting any rest and actually getting restored. Anyway, I hope that helps. Never miss.
+

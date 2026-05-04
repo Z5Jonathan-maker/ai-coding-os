@@ -131,6 +131,55 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 
 **Security note:** This skill has accepted-risk status (3 scanner warnings) — see `wiki/logs/failure-log.md` 2026-05-03 entry. Don't extend its allowed-tools surface beyond the SKILL.md frontmatter. Audit task definitions in `tasks/<name>/task.md` before running against sites that handle PII or money.
 
+## W11: Build a mentor / topic mega-brain from external corpus
+
+**Trigger:** "build a brain on X", "ingest this expert's content", any time we want a queryable corpus on a person, topic, or compound.
+
+**Inputs:** YouTube channel/video URLs, articles, PDFs, sitemaps, RSS, OR a local dir of transcripts/PDFs/text/HTML.
+
+1. Decide the topic slug (kebab-case, prefix `mentor-` if it's a person). e.g. `mentor-ayubace`, `peptide-research`.
+2. Decide source mode:
+   - **URL list:** put URLs in `~/code/projects/scrapling-lab/brain-sources/<topic>.txt` (one per line)
+   - **Local corpus:** point at the directory (recurses, dedupes)
+   - **DB-only corpus:** see W12 (dump first, then ingest the local dir)
+3. Run ingestion:
+   ```bash
+   mega-brain-ingest --topic <slug> --sources brain-sources/<slug>.txt --skip-video --workers 8
+   # then add video transcripts (slow)
+   mega-brain-ingest --topic <slug> --sources brain-sources/<slug>.txt --whisper-model small
+   ```
+4. (Mentor brains) Add a profile to `/tmp/build-mentor-index.py`'s `PROFILES` dict (name, channels, credibility, strengths, tone, use_when). Re-run to refresh `_INDEX.md` + `_COMPOUND_INDEX.md` + per-mentor `_README.md`.
+5. Mempalace mine for cross-session semantic recall:
+   ```bash
+   mempalace --palace ~/mempalace mine ~/.claude/wiki/learnings/<slug>
+   ```
+6. Update `wiki/tool-registry.md` `learnings` row totals.
+
+**Cost:** $0 (trafilatura + pypdf + faster-whisper all local). Only paid if Groq Whisper fallback for captionless videos (~$0.111/hr).
+
+## W12: Recover knowledge from a DB-only corpus (e.g. Neon transcript_embeddings → mentor brains)
+
+**Trigger:** A prior project ingested external content directly into a DB (skipped writing files). You want it as queryable per-doc files in `learnings/`.
+
+1. Get DB credentials cleanly. Order of preference:
+   1. API key (Neon dashboard → settings → API keys → "Generate new") set into `NEON_API_KEY` env
+   2. Live `.env.production` if committed (load `set -a; source FILE; set +a` so the value never enters transcript)
+   3. OAuth via patched neonctl (`~/local/lib/neonctl-patched/cli.js auth` — 900s window)
+2. List + select project → connection string:
+   ```bash
+   neonctl projects list --org-id <id>
+   DB_URL=$(neonctl connection-string --project-id <pid> --org-id <oid>)
+   ```
+3. Inspect schema → find embeddings/transcript table:
+   ```bash
+   psql "$DB_URL" -c "\dt"
+   psql "$DB_URL" -c "\d transcript_embeddings"
+   ```
+4. Stream rows → per-doc `.md` with frontmatter. Group by `(creator, video_id)`, sort by `chunk_index`, concatenate `content`. Reference template: `/tmp/dump-neon-corpus.py` (kept after 2026-05-03 DoseCraft pull, 8826 chunks → 843 videos across 8 mentors).
+5. Ingest with W11 step 3 (local-dir mode).
+
+**Honesty constraint:** API key crosses Bash boundary → treat as exposed → revoke after pull.
+
 ## How to add a new workflow
 
 If during a session you build a multi-step recipe that worked well:

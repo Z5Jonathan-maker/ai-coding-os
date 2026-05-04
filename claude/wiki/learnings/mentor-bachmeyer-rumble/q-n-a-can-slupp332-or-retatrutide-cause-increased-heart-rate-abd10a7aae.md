@@ -1,0 +1,29 @@
+---
+source: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y.md
+kind: local_text
+title: q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y
+retrieved: "2026-05-04T00:48:22+00:00"
+word_count: 750
+char_count: 4532
+local_path: /Users/leonardofibonacci/dotfiles/claude/wiki/learnings/_dosecraft-mentors-raw/bachmeyer-rumble/q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y.md
+ext: .md
+---
+
+# q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-leading-clinical-v73b89y
+
+---
+source: https://rumble.com/v73b89y-q-n-a-can-slupp332-or-retatrutide-cause-increased-heart-rate-dr-trevor-bach.html?e9s=src_v1_ucp_a
+kind: youtube_transcript
+title: "Q n A \ufffdCan SLUPP332 or Retatrutide Cause Increased Heart Rate?\ufffd - Dr Leading Clinical Expert"
+creator: "Leading Clinical Expert"
+channel: rumble:thespartan
+video_id: v73b89y
+chunks: 2
+---
+
+# Q n A �Can SLUPP332 or Retatrutide Cause Increased Heart Rate?� - Dr Leading Clinical Expert
+
+Hesitant to get into this one because I don't screw around with this thing. This thing is keeping you alive 24-7-365, but the question is they used SLU, SLU-PP-332 and read a true tide and the heart rate spiked 15 to 20 points on low-dose Reda. How do I manage it? And I'm not going to get into the dose they used. So heart rate increase of 15 to 20 beats per minute on a low-dose Reda significant, but manageable pharmacological response. It's not an anomaly either. It's a direct effect of the peptide's mechanism of action. So here's what happens. Watch. Redutrutide is a triple agonist. GIP GLP, one glucagon, right? The glucagon receptor agonism is the primary driver of the tachycardia, the increase in heart rate. Tachycardia is usually over 100 beats a minute. Glucagon's job is to raise blood sugar by signaling to release glucose. In order to deliver this glucose to the tissue, it also increases cardiac output by raising heart rate and contractility. Redutrutide is mimicking this stress hormone signal, so it's doing its job. The peptide increases sympathetic fight-flight-or-freeze tone, directly stimulating the SA-sinoatrial node in the heart to fire faster. So 15 to 20 beats per To be honest, manage the response, like don't screw around to this and just ensure safety and tolerability. So here's what I would do to handle it if you were my patient. Right off the bat, cut your dose in half. Hydration and electrolytes right out of the gate, non-negotiable. Red and true tide usually causes mild dehydration, which exacerbates tachycardia. Drink 100 to 120 ounces of water every day with added electrolytes, sodium, potassium, magnesium. Think about it. Dehydration reduces blood volume, forcing the heart. to work hard or you don't want to do that. Cut out all your caffeine. I mean, I have a friggin' coffee right here. I drink coffee all the time, but in this case, cut it out right now. Like caffeine is a direct adenosine receptor antagonist and it synergizes with red or true tide sympathetic effects. So it's gonna compound the heart rate increase. You don't need some doctor. Like if it's elevated after 48 hours, then maybe go get something checked out because it's gonna be something else. Here's what people are going to tell you, and I think it's ridiculous. They want to put you on pro-core LAN, which is going to selectively slow the firing rate of the SA node without affecting blood pressure or contractility. It's not a beta blocker. It's just pure heart rate lowering agent. Pretty much directly counteracts read at true tides effect on the SA node. You need a prescription anyway. You don't need it. A low-dose beta blocker is something like metropolol. this is a beta blocker. It's going to hit the beta 1 internergic receptors in the heart. It's going to reduce the effects of sympathetic stimulation, but it's going to make you tired as hell. It's going to exacerbate
+
+don't need it. A low-dose beta blocker is something like metropolol. this is a beta blocker. It's going to hit the beta 1 internergic receptors in the heart. It's going to reduce the effects of sympathetic stimulation, but it's going to make you tired as hell. It's going to exacerbate the mild hypotensive, the blood pressure lowering effects of reded trutide. I don't know. I just don't think those are necessary, but I want you to see all the options. I would probably look at my timing too. If you take reded trutide in the morning, take it at night. Try switching to evening. The peak hemodynamic effects It probably will occur while you're asleep, so it's gonna improve the daytime tolerance. Don't titrate at all. Remember I said, cut the dose in half, stop titrating, wait until the tachycardia is under complete control, otherwise you're gonna wind up screwing yourself up. Pushing forward, you're just gonna make things worse. So here, listen, double all your water and electrolytes, get rid of all your caffeine, monitor and track what's going on for 48 hours, if it's not handled, go see somebody about it. Anyway, I hope that helps, never miss.
+

@@ -133,6 +133,19 @@ Auto-memory (`~/.claude/projects/-Users-leonardofibonacci-Claude-Code/memory/`) 
 
 MemPalace (`recall` skill + `mempalace` MCP) is for cross-session semantic search of *what was discussed before* — episodic, not factual.
 
+## MEGA-BRAIN LEARNINGS LAYER
+
+Source of truth: `~/.claude/wiki/learnings/`. Per-topic knowledge brains built from external corpora (transcripts, articles, PDFs, mentor content). Currently **8 mentor brains + dosecraft-research = 843 videos / 4.1M words** of peptide/TRT/biohacking domain knowledge.
+
+**Always check before answering domain questions:**
+1. `~/.claude/wiki/learnings/_INDEX.md` — catalog of all brains
+2. `~/.claude/wiki/learnings/_COMPOUND_INDEX.md` — peptide → mentor coverage map (find which mentor has the most coverage on a given compound)
+3. Per-mentor `_README.md` — credibility, tone, when-to-consult-vs-skip
+
+**Recall** via `mempalace` MCP for semantic, or `rg` directly into `mentor-<slug>/` for keyword. See decision rule D14.
+
+**Build / extend:** `mega-brain-ingest` CLI auto-routes URL/local-path → trafilatura/pypdf/transcribe-video → wiki/learnings. See workflow W11 (greenfield) and W12 (recover from DB-only corpus).
+
 ## TELEMETRY
 
 Langfuse plugin is live and emitting to `http://127.0.0.1:3000` (verified). Every session is traced. To inspect: open the local Langfuse UI. Don't disable.

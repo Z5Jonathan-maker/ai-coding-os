@@ -1,0 +1,616 @@
+{
+  "topic": "dosecraft-research",
+  "created": "2026-05-04T00:06:40.499949+00:00",
+  "docs": {
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/DR_B_PROTOCOL_REFERENCE.md": {
+      "file": "dr_b_protocol_reference-2e2abae5fa.md",
+      "kind": "local_text",
+      "title": "DR_B_PROTOCOL_REFERENCE",
+      "words": 35444,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/CREATOR_INTELLIGENCE_DATABASE.md": {
+      "file": "creator_intelligence_database-d9403fa414.md",
+      "kind": "local_text",
+      "title": "CREATOR_INTELLIGENCE_DATABASE",
+      "words": 12628,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/DR_B_YOUTUBE_PROTOCOLS_DOSSIER.md": {
+      "file": "dr_b_youtube_protocols_dossier-691db0917a.md",
+      "kind": "local_text",
+      "title": "DR_B_YOUTUBE_PROTOCOLS_DOSSIER",
+      "words": 15326,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/DR_B_SOCIAL_MEDIA_PROFILE.md": {
+      "file": "dr_b_social_media_profile-b9e087f32e.md",
+      "kind": "local_text",
+      "title": "DR_B_SOCIAL_MEDIA_PROFILE",
+      "words": 6323,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/WHOLESALE_PRICING_COMPARISON.md": {
+      "file": "wholesale_pricing_comparison-7c8fc45f05.md",
+      "kind": "local_text",
+      "title": "WHOLESALE_PRICING_COMPARISON",
+      "words": 1470,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/PEPTIDE_BRAND_LAUNCH_RESEARCH.md": {
+      "file": "peptide_brand_launch_research-de08397cd3.md",
+      "kind": "local_text",
+      "title": "PEPTIDE_BRAND_LAUNCH_RESEARCH",
+      "words": 2494,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/best-peptide-protocol-app-2026.md": {
+      "file": "best-peptide-protocol-app-2026-e92ee3abac.md",
+      "kind": "local_text",
+      "title": "best-peptide-protocol-app-2026",
+      "words": 2509,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/complete-peptide-dosage-calculator-guide.md": {
+      "file": "complete-peptide-dosage-calculator-guide-1874b64aad.md",
+      "kind": "local_text",
+      "title": "complete-peptide-dosage-calculator-guide",
+      "words": 2386,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/WHITE_LABEL_PARTNER_RANKINGS.md": {
+      "file": "white_label_partner_rankings-103166cb29.md",
+      "kind": "local_text",
+      "title": "WHITE_LABEL_PARTNER_RANKINGS",
+      "words": 865,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/epitalon-dosage-telomere-protocol.md": {
+      "file": "epitalon-dosage-telomere-protocol-96867761b3.md",
+      "kind": "local_text",
+      "title": "epitalon-dosage-telomere-protocol",
+      "words": 2483,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/research/MARGIN_ANALYSIS.md": {
+      "file": "margin_analysis-67a0293a75.md",
+      "kind": "local_text",
+      "title": "MARGIN_ANALYSIS",
+      "words": 2278,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/bpc-157-complete-protocol-guide.md": {
+      "file": "bpc-157-complete-protocol-guide-616fa28a25.md",
+      "kind": "local_text",
+      "title": "bpc-157-complete-protocol-guide",
+      "words": 2334,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/ghk-cu-benefits-skin-longevity.md": {
+      "file": "ghk-cu-benefits-skin-longevity-d50939866c.md",
+      "kind": "local_text",
+      "title": "ghk-cu-benefits-skin-longevity",
+      "words": 2510,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/mots-c-peptide-mitochondria-guide.md": {
+      "file": "mots-c-peptide-mitochondria-guide-9d156fcfae.md",
+      "kind": "local_text",
+      "title": "mots-c-peptide-mitochondria-guide",
+      "words": 2825,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/peptide-reconstitution-guide.md": {
+      "file": "peptide-reconstitution-guide-576392900b.md",
+      "kind": "local_text",
+      "title": "peptide-reconstitution-guide",
+      "words": 2983,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/peptide-stacking-guide-beginners.md": {
+      "file": "peptide-stacking-guide-beginners-f00f47fd20.md",
+      "kind": "local_text",
+      "title": "peptide-stacking-guide-beginners",
+      "words": 2507,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/peptide-safety-guide-beginners.md": {
+      "file": "peptide-safety-guide-beginners-fed7913f55.md",
+      "kind": "local_text",
+      "title": "peptide-safety-guide-beginners",
+      "words": 3301,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/blog-posts/tb-500-dosage-guide.md": {
+      "file": "tb-500-dosage-guide-5934be9f26.md",
+      "kind": "local_text",
+      "title": "tb-500-dosage-guide",
+      "words": 2550,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-BPC157-Protocol-Card.pdf": {
+      "file": "the-complete-bpc-157-protocol-card-dosecraft-d086484f80.md",
+      "kind": "local_pdf",
+      "title": "The Complete BPC-157 Protocol Card \u2014 DoseCraft",
+      "words": 1393,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Bloodwork-Checklist.pdf": {
+      "file": "pre-protocol-bloodwork-checklist-dosecraft-a323bad5f7.md",
+      "kind": "local_pdf",
+      "title": "Pre-Protocol Bloodwork Checklist \u2014 DoseCraft",
+      "words": 1475,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Cycling-Calendar.pdf": {
+      "file": "the-peptide-cycling-calendar-dosecraft-9d4a23acd8.md",
+      "kind": "local_pdf",
+      "title": "The Peptide Cycling Calendar \u2014 DoseCraft",
+      "words": 1376,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-GH-Comparison.pdf": {
+      "file": "growth-hormone-secretagogues-cjc-1295-vs-ipamorelin-vs-tesam-4d7c0f60df.md",
+      "kind": "local_pdf",
+      "title": "Growth Hormone Secretagogues: CJC-1295 vs Ipamorelin vs Tesamorelin \u2014 DoseCraft",
+      "words": 1393,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Mitochondrial-Primer.pdf": {
+      "file": "mitochondrial-primer-why-you-re-tired-and-how-to-fix-it-dose-d0ab8e4cb9.md",
+      "kind": "local_pdf",
+      "title": "Mitochondrial Primer: Why You're Tired and How to Fix It \u2014 DoseCraft",
+      "words": 1415,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-First-Stack-Guide.pdf": {
+      "file": "your-first-peptide-stack-the-beginner-s-blueprint-dosecraft-7204a4622b.md",
+      "kind": "local_pdf",
+      "title": "Your First Peptide Stack: The Beginner's Blueprint \u2014 DoseCraft",
+      "words": 1645,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Reconstitution-Cheat-Sheet.pdf": {
+      "file": "peptide-reconstitution-cheat-sheet-dosecraft-b1a06b855a.md",
+      "kind": "local_pdf",
+      "title": "Peptide Reconstitution Cheat Sheet \u2014 DoseCraft",
+      "words": 1190,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-TB500-Recovery-Guide.pdf": {
+      "file": "tb-500-the-recovery-compound-your-body-is-missing-dosecraft-0af4841262.md",
+      "kind": "local_pdf",
+      "title": "TB-500: The Recovery Compound Your Body Is Missing \u2014 DoseCraft",
+      "words": 1471,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Three-Root-Causes-Framework.pdf": {
+      "file": "the-3-root-causes-framework-dosecraft-ea3d8af505.md",
+      "kind": "local_pdf",
+      "title": "The 3 Root Causes Framework \u2014 DoseCraft",
+      "words": 1614,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/DoseCraft-Vendor-Red-Flags.pdf": {
+      "file": "vendor-red-flags-7-signs-your-peptide-source-is-dangerous-do-464e9cfc91.md",
+      "kind": "local_pdf",
+      "title": "Vendor Red Flags: 7 Signs Your Peptide Source Is Dangerous \u2014 DoseCraft",
+      "words": 1569,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/email-templates/referral-invite.html": {
+      "file": "referral-invite-0bb82c4f2e.md",
+      "kind": "local_text",
+      "title": "referral-invite",
+      "words": 160,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/email-templates/welcome.html": {
+      "file": "welcome-dc946a0109.md",
+      "kind": "local_text",
+      "title": "welcome",
+      "words": 53,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/email-templates/trial-ending.html": {
+      "file": "trial-ending-1955e5491b.md",
+      "kind": "local_text",
+      "title": "trial-ending",
+      "words": 173,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/email-templates/protocol-reminder.html": {
+      "file": "protocol-reminder-4b5ab379b1.md",
+      "kind": "local_text",
+      "title": "protocol-reminder",
+      "words": 43,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/email-templates/weekly-digest.html": {
+      "file": "weekly-digest-2f688a5eaf.md",
+      "kind": "local_text",
+      "title": "weekly-digest",
+      "words": 57,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/bloodwork-checklist.html": {
+      "file": "bloodwork-checklist-ce9e16a9e9.md",
+      "kind": "local_text",
+      "title": "bloodwork-checklist",
+      "words": 1048,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/bpc157-protocol-card.html": {
+      "file": "bpc157-protocol-card-9734237c5f.md",
+      "kind": "local_text",
+      "title": "bpc157-protocol-card",
+      "words": 1055,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/cycling-calendar.html": {
+      "file": "cycling-calendar-d311a13b7d.md",
+      "kind": "local_text",
+      "title": "cycling-calendar",
+      "words": 920,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/mitochondrial-primer.html": {
+      "file": "mitochondrial-primer-ad1904a31c.md",
+      "kind": "local_text",
+      "title": "mitochondrial-primer",
+      "words": 1058,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/gh-comparison.html": {
+      "file": "gh-comparison-74f7e31fd4.md",
+      "kind": "local_text",
+      "title": "gh-comparison",
+      "words": 1018,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/reconstitution-cheat-sheet.html": {
+      "file": "reconstitution-cheat-sheet-3eda6aa090.md",
+      "kind": "local_text",
+      "title": "reconstitution-cheat-sheet",
+      "words": 997,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/tb500-recovery-guide.html": {
+      "file": "tb500-recovery-guide-e470985760.md",
+      "kind": "local_text",
+      "title": "tb500-recovery-guide",
+      "words": 1129,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/first-stack-guide.html": {
+      "file": "first-stack-guide-61c199ac99.md",
+      "kind": "local_text",
+      "title": "first-stack-guide",
+      "words": 1129,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/vendor-red-flags.html": {
+      "file": "vendor-red-flags-3a02cccb40.md",
+      "kind": "local_text",
+      "title": "vendor-red-flags",
+      "words": 1138,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/lead-magnets/three-root-causes.html": {
+      "file": "three-root-causes-b894b0132f.md",
+      "kind": "local_text",
+      "title": "three-root-causes",
+      "words": 1280,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/01-managed-decline.html": {
+      "file": "01-managed-decline-ff55b1af87.md",
+      "kind": "local_text",
+      "title": "01-managed-decline",
+      "words": 1004,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/03-insulin-resistance.html": {
+      "file": "03-insulin-resistance-c5d4e5d471.md",
+      "kind": "local_text",
+      "title": "03-insulin-resistance",
+      "words": 1099,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/00-front-matter.html": {
+      "file": "00-front-matter-e6c3240db2.md",
+      "kind": "local_text",
+      "title": "00-front-matter",
+      "words": 924,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/05-how-to-read-profiles.html": {
+      "file": "05-how-to-read-profiles-c922d320e6.md",
+      "kind": "local_text",
+      "title": "05-how-to-read-profiles",
+      "words": 1015,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/02-inflammation.html": {
+      "file": "02-inflammation-3ec91de671.md",
+      "kind": "local_text",
+      "title": "02-inflammation",
+      "words": 1265,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/04-atp-shortage.html": {
+      "file": "04-atp-shortage-3f6f479d24.md",
+      "kind": "local_text",
+      "title": "04-atp-shortage",
+      "words": 1451,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/06-bpc157.html": {
+      "file": "06-bpc157-f80804297e.md",
+      "kind": "local_text",
+      "title": "06-bpc157",
+      "words": 994,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/07-motsc.html": {
+      "file": "07-motsc-0d5e9f6df4.md",
+      "kind": "local_text",
+      "title": "07-motsc",
+      "words": 1016,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/08-epitalon.html": {
+      "file": "08-epitalon-4b12c0c9a4.md",
+      "kind": "local_text",
+      "title": "08-epitalon",
+      "words": 1454,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/12-retatrutide.html": {
+      "file": "12-retatrutide-30302acf30.md",
+      "kind": "local_text",
+      "title": "12-retatrutide",
+      "words": 1038,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/09-tb500.html": {
+      "file": "09-tb500-59c1166ee4.md",
+      "kind": "local_text",
+      "title": "09-tb500",
+      "words": 1351,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/14-methylene-blue.html": {
+      "file": "14-methylene-blue-304b6a159a.md",
+      "kind": "local_text",
+      "title": "14-methylene-blue",
+      "words": 1394,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/11-kpv.html": {
+      "file": "11-kpv-39cd4514b7.md",
+      "kind": "local_text",
+      "title": "11-kpv",
+      "words": 1138,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/13-thymosin-alpha1.html": {
+      "file": "13-thymosin-alpha1-3df03297cc.md",
+      "kind": "local_text",
+      "title": "13-thymosin-alpha1",
+      "words": 1609,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/15-ss31.html": {
+      "file": "15-ss31-bb729492cd.md",
+      "kind": "local_text",
+      "title": "15-ss31",
+      "words": 1296,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/10-ghkcu.html": {
+      "file": "10-ghkcu-0c1a013bfc.md",
+      "kind": "local_text",
+      "title": "10-ghkcu",
+      "words": 1401,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/17-protocol-design.html": {
+      "file": "17-protocol-design-9461053a58.md",
+      "kind": "local_text",
+      "title": "17-protocol-design",
+      "words": 1716,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/16b-interaction-risk-matrix.html": {
+      "file": "16b-interaction-risk-matrix-f395fddb6c.md",
+      "kind": "local_text",
+      "title": "16b-interaction-risk-matrix",
+      "words": 1998,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/19-trilogy-for-life.html": {
+      "file": "19-trilogy-for-life-4dcdc45dbd.md",
+      "kind": "local_text",
+      "title": "19-trilogy-for-life",
+      "words": 1137,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/23-custom-stack.html": {
+      "file": "23-custom-stack-ce8b2f4125.md",
+      "kind": "local_text",
+      "title": "23-custom-stack",
+      "words": 1061,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/21-mega-regeneration.html": {
+      "file": "21-mega-regeneration-c1408c1d1a.md",
+      "kind": "local_text",
+      "title": "21-mega-regeneration",
+      "words": 1505,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/20-wolverine-protocol.html": {
+      "file": "20-wolverine-protocol-eb407bea4e.md",
+      "kind": "local_text",
+      "title": "20-wolverine-protocol",
+      "words": 1436,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/24-reconstitution.html": {
+      "file": "24-reconstitution-4770e5c144.md",
+      "kind": "local_text",
+      "title": "24-reconstitution",
+      "words": 937,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/18-top4-forever.html": {
+      "file": "18-top4-forever-45fba7d6d4.md",
+      "kind": "local_text",
+      "title": "18-top4-forever",
+      "words": 1412,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/22-longevity-stack.html": {
+      "file": "22-longevity-stack-7f300714d7.md",
+      "kind": "local_text",
+      "title": "22-longevity-stack",
+      "words": 1883,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/29-vendor-verification.html": {
+      "file": "29-vendor-verification-3bd2d208de.md",
+      "kind": "local_text",
+      "title": "29-vendor-verification",
+      "words": 1013,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/25-injection-technique.html": {
+      "file": "25-injection-technique-eddb880296.md",
+      "kind": "local_text",
+      "title": "25-injection-technique",
+      "words": 1031,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/26-oral-vs-injectable.html": {
+      "file": "26-oral-vs-injectable-ea8b9d45ca.md",
+      "kind": "local_text",
+      "title": "26-oral-vs-injectable",
+      "words": 1442,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/28-bloodwork.html": {
+      "file": "28-bloodwork-ef9139e830.md",
+      "kind": "local_text",
+      "title": "28-bloodwork",
+      "words": 1449,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/30-cancer-evidence.html": {
+      "file": "30-cancer-evidence-43c4d900ae.md",
+      "kind": "local_text",
+      "title": "30-cancer-evidence",
+      "words": 1191,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/27-cycling-bible.html": {
+      "file": "27-cycling-bible-da92b8808a.md",
+      "kind": "local_text",
+      "title": "27-cycling-bible",
+      "words": 960,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/31-contraindications.html": {
+      "file": "31-contraindications-d7f943ed1d.md",
+      "kind": "local_text",
+      "title": "31-contraindications",
+      "words": 1847,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/33-regulatory.html": {
+      "file": "33-regulatory-2b2f071914.md",
+      "kind": "local_text",
+      "title": "33-regulatory",
+      "words": 951,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/32-mito-preparedness.html": {
+      "file": "32-mito-preparedness-bcab340407.md",
+      "kind": "local_text",
+      "title": "32-mito-preparedness",
+      "words": 1196,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/34-gender-considerations.html": {
+      "file": "34-gender-considerations-14d026562d.md",
+      "kind": "local_text",
+      "title": "34-gender-considerations",
+      "words": 1174,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/35-recovery-protocols.html": {
+      "file": "35-recovery-protocols-9f576beed1.md",
+      "kind": "local_text",
+      "title": "35-recovery-protocols",
+      "words": 1600,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/36-performance-protocols.html": {
+      "file": "36-performance-protocols-d8f2193354.md",
+      "kind": "local_text",
+      "title": "36-performance-protocols",
+      "words": 1516,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/brain-v2/requirements.txt": {
+      "file": "requirements-1c4d44fc17.md",
+      "kind": "local_text",
+      "title": "requirements",
+      "words": 9,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/37-longevity-protocols.html": {
+      "file": "37-longevity-protocols-cfca974ada.md",
+      "kind": "local_text",
+      "title": "37-longevity-protocols",
+      "words": 1731,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/38-cognitive-protocols.html": {
+      "file": "38-cognitive-protocols-aca9053679.md",
+      "kind": "local_text",
+      "title": "38-cognitive-protocols",
+      "words": 1792,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/39-quick-reference-cards.html": {
+      "file": "39-quick-reference-cards-c43fb5d704.md",
+      "kind": "local_text",
+      "title": "39-quick-reference-cards",
+      "words": 1465,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/99-back-matter.html": {
+      "file": "99-back-matter-2ede4ecf4e.md",
+      "kind": "local_text",
+      "title": "99-back-matter",
+      "words": 3276,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/33b-condition-protocol-map.html": {
+      "file": "33b-condition-protocol-map-d8f97fa1cc.md",
+      "kind": "local_text",
+      "title": "33b-condition-protocol-map",
+      "words": 6711,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    },
+    "/Users/leonardofibonacci/code/projects/dosecraft/content/master-protocol-bible/chapters/16-supporting-compounds.html": {
+      "file": "16-supporting-compounds-7380361745.md",
+      "kind": "local_text",
+      "title": "16-supporting-compounds",
+      "words": 6671,
+      "ingested": "2026-05-04T00:06:47+00:00"
+    }
+  },
+  "last_run": "2026-05-04T00:06:47+00:00"
+}

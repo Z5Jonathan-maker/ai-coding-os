@@ -91,3 +91,29 @@ The "when X, pick Y not Z" logic. Captures non-obvious routing decisions so the 
 - **NEVER** = ask the user to paste a credential into chat. The harness blocks transcript-based credential capture for good reason. Use the OAuth flow (`claude mcp` UI) or 1Password — that's it.
 
 Invocation: `~/.claude/tel/client/tel-call.sh <service> <action> '<args-json>'`. Returns audit_id + optional undo_token. Credential never touches the transcript.
+
+## D14: When to consult a mentor brain (`~/.claude/wiki/learnings/mentor-*/`)
+
+Mentor brains are 4.1M words of curated peptide/TRT/biohacking transcripts from 8 named experts (843 videos). Consult them when:
+
+- User asks "what does <name> say about X?" → recall from `mentor-<slug>/` directly
+- User asks a peptide/TRT/biohacking compound question and wants experiential / clinical-voice grounding (not just papers) → check `_COMPOUND_INDEX.md`, route to top-coverage mentor for that compound
+- Building Aurex copy that needs to feel grounded in practitioner consensus (without quoting them — copy stays compliant) → scan compound index for the strongest mentor on that compound
+- Cross-referencing a mainstream pop-science claim → check `mentor-moreplatesmoredates` (skeptic) or `mentor-jay-campbell` (Huberman debunker)
+
+**Don't consult mentor brains for:**
+- Citation-grade claims for Aurex pages — use peer-reviewed `peptide-research` corpus instead (still TBD)
+- Compliance-sensitive copy — mentor voices include human-use language Aurex must never repeat
+- General software / non-domain questions
+
+**Recall pattern:**
+```bash
+# semantic across all mined brains
+mempalace --palace ~/mempalace search 'YOUR QUERY' | head -20
+# direct grep into a single mentor
+rg -i 'PATTERN' ~/.claude/wiki/learnings/mentor-bachmeyer/
+# compound → mentor lookup
+cat ~/.claude/wiki/learnings/_COMPOUND_INDEX.md | grep -i 'BPC-157'
+```
+
+Index is in `~/.claude/wiki/learnings/_INDEX.md`; per-mentor profiles + when-to-use in each `_README.md`.

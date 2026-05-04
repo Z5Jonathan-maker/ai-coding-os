@@ -83,3 +83,16 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **Change:** Built `~/dotfiles/claude/wiki/` with 6 sections (tool-registry, agent-definitions, workflow-templates, decision-rules, failure-log, optimization-log) + read/follow/write protocol baked into CLAUDE.md
 - **After:** Failures get logged once, never repeated. Optimizations compound across sessions. New workflows accumulate as the brain encounters them.
 - **Why it matters:** **If knowledge isn't in the wiki, it doesn't exist for future intelligence.** This is the foundation of long-term self-improvement.
+
+## 2026-05-03 · Mega-brain ingestion pipeline + 8 mentor brains stood up
+
+- **Before:** No standard way to absorb external corpora (articles/PDFs/videos/databases) into the wiki. Domain knowledge stayed siloed in source projects (DoseCraft had 8826 transcript chunks in Neon, unreachable from any other Claude session).
+- **Change:**
+  - Built `mega-brain-ingest` (`~/code/projects/scrapling-lab/bin/`, on PATH): auto-routes URL/local-path → trafilatura/pypdf/transcribe-video; writes per-doc markdown + frontmatter + dedupe manifest under `~/.claude/wiki/learnings/<topic>/`. Local-path mode supports recursive directory ingest of mixed `.pdf .md .txt .html .vtt .srt .mp3 .mp4`.
+  - Pulled DoseCraft Neon `transcript_embeddings` (8,826 chunks across 843 videos) → reconstructed per-video markdown → ingested into 8 per-mentor brains: bachmeyer (472 vids / 3.0M words), bachmeyer-rumble (102), ayubace (167), nathalie-niddam (28 / 338K words), jay-campbell (21), nick-trigili (20), moreplatesmoredates (17), dr-craig-koniver (16). Total: **843 videos, 4.1M words.**
+  - Built cross-mentor `_COMPOUND_INDEX.md` (peptide → mentor coverage matrix; e.g. BPC-157 across 185 videos, top: bachmeyer 78) + machine-readable `_compound-index.json`.
+  - Per-mentor `_README.md` profiles (credibility, tone, strengths, when-to-consult).
+  - Top-level `_INDEX.md` catalog.
+- **After:** Any future Claude session can recall mentor consensus on any peptide in 1 grep / mempalace search. Workflows W11 + W12 cover greenfield ingestion and DB-recovery patterns. Decision rule D14 governs when to consult.
+- **Cost:** $0 (faster-whisper local, trafilatura local, pypdf local). Neon API key crossed Bash boundary once → user advised to revoke.
+- **Why it matters:** This is the user's primary mode going forward — "build mega brains from public articles + PDFs + YouTube + mentor content, efficient, lowest cost, highest quality." The pipeline is generic; DoseCraft mentors were the first 4M words; karpathy + peptide-research source files already seeded for next ingestion passes.

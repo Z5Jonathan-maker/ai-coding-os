@@ -84,7 +84,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Library / SDK / API docs | `context7` | Always prefer over web search for docs |
 | GitHub issue/PR/repo ops | `github` | Native `gh` CLI also works |
 | Page inspect / Lighthouse / DevTools | `chrome-devtools` | **Default browser MCP** |
-| E2E test / scripted browser automation | `agent-browser` (CLI via Bash) | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
+| Browser automation, clean sites (no anti-bot) | `agent-browser` (CLI via Bash) | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
+| Browser automation, anti-bot-protected sites (Cloudflare/Google/etc.) | `camofox-browser` (REST API on `http://localhost:9377`) | Camoufox-powered Firefox fork with C++-level fingerprint spoofing (navigator/WebGL/AudioContext/WebRTC). Curl HTTP endpoints; OpenAPI at `/openapi.json`. Source: `~/code/research/camofox-browser/`. Start: `cd ~/code/research/camofox-browser && nohup npm start > ~/Library/Logs/camofox-browser.out.log 2>&1 &`. To autostart at login: `launchctl load -w ~/Library/LaunchAgents/bio.aurex.camofox.plist` (plist available but not auto-installed). |
 | Sensitive supervised browse (auth, payment) | `auto-browser` | Approval gates built-in |
 | Read Figma design / get_design_context | `claude_ai_Figma` | URL parsing built-in |
 | Email read/send | `claude_ai_Gmail` | OAuth-gated |

@@ -5,3 +5,9 @@
 claude/skills/prompt-master/
 .venv/
 claude/tel/.venv/
+
+# Mega-brain learnings: transcripts/articles stay local-only.
+# Keep _README.md, _INDEX.md, _COMPOUND_INDEX.md, manifests committed.
+claude/wiki/learnings/_archive/
+claude/wiki/learnings/mentor-*/[a-z0-9]*.md
+claude/wiki/learnings/dosecraft-research/[0-9]*.md

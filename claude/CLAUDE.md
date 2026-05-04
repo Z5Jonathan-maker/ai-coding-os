@@ -55,6 +55,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Be terse" | `caveman` | Strips conversational filler |
 | "Compress generated code" | `pulse` | Dense functions, no restate-comments |
 | "Apply Karpathy rules" | `karpathy-guidelines` | Surgical, simplicity-first |
+| "Consolidate memory / distill recent sessions" | `consolidate-memory` | Updates 3-tier memory layer (Roman Knox pattern) |
+| "Find what's new / scout for X / challenge existing knowledge" | `research-scout` | Stages findings in long-term-memory.md `new_learnings` |
 | "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action via 1Password — credential never enters transcript |
 | "Show me brain state / system snapshot" | (no skill — run `~/.claude/scripts/snapshot.sh`) | Single-command full state report |
 | "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop on browser tasks (browserbase/skills v0.1, MIT). Requires ANTHROPIC_API_KEY (separate from Claude Max — see skill .env). 3 security scanners flagged warnings — risk accepted 2026-05-03, see wiki/logs/failure-log.md. Composes with auto-browser MCP (already loaded). |
@@ -133,6 +135,21 @@ When `nonstop` or auto-mode is active, STOP and surface a question if you hit an
 Auto-memory (`~/.claude/projects/-Users-leonardofibonacci-Claude-Code/memory/`) is the long-term user-fact store. Always check `MEMORY.md` first before asking the user about themselves. Save new facts as they emerge. Curate weekly via `memory-curator` agent.
 
 MemPalace (`recall` skill + `mempalace` MCP) is for cross-session semantic search of *what was discussed before* — episodic, not factual.
+
+**3-tier memory layer at `~/.claude/memory/`** (Roman Knox pattern, added 2026-05-04):
+- `recent-memory.md` — rolling 48hr distilled context (auto-loaded inline at session start when CLAUDE.md @-include is added)
+- `long-term-memory.md` — distilled facts/preferences/patterns + `new_learnings` staging section (research-scout writes here)
+- `project-memory.md` — active project state (Aurex / brain / mega-brains tracked)
+- `/consolidate-memory` skill (nightly) — distills past 24hr session jsonls → updates these 3 files
+- `/research-scout` skill (3x nightly + weekly review) — hunts new info to challenge existing knowledge, stages in `new_learnings`
+- Both skills opt-in via cron/launchd; not auto-installed
+
+Sibling layers compose: auto-memory (per-fact files) + 3-tier memory (auto-distilled prose) + mempalace (episodic verbatim semantic search) + wiki/learnings (external corpus).
+
+## MULTI-SESSION ORCHESTRATION
+
+- **Octogent** — CLI multi-session, headless server-friendly, durable per-tentacle CONTEXT.md/todo.md (already documented)
+- **Conductor** — Mac app for parallel Claude Code agents in isolated repo copies, GUI-driven (installed via `brew install --cask conductor`, app at `/Applications/Conductor.app`, source: conductor.build). Pick Conductor when desktop GUI orchestration helps; pick Octogent for CLI/scripted multi-session.
 
 ## MEGA-BRAIN LEARNINGS LAYER
 

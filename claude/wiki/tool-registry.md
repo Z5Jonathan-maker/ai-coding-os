@@ -23,7 +23,7 @@ Every tool the brain can call. Mirrors CLAUDE.md routing tables but adds depth: 
 | MCP | What it does | When to pick | Notes |
 |---|---|---|---|
 | `chrome-devtools` | DevTools Protocol — inspect, screenshot, lighthouse, network log, performance trace | Default browser MCP for inspection/perf | Spawns Chromium ~2s cold start |
-| `playwright` | E2E test runner semantics, multi-tab, network mock | When you need test runner behavior | Heavier than chrome-devtools |
+| ~~`playwright`~~ | Replaced 2026-05-04 by `agent-browser` CLI (vercel-labs, native Rust). MCP entry removed from ~/.claude.json. | — | See "Custom CLI tools" row for agent-browser invocation |
 | `auto-browser` | Supervised browser with approval gates | Sensitive flows: login, payment, account ops | Built-in human-takeover |
 | `github` | gh-equivalent ops: issues, PRs, repos, workflows | GitHub state queries + mutations | Native `gh` CLI also works for read |
 | `context7` | Library/SDK/API doc lookup | Always prefer over WebSearch for docs | Lower hallucination risk |
@@ -70,7 +70,9 @@ These aren't MCPs — they're filesystem-based knowledge + execution layers, que
 
 | Tool | Purpose | Trigger | Output | Notes |
 |---|---|---|---|---|
+| `agent-browser` | Native Rust browser automation CLI (vercel-labs/agent-browser, on PATH at `~/local/bin/`). **Default browser-automation tool as of 2026-05-04** (replaced playwright MCP). | Any browser automation: navigate, click, type, screenshot, snapshot (a11y tree), eval JS, CDP connect, multi-session | Inline Bash returns from each command; chain via `agent-browser skills get core --full` for workflow patterns | Chrome 148 installed at `~/.agent-browser/browsers/`. No MCP; invoke directly via Bash. Skills include electron, slack, exploratory-testing. |
 | `mega-brain-ingest` | Orchestrate scrape+normalize+ingest of articles/PDFs/YouTube/sitemaps/RSS/local-dirs into `~/.claude/wiki/learnings/<topic>/` | Building or expanding a topic brain | per-doc markdown + frontmatter + `_manifest.json` for dedupe | Auto-routes by source: trafilatura (article), pypdf (PDF), transcribe-video/faster-whisper (video). `--skip-video` for fast text pass. Source: `~/code/projects/scrapling-lab/bin/` |
+| `mentor-expand` | Pull a YouTube channel's videos via yt-dlp, diff vs existing manifest, fetch auto-CC for new IDs, write per-video markdown to a brain folder | Expanding a mentor brain (e.g. mentor-niddam, mentor-mpmd) when new content is published | per-video markdown + manifest update | `--channel-url` mode for full enumeration, `--query` for ytsearch fallback. `--whisper-fallback` enables faster-whisper for captionless videos (slow). Source: `~/code/projects/scrapling-lab/bin/` |
 | `transcribe-video` | yt-dlp → faster-whisper → markdown transcript | Single video URL → standalone .md | markdown to `~/code/projects/scrapling-lab/transcripts/` | Models: tiny → large-v3, default `small`. CPU/int8 on Apple Silicon. |
 | `competitor-pricing` | Scrapling stealth fetch of vendor catalogs → pricing CSV | Vendor catalog URL(s) | CSV at `~/code/projects/scrapling-lab/pricing-runs/` | JSON-LD Product schema first, heuristic fallback. |
 | `pricing-vs-aurex` | Join competitor CSV against Aurex catalog → markdown gap report | Competitor CSV + Aurex `lib/products.ts` | Markdown table | Per-compound position + recommended action |

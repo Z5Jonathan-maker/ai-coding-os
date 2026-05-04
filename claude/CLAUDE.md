@@ -84,7 +84,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Library / SDK / API docs | `context7` | Always prefer over web search for docs |
 | GitHub issue/PR/repo ops | `github` | Native `gh` CLI also works |
 | Page inspect / Lighthouse / DevTools | `chrome-devtools` | **Default browser MCP** |
-| E2E test / browser automation | `playwright` | When you need test runner semantics |
+| E2E test / scripted browser automation | `agent-browser` (CLI via Bash) | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
 | Sensitive supervised browse (auth, payment) | `auto-browser` | Approval gates built-in |
 | Read Figma design / get_design_context | `claude_ai_Figma` | URL parsing built-in |
 | Email read/send | `claude_ai_Gmail` | OAuth-gated |

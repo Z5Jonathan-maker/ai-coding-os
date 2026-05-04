@@ -25,7 +25,7 @@ The "when X, pick Y not Z" logic. Captures non-obvious routing decisions so the 
 ## D4: Which browser MCP
 
 - **chrome-devtools** = default. Inspection, lighthouse, screenshots, network log
-- **playwright** = need test-runner semantics (waitForSelector, fill_form across nav, network mocking)
+- **agent-browser** (CLI via Bash) = primary scripted browser automation as of 2026-05-04 (vercel-labs/agent-browser, native Rust). Replaces `playwright` MCP. Run `agent-browser skills get core --full` first to load workflow patterns. Use for: nav, click, type, screenshot, eval JS, snapshot (a11y), CDP connect, multi-session. No MCP — invoke directly.
 - **auto-browser** = sensitive flows (login, payment, account ops) where approval gates matter
 - ~~browser-use~~ = retired 2026-05-03 (redundant)
 

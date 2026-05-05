@@ -125,3 +125,11 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
   - Aurex script grep PDPs for `?ref=DOSECRAFT` + `?sld=dosecraft` — silent revenue-leak detector; if affiliate code missing, partner click-through earns nothing
 - **After:** A failed deploy that *built* but produced broken OG/affiliate state now fails loud at the post-deploy step.
 - **Why it matters:** Build-passes-but-runtime-broken is the worst failure mode. Pattern: post-deploy scripts should verify *runtime behavior* (response codes, content types, content sanity) not just `curl /api/health`.
+
+## 2026-05-04 · OG render smoke test as CI gate (vitest)
+
+- **Before:** Satori errors fire only at request-time. Build was silent on the 5 OG bugs caught by local-serve E2E this session. Manual local-serve + curl is the only existing verification — high friction, easy to skip.
+- **Change:** Added `tests/og-render.test.ts` to both repos (dosecraft-companion 040c57e, aurex 57d1df0). Pattern: import each OG handler module, call default export with mocked params for dynamic routes, await `response.arrayBuffer()`, verify PNG magic bytes (`89 50 4E 47 0D 0A 1A 0A`) at offset 0. Any Satori error rejects the promise — caught at unit-test time, before merge.
+- **After:** 24 OG render assertions across both repos run in ~2s total. Verified detection by injecting a Satori bug into a known-good OG card — test failed with the exact error message Satori would emit at request time.
+- **Why it matters:** Converts the manual trust-but-verify loop into a CI gate. Future Satori regressions blocked at PR time, not after they reach production. Pattern is repeatable for any `next/og` ImageResponse — 1 test per OG route, ~10 lines each.
+- **Coverage:** Dosecraft 9 static + 4 dynamic = 13 tests; Aurex 8 static + 3 dynamic = 11 tests. Branch coverage for vendor-preferred (`aurex` slug hits the PREFERRED pill) and partner-fulfilled product variants.

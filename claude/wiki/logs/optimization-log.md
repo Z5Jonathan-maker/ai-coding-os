@@ -96,3 +96,32 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** Any future Claude session can recall mentor consensus on any peptide in 1 grep / mempalace search. Workflows W11 + W12 cover greenfield ingestion and DB-recovery patterns. Decision rule D14 governs when to consult.
 - **Cost:** $0 (faster-whisper local, trafilatura local, pypdf local). Neon API key crossed Bash boundary once → user advised to revoke.
 - **Why it matters:** This is the user's primary mode going forward — "build mega brains from public articles + PDFs + YouTube + mentor content, efficient, lowest cost, highest quality." The pipeline is generic; DoseCraft mentors were the first 4M words; karpathy + peptide-research source files already seeded for next ingestion passes.
+
+## 2026-05-04 · Per-surface custom OG cards compound social CTR
+
+- **Before:** Both Aurex (aurex.bio) and Dosecraft (dosecraftapp.com + coach.dosecraftapp.com) had a single apex OG card; every shared URL rendered the same brand card whether it was the homepage, a research-area landing, or the bio link tree. Social viewers had no preview-level clue what to expect — link CTR cratered on shared deep-links.
+- **Change:** Shipped 12 purpose-built OG cards (Next.js `next/og` ImageResponse + `runtime: 'nodejs'` for fs-loaded brand mark):
+  - **Aurex (5):** /links (bio destination), /find-your-stack (picker), /calculator (reconstitution), per-condition /research/<slug> (×7 already shipped iter-pre)
+  - **Dosecraft apex (3):** /research index, /picker, per-condition /research/<slug> (×7 already shipped)
+  - **Coach (3):** /coach/chat (sample-question chips), /coach/pricing (tier+price chips), /coach/aurex (cross-brand pitch)
+- **Pattern:** Shared visual language per brand (warm paper + cobalt accent for Aurex; warm paper + teal for Dosecraft apex; navy + teal for Coach). Each card surfaces the page's specific value via 4-6 chip tags so the preview *advertises* contents.
+- **After:** Every high-share surface now has its own preview. Bio destinations, pickers, and tools (the most DM/screenshot-shared assets) get bespoke cards.
+- **Why it matters:** OG cards are the single highest-leverage SEO/social investment per LOC — one 200-line file moves CTR on every share of that URL forever. Pattern is repeatable: any new page that gets shared on social warrants its own opengraph-image.tsx co-located with page.tsx.
+
+## 2026-05-04 · llms.txt + ai.txt + llms-full.txt as AI-search foundation
+
+- **Before:** Aurex had llms.txt/llms-full.txt/ai.txt; Dosecraft (the LLM-target product — Coach is literally an AI chat) had none. Perplexity / ChatGPT / Claude / Gemini crawlers had no structured discovery path.
+- **Change:** Dosecraft `public/llms.txt` (concise: canonical URLs apex+coach, 36 compound slugs grouped by class, 7 research areas, 3 vendors, editorial posture, AI-citation guidance, contact) + `public/llms-full.txt` (comprehensive markdown mirror: per-compound MoA summary, per-research-area framing, methodology + sanitizer behavior, schema.org safety policy, compliance, "how to cite Dosecraft" for AI assistants) + `public/ai.txt` (allowed crawlers list, preferred citation format per surface, CC-BY-4.0 content license, editorial-integrity expectations: preserve research-only framing, preserve citations, avoid therapeutic-claim laundering, disclose affiliate context per FTC § 255.5)
+- **After:** Coach is now AI-search-discoverable with the editorial framing intact across summarization. UGC explicitly excluded from training corpora.
+- **Why it matters:** AI search is the next-gen attention layer. `llms.txt` follows the emerging llmstxt.org convention (additive to sitemap.xml, not replacement). `ai.txt` is the Cloudflare/spawning.ai standard for declaring access policy. Pattern: any LLM-target product needs both files; sister-brand parity matters (apex + sub-brand).
+
+## 2026-05-04 · Post-deploy script as silent-failure detector
+
+- **Before:** Post-deploy scripts only curl'd /api/health and pinged Bing — silent OG card bugs (e.g., a route falling through to text/html instead of image/png) survived shipped state.
+- **Change:** Both repos now grep returned content-type per OG route:
+  - For OG cards: expect `200 image/png` — `text/html` means silent page-render fallback
+  - For AI-search files: expect `200 text/plain` on llms.txt/llms-full.txt/ai.txt
+  - Sitemap content sanity: count compound dossiers (expect 36 Dosecraft), research areas (expect 7), coach.* URLs (expect 11+), partner SKUs (expect 6 Aurex)
+  - Aurex script grep PDPs for `?ref=DOSECRAFT` + `?sld=dosecraft` — silent revenue-leak detector; if affiliate code missing, partner click-through earns nothing
+- **After:** A failed deploy that *built* but produced broken OG/affiliate state now fails loud at the post-deploy step.
+- **Why it matters:** Build-passes-but-runtime-broken is the worst failure mode. Pattern: post-deploy scripts should verify *runtime behavior* (response codes, content types, content sanity) not just `curl /api/health`.

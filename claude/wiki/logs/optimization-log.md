@@ -133,3 +133,18 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** 24 OG render assertions across both repos run in ~2s total. Verified detection by injecting a Satori bug into a known-good OG card — test failed with the exact error message Satori would emit at request time.
 - **Why it matters:** Converts the manual trust-but-verify loop into a CI gate. Future Satori regressions blocked at PR time, not after they reach production. Pattern is repeatable for any `next/og` ImageResponse — 1 test per OG route, ~10 lines each.
 - **Coverage:** Dosecraft 9 static + 4 dynamic = 13 tests; Aurex 8 static + 3 dynamic = 11 tests. Branch coverage for vendor-preferred (`aurex` slug hits the PREFERRED pill) and partner-fulfilled product variants.
+
+## 2026-05-04 · Data integrity tests catch silent content drift
+
+- **Before:** Build was silent on YAML/data-source drift — typo in a research-area's compound slug, missing affiliate code in a partner URL, partner-fulfilled SKU forgotten with stock>0, vendor renamed without updating cross-refs. Manual visual scan was the only check.
+- **Change:** `tests/data-integrity.test.ts` in both repos.
+  - **Dosecraft (15 tests, b80ca03):** compound count + unique slugs + resolvability + canonical fields; research-area cross-refs resolve to compounds; vendor roster locked to {aurex, oasis, peptide-partners}; every SKU references real compound + real vendor; FTC affiliate hygiene (every PP URL `?ref=DOSECRAFT`, every oasis URL `?sld=dosecraft`).
+  - **Aurex (16 tests, ba094c7):** product count + unique slugs + canonical fields; partner-fulfilled SKU hygiene (stock===0, primaryUrl present, alt-partner URL carries right affiliate code); Aurex-fulfilled SKU hygiene (pricing.list > 0); stack count + canonical fields.
+- **Caught + fixed by this run:** `/research/libido` had only 1 compound (PT-141). Added VIP — has legitimate intracavernous-injection erectile-mechanism research, distinct from PT-141's central melanocortin pathway. Both compounds + comparison cited in updated chatPrompt.
+- **Why it matters:** Total test coverage now blocks 5 silent-failure classes pre-merge:
+  1. Satori OG render bugs (vitest OG smoke, 24 tests)
+  2. Cross-link breakage between compound/research/vendor (15 tests)
+  3. Affiliate-code stripping = silent revenue leak (4 tests across both repos)
+  4. Partner-fulfilled SKU forgotten state mismatches (3 tests)
+  5. Content thinness (research areas with too few compounds, products without taglines)
+- **Pattern:** When YAML/registry data feeds public pages, write integrity tests that walk every cross-reference. The cost is ~150 LOC per repo; the value is unbounded — catches every future content-drift regression.

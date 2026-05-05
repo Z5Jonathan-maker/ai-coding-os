@@ -100,3 +100,35 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Root cause:** Two Vercel projects exist — `aurex` receives git pushes, `aurex-bio` owns the production domain. Pushes built into `aurex` but the alias never updated.
 - **Fix:** Manual `npx vercel alias <new-deployment> aurex.bio` after every push. Long-term: GitHub Action `auto-promote.yml` automates the alias. Permanent fix requires moving the domain in Vercel UI (still pending).
 - **Lesson:** Always run `npx vercel inspect <prod-domain>` before assuming a push will go live. Two-project drift is a common Vercel footgun on hobby tier.
+
+## 2026-05-05 · kimi-client.cjs missing normalizeResponse import — 3 routing layers cascade-failed
+
+- **Context:** Routing 4-template cover-image design task to KIMI (TD design tier) via router-ask, then fallback to direct kimi-client call
+- **Failure 1:** `node lib/tiered-ask.cjs ask --purpose ui_design ...` — CLI doesn't parse `--purpose` flag; whole arg string joined into prompt → classified as cheap → DeepSeek v4 Pro returned empty text
+- **Failure 2:** Inline JS `ask({prompt, purpose: 'ui_design'})` → router logged "Historical purpose override: ui_design from design to precision" → cascaded down to llama3.2:3b chat tier (3.6KB output, wrong category-chip rendering)
+- **Failure 3:** Direct `callKimi()` from kimi-client.cjs → `ERR: normalizeResponse is not defined` — function used at lines 106 and 117 but never imported (anthropic-client/deepseek-client/ollama-client all import it from `./normalize-response.cjs`)
+- **Root cause (failure 3):** Missing one-line import. Likely never tested directly because the `ask()` router wrapper catches errors and falls through to backup tier silently.
+- **Root cause (failure 2):** `applyQuota()` in tiered-ask.cjs has historical-purpose-override logic that ignores caller's `purpose` if the design tier has been over-used recently. Counterintuitive — `purpose: 'ui_design'` is documented in CLAUDE.md as a hard force.
+- **Fix:** Added `const { normalizeResponse } = require('./normalize-response.cjs');` at top of `lib/kimi-client.cjs`. Direct callKimi now works.
+- **Lesson:** When forcing a tier via `purpose`, the router's quota-balancing override can still flip it. To genuinely force, call `callKimi()` directly. Also: missing-import bugs hide behind silent fallbacks — test direct backend clients in isolation.
+
+## 2026-05-04 · Coach subdomain middleware silently collapsed nested paths to /coach
+
+- **Context:** Shipped 6 Coach OG cards (/chat, /pricing, /aurex, /sign-up, /linktree, plus existing /) and 1 twitter-image route. Build passed, sitemap correct, all routes registered. Trust-but-verify run: `npm start` + curl Coach hosts via Host header.
+- **Failure:** `curl -H "Host: coach.dosecraftapp.com" /chat/opengraph-image` returned `200 text/html` (Coach landing page HTML, ~104KB) instead of `200 image/png`. Same for `/pricing/opengraph-image`, `/aurex/opengraph-image`, etc. Every Coach OG card was silently broken — social crawlers (Twitter, iMessage, Slack, LinkedIn) would have rendered the landing page HTML as `og:image` and produced broken previews.
+- **Root cause:** middleware.ts had this branch for coach hosts:
+  ```ts
+  if (!url.pathname.startsWith('/coach')) {
+    url.pathname = '/coach'   // <-- bug: collapses, doesn't prefix
+    return NextResponse.rewrite(url)
+  }
+  ```
+  Intent was "rewrite `/chat` to `/coach/chat`" but the special-case branch only handled `=== '/chat'` exactly. Anything nested (e.g., `/chat/opengraph-image`, `/pricing/opengraph-image`) fell to the catch-all which OVERWROTE the path to just `/coach`, returning the landing page.
+- **Why no test caught it:**
+  - Build passed (routes registered correctly under `app/coach/*/opengraph-image.tsx`)
+  - Sitemap correct (referenced /chat, /pricing, /aurex with the right canonical URLs)
+  - Browser-on-localhost would have hit the apex side of middleware and hashed-OG paths render fine there
+  - Only a Coach-host-prefixed curl exposed it
+- **Fix:** Replace `url.pathname = '/coach'` with `url.pathname = `/coach${url.pathname}`` — prefix the existing path instead of collapsing it. Special-case `/` → `/coach` retained for root.
+- **Lesson:** Build-passes-runtime-broken is the worst failure mode for subdomain-routed apps. **Verification protocol for any app with host-based routing:** after shipping subdomain routes, local-serve + curl with the production Host header before assuming production will work. The Vercel post-deploy script now greps content-type per OG route specifically to catch this in prod (text/html on an /opengraph-image path = silent landing-page fallback).
+- **Pattern (preserve forward):** middleware that rewrites paths must use string concatenation (`/coach${path}`), not assignment (`= '/coach'`). Reviewer mental model: "does this preserve the rest of the URL?"

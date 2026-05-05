@@ -148,3 +148,16 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
   4. Partner-fulfilled SKU forgotten state mismatches (3 tests)
   5. Content thinness (research areas with too few compounds, products without taglines)
 - **Pattern:** When YAML/registry data feeds public pages, write integrity tests that walk every cross-reference. The cost is ~150 LOC per repo; the value is unbounded — catches every future content-drift regression.
+
+## 2026-05-04 · CI gates wired (vitest + sitemap completeness)
+
+- **Before:** Aurex CI ran typecheck + build + lint + knip but skipped `npm test`. Dosecraft had no .github/workflows at all. The 55 vitest tests added this session sat unused on disk — local-only, never gated PRs.
+- **Change:**
+  - Aurex 6b8eeeb: appended `test:` job to existing ci.yml (needs typecheck, runs `npm test`, blocks merge)
+  - Dosecraft f52c27c: created ci.yml from scratch (typecheck → build → test → audit). Audit job verifies AI-search file presence (llms.txt, llms-full.txt, ai.txt) + routing files + Coach legal pages (Paddle merchant-review-critical)
+- **Plus 16 new sitemap completeness tests** (Dosecraft 57f1d7c, Aurex f8e5559) catching silent-SEO-leak: new compound / research-area / vendor / product / stack added to registry but app/sitemap.ts not updated → page renders, Google never indexes.
+- **Result:** Total test counts after this wave:
+  - Dosecraft: 151 tests across 9 files
+  - Aurex: 73 tests across 8 files
+  - All gated by CI on every PR.
+- **Why it matters:** Tests on disk are best-effort; tests in CI are gates. The 5-class silent-failure detection (Satori OG, cross-link breakage, affiliate stripping, partner-SKU mismatch, content thinness, sitemap drift) now blocks merge automatically. No more "the test passes locally but I forgot to run it before pushing".

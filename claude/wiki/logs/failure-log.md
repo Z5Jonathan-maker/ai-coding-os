@@ -132,3 +132,20 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 - **Fix:** Replace `url.pathname = '/coach'` with `url.pathname = `/coach${url.pathname}`` — prefix the existing path instead of collapsing it. Special-case `/` → `/coach` retained for root.
 - **Lesson:** Build-passes-runtime-broken is the worst failure mode for subdomain-routed apps. **Verification protocol for any app with host-based routing:** after shipping subdomain routes, local-serve + curl with the production Host header before assuming production will work. The Vercel post-deploy script now greps content-type per OG route specifically to catch this in prod (text/html on an /opengraph-image path = silent landing-page fallback).
 - **Pattern (preserve forward):** middleware that rewrites paths must use string concatenation (`/coach${path}`), not assignment (`= '/coach'`). Reviewer mental model: "does this preserve the rest of the URL?"
+
+## 2026-05-04 · 5 silent OG production bugs caught by local-serve E2E (Satori + metadataBase + openGraph inheritance)
+
+- **Context:** After shipping ~12 OG cards across Aurex + Dosecraft + Coach, ran trust-but-verify: `npm start` + curl each page, extract `<meta og:image content="...">`, fetch the URL, verify `200 image/png`. Build had passed for everything; the OG cards looked fine in source.
+- **5 silent bugs caught:**
+  1. **Apex Dosecraft `/` OG** — Satori rejected multi-child `<div>` containing "Peptide research,`<br/>`<span>organized.</span>" → fix: split each line into its own `<div>` under flex column.
+  2. **Coach `/` OG** — same `<br/>` + multi-child pattern → same fix.
+  3. **`/vendors/<id>/` OG** — Satori rejected text-only single-child `<div>`s when the parent flex container computed gap layout → fix: explicit `display: flex` on every pill div.
+  4. **Coach `metadataBase`** — `app/layout.tsx` set apex (`dosecraftapp.com`) metadataBase, so Coach pages emitted `og:image` as `dosecraftapp.com/coach/<path>/...` → social crawlers got 307 → coach.dosecraftapp.com → cached the wrong canonical URL → fix: `app/coach/layout.tsx` adds `metadata` export with `metadataBase = https://coach.dosecraftapp.com`.
+  5. **Aurex `/research`** — page overrode `openGraph` without re-declaring `images`, so Next dropped the inherited apex image reference → social shares had `og:title` + `og:description` but NO `og:image` → fix: explicit `images: [{ url: '/opengraph-image', width: 1200, height: 630 }]` inside the override.
+- **Why none were caught by build:** Satori errors fire only at request time when the OG renders. `metadataBase` mismatch and missing `images` produce valid HTML — just point to wrong/missing URLs. Build is silent on all of these.
+- **Why none were caught by my first post-deploy script:** I was probing `$BASE/<page>/opengraph-image` (unhashed). Next emits HASHED URLs in `<meta og:image>` (`/opengraph-image-<hash>?<query>`) — social crawlers fetch THOSE. Probing unhashed paths returned 404 even when the OG worked, producing false-negatives that masked these silent failures.
+- **Lessons preserved forward:**
+  - **Satori rules for next/og JSX:** any `<div>` with multiple children needs explicit `display: flex` or `display: none`. Use `<br/>` ALWAYS produces a multi-child div — split into separate `<div>` elements under a `flex-direction: column` parent. When in doubt, just add `display: 'flex'` to every div in the OG card.
+  - **metadataBase per subdomain:** apex `app/layout.tsx` sets metadataBase for the apex host; sub-route layouts under different hosts MUST override metadataBase or all relative URLs (og:image, alternates, etc) will resolve to the apex.
+  - **openGraph override = images dropped:** Next does NOT merge `images` from a parent layout's openGraph into a page's openGraph override. If a page declares its own `openGraph` block, it must re-declare `images` (or omit the override entirely to inherit).
+  - **Smoke-script pattern:** to verify OG cards in production, curl each PAGE, extract `<meta og:image content=...>` from HTML, fetch THAT URL, verify content-type. Probing `/opengraph-image` directly returns false-negatives because Next emits hashed URLs.

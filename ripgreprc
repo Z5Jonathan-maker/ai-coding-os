@@ -1,0 +1,14 @@
+# Ripgrep config — sensible defaults
+--smart-case
+--hidden
+--glob=!.git/
+--glob=!node_modules/
+--glob=!__pycache__/
+--glob=!.venv/
+--glob=!*.min.js
+--glob=!*.min.css
+--glob=!dist/
+--glob=!build/
+--glob=!coverage/
+--max-columns=200
+--max-columns-preview

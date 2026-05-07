@@ -67,6 +67,7 @@ link git-config/allowed_signers .config/git/allowed_signers
 link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua
 link editorconfig               .editorconfig
+link ripgreprc                  .config/ripgreprc
 
 # Vendored skills cloned outside dotfiles. The symlinks tracked under
 # claude/skills/ point at these paths; clone them if missing so the
@@ -87,6 +88,15 @@ clone_if_missing https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git "$H
 # ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
 chmod 600 "$DOTFILES_DIR/ssh_config" || true
 chmod 700 "$HOME/.ssh" 2>/dev/null || true
+
+# Verify Brewfile packages are installed (warn if drift)
+if command -v brew >/dev/null 2>&1; then
+  echo
+  echo "Checking Brewfile bundle status..."
+  brew bundle check --file="$DOTFILES_DIR/Brewfile" --no-upgrade 2>/dev/null || {
+    echo "Some Brewfile packages are missing. Run: brew bundle --file=$DOTFILES_DIR/Brewfile"
+  }
+fi
 
 echo
 echo "Done. Open a new shell to pick up changes."

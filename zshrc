@@ -31,19 +31,12 @@ setopt AUTO_CD                    # `foo/bar` cds into it
 setopt AUTO_PUSHD                 # cd pushes to dir stack
 setopt PUSHD_IGNORE_DUPS
 
-# History search with up/down on partial command
-autoload -U up-line-or-beginning-search down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
-bindkey '^[[A' up-line-or-beginning-search
-bindkey '^[[B' down-line-or-beginning-search
-
 # Useful aliases
 if command -v eza >/dev/null 2>&1; then
-  alias ls='eza'
-  alias ll='eza -lah --git'
-  alias la='eza -a'
-  alias lt='eza --tree --level=2'
+  alias ls='eza --icons --git-ignore'
+  alias ll='eza -lah --icons --git'
+  alias la='eza -a --icons'
+  alias lt='eza --tree --level=2 --icons'
 else
   alias ll='ls -lah'
   alias la='ls -A'
@@ -56,8 +49,9 @@ alias lg='lazygit'
 alias ..='cd ..'
 alias ...='cd ../..'
 
-# zoxide — smarter cd (use `z <dir>` to jump)
+# zoxide — smarter cd (use `z <dir>` to jump, `zi` for interactive fzf)
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+alias zi='z -i'
 
 # fnm — fast Node version manager
 command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
@@ -68,10 +62,18 @@ command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 # fzf — fuzzy finder with fd integration
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --exclude .git'
 export BAT_THEME='Monokai Extended'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# starship — fancy prompt
+# fzf-git.sh — fuzzy git branch/file/commit/hash browsing
+[ -f ~/dotfiles/bin/fzf-git.sh ] && source ~/dotfiles/bin/fzf-git.sh
+
+# bat — better cat, also as man pager
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgreprc"
+
+# starship — fancy prompt (defer for faster startup)
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 else
@@ -83,12 +85,18 @@ else
 %# '
 fi
 
-# atuin — magical shell history (replaces Ctrl-R; up-arrow stays as before)
+# atuin — magical shell history (replaces Ctrl-R)
 command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"
 
 # zsh-autosuggestions — fish-like inline suggestions
 [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] \
   && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# zsh-history-substring-search — powerful up/down arrow history search
+[ -f /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh ] \
+  && source /opt/homebrew/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 # zsh-syntax-highlighting — must be sourced LAST
 [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \

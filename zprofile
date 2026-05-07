@@ -14,18 +14,6 @@ export SUDO_ASKPASS="$HOME/dotfiles/bin/sudo-askpass"
 # Scope to the Personal vault, then paste the `ops_…` token below and uncomment.
 # export OP_SERVICE_ACCOUNT_TOKEN="ops_REPLACE_ME"
 
-# Source the triple-tier router's .env so DeepSeek (Tier-2) creds are
-# available to any tool that wants them — browser-use, cc-browse, ad-hoc
-# scripts. The router itself reads this file at runtime; this just
-# pre-populates the shell env so subprocesses inherit it.
-if [ -f "$HOME/Claude Code/.env" ]; then
-  set -a
-  . "$HOME/Claude Code/.env"
-  set +a
-  # Hand DeepSeek to browser-use's native ChatDeepSeek provider.
-  export BROWSER_USE_LLM_MODEL="${BROWSER_USE_LLM_MODEL:-deepseek-chat}"
-fi
-
 # ntfy.sh push topic — installed by cc-bootstrap 2026-04-30
 export NTFY_TOPIC="cc-imac-c1ac6b58f282"
 

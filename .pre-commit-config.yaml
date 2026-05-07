@@ -15,3 +15,12 @@ repos:
     hooks:
       - id: shfmt
         args: ["-i", "2", "-ci", "-bn"]
+
+  - repo: local
+    hooks:
+      - id: routing-drift
+        name: routing-drift (CLAUDE.md ↔ skills/agents)
+        entry: bash -c '"$HOME/.claude/scripts/routing-drift-check.sh"'
+        language: system
+        pass_filenames: false
+        files: '^claude/(CLAUDE\.md|skills/.*|agents/.*)$'

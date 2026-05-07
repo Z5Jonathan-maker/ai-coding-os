@@ -86,6 +86,7 @@ clone_if_missing https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git "$H
 
 # ssh config must be 600 (its target file is in this repo, but ssh checks the linked path)
 chmod 600 "$DOTFILES_DIR/ssh_config" || true
+chmod 700 "$HOME/.ssh" 2>/dev/null || true
 
 echo
 echo "Done. Open a new shell to pick up changes."

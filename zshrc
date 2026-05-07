@@ -1,3 +1,6 @@
+# Deduplicate PATH entries
+typeset -U path PATH
+
 export PATH="$HOME/local/bin:$HOME/.local/bin:$HOME/dotfiles/bin:$PATH"
 
 # History
@@ -9,13 +12,17 @@ setopt HIST_IGNORE_ALL_DUPS       # drop older duplicates
 setopt HIST_IGNORE_SPACE          # don't record commands starting with space
 setopt HIST_REDUCE_BLANKS
 setopt EXTENDED_HISTORY           # write timestamp + duration
-setopt INC_APPEND_HISTORY
 
 # Completion (Homebrew completions before compinit)
 if [ -d /opt/homebrew/share/zsh/site-functions ]; then
   fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
 fi
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' '+r:|[._-]=* r:|=*'
 
@@ -58,7 +65,13 @@ command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
 # direnv — per-directory env vars
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
-# starship — fancy prompt (replaces vcs_info prompt above if installed)
+# fzf — fuzzy finder with fd integration
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export BAT_THEME='Monokai Extended'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# starship — fancy prompt
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 else
@@ -70,13 +83,8 @@ else
 %# '
 fi
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # atuin — magical shell history (replaces Ctrl-R; up-arrow stays as before)
 command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh --disable-up-arrow)"
-
-# thefuck — typo correction (alias `fuck` retries last command)
-command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
 
 # zsh-autosuggestions — fish-like inline suggestions
 [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] \
@@ -86,5 +94,15 @@ command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
 [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
   && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Node global bin (ruflo, codex, webclaw-mcp, etc.)
-export PATH="/Users/leonardofibonacci/local/opt/node/bin:$PATH"
+# Ecosystem env (Langfuse, etc.)
+[ -f "$HOME/code/scripts/ecosystem-env.sh" ] && source "$HOME/code/scripts/ecosystem-env.sh"
+
+# Claude Code Router — global NODE_PATH
+export NODE_PATH="/Users/leonardofibonacci/Claude Code/lib:$NODE_PATH"
+export PATH=$PATH:$HOME/.maestro/bin
+
+# OpenJDK for fastlane/maestro
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+# OpenFang
+export PATH=/Users/leonardofibonacci/.openfang/bin:$PATH

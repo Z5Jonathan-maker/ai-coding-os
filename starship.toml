@@ -36,16 +36,3 @@ conflicted = " ⚠"
 [cmd_duration]
 min_time = 2_000
 format = " took [$duration]($style)"
-
-[python]
-symbol = " "
-format = ' [$symbol$pyenv_prefix($version )(\($virtualenv\) )]($style)'
-
-[nodejs]
-symbol = " "
-
-[rust]
-symbol = " "
-
-[golang]
-symbol = " "

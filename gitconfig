@@ -1,7 +1,7 @@
 [user]
 	name = Jonathan Cimadevilla
 	email = z5jonathan@icloud.com
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKG544Vmb701NXqpXZXqlWAs0jmTYcLy1poo6kyhoiGj z5jonathan@icloud.com
+	signingkey = ~/.ssh/id_ed25519.pub
 [init]
 	defaultBranch = main
 [pull]
@@ -9,10 +9,13 @@
 [push]
 	autoSetupRemote = true
 	default = simple
+	followTags = true
 [core]
 	editor = code --wait
 	excludesfile = /Users/leonardofibonacci/.gitignore_global
 	pager = delta
+	fsmonitor = true
+	untrackedCache = true
 [rebase]
 	autosquash = true
 	autostash = true
@@ -21,9 +24,11 @@
 [diff]
 	algorithm = histogram
 	tool = difftastic
+	colorMoved = plain
+	colorMovedWS = allow-indentation-change
 [merge]
 	conflictstyle = zdiff3
-	tool = delta
+	tool = vimdiff
 [rerere]
 	enabled = true
 [color]
@@ -39,6 +44,12 @@
 	cmd = difft \"$LOCAL\" \"$REMOTE\"
 [difftool]
 	prompt = false
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
 [alias]
 	dft = difftool
 	lg = log --oneline --graph --decorate -20
@@ -48,17 +59,20 @@
 	br = branch
 	ci = commit
 	amend = commit --amend --no-edit
-	wip = !git add -A && git commit -m \"wip\" --no-verify
+	fixup = commit --fixup
+	squash = commit --squash
 	undo = reset --soft HEAD~1
 	unstage = reset HEAD --
 	last = log -1 HEAD
 	aliases = config --get-regexp alias
+	recent = branch --sort=-committerdate --format='%(committerdate:relative)%09%(refname:short)' -10
+	bc = !git branch --merged | grep -v '\\*' | grep -v main | grep -v master | xargs -r git branch -d
 [credential "https://github.com"]
 	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = !gh auth git-credential
 [credential "https://gist.github.com"]
 	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = !gh auth git-credential
 [gpg]
 	format = ssh
 [commit]

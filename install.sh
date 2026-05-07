@@ -68,6 +68,7 @@ link atuin/config.toml          .config/atuin/config.toml
 link hammerspoon/init.lua       .hammerspoon/init.lua
 link editorconfig               .editorconfig
 link ripgreprc                  .config/ripgreprc
+link gh-config.yml              .config/gh/config.yml
 
 # Vendored skills cloned outside dotfiles. The symlinks tracked under
 # claude/skills/ point at these paths; clone them if missing so the

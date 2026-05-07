@@ -1,7 +1,8 @@
 # Deduplicate PATH entries
 typeset -U path PATH
 
-export PATH="$HOME/local/bin:$HOME/.local/bin:$HOME/dotfiles/bin:$PATH"
+# Shared environment contract for interactive shells too.
+[ -f "$HOME/code/scripts/ecosystem-env.sh" ] && source "$HOME/code/scripts/ecosystem-env.sh"
 
 # History
 HISTFILE=~/.zsh_history
@@ -53,9 +54,6 @@ alias ...='cd ../..'
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 alias zi='z -i'
 
-# fnm — fast Node version manager
-command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
-
 # direnv — per-directory env vars
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
@@ -74,7 +72,7 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgreprc"
 
 # starship — fancy prompt (defer for faster startup)
-if command -v starship >/dev/null 2>&1; then
+if [ "${TERM:-}" != "dumb" ] && command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 else
   autoload -Uz vcs_info
@@ -102,15 +100,23 @@ bindkey '^[[B' history-substring-search-down
 [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
   && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Ecosystem env (Langfuse, etc.)
-[ -f "$HOME/code/scripts/ecosystem-env.sh" ] && source "$HOME/code/scripts/ecosystem-env.sh"
+# Shared PATH/runtime ownership lives in ecosystem-env.sh.
 
-# Claude Code Router — global NODE_PATH
-export NODE_PATH="/Users/leonardofibonacci/Claude Code/lib:$NODE_PATH"
-export PATH=$PATH:$HOME/.maestro/bin
+# Aider — AI pair programming
+export PATH="/opt/homebrew/opt/aider/libexec/bin:$PATH"
 
-# OpenJDK for fastlane/maestro
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+# Repomix — codebase context packaging
+alias repomix-here='repomix --config ~/.repomixrc'
 
-# OpenFang
-export PATH=/Users/leonardofibonacci/.openfang/bin:$PATH
+# Tree-sitter — AST-aware syntax check
+alias ts-check='tree-sitter parse'
+
+# Zellij — terminal multiplexer with tmux keybinds
+alias zj='zellij --layout ~/.config/zellij/layouts/dev.kdl'
+alias zj-attach='zellij attach'
+
+# Git worktree shortcuts
+alias gwt='git worktree'
+alias gwta='git worktree add'
+alias gwtl='git worktree list'
+alias gwtr='git worktree remove'

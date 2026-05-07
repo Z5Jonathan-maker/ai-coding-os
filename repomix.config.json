@@ -1,0 +1,29 @@
+{
+  "output": {
+    "style": "xml",
+    "filePath": "repomix-output.xml",
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "showLineNumbers": true,
+    "topFilesLength": 20
+  },
+  "include": [],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "*.min.js",
+      "*.min.css",
+      "dist/",
+      "build/",
+      "coverage/",
+      ".playwright-mcp/",
+      "node_modules/",
+      ".venv/",
+      "__pycache__/"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}

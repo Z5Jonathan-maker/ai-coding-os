@@ -1,0 +1,33 @@
+# Aider configuration — AI pair programming settings
+# Docs: https://aider.chat/docs/config.html
+
+# Model routing
+model: anthropic/claude-3-7-sonnet-latest
+weak-model: deepseek/deepseek-chat
+editor-model: anthropic/claude-3-7-sonnet-latest
+
+# Git integration
+git: true
+gitignore: true
+auto-commits: false
+dirty-commits: false
+
+# Output
+stream: true
+pretty: true
+show-diffs: true
+
+# Code quality
+lint-cmd: "npx eslint --fix"
+test-cmd: "npm test"
+
+# Context
+read: []
+map-tokens: 1024
+map-refresh: files
+
+# Security
+verify-ssl: true
+
+# Analytics
+analytics-disable: true

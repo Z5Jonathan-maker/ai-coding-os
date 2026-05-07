@@ -69,6 +69,13 @@ link hammerspoon/init.lua       .hammerspoon/init.lua
 link editorconfig               .editorconfig
 link ripgreprc                  .config/ripgreprc
 link gh-config.yml              .config/gh/config.yml
+link .aider.conf.yml            .aider.conf.yml
+link repomix.config.json        .repomixrc
+link .zellij.kdl                .config/zellij/config.kdl
+link zellij-layout.kdl          .config/zellij/layouts/dev.kdl
+
+# Ensure zellij layout dir exists
+mkdir -p "$HOME/.config/zellij/layouts"
 
 # Vendored skills cloned outside dotfiles. The symlinks tracked under
 # claude/skills/ point at these paths; clone them if missing so the

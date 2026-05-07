@@ -1,0 +1,35 @@
+// Zellij layout for AI-assisted development
+// Usage: zellij --layout ~/.config/zellij/layouts/dev.kdl
+
+layout {
+    default_tab "code" {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        pane split_direction="vertical" {
+            pane {
+                command "nvim"
+                focus true
+            }
+            pane split_direction="horizontal" {
+                pane size="30%" {
+                    command "git"
+                    args "status"
+                }
+                pane {
+                    command "npm"
+                    args "test"
+                }
+            }
+        }
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    tab "logs" {
+        pane {
+            command "tail"
+            args "-f" "logs/app.log"
+        }
+    }
+}

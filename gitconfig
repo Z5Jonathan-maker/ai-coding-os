@@ -67,6 +67,10 @@
 	aliases = config --get-regexp alias
 	recent = branch --sort=-committerdate --format='%(committerdate:relative)%09%(refname:short)' -10
 	bc = !git branch --merged | grep -v '\\*' | grep -v main | grep -v master | xargs -r git branch -d
+	wt = worktree
+	wta = worktree add
+	wtl = worktree list
+	wtr = worktree remove
 [credential "https://github.com"]
 	helper = 
 	helper = !gh auth git-credential

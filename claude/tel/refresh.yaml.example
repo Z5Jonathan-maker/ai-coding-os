@@ -1,0 +1,58 @@
+# TEL refresh walker config (example — copy to refresh.yaml to opt in)
+#
+# The walker fires every 20 minutes via launchd
+# (bio.claude.tel-refresh.plist). Each entry calls a TEL action and
+# stores the result at ~/.claude/state/tel-refresh/<service>-<action>.json
+# with a timestamp. Skill code (e.g. a recall-style skill) can read these
+# caches when injecting context into prompts.
+#
+# Per-service entries map directly to TEL policy actions — see
+# ~/.claude/tel/policies/<service>.yaml for available actions and their
+# required/optional args.
+#
+# Why opt-in: pre-fetching means hitting third-party APIs every 20 min
+# whether you're using them or not. Burn rate matters. Curate this list
+# to services where pre-cached context actually helps your workflow.
+
+entries:
+  # Gmail — recent unread threads for inbox triage
+  # - service: gmail
+  #   action: search_threads
+  #   args:
+  #     q: "is:unread newer_than:1d"
+  #     maxResults: 20
+
+  # Google Calendar — events for the next 24h
+  # - service: google_calendar
+  #   action: list_events
+  #   args:
+  #     calendarId: primary
+  #     timeMin: "2026-05-10T00:00:00Z"  # set dynamically via a wrapper
+  #     timeMax: "2026-05-11T00:00:00Z"
+  #     maxResults: 20
+
+  # GitHub — recent notifications
+  # - service: github
+  #   action: list_notifications
+  #   args:
+  #     all: false
+  #     participating: true
+
+  # Linear — assigned issues
+  # - service: linear
+  #   action: list_issues
+  #   args:
+  #     filter:
+  #       assignee:
+  #         isMe: { eq: true }
+  #     first: 20
+
+  # Notion — recently-updated pages
+  # - service: notion
+  #   action: search
+  #   args:
+  #     query: ""
+  #     sort:
+  #       direction: descending
+  #       timestamp: last_edited_time
+  #     page_size: 20

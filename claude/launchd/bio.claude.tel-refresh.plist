@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>bio.claude.tel-refresh</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>$HOME/.claude/tel/ops/refresh-walker.sh</string>
+  </array>
+  <!-- Every 20 minutes — matches the tinyhumansai/openhuman auto-fetch
+       cadence. The walker is a no-op until ~/.claude/tel/refresh.yaml is
+       created (copy refresh.yaml.example to opt in). -->
+  <key>StartInterval</key><integer>1200</integer>
+  <key>StandardOutPath</key><string>/tmp/tel-refresh.log</string>
+  <key>StandardErrorPath</key><string>/tmp/tel-refresh.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/Users/leonardofibonacci/.local/share/fnm/aliases/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>

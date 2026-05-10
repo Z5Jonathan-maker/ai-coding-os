@@ -106,6 +106,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "How do I find/use skills / what's available" | `using-superpowers` | Meta — establishes skill-discovery rhythm at conversation start. From superpowers. |
 | "Verify before claiming this is done" | `verification-before-completion` | Run verification commands + confirm output before any success claim. From superpowers. |
 | "Plan a multi-step task before touching code" | `writing-plans` | Spec → executable plan with checkpoints. From superpowers. |
+| "Wire openhuman / voice-first assistant / @senamakel / tinyhumans" | `openhuman-bridge` | Composition map vs tinyhumansai/openhuman desktop app — what overlaps with your stack (skip those), what's genuinely novel (lift them: 20-min auto-fetch, TokenJuice compression, mascot UX pattern), what can't lift cleanly. Clone preserved at `~/code/research/openhuman/`. |
 
 **Built-in Anthropic skills** (always available, no routing — type `/<name>` to invoke): `claude-api`, `fewer-permission-prompts`, `init`, `keybindings-help`, `loop`, `review`, `schedule`, `security-review`, `simplify`, `update-config`.
 

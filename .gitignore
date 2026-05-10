@@ -11,3 +11,6 @@ claude/tel/.venv/
 claude/wiki/learnings/_archive/
 claude/wiki/learnings/mentor-*/[a-z0-9]*.md
 claude/wiki/learnings/dosecraft-research/[0-9]*.md
+
+# Cloned external repo — corpus content stays local-only (same as mentor-* / dosecraft-research)
+claude/wiki/learnings/jailbreak-corpus/

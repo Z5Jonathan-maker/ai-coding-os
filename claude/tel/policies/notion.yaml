@@ -16,17 +16,32 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Notion/integration_token
+    auth_keychain_service: cc.notion.integration_token
     auth_header: Authorization
     auth_prefix: Bearer
 
   get_page:
-    description: Read a Notion page by ID
+    description: Read a Notion page's metadata by ID (NOT the body content — see get_block_children)
     method: GET
     endpoint: /v1/pages/{page_id}
     required_args: [page_id]
     reversible: false
     rate_limit_per_hour: 500
     auth_op_path: op://Personal/Notion/integration_token
+    auth_keychain_service: cc.notion.integration_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  get_block_children:
+    description: Read a page's actual body content (Notion stores prose in block children, not in the page object itself)
+    method: GET
+    endpoint: /v1/blocks/{block_id}/children
+    required_args: [block_id]
+    optional_args: [page_size, start_cursor]
+    reversible: false
+    rate_limit_per_hour: 500
+    auth_op_path: op://Personal/Notion/integration_token
+    auth_keychain_service: cc.notion.integration_token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -39,6 +54,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Notion/integration_token
+    auth_keychain_service: cc.notion.integration_token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -52,5 +68,6 @@ actions:
     undo_window_seconds: 600
     rate_limit_per_hour: 30
     auth_op_path: op://Personal/Notion/integration_token
+    auth_keychain_service: cc.notion.integration_token
     auth_header: Authorization
     auth_prefix: Bearer

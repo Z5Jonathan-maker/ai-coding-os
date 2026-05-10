@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>bio.claude.task-reaper</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-c</string>
+    <string>$HOME/local/bin/cc-tasks reap >> /tmp/cc-task-reaper.log 2>&amp;1</string>
+  </array>
+  <!-- Every 15 minutes. Crash recovery doesn't need to be aggressive; a stuck
+       'in_flight' row is invisible to most workflows but harmless until
+       investigated, so 15min is a reasonable observability cadence without
+       hammering the DB. -->
+  <key>StartInterval</key><integer>900</integer>
+  <key>StandardOutPath</key><string>/tmp/cc-task-reaper.log</string>
+  <key>StandardErrorPath</key><string>/tmp/cc-task-reaper.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/Users/leonardofibonacci/.local/share/fnm/aliases/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>

@@ -127,6 +127,11 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Orchestrate full design loop (Phase 1-6) | `design-director` | Multi-step design tasks needing brand memory + QC + logging |
 | Claude Code / API / SDK questions | `claude-code-guide` | Anything about Claude products |
 | Status line setup | `statusline-setup` | When user asks |
+| Awesome-AI-Apps catalog dispatcher (111 Python agents) | `aaa` | "run the X agent", any intent that matches a built-in agent at `~/code/research/awesome-ai-apps/` |
+| Parallel multi-agent due diligence (AG2 + TinyFish) | `aaa-due-diligence` | "due diligence on X", "vet this startup", "background check" |
+| Production PDF RAG (hybrid Qdrant + rerank + citations) | `aaa-rag-rerank` | "chat with these PDFs", "RAG over a doc corpus", knowledge base |
+| arXiv research + Memori v3 persistent memory | `aaa-arxiv-research` | "find papers on X", "continue my literature review", paper-thread memory |
+| AI consultant w/ Memori v3 + Tavily research | `aaa-ai-consultant` | "strategic consulting on X", standing consultant for a client/project |
 | Topic cluster / pillar-spoke architecture | `seo-cluster-strategist` | Designing site IA around topical authority |
 | SERP / content gap / on-page analysis | `seo-content-analyzer` | Auditing existing content vs competitors |
 | Conversion-rate optimization analysis | `seo-cro-analyst` | Funnel breakdowns, CTA + form optimization |
@@ -211,9 +216,15 @@ Sibling layers compose: auto-memory (per-fact files) + 3-tier memory (auto-disti
 
 ## MULTI-SESSION ORCHESTRATION
 
-- **In-session parallel** — Brain's Agent tool (default) — multiple agents within one session, single coordinator
+- **In-session parallel** — Brain's Agent tool — multiple agents within one session, single coordinator. **CAVEAT:** 600s stream watchdog kills agents doing long chrome-devtools sequences (navigate + screenshot + evaluate_script without text emission). Use ONLY for tasks that emit text every ~5min. For heavy chrome/file work, route through **cc-dispatch** below.
+- **Watchdog-free fire-and-forget** — `cc-dispatch` (`~/.claude/scripts/dispatch-agent.sh`, see `~/.claude/scripts/CC-DISPATCH-README.md`) — spawns `claude -p` as detached Unix subprocess. State at `~/.claude/jobs/<id>/`. Inspect via `cc-jobs`, `cc-job-status <id>`, `cc-job-output <id> [--tail N|--error]`. **Use for swarms of 5+ agents OR chrome-devtools-heavy work.** Survives session close.
 - **Cross-session, CLI/scripted** — `octogent` (`~/code/projects/octogent`, `pnpm dev`) — durable per-tentacle CONTEXT.md/todo.md
 - **Cross-session, GUI** — Conductor.app (Mac, `brew install --cask conductor`)
+
+**Dispatch decision rule:**
+- 1–3 agents, short task, lots of text streaming → Agent tool (cheapest, in-session memory)
+- 4+ agents OR chrome-devtools-heavy OR >5min runtime → `cc-dispatch` (watchdog-free)
+- Multi-day cross-session orchestration → `octogent`
 
 ## MEGA-BRAIN LEARNINGS LAYER
 

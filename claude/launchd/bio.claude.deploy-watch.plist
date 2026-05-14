@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>bio.claude.deploy-watch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/leonardofibonacci/dotfiles/bin/cc-deploy-watch-cron</string>
+  </array>
+  <!-- Every 5 minutes — fast enough to catch billing/CI regressions before
+       the user notices, slow enough to not blow API quotas. -->
+  <key>StartInterval</key><integer>300</integer>
+  <!-- Don't run at every login; let StartInterval handle cadence. -->
+  <key>RunAtLoad</key><false/>
+  <key>StandardOutPath</key><string>/tmp/cc-deploy-watch.log</string>
+  <key>StandardErrorPath</key><string>/tmp/cc-deploy-watch.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/Users/leonardofibonacci/.local/share/fnm/aliases/default/bin:/Users/leonardofibonacci/local/bin:/Users/leonardofibonacci/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>HOME</key><string>/Users/leonardofibonacci</string>
+  </dict>
+</dict>
+</plist>

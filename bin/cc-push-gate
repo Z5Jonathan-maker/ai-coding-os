@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# cc-push-gate — fast pre-push smoke check. Installed as .git/hooks/pre-push
+# in repos whose autonomous loops (fresh-audit, mega-cycle, etc.) push commits
+# without human review.
+#
+# Designed for the 2026-05-14 lesson: aurex-bio's autonomous loop shipped 50+
+# cycles silently while GitHub Actions was billing-blocked. This gate is
+# defense-in-depth — even if CI is down, a local smoke check catches obvious
+# broken-build commits before they leave the dev machine.
+#
+# Runs:
+#   1. If package.json has a "typecheck" script — run it (fast, ~1-5s typical)
+#   2. If package.json has a "lint" script — run it (slower, ~10-30s)
+#   3. Skip entirely if no scripts present (graceful no-op for non-Node repos)
+#
+# Hard timeout: 60s. Tests are NOT run (too slow, do them in CI/pre-merge).
+#
+# Bypass:
+#   - git push --no-verify          (standard skip)
+#   - touch .git/cc-push-gate-off    (repo-level disable marker)
+#   - CC_PUSH_GATE=off git push      (one-off env override)
+#
+# Called by .git/hooks/pre-push which is a thin invoker.
+
+set -u
+
+# Bypass conditions
+if [ "${CC_PUSH_GATE:-}" = "off" ]; then
+  echo "cc-push-gate: bypassed via CC_PUSH_GATE=off" >&2
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+if [ -f "$REPO_ROOT/.git/cc-push-gate-off" ]; then
+  echo "cc-push-gate: bypassed via .git/cc-push-gate-off marker" >&2
+  exit 0
+fi
+
+# Only gate pushes to main/master (don't slow down feature branches)
+PROTECTED="${CC_PUSH_GATE_BRANCHES:-main master}"
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  REMOTE_BRANCH="${remote_ref#refs/heads/}"
+  for p in $PROTECTED; do
+    if [ "$REMOTE_BRANCH" = "$p" ]; then
+      MUST_GATE=1
+      break
+    fi
+  done
+done
+
+if [ "${MUST_GATE:-0}" = "0" ]; then
+  exit 0
+fi
+
+cd "$REPO_ROOT" || exit 0
+
+# Probe package.json for runnable scripts
+HAS_TYPECHECK=0
+HAS_LINT=0
+if [ -f package.json ]; then
+  HAS_TYPECHECK=$(python3 -c "import json; print(1 if 'typecheck' in json.load(open('package.json')).get('scripts',{}) else 0)" 2>/dev/null || echo 0)
+  HAS_LINT=$(python3 -c "import json; print(1 if 'lint' in json.load(open('package.json')).get('scripts',{}) else 0)" 2>/dev/null || echo 0)
+fi
+
+if [ "$HAS_TYPECHECK" = "0" ] && [ "$HAS_LINT" = "0" ]; then
+  echo "cc-push-gate: no typecheck or lint scripts — skipping (use CC_PUSH_GATE_VERBOSE=1 to see decision)" >&2
+  exit 0
+fi
+
+# Background-with-timeout pattern (portable, no GNU coreutils dep)
+run_with_timeout() {
+  local timeout_s="$1"; shift
+  local cmd="$*"
+  local pid
+  ( eval "$cmd" ) &
+  pid=$!
+  local elapsed=0
+  while [ $elapsed -lt $timeout_s ]; do
+    if ! kill -0 $pid 2>/dev/null; then
+      wait $pid
+      return $?
+    fi
+    sleep 1
+    elapsed=$((elapsed + 1))
+  done
+  echo "cc-push-gate: timed out after ${timeout_s}s — killing" >&2
+  kill -TERM $pid 2>/dev/null
+  sleep 1
+  kill -KILL $pid 2>/dev/null
+  return 124
+}
+
+START=$(date +%s)
+LOG=/tmp/cc-push-gate-$$.log
+
+if [ "$HAS_TYPECHECK" = "1" ]; then
+  echo "cc-push-gate: running typecheck…" >&2
+  if ! run_with_timeout 60 "npm run --silent typecheck > $LOG 2>&1"; then
+    echo "cc-push-gate: ✗ typecheck FAILED — push BLOCKED" >&2
+    tail -30 "$LOG" >&2
+    echo >&2
+    echo "Bypass for this push: git push --no-verify" >&2
+    rm -f "$LOG"
+    exit 1
+  fi
+fi
+
+# Lint is intentionally NOT run by default — many repos have stale lint
+# scripts (e.g. `next lint` after Next.js deprecated it but package.json
+# still points there), causing the gate to false-positive. CI is the right
+# place for full lint. Opt in with CC_PUSH_GATE_LINT=1 when you trust the
+# repo's `npm run lint`.
+if [ "$HAS_LINT" = "1" ] && [ "${CC_PUSH_GATE_LINT:-0}" = "1" ]; then
+  echo "cc-push-gate: running lint (opt-in)…" >&2
+  if ! run_with_timeout 60 "npm run --silent lint > $LOG 2>&1"; then
+    echo "cc-push-gate: ✗ lint FAILED — push BLOCKED" >&2
+    tail -30 "$LOG" >&2
+    echo >&2
+    echo "Bypass for this push: git push --no-verify" >&2
+    rm -f "$LOG"
+    exit 1
+  fi
+fi
+
+rm -f "$LOG"
+DURATION=$(($(date +%s) - START))
+echo "cc-push-gate: ✓ checks passed in ${DURATION}s" >&2
+exit 0

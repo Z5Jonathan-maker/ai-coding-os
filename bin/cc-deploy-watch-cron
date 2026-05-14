@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# cc-deploy-watch-cron — launchd-friendly wrapper. Runs cc-deploy-watch for
+# every (repo, domain) pair in WATCHED below, fires a notification on any
+# drift transition (state file changed from OK → drift).
+#
+# Notification routes (in order, fail-soft):
+#   1. ntfy.sh if NTFY_TOPIC env is set (phone push via Tailscale-routed ntfy
+#      or public ntfy.sh)
+#   2. macOS osascript display notification (local desktop)
+#
+# Only fires on STATE TRANSITION (was OK, now drifted) — avoids spam every
+# 5min when prod has been stuck for an hour.
+
+set -u
+
+LOG_DIR="${HOME}/.claude/state"
+mkdir -p "$LOG_DIR"
+LOG="${LOG_DIR}/deploy-watch-cron.log"
+
+# Format: "owner/repo:domain"
+WATCHED=(
+  "Z5Jonathan-maker/aurex-bio:aurex.bio"
+)
+
+notify() {
+  local title="$1" body="$2"
+  if [ -n "${NTFY_TOPIC:-}" ]; then
+    /usr/bin/curl -s -m 5 \
+      -H "Title: $title" \
+      -H "Priority: 4" \
+      -H "Tags: warning,rocket" \
+      -d "$body" \
+      "${NTFY_URL:-https://ntfy.sh}/${NTFY_TOPIC}" >/dev/null 2>&1 || true
+  fi
+  # macOS local notification (always — Tailscale or not, you see it)
+  /usr/bin/osascript -e "display notification \"${body//\"/\\\"}\" with title \"${title//\"/\\\"}\"" 2>/dev/null || true
+}
+
+for entry in "${WATCHED[@]}"; do
+  REPO="${entry%%:*}"
+  DOMAIN="${entry##*:}"
+  STATE="${LOG_DIR}/deploy-watch.${REPO//\//_}.json"
+
+  # Capture prior CI state if it exists
+  PRIOR_STATE=""
+  if [ -f "$STATE" ]; then
+    PRIOR_STATE="$(python3 -c "import json,sys; print(json.load(open('$STATE')).get('ci_state',''))" 2>/dev/null)"
+  fi
+
+  # Run the watcher
+  /Users/leonardofibonacci/dotfiles/bin/cc-deploy-watch "$REPO" "$DOMAIN" >/dev/null 2>&1
+  EXIT=$?
+
+  # Read NEW state
+  NEW_STATE=""
+  if [ -f "$STATE" ]; then
+    NEW_STATE="$(python3 -c "import json,sys; print(json.load(open('$STATE')).get('ci_state',''))" 2>/dev/null)"
+  fi
+
+  printf '%s  %s  prior=%s  new=%s  exit=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$REPO" "$PRIOR_STATE" "$NEW_STATE" "$EXIT" >>"$LOG"
+
+  # Fire notification ONLY on transition into drift, or daily reminder if still drifted
+  if [ "$NEW_STATE" = "drift" ] && [ "$PRIOR_STATE" != "drift" ]; then
+    notify "🚨 Deploy drift: $DOMAIN" "Autonomous loop pushing to $REPO but CI is failing. Open: github.com/$REPO/actions"
+  elif [ "$NEW_STATE" = "ok" ] && [ "$PRIOR_STATE" = "drift" ]; then
+    notify "✅ Deploy recovered: $DOMAIN" "CI passing again on $REPO"
+  fi
+done
+
+# Log size cap
+if [ -f "$LOG" ] && [ "$(/usr/bin/wc -c <"$LOG")" -gt 102400 ]; then
+  /usr/bin/tail -500 "$LOG" >"${LOG}.tmp" && /bin/mv "${LOG}.tmp" "$LOG"
+fi
+
+exit 0

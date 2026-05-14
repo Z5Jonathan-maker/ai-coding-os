@@ -113,6 +113,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Plan a multi-step task before touching code" | `writing-plans` | Spec → executable plan with checkpoints. From superpowers. |
 | "Wire openhuman / voice-first assistant / @senamakel / tinyhumans" | `openhuman-bridge` | Composition map vs tinyhumansai/openhuman desktop app — what overlaps with your stack (skip those), what's genuinely novel (lift them: 20-min auto-fetch, TokenJuice compression, mascot UX pattern), what can't lift cleanly. Clone preserved at `~/code/research/openhuman/`. |
 
+| "Register a new skill or CLI into the routing tables" | `cc-skill-register` (CLI, not a skill) | Auto-inserts row into SKILL ROUTING TABLE in CLAUDE.md + adds CLIs to drift-checker allowlist. Closes the drift loop that bit us 4× during today's audit. Idempotent (no-op if already routed). |
+| "Block pre-push if typecheck fails / catch broken commits before they leave dev machine" | `cc-push-gate` (CLI, not a skill) | Installed as .git/hooks/pre-push in repos with autonomous-loop pushers. Runs typecheck (fast, ~1-5s) when pushing to main/master, skips feature branches, fail-soft if no scripts present. Bypass: `git push --no-verify`, `CC_PUSH_GATE=off`, or `touch .git/cc-push-gate-off`. Defense-in-depth for the 2026-05-14 'autonomous loop pushing into void' lesson. |
 **Built-in Anthropic skills** (always available, no routing — type `/<name>` to invoke): `claude-api`, `fewer-permission-prompts`, `init`, `keybindings-help`, `loop`, `review`, `schedule`, `security-review`, `simplify`, `update-config`.
 
 ## AGENT ROUTING TABLE

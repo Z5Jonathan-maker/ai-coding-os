@@ -98,6 +98,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/wiki-writeback.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/mempalace-stop.sh"
           }
         ]
       }

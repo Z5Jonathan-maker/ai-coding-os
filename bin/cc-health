@@ -16,9 +16,18 @@
 set -u
 
 QUIET=0
-case "${1:-}" in
-  -q|--quiet) QUIET=1 ;;
-esac
+INSTANT=0
+for arg in "$@"; do
+  case "$arg" in
+    -q|--quiet) QUIET=1 ;;
+    -i|--instant)
+      # Instant mode: skip every probe that does network I/O or spawns
+      # subprocesses. Read ONLY from cached state files maintained by
+      # cc-deploy-watch-cron + mempalace-stop hook + bridge-keeper.
+      # Returns in <500ms — suitable for SessionStart hook use.
+      INSTANT=1; QUIET=1 ;;
+  esac
+done
 
 # Color when output is a TTY (CI-friendly)
 if [ -t 1 ]; then
@@ -50,8 +59,11 @@ echo -e "${B}# cc-health — $(date -u +%Y-%m-%dT%H:%M:%SZ)${Z}"
 echo
 echo -e "${B}Router tiers${Z}  (real ping, includes CB-adjusted thresholds via memory/classifier-tuning.json)"
 
-# Router-ping output is JSON-ish across multiple tiers
-if [ -f "$ROUTER_LIB/tiered-ask.cjs" ]; then
+# Router-ping spawns subprocess CLIs (claude, codex, kimi) — 30s+. Skip in
+# --instant mode and trust the launchd-driven autotuner state instead.
+if [ "$INSTANT" = "1" ]; then
+  row OK "router/all-tiers" "(instant mode — skipped network probe; see /tmp/router-ping.log for cached)"
+elif [ -f "$ROUTER_LIB/tiered-ask.cjs" ]; then
   RP="$(node "$ROUTER_LIB/tiered-ask.cjs" ping 2>&1)"
   for tier in tier1 tier2 tier3 tierDesign tierCodex; do
     label="${tier#tier}"; [ -z "$label" ] && label=1
@@ -78,8 +90,11 @@ fi
 echo
 echo -e "${B}Bridges${Z}  (real ping, cross-checked with bridge-alerts.log per the 2026-05-14 honest-ping fix)"
 
-# Kimi bridge
-if [ -f "$ROUTER_LIB/kimi-bridge.cjs" ]; then
+# Kimi bridge — skip the playwright-spawning probe in --instant mode;
+# rely on bridge-alerts.log for the truth
+if [ "$INSTANT" = "1" ]; then
+  row OK "bridge/kimi" "(instant — skipped playwright probe)"
+elif [ -f "$ROUTER_LIB/kimi-bridge.cjs" ]; then
   K="$(node "$ROUTER_LIB/kimi-bridge.cjs" ping 2>&1)"
   case "$K" in
     *'"ok": true'*) row OK "bridge/kimi" "logged in, generation-capable" ;;
@@ -90,8 +105,30 @@ else
   row WARN "bridge/kimi" "kimi-bridge.cjs not found"
 fi
 
-# ChatGPT image bridge
-if [ -f "$ROUTER_LIB/chatgpt-image-bridge.cjs" ]; then
+# ChatGPT image bridge — skip the playwright-spawning probe in --instant mode
+if [ "$INSTANT" = "1" ]; then
+  # In instant mode, count recent keeper alerts directly
+  RECENT_IMG=$(python3 -c "
+import datetime, os
+log = os.path.expanduser('~/.claude/bridge-alerts.log')
+if not os.path.exists(log): print(0); exit()
+cutoff = datetime.datetime.now(datetime.timezone.utc).timestamp() - 900
+n = 0
+for line in open(log, errors='ignore'):
+    if 'ChatGPT bridge' not in line: continue
+    ts = line.split()[0]
+    try:
+        if datetime.datetime.fromisoformat(ts.replace('Z','+00:00')).timestamp() >= cutoff:
+            n += 1
+    except: pass
+print(n)
+" 2>/dev/null)
+  if [ "${RECENT_IMG:-0}" -gt 0 ]; then
+    row FAIL "bridge/image" "keeper logged ${RECENT_IMG} failures in last 15min"
+  else
+    row OK "bridge/image" "(instant — no recent keeper alerts)"
+  fi
+elif [ -f "$ROUTER_LIB/chatgpt-image-bridge.cjs" ]; then
   I="$(node "$ROUTER_LIB/chatgpt-image-bridge.cjs" ping 2>&1)"
   case "$I" in
     *'"ok": true'*) row OK "bridge/image" "ready" ;;

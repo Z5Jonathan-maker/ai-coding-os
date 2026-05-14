@@ -14,6 +14,34 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 
 ---
 
+## 2026-05-05 · Classifier precedence inverted to "purpose > flag" uniformly
+
+- **Before:** `classifyTask` checked DESIGN_F before IMAGE_P, and CHAT_F/CHEAP_F flags before CHAT_P/CHEAP_P purposes — same code path used inconsistent precedence depending on tier. Symptom: `purpose:'image_gen', flags:['design']` returned `'design'` (flag won over purpose), but `purpose:'ui_design', flags:['image']` returned `'design'` (purpose won over flag). Routing was hard to reason about.
+- **Change:** Reordered `classifyTask` to do all PURPOSE checks first (HARD_FLOOR → DESIGN_P → IMAGE_P → SWARM_P → CODEX_P → CHAT_P → CHEAP_P), then all FLAG checks in same priority order. Documented "purpose > flag > heuristic" as the universal precedence rule inline.
+- **After:** Predictable contract: when purpose and flag conflict, purpose always wins. Added two precedence test cases to the runtime gauntlet (`test/router-routes.test.js`) — both pass.
+- **Why it matters:** Inconsistent precedence is a silent surface — callers passing `{purpose, flags}` together couldn't predict the result without reading source. The reorder makes the rule obvious: more specific (purpose) beats less specific (flag).
+
+## 2026-05-05 · Runtime route gauntlet promoted to project test + wired into pre-commit
+
+- **Before:** Codex generated a one-shot runtime test at `/tmp/audit-r2/runtime-test.js` during the audit. It tested PURPOSE-based routing only. The cheap-flag bug (flags:['cheap'] → Ollama) slipped through because no test exercised flag-only routes. The test would also be deleted on next reboot.
+- **Change:** Promoted to permanent file at `Claude Code/test/router-routes.test.js`. Extended from 15 to 25 cases: added 8 flag-only routes (cheap/deepseek/light/mechanical/design/image/codex/swarm) and 2 purpose-vs-flag precedence conflicts. Wired into `.pre-commit-config.yaml` so any change to `lib/tiered-ask.cjs` or `lib/validate.cjs` runs the gauntlet at commit time.
+- **After:** Reintroducing the cheap-flag bug now produces `FAIL flag cheap → cheap` at commit. Verified by negative test (reverted, ran gauntlet, confirmed failure, restored).
+- **Why it matters:** Two kinds of route bugs (purpose-set drift, flag-set drift) now have first-class regression coverage. The historical bug cannot return silently.
+
+## 2026-05-05 · Three-net regression defense for the LLM router
+
+- **Before:** Adding a new tier required updating two files (classifier set in `tiered-ask.cjs`, validator set in `validate.cjs`). Forgetting the second made the tier unreachable via explicit `purpose:` / `flags:`. Routing-table edits relied on a weekly launchd drift-check that had been silently passing on a column-extraction bug.
+- **Change:** (1) Added startup integrity check in `tiered-ask.cjs` that throws on first classifier↔validator drift — module won't load. (2) Fixed `routing-drift-check.sh` to read column 2 (skill names) instead of column 1 (user intents); added `-L` to follow `skills/` and `agents/` symlinks; added built-in allowlist. (3) Added pre-commit hook in `~/dotfiles/.pre-commit-config.yaml` that runs the drift-check on any change to `claude/CLAUDE.md`, `claude/skills/**`, or `claude/agents/**`.
+- **After:** Three orthogonal nets at three cadences — pre-commit (instant, blocks bad commits), module-load (catches unreachable purposes immediately), weekly cron (catches anything that bypassed pre-commit). Same regression cannot slip through all three.
+- **Why it matters:** The codex/image-tier-unreachable bug had been latent since those tiers were added; the SWARM tier was added by auto-improve mid-session and would have repeated the bug. Adding orthogonal checks turned a silent two-file invariant into a load-time error.
+
+## 2026-05-05 · CLAUDE.md density: 295 → 210 lines (-29%) without losing routing power
+
+- **Before:** Global CLAUDE.md had three contradictory KIMI design rows (one said "translate KIMI output to code", one said "DEFER to KIMI", a memory entry said "KIMI leads design AND code"). Built-in Anthropic skills consumed 8 routing-table rows each repeating "Built-in —" qualifier. DESIGN INTELLIGENCE SUITE / MEGA-BRAIN / WIKI / TELEMETRY / OCTOGENT / STOP CONDITIONS sections were 5-15 lines each restating rules already in `wiki/decision-rules.md`.
+- **Change:** Audit ran via DeepSeek (T2, long-context, ~28k tokens, 1 call) → 30-item punch list. Synthesized into surgical edits: collapsed contradictory KIMI rows into one current-policy line citing the superseding memory entry, moved 8 built-in skills into one inline `**Built-in Anthropic skills**` line that the drift-checker now parses, trimmed sections to load-bearing density, fixed `cc-loop` → `loop`, added missing `skill-creator` row, fixed `agent-definitions.md` count `(6)` → `(8)`.
+- **After:** 210 lines. Drift-check green (37 skills + 13 agents + 2 MCP refs). No routing power lost — every removed line either duplicated another, cited a non-existent file, or restated a built-in harness behavior.
+- **Why it matters:** CLAUDE.md is loaded into every session's context. Each saved line saves ~50 tokens × every session forever. Density also surfaces drift faster — contradictions are easier to spot in a tight doc.
+
 ## 2026-05-03 · Wired Stop hooks were not the bottleneck
 
 - **Before:** Suspected 5 sequential Stop hooks were causing 2-5s dead air per turn
@@ -173,3 +201,41 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **Wave 4 (f0464c5) — KIMI #4 PDP gradient settle:** Found smaller-than-expected fix for the deferred "PDP full-bleed dark" item. Instead of flipping every inner-component color, just had the dark gradient settle into paper by ~45% so the buy panel reads as a continuation of the surface, not a contrast-sandwich island. No inner-component color flips needed.
 - **Result:** All 6 KIMI design directives shipped. Cobalt restraint + serif hierarchy + section density + Stripe-style trust strip + filled-ink CTAs + softened PDP framing. Dosecraft + Coach surfaces audited separately — already premium-tier (different design language, editorial vs commercial, both work). Aurex test suite: 76/76 passing post-design-waves; Dosecraft: 151/151. Zero regressions.
 - **Pattern preserved forward:** When user feedback says "looks low budget" — (1) visual audit to find real bugs hidden beneath the perception, (2) dispatch KIMI for a 6-shot plan via router-ask purpose:ui_design, (3) ship in measured waves keeping diffs reviewable. Visual quality is downstream of fixing $0/NaN% bugs first.
+
+## 2026-05-05 · Dosecraft Companion v1 SHIPPED to dosecraftapp.com + coach.dosecraftapp.com
+
+- **Trigger:** User explicit "go" after I outlined the dummy-mode-now vs wait-for-Paddle decision tree.
+- **What shipped:** Full v1 deliverable — chat UI streaming + vendor cards + cross-link surfaces + FTC disclosure + corpus-backed retrieval. Apex + Coach subdomain both live.
+- **Pattern that worked (preserve forward):**
+  1. `vercel link --yes --project <name>` (auto-creates project, connects to GitHub)
+  2. `vercel --prod --yes` (first deploy)
+  3. `vercel domains ls` (audit registered domains)
+  4. `vercel alias set <deploy-url> <domain>` for apex + each subdomain
+  5. `vercel domains add <subdomain>` for any subdomain not yet on the project
+  6. `vercel env add <KEY> production` (echo value via stdin to avoid interactive prompt)
+- **Two prod gotchas caught + fixed:**
+  - **Coach subdomain returned 401 SSO-protected.** Cause: ssoProtection mode was `all_except_custom_domains`, but the alias alone doesn't make a custom domain "registered." Fix: explicit `vercel domains add coach.dosecraftapp.com` to register it as a project-level domain.
+  - **Wiki corpus didn't reach the function.** Vercel Node File Tracing only includes statically-imported files. retrieve.ts computes its path from env, so wiki-corpus/ was excluded. Two fixes layered: (1) `outputFileTracingIncludes` in next.config.ts to explicitly bundle the directory, (2) absolute env path `/var/task/wiki-corpus` rather than relative `./wiki-corpus` (cwd in serverless != repo root).
+- **Corpus strategy:** Bundled the dosecraft-research subset only (88 files / 2 MB) of the full 368 MB wiki/learnings tree. Mentor brains (Bachmeyer, Huberman, Koniver — 14-17 MB each) stay local-only as enrichment. v1 chat answers from dosecraft-owned curated corpus; mentor enrichment is a post-v1 lever (could go to Neon as embedded vectors).
+- **Result:** Live chat smoke against `https://coach.dosecraftapp.com/api/chat` returned `chunkCount: 3, tier: keyword, total_ms: 324` with 3 vendor cards (peptide-partners + aurex + oasis) emitted at end of stream. Deployment chain: c931819 → db592fe → 98f98c8 → cbd601c → final lfaajtle5.
+- **Aurex side:** All 5 KIMI design waves auto-deployed via the existing Vercel/GitHub integration. aurex.bio shows the new "Engineered for precision." hero, partner SKUs render "Cataloged" not "$0/SAVE NaN%", catalog cards show "Via partner" chips. Confirmed live.
+
+## 2026-05-14 · Closed feedback loop: autotuner → CB threshold
+- **Before:** cbAdjustment in classifier-tuning.json was dead data; CB threshold was global default 3 for every tier
+- **Change:** Wired circuit-breaker.cjs to read classifier-tuning.json with mtime-cached load + clamped per-tier offset (±3, floor at 1)
+- **After:** Live thresholds: chat=3, cheap=5 (+2 grace), precision=3, design=3, codex=2 (stricter). 9 tests pass.
+- **Why:** First piece of closed-loop architecture. The autotuner's observations finally drive routing decisions automatically. Future tier drift self-corrects without manual intervention.
+- **Timestamp:** 2026-05-14T08:44:26Z
+
+## 2026-05-14 · hero trust pill no-wrap on mobile
+- **Cycle:** #50 (fresh-audit)
+- **Summary:** hero trust pill no-wrap on mobile
+- **Depth:** 2 · **Regression:** false
+- **Timestamp:** 2026-05-14T08:44:26Z
+
+## 2026-05-14 · Closed feedback loop #2: post-cycle reflection → wiki logs
+- **Before:** wiki-writeback.sh fired on every Stop but only checked obscure CC_WIKI_* env vars that no session ever sets. No structured path for sessions or autonomous cycles to leave a learning trail. optimization-log.md only grew when I hand-wrote entries.
+- **Change:** Built ~/dotfiles/bin/cc-reflect (writes JSONL to ~/.claude/state/reflection-queue.jsonl). Extended wiki-writeback.sh to drain the queue, format entries by type (optimization/cycle/failure), append to the right log, and truncate. Tested end-to-end: 2 entries queued → flushed to optimization-log.md → queue empty.
+- **After:** Sessions can now leave a structured learning trail with one CLI call per reflection. Autonomous cycles can do the same. The wiki logs become a queryable corpus instead of a hand-curated record.
+- **Why:** Second piece of closed-loop architecture (after autotuner→CB). Multi-cycle pattern detection becomes possible — e.g. 'show me all cycles with depth<=2 in the last 7 days' would now be a single grep against optimization-log.md.
+- **Timestamp:** 2026-05-14T08:47:08Z

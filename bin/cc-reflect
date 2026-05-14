@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# cc-reflect — append a structured reflection to the queue, drained at
+# session-end by ~/.claude/hooks/wiki-writeback.sh into the wiki logs.
+#
+# This is the integration point that closes the "post-cycle reflection" loop:
+# autonomous loops (mega-cycle, fresh-audit, /loop /<cmd>) AND interactive
+# sessions both write through here. The Stop hook flushes to:
+#   - optimization-log.md  (kind=optimization|cycle)
+#   - failure-log.md       (kind=failure)
+#
+# Usage:
+#   cc-reflect optimization --title "..." --before "..." --change "..." --after "..." --why "..."
+#   cc-reflect failure --title "..." --root-cause "..." --fix "..."
+#   cc-reflect cycle --n 50 --kind fresh-audit --summary "..." [--depth 2] [--regression false]
+#
+# Queue file: ~/.claude/state/reflection-queue.jsonl (one JSON per line)
+# Drained AND truncated by the Stop hook. If the Stop hook never fires (rare),
+# the queue accumulates safely — `cc-reflect digest` shows pending entries.
+
+set -euo pipefail
+
+QUEUE_DIR="${HOME}/.claude/state"
+QUEUE="${QUEUE_DIR}/reflection-queue.jsonl"
+mkdir -p "$QUEUE_DIR"
+
+usage() {
+  sed -n '2,/^set -e/p' "$0" | sed -e 's/^# \{0,1\}//' -e '/^set -e/d'
+  exit 64
+}
+
+[ $# -ge 1 ] || usage
+TYPE="$1"; shift
+
+# Parse --flag value pairs into associative array
+declare -A F
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --*)
+      key="${1#--}"; key="${key//-/_}"
+      val="${2:-}"
+      F["$key"]="$val"
+      shift 2 ;;
+    *)
+      echo "cc-reflect: unknown arg: $1" >&2; exit 64 ;;
+  esac
+done
+
+case "${TYPE}" in
+  digest)
+    # Show pending queue entries (no drain)
+    if [ -f "$QUEUE" ]; then
+      lines=$(wc -l < "$QUEUE" | tr -d ' ')
+      echo "pending reflections: $lines (at $QUEUE)"
+      [ "$lines" -gt 0 ] && tail -5 "$QUEUE" | python3 -m json.tool --json-lines 2>/dev/null || tail -5 "$QUEUE"
+    else
+      echo "pending reflections: 0 (queue empty)"
+    fi
+    exit 0 ;;
+  drain)
+    # Manual drain (Stop hook would normally do this)
+    if [ ! -s "$QUEUE" ]; then echo "nothing to drain"; exit 0; fi
+    bash "${HOME}/.claude/hooks/wiki-writeback.sh" || true
+    exit 0 ;;
+  optimization|cycle|failure)
+    : ;;
+  *)
+    echo "cc-reflect: unknown type '$TYPE' (use optimization|cycle|failure|digest|drain)" >&2
+    exit 64 ;;
+esac
+
+TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+SESSION="${CLAUDE_SESSION_ID:-unknown}"
+
+# Compose a single-line JSON via python for safe escaping
+python3 - "$TYPE" "$TS" "$SESSION" "${QUEUE}" "$(declare -p F)" <<'PY'
+import json, os, sys
+type_, ts, session, queue_path, decl = sys.argv[1:6]
+
+# Reconstruct the associative array from `declare -p F`
+fields = {}
+for line in decl.splitlines():
+    if line.startswith("declare -A F=("):
+        body = line[len("declare -A F=("):].rstrip(")")
+        i = 0
+        parts = []
+        cur = ""
+        in_q = False
+        for ch in body:
+            if ch == '"' and (not cur or cur[-1] != '\\'):
+                in_q = not in_q
+                cur += ch
+            elif ch == ' ' and not in_q:
+                if cur: parts.append(cur); cur = ""
+            else:
+                cur += ch
+        if cur: parts.append(cur)
+        for p in parts:
+            if '=' not in p: continue
+            k, _, v = p.partition('=')
+            k = k.strip('[]"')
+            v = v.strip('"')
+            fields[k] = v
+        break
+
+entry = {"type": type_, "ts": ts, "session": session, **fields}
+with open(queue_path, "a") as f:
+    f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+print(f"queued ({type_}): {fields.get('title') or fields.get('summary') or '(no title)'}")
+PY

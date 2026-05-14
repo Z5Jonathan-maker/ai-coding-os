@@ -83,15 +83,18 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Compress generated code" | `pulse` | Dense functions, no restate-comments |
 | "Apply Karpathy rules" | `karpathy-guidelines` | Surgical, simplicity-first |
 | "Consolidate memory / distill recent sessions" | `consolidate-memory` | Updates 3-tier memory layer (Roman Knox pattern) |
+| "Log what worked / left a learning behind / reflect on this cycle" | `cc-reflect` (CLI, not a skill) | `cc-reflect optimization\|cycle\|failure --flags…` — queues to `~/.claude/state/reflection-queue.jsonl`; Stop hook drains to `wiki/logs/optimization-log.md` (or `failure-log.md`). Use after non-trivial work so the wiki accumulates structured history instead of hand-curated entries. |
 | "Create or modify a skill" | `skill-creator` | New skill scaffold or upgrade existing one |
 | "Find what's new / scout for X / challenge existing knowledge" | `research-scout` *(skill — quick, in-session)* | Stages findings in long-term-memory.md `new_learnings`. For long-form delegated research, use the `research-scout` agent (see Agent Routing Table). |
 | "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action gateway — credentials stay out of the transcript. **Status:** daemon live; Keychain-first auth works now, with 1Password only as optional fallback for unmigrated services. |
 | "Show me brain state / system snapshot" | (no skill — run `~/.claude/scripts/snapshot.sh`) | Single-command full state report |
 | "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with auto-browser MCP. |
 | "Monitor controversial repos / grey-area archive" | `grey-area-arsenal` | GitHub monitor + local archive tooling |
-| "Ask about Melville" | `swarm-melville` | Topic-specific swarm intelligence bundle |
-| "Ask about Moby Dick" | `swarm-moby-dick` | Topic-specific swarm intelligence bundle |
 | "Build me a website / landing page / marketing site / 3D hero" | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
+| "Start the self-paced autonomous loop / mega-cycle" | `mega-cycle` | Self-paced depth-ladder loop. Each cycle ≥ previous (surface→diagnostic→root-cause→refactor→audit→foundation). Anti-pattern memories auto-apply. Pairs with `nonstop` + `wired-up`. From Wassim Younes mega-cycle bundle. |
+| "Check if I'm regressing to surface fixes" | `depth-check` | Meta-audit of recent cycles. Flags depth-drift (agent regressing to 1-line edits). |
+| "Spawn new skill / memory / diagnostic mid-loop" | `evolve` | On-the-fly self-evolution. Creates new capabilities based on patterns the agent notices. |
+| "Register a new scheduled / recurring task right now" | `schedule-task` | Cross-platform cron registration (macOS/Linux/Windows). The agent can register its own recurring tasks mid-loop. |
 | "Set up the self-improvement loop / autonomous loop" | `autonomous-loop` | 2-min self-improvement loop scaffold — `memory/HUMAN.md` override, counter-action discipline, null-result-as-health, theme detection. Composes with `/loop` (interval) and `/nonstop` (no early termination). |
 | "Brainstorm before I build / explore intent" | `brainstorming` | **MUST** run before any creative work — features, components, behavior changes. From the superpowers bundle. |
 | "Run 2+ independent tasks in parallel agents" | `dispatching-parallel-agents` | When tasks have no shared state or sequential dependencies. From superpowers. |
@@ -166,6 +169,13 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Web scraping with full browser control | `webclaw` *(project-scoped — only loads in projects with webclaw MCP config)* | Prefer `chrome-devtools` or `agent-browser` CLI for global use |
 | Product analytics queries | `claude_ai_Amplitude` | OAuth-gated, currently needs re-auth |
 | B2B prospect enrichment | `claude_ai_Vibe_Prospecting` | Explorium-backed, OAuth-gated |
+| HTTP fetch any URL → clean markdown | `mcp-fetch` | Stateless, parallel-safe utility |
+| Git read/inspect repos | `mcp-git` | Read-friendly; ⚠️ same-repo writes serialize (see parallel-safety.md) |
+| Filesystem read/write within `~`, `~/Claude Code`, `~/DoseCraft` | `mcp-filesystem` | Reads parallel-safe; writes to same path = last-write-wins |
+| In-session knowledge graph (entity/relations/observations) | `mcp-memory` | Backing file `~/.claude/state/mcp-memory.jsonl`. For cross-session/episodic, prefer `mempalace`. ⚠️ concurrent writes can race — single-agent only |
+| Multi-step reasoning chains | `mcp-sequential-thinking` | Pure compute, parallel-safe |
+| Timezone math / current time | `mcp-time` | Pure compute, parallel-safe |
+| Open Design (design daemon: skills, design systems, projects) | `open-design` | Local daemon wrapping CLI; single-instance — agents share it, queue under load. Repo: `~/code/projects/open-design` |
 
 ## SKILL COMPOSITION RULES
 

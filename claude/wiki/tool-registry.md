@@ -23,7 +23,6 @@ Every tool the brain can call. Mirrors CLAUDE.md routing tables but adds depth: 
 | MCP | What it does | When to pick | Notes |
 |---|---|---|---|
 | `chrome-devtools` | DevTools Protocol — inspect, screenshot, lighthouse, network log, performance trace | Default browser MCP for inspection/perf | Spawns Chromium ~2s cold start |
-| ~~`playwright`~~ | Replaced 2026-05-04 by `agent-browser` CLI (vercel-labs, native Rust). MCP entry removed from ~/.claude.json. | — | See "Custom CLI tools" row for agent-browser invocation |
 | `auto-browser` | Supervised browser with approval gates | Sensitive flows: login, payment, account ops | Built-in human-takeover |
 | `github` | gh-equivalent ops: issues, PRs, repos, workflows | GitHub state queries + mutations | Native `gh` CLI also works for read |
 | `context7` | Library/SDK/API doc lookup | Always prefer over WebSearch for docs | Lower hallucination risk |
@@ -42,10 +41,11 @@ Every tool the brain can call. Mirrors CLAUDE.md routing tables but adds depth: 
 | `claude_ai_Gamma` | Slide generation (cloud) | Re-auth via `claude mcp` UI |
 | `claude_ai_Amplitude` | Product analytics | Re-auth via `claude mcp` UI |
 
-### Retired (do not use, removed)
+### Retired (still loaded but do not select)
 | MCP | Why retired | Date | Replacement |
 |---|---|---|---|
-| `browser-use` | Redundant with chrome-devtools + auto-browser + playwright (4 browser MCPs was 1 too many) | 2026-05-03 | chrome-devtools (default), auto-browser (supervised) |
+| `playwright` | Replaced by `agent-browser` CLI (faster, no MCP overhead) | 2026-05-04 | `agent-browser` for clean sites; `chrome-devtools` for inspection |
+| `browser-use` | Redundant with chrome-devtools + auto-browser | 2026-05-03 | `chrome-devtools` (default), `auto-browser` (supervised) |
 
 ## Tool selection priority order
 
@@ -77,7 +77,6 @@ These aren't MCPs — they're filesystem-based knowledge + execution layers, que
 | `transcribe-video` | yt-dlp → faster-whisper → markdown transcript | Single video URL → standalone .md | markdown to `~/code/projects/scrapling-lab/transcripts/` | Models: tiny → large-v3, default `small`. CPU/int8 on Apple Silicon. |
 | `competitor-pricing` | Scrapling stealth fetch of vendor catalogs → pricing CSV | Vendor catalog URL(s) | CSV at `~/code/projects/scrapling-lab/pricing-runs/` | JSON-LD Product schema first, heuristic fallback. |
 | `pricing-vs-aurex` | Join competitor CSV against Aurex catalog → markdown gap report | Competitor CSV + Aurex `lib/products.ts` | Markdown table | Per-compound position + recommended action |
-| `video-learn` | `transcribe-video` + copy to wiki/learnings (legacy; prefer `mega-brain-ingest`) | Single URL → wiki | wiki .md | Shallow wrapper |
 | `neonctl` | Neon CLI (npm: `neonctl`, also `~/local/lib/neonctl-patched/cli.js` with 900s OAuth window) | Neon project ops | json/table | Auth via API key (`--api-key`) or GitHub OAuth (60s default, 900s in patched copy). Set `NEON_API_KEY` env to skip flag. |
 
 ### Health monitoring of each layer
@@ -91,3 +90,20 @@ Every tool result Claude receives is a string. Tools that produce structured dat
 - Return JSON inside a code fence when the consumer needs to parse
 - Return markdown tables when the consumer is human-reading
 - Return concise summary + reference path when output is large (write to file, return path)
+
+## Skill classes (resolves "which skills actually DO something")
+
+Not every skill is the same kind of thing. Three classes, never mix them up:
+
+| Class | Definition | Examples | How to use |
+| --- | --- | --- | --- |
+| **Runtime** | Has executable side-effects: writes files, calls APIs, spawns processes, mutates state. Real work happens. | `/checkpoint`, `/sync`, `/audit`, `/onboard`, `/forge`, `/tel`, `/autobrowse`, `/skill-creator`, `/consolidate-memory`, `/research-scout`, `/recall`, `/health`, `/mega-cycle`, `/evolve`, `/schedule-task`, `/depth-check`, `/morning`, `/nonstop`, `/wired-up`, `/route` | Invoke directly when intent matches. State changes. |
+| **Ruleset** | Pure behavioral guidance — markdown instructions to the model. No tools, no side-effects. Toggles how I think. | `/karpathy-guidelines`, `/using-superpowers`, `/caveman`, `/pulse`, `/verification-before-completion`, `/brainstorming`, `/writing-plans`, `/executing-plans`, `/subagent-driven-development`, `/dispatching-parallel-agents`, `/test-driven-development`, `/systematic-debugging`, `/requesting-code-review`, `/receiving-code-review`, `/finishing-a-development-branch`, `/using-git-worktrees` | Load into context to bias subsequent behavior. Don't expect a deliverable. |
+| **Lookup** | Reference library — design palettes, style examples, capability index. Read to retrieve facts, not to invoke action. | `/arsenal`, `/ui-ux-pro-max`, `/design-system`, `/ui-styling`, `/banner-design`, `/brand`, `/slides`, `/website-design-stack`, `/huashu-design`, `/design`, `/openhuman-bridge`, `/prompt-master`, `/grey-area-arsenal`, `/claude-api`, `/autonomous-loop` | Read, extract relevant entries, apply via Runtime tools or direct code. |
+
+**Rule of thumb:** A skill whose name describes a *workflow* is usually a Ruleset. A skill whose name describes a *capability or asset* is usually a Lookup. A skill whose name describes an *action* with concrete output is usually Runtime.
+
+**Exceptions worth knowing:**
+- `/route` is Runtime — actually picks a target (cloud vs local).
+- `/autonomous-loop` is Lookup despite the "loop" name — it's a *bootstrap doc* for installing the pattern; the actual loop runs via `/mega-cycle` (Runtime).
+- `/design` is dual — Lookup for HTML mockup patterns, Runtime when it generates a file.

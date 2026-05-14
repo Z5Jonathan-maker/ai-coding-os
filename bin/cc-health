@@ -191,6 +191,29 @@ else
 fi
 
 echo
+echo -e "${B}Production deploy drift${Z}  (autonomous-loop safety net — composes with cc-deploy-watch)"
+
+# Loop over watched repos. Add more lines here as you onboard more sites.
+# shellcheck disable=SC2043  # currently one entry; structure is intentionally a loop for extensibility
+for entry in "Z5Jonathan-maker/aurex-bio:aurex.bio"; do
+  REPO="${entry%%:*}"; DOM="${entry##*:}"
+  STATE_FILE="${HOME}/.claude/state/deploy-watch.${REPO//\//_}.json"
+  if [ -f "$STATE_FILE" ]; then
+    AGE_MIN=$(python3 -c "import json,datetime; d=json.load(open('$STATE_FILE')); ts=datetime.datetime.fromisoformat(d['checked_at'].replace('Z','+00:00')); print(int((datetime.datetime.now(datetime.timezone.utc) - ts).total_seconds()/60))" 2>/dev/null)
+    CI_STATE=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('ci_state','?'))" 2>/dev/null)
+    DRIFT=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('drift_hours','?'))" 2>/dev/null)
+    case "$CI_STATE" in
+      ok)    row OK "deploy/$DOM" "CI green · drift Δ ${DRIFT}h · cached ${AGE_MIN}min ago" ;;
+      drift) row FAIL "deploy/$DOM" "CI broken on HEAD · loop pushing into void · run: cc-deploy-watch $REPO $DOM" ;;
+      pending) row WARN "deploy/$DOM" "CI running · cached ${AGE_MIN}min ago" ;;
+      *)     row WARN "deploy/$DOM" "unknown · cached ${AGE_MIN}min ago" ;;
+    esac
+  else
+    row WARN "deploy/$DOM" "no recent watch — run: cc-deploy-watch $REPO $DOM"
+  fi
+done
+
+echo
 echo -e "${B}Alerts (last 15 min)${Z}"
 
 # Bridge alerts

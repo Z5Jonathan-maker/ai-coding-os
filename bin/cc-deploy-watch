@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# cc-deploy-watch — surface drift between what's been PUSHED vs what's actually LIVE.
+#
+# Autonomous loops (fresh-audit, mega-cycle, etc.) push commits cheerfully
+# assuming CI will pick them up. If CI is billing-blocked, deploy chain is
+# broken, or typecheck has been failing for 20 cycles — those pushes never
+# reach prod, and the loop keeps shipping into the void.
+#
+# This watcher cross-references:
+#   - GitHub: latest commit SHA on origin/main + check-run status
+#   - Vercel: latest *ready* production deploy + its SHA
+#   - Live: actual HTTP response from the production domain
+#
+# Drift conditions surfaced:
+#   - "skipped checks" — CI didn't run (billing block, workflow disabled)
+#   - "stale prod" — latest ready Vercel deploy is N days behind HEAD
+#   - "down" — domain returns non-2xx
+#
+# Usage:
+#   cc-deploy-watch <github-owner/repo> <production-domain>
+#   cc-deploy-watch Z5Jonathan-maker/aurex-bio aurex.bio
+#
+# Exit codes: 0 (live + fresh), 1 (drifted but live), 2 (broken)
+# Writes alerts to ~/.claude/state/deploy-alerts.log
+
+set -u
+
+REPO="${1:-}"
+DOMAIN="${2:-}"
+if [ -z "$REPO" ] || [ -z "$DOMAIN" ]; then
+  echo "Usage: cc-deploy-watch <github-owner/repo> <production-domain>"
+  exit 64
+fi
+
+LOG_DIR="${HOME}/.claude/state"
+mkdir -p "$LOG_DIR"
+LOG="${LOG_DIR}/deploy-alerts.log"
+STATE="${LOG_DIR}/deploy-watch.${REPO//\//_}.json"
+
+# Color when TTY
+if [ -t 1 ]; then
+  G="\033[32m"; Y="\033[33m"; R="\033[31m"; B="\033[1m"; D="\033[2m"; Z="\033[0m"
+else
+  G=""; Y=""; R=""; B=""; D=""; Z=""
+fi
+
+echo -e "${B}cc-deploy-watch · ${REPO} → ${DOMAIN}${Z}"
+echo
+
+# 1. Latest commit on main
+HEAD_SHA="$(gh api "repos/${REPO}/commits/main" --jq '.sha' 2>/dev/null)"
+HEAD_MSG="$(gh api "repos/${REPO}/commits/main" --jq '.commit.message' 2>/dev/null | head -1 | cut -c1-72)"
+if [ -z "$HEAD_SHA" ]; then
+  echo -e "  ${R}[FAIL]${Z} GitHub HEAD unreachable"
+  echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) ${REPO} github-unreachable" >> "$LOG"
+  exit 2
+fi
+echo -e "  ${D}HEAD${Z}    ${HEAD_SHA:0:7}  ${HEAD_MSG}"
+
+# 2. CI check-runs for HEAD
+CHECK_SUMMARY="$(gh api "repos/${REPO}/commits/${HEAD_SHA}/check-runs" --jq '
+  [.check_runs[]] |
+  group_by(.conclusion) |
+  map({(.[0].conclusion // "running"): length}) |
+  add // {}' 2>/dev/null)"
+echo -e "  ${D}CI${Z}      ${CHECK_SUMMARY}"
+
+CI_OK=$(echo "$CHECK_SUMMARY" | python3 -c "import sys,json; d=json.load(sys.stdin); ok=d.get('success',0); fail=d.get('failure',0)+d.get('cancelled',0); skip=d.get('skipped',0); print('drift' if (fail or skip) else ('ok' if ok else 'pending'))")
+
+case "$CI_OK" in
+  ok)    echo -e "  ${G}[OK]${Z}    all CI checks passed for HEAD" ;;
+  drift) echo -e "  ${R}[FAIL]${Z}  CI broken — fails/skips on HEAD (autonomous loop has been pushing into the void)"
+         # Surface the billing-block annotation if it's there
+         BILLING=$(gh api "repos/${REPO}/commits/${HEAD_SHA}/check-runs" --jq '.check_runs[].output.summary // empty' 2>/dev/null | grep -iE "billing|spending|payment" | head -1)
+         [ -n "$BILLING" ] && echo -e "  ${R}        ↳ ${BILLING}${Z}" ;;
+  pending) echo -e "  ${Y}[WARN]${Z}  CI still running for HEAD" ;;
+esac
+
+# 3. Vercel latest ready prod deploy via GitHub deployments API (no Vercel CLI needed)
+LATEST_DEPLOY=$(gh api "repos/${REPO}/deployments?environment=Production&per_page=1" --jq '.[0]' 2>/dev/null)
+DEPLOY_SHA=$(echo "$LATEST_DEPLOY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('sha','')[:7])" 2>/dev/null)
+DEPLOY_TS=$(echo "$LATEST_DEPLOY" | python3 -c "import sys,json; print(json.load(sys.stdin).get('created_at',''))" 2>/dev/null)
+echo -e "  ${D}Deploy${Z}  ${DEPLOY_SHA}  at ${DEPLOY_TS}"
+
+# 4. Live HTTP probe
+HTTP_CODE="$(/usr/bin/curl -s -o /dev/null -w '%{http_code}' -m 8 "https://${DOMAIN}/" 2>/dev/null)"
+case "$HTTP_CODE" in
+  200|301|302|307|308) echo -e "  ${G}[OK]${Z}    https://${DOMAIN}/ → HTTP ${HTTP_CODE}" ;;
+  *) echo -e "  ${R}[FAIL]${Z}  https://${DOMAIN}/ → HTTP ${HTTP_CODE}"
+     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) ${REPO} domain-down http=${HTTP_CODE}" >> "$LOG" ;;
+esac
+
+# 5. Stale-prod detection: is the latest deploy older than 24h after HEAD?
+if [ -n "$DEPLOY_TS" ] && [ -n "$HEAD_SHA" ]; then
+  HEAD_TS=$(gh api "repos/${REPO}/commits/${HEAD_SHA}" --jq '.commit.committer.date' 2>/dev/null)
+  if [ -n "$HEAD_TS" ]; then
+    DRIFT_HOURS=$(python3 -c "
+import datetime, sys
+head = datetime.datetime.fromisoformat('$HEAD_TS'.replace('Z','+00:00'))
+deploy = datetime.datetime.fromisoformat('$DEPLOY_TS'.replace('Z','+00:00'))
+diff = (head - deploy).total_seconds() / 3600
+print(f'{diff:.1f}')")
+    if python3 -c "import sys; sys.exit(0 if float('$DRIFT_HOURS') > 1 else 1)"; then
+      echo -e "  ${R}[FAIL]${Z}  Production is ${DRIFT_HOURS}h behind HEAD — pushes are NOT reaching prod"
+      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) ${REPO} stale-prod hours=${DRIFT_HOURS} head=${HEAD_SHA:0:7} deploy=${DEPLOY_SHA}" >> "$LOG"
+      WORST=2
+    else
+      echo -e "  ${G}[OK]${Z}    deploy is current (Δ ${DRIFT_HOURS}h)"
+    fi
+  fi
+fi
+
+# Persist state for cc-health to read
+python3 - "$STATE" "$REPO" "$HEAD_SHA" "$DEPLOY_SHA" "$DEPLOY_TS" "$HTTP_CODE" "${DRIFT_HOURS:-unknown}" "$CI_OK" <<'PY' 2>/dev/null
+import json, sys
+path, repo, head, deploy, deploy_ts, http, drift_hours, ci = sys.argv[1:9]
+json.dump({
+  "repo": repo, "head_sha": head, "deploy_sha": deploy, "deploy_ts": deploy_ts,
+  "http": http, "drift_hours": drift_hours, "ci_state": ci,
+  "checked_at": __import__("datetime").datetime.utcnow().isoformat() + "Z"
+}, open(path,"w"), indent=2)
+PY
+
+exit "${WORST:-${CI_OK:+1}}"

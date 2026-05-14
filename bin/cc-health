@@ -1,0 +1,239 @@
+#!/usr/bin/env bash
+# cc-health — single-call truth table across every layer of the stack.
+#
+# Different from /health (markdown instruction skill for the model) and from
+# router-ping (router-only, JSON output). This is the operator's "is everything
+# actually working" command: real probes, not cached file presence; honest
+# bridge pings (not the heuristic ones that lied for months pre-2026-05-14).
+#
+# Composes with the closed-loop architecture:
+#   - Reads classifier-tuning.json so CB-adjusted thresholds show up
+#   - Reads bridge-alerts.log so dishonest "ok=true" pings get cross-checked
+#   - Counts reflection-queue.jsonl so pending writes are visible
+#
+# Usage: cc-health [--quiet | -q]   (quiet: only show non-OK rows)
+
+set -u
+
+QUIET=0
+case "${1:-}" in
+  -q|--quiet) QUIET=1 ;;
+esac
+
+# Color when output is a TTY (CI-friendly)
+if [ -t 1 ]; then
+  G="\033[32m"; Y="\033[33m"; R="\033[31m"; B="\033[1m"; D="\033[2m"; Z="\033[0m"
+else
+  G=""; Y=""; R=""; B=""; D=""; Z=""
+fi
+
+ROUTER_LIB="/Users/leonardofibonacci/Claude Code/lib"
+OK=0; WARN=0; FAIL=0
+
+row() {
+  local status="$1" name="$2" detail="$3"
+  case "$status" in
+    OK)   OK=$((OK+1));   [ "$QUIET" = 1 ] && return; printf "  ${G}[OK]${Z}   %-26s ${D}%s${Z}\n" "$name" "$detail" ;;
+    WARN) WARN=$((WARN+1)); printf "  ${Y}[WARN]${Z} %-26s %s\n" "$name" "$detail" ;;
+    FAIL) FAIL=$((FAIL+1)); printf "  ${R}[FAIL]${Z} %-26s %s\n" "$name" "$detail" ;;
+  esac
+}
+
+# Get a value from a JSON blob using python (portable, no jq dep)
+jget() { python3 -c "import sys,json; print(json.load(sys.stdin).get('$1','') if '$1' else '')" 2>/dev/null; }
+
+probe_http() {
+  /usr/bin/curl -s -o /dev/null -w "%{http_code}" -m 3 "$1" 2>/dev/null
+}
+
+echo -e "${B}# cc-health — $(date -u +%Y-%m-%dT%H:%M:%SZ)${Z}"
+echo
+echo -e "${B}Router tiers${Z}  (real ping, includes CB-adjusted thresholds via memory/classifier-tuning.json)"
+
+# Router-ping output is JSON-ish across multiple tiers
+if [ -f "$ROUTER_LIB/tiered-ask.cjs" ]; then
+  RP="$(node "$ROUTER_LIB/tiered-ask.cjs" ping 2>&1)"
+  for tier in tier1 tier2 tier3 tierDesign tierCodex; do
+    label="${tier#tier}"; [ -z "$label" ] && label=1
+    ok="$(echo "$RP" | python3 -c "import sys,json,re;txt=sys.stdin.read();
+try:
+  d=json.loads(txt)
+  print(d.get('$tier',{}).get('ok',''))
+except: print('?')" 2>/dev/null)"
+    lat="$(echo "$RP" | python3 -c "import sys,json;
+try:
+  d=json.loads(sys.stdin.read())
+  print(d.get('$tier',{}).get('latency_ms','?'))
+except: print('?')" 2>/dev/null)"
+    case "$ok" in
+      True|true) row OK   "router/$tier" "latency=${lat}ms" ;;
+      False|false) row FAIL "router/$tier" "ping returned ok=false" ;;
+      *) row WARN "router/$tier" "could not parse router-ping output" ;;
+    esac
+  done
+else
+  row WARN "router" "$ROUTER_LIB/tiered-ask.cjs not found"
+fi
+
+echo
+echo -e "${B}Bridges${Z}  (real ping, cross-checked with bridge-alerts.log per the 2026-05-14 honest-ping fix)"
+
+# Kimi bridge
+if [ -f "$ROUTER_LIB/kimi-bridge.cjs" ]; then
+  K="$(node "$ROUTER_LIB/kimi-bridge.cjs" ping 2>&1)"
+  case "$K" in
+    *'"ok": true'*) row OK "bridge/kimi" "logged in, generation-capable" ;;
+    *'Not logged into'*) row FAIL "bridge/kimi" "session expired — login needed at kimi.com via Camoufox" ;;
+    *) row WARN "bridge/kimi" "$(echo "$K" | head -1)" ;;
+  esac
+else
+  row WARN "bridge/kimi" "kimi-bridge.cjs not found"
+fi
+
+# ChatGPT image bridge
+if [ -f "$ROUTER_LIB/chatgpt-image-bridge.cjs" ]; then
+  I="$(node "$ROUTER_LIB/chatgpt-image-bridge.cjs" ping 2>&1)"
+  case "$I" in
+    *'"ok": true'*) row OK "bridge/image" "ready" ;;
+    *'"ok": false'*) row FAIL "bridge/image" "$(echo "$I" | python3 -c "import sys,json;print(json.load(sys.stdin).get('reason',''))" 2>/dev/null)" ;;
+    *'"ok": "unknown"'*) row WARN "bridge/image" "headless challenge — verify with: node lib/chatgpt-image-bridge.cjs test" ;;
+    *) row WARN "bridge/image" "$(echo "$I" | head -1)" ;;
+  esac
+else
+  row WARN "bridge/image" "chatgpt-image-bridge.cjs not found"
+fi
+
+# Camofox HTTP
+CF="$(probe_http http://127.0.0.1:9377/health)"
+case "$CF" in
+  200) row OK "camofox" "HTTP 200 on :9377/health" ;;
+  *)   row FAIL "camofox" "HTTP $CF on :9377/health (server.js may have crashed)" ;;
+esac
+
+# TEL daemon
+TEL="$(probe_http http://127.0.0.1:8765/health)"
+case "$TEL" in
+  200) row OK "tel-daemon" "HTTP 200 on :8765/health" ;;
+  *)   row FAIL "tel-daemon" "HTTP $TEL on :8765/health" ;;
+esac
+
+echo
+echo -e "${B}Persistence stores${Z}"
+
+# Task queue
+if command -v cc-tasks >/dev/null 2>&1; then
+  TS="$(cc-tasks stats 2>/dev/null | grep -E "total tasks:|artifact" | head -2 | tr '\n' ' ')"
+  row OK "task-queue" "$TS"
+else
+  row WARN "task-queue" "cc-tasks not on PATH"
+fi
+
+# Vector store
+if command -v cc-vec >/dev/null 2>&1; then
+  VL="$(cc-vec list 2>/dev/null | tail -n +3 | head -1)"
+  if [ -n "$VL" ]; then
+    row OK "vector-store" "$(echo "$VL" | awk '{print $1, "·", $2, "files ·", $3, "chunks"}')"
+  else
+    row WARN "vector-store" "no projects indexed"
+  fi
+else
+  row WARN "vector-store" "cc-vec not on PATH"
+fi
+
+# Mempalace
+if command -v mempalace >/dev/null 2>&1; then
+  # Cheapest check: is the chroma sqlite alive?
+  MP_SIZE="$(stat -f "%z" /Users/leonardofibonacci/mempalace/chroma.sqlite3 2>/dev/null || echo 0)"
+  if [ "$MP_SIZE" -gt 1000000 ]; then
+    MP_MB="$((MP_SIZE / 1024 / 1024))"
+    row OK "mempalace" "palace alive, chroma.sqlite3 = ${MP_MB}MB"
+  else
+    row WARN "mempalace" "palace small or missing"
+  fi
+else
+  row WARN "mempalace" "mempalace CLI not on PATH"
+fi
+
+echo
+echo -e "${B}Closed-loop signals${Z}  (today's three feedback loops)"
+
+# Loop 1: autotuner → CB
+TUNING="$ROUTER_LIB/../memory/classifier-tuning.json"
+if [ -f "$TUNING" ]; then
+  AGE_MIN="$(python3 -c "import json,os,time; d=json.load(open('$TUNING')); ts=d.get('generatedAt','');
+import datetime; print(int((time.time() - datetime.datetime.fromisoformat(ts.replace('Z','+00:00')).timestamp()) / 60))" 2>/dev/null)"
+  NONDEF="$(python3 -c "import json; d=json.load(open('$TUNING'))['adjustments']; print(sum(1 for v in d.values() if v.get('cbAdjustment',0) != 0))" 2>/dev/null)"
+  if [ "${AGE_MIN:-9999}" -lt 1440 ]; then
+    row OK "loop1/autotuner→CB" "tuning ${AGE_MIN}min old · ${NONDEF} tiers with non-default cbAdjustment"
+  else
+    row WARN "loop1/autotuner→CB" "tuning is ${AGE_MIN}min stale (>24h)"
+  fi
+else
+  row WARN "loop1/autotuner→CB" "classifier-tuning.json missing"
+fi
+
+# Loop 2: reflection-queue → wiki logs
+QUEUE="$HOME/.claude/state/reflection-queue.jsonl"
+if [ -f "$QUEUE" ]; then
+  Q="$(wc -l <"$QUEUE" | tr -d ' ')"
+  row OK "loop2/reflection-queue" "$Q pending reflection(s) — drained at next session-Stop"
+else
+  row OK "loop2/reflection-queue" "queue empty (drained or never written)"
+fi
+
+# Loop 3: mempalace stop hook
+MS_LOG="$HOME/.claude/state/mempalace-stop.log"
+if [ -f "$MS_LOG" ]; then
+  LAST="$(tail -1 "$MS_LOG")"
+  row OK "loop3/mempalace-stop" "last fire: $LAST"
+else
+  row WARN "loop3/mempalace-stop" "no firings yet (hook just installed?)"
+fi
+
+echo
+echo -e "${B}Alerts (last 15 min)${Z}"
+
+# Bridge alerts
+BA="$HOME/.claude/bridge-alerts.log"
+if [ -f "$BA" ]; then
+  RECENT="$(python3 -c "
+import sys, datetime, os
+cutoff = datetime.datetime.now(datetime.timezone.utc).timestamp() - 900
+n=0
+for line in open('$BA','r',errors='ignore'):
+    try:
+        ts = line.split()[0]
+        t = datetime.datetime.fromisoformat(ts.replace('Z','+00:00')).timestamp()
+        if t >= cutoff: n+=1
+    except: pass
+print(n)
+" 2>/dev/null)"
+  if [ "${RECENT:-0}" -eq 0 ]; then
+    row OK "bridge-alerts" "clean"
+  else
+    row WARN "bridge-alerts" "$RECENT bridge alert(s) in last 15min — bridge runtime likely degraded"
+  fi
+fi
+
+# Tailscale up
+if command -v tailscale >/dev/null 2>&1; then
+  if tailscale status >/dev/null 2>&1; then
+    PEERS="$(tailscale status 2>/dev/null | wc -l | tr -d ' ')"
+    row OK "tailscale" "up · $PEERS peers reachable"
+  else
+    row WARN "tailscale" "daemon down or disconnected"
+  fi
+fi
+
+echo
+TOTAL=$((OK + WARN + FAIL))
+if [ "$FAIL" -gt 0 ]; then
+  echo -e "${R}${B}${FAIL} FAIL${Z}${B} · ${Y}${WARN} WARN${Z}${B} · ${G}${OK} OK${Z}${B} of $TOTAL components${Z}"
+  exit 2
+elif [ "$WARN" -gt 0 ]; then
+  echo -e "${Y}${B}${WARN} WARN${Z}${B} · ${G}${OK} OK${Z}${B} of $TOTAL components${Z}"
+  exit 1
+else
+  echo -e "${G}${B}all ${OK} components green${Z}"
+  exit 0
+fi

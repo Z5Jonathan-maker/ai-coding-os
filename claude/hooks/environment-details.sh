@@ -67,7 +67,7 @@ fi
 
 # SESSION-HANDOFF.md presence + age
 if [ -f SESSION-HANDOFF.md ]; then
-  age=$(( ($(date +%s) - $(stat -f %m SESSION-HANDOFF.md 2>/dev/null || stat -c %Y SESSION-HANDOFF.md 2>/dev/null || date +%s)) / 86400 ))
+  age=$((($(date +%s) - $(stat -f %m SESSION-HANDOFF.md 2>/dev/null || stat -c %Y SESSION-HANDOFF.md 2>/dev/null || date +%s)) / 86400))
   out="${out}handoff: SESSION-HANDOFF.md (updated ${age}d ago)"$'\n'
 fi
 

@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODEL="${DEEPSEEK_MODEL:-}"
+SYSTEM=""
+JSON=0
+PING=0
+PRINT=0
+
+usage() {
+  cat <<'EOF'
+Usage: deepseek [options] [prompt]
+
+Options:
+  -m, --model <name>     Override model
+  -s, --system <text>    System prompt
+  --json                 Print full JSON response
+  --print                One-shot mode even in a TTY
+  --ping                 Run health probe only
+  -h, --help             Show this help
+
+Behavior:
+  - with a prompt: run one-shot
+  - with stdin: read stdin and run one-shot
+  - with no prompt in a TTY: start a simple REPL
+EOF
+}
+
+run_once() {
+  local prompt="$1"
+  node - "$MODEL" "$SYSTEM" "$JSON" "$prompt" <<'NODE'
+const [model, system, jsonMode, prompt] = process.argv.slice(2);
+const { callDeepSeek } = require('/Users/leonardofibonacci/Claude Code/lib/deepseek-client.cjs');
+
+(async () => {
+  const res = await callDeepSeek(model || undefined, system || undefined, prompt, {});
+  if (jsonMode === '1') {
+    process.stdout.write(JSON.stringify(res, null, 2) + '\n');
+  } else {
+    process.stdout.write((res.text || '').trimEnd() + '\n');
+  }
+})().catch((err) => {
+  process.stderr.write(`deepseek: ${err.message}\n`);
+  process.exit(1);
+});
+NODE
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -m | --model)
+      MODEL="${2:-}"
+      shift 2
+      ;;
+    -s | --system)
+      SYSTEM="${2:-}"
+      shift 2
+      ;;
+    --json)
+      JSON=1
+      shift
+      ;;
+    --print)
+      PRINT=1
+      shift
+      ;;
+    --ping)
+      PING=1
+      shift
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "deepseek: unknown option $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *) break ;;
+  esac
+done
+
+if [ "$PING" = "1" ]; then
+  node - <<'NODE'
+const { probeHealth } = require('/Users/leonardofibonacci/Claude Code/lib/deepseek-client.cjs');
+(async () => {
+  const res = await probeHealth();
+  process.stdout.write(JSON.stringify(res, null, 2) + '\n');
+  process.exit(res.ok ? 0 : 1);
+})().catch((err) => {
+  process.stderr.write(`deepseek: ${err.message}\n`);
+  process.exit(1);
+});
+NODE
+  exit $?
+fi
+
+PROMPT=""
+if [ $# -gt 0 ]; then
+  PROMPT="$*"
+elif [ ! -t 0 ]; then
+  PROMPT="$(cat)"
+fi
+
+if [ -n "$PROMPT" ] || [ "$PRINT" = "1" ]; then
+  [ -n "$PROMPT" ] || {
+    echo "deepseek: prompt required in --print mode" >&2
+    exit 2
+  }
+  run_once "$PROMPT"
+  exit $?
+fi
+
+echo "DeepSeek REPL. Type /exit to quit."
+while true; do
+  printf 'deepseek> '
+  IFS= read -r line || break
+  case "$line" in
+    "") continue ;;
+    /exit | /quit) break ;;
+  esac
+  run_once "$line"
+  echo
+done

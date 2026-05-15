@@ -1,0 +1,907 @@
+{
+  "topic": "mentor-huberman",
+  "created": "2026-05-04T03:15:37.339824+00:00",
+  "docs": {
+    "https://www.youtube.com/watch?v=wRsX_ZkzxvQ": {
+      "file": "peptide-hormone-therapies-for-health-performance-longevity-dr-craig-koniver-wRsX_ZkzxvQ.md",
+      "kind": "youtube_transcript",
+      "title": "Peptide & Hormone Therapies for Health, Performance & Longevity | Dr. Craig Koniver",
+      "video_id": "wRsX_ZkzxvQ",
+      "method": "auto-cc",
+      "words": 58185,
+      "ingested": "2026-05-04T03:20:21+00:00"
+    },
+    "https://www.youtube.com/watch?v=zU5EYw06wtw": {
+      "file": "benefits-risks-of-peptide-therapeutics-for-physical-mental-health-zU5EYw06wtw.md",
+      "kind": "youtube_transcript",
+      "title": "Benefits & Risks of Peptide Therapeutics for Physical & Mental Health",
+      "video_id": "zU5EYw06wtw",
+      "method": "auto-cc",
+      "words": 31567,
+      "ingested": "2026-05-04T03:20:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=H64KAkM0wF4": {
+      "file": "testosterone-testosterone-replacement-therapy-trt-dr-peter-attia-dr-andrew-huber-H64KAkM0wF4.md",
+      "kind": "youtube_transcript",
+      "title": "Testosterone & Testosterone Replacement Therapy (TRT) | Dr. Peter Attia & Dr. Andrew Huberman",
+      "video_id": "H64KAkM0wF4",
+      "method": "auto-cc",
+      "words": 3229,
+      "ingested": "2026-05-04T03:20:46+00:00"
+    },
+    "https://www.youtube.com/watch?v=B8staZOc_xQ": {
+      "file": "what-is-glp-1-how-does-it-reduce-appetite-promote-weight-loss-dr-andrew-huberman-B8staZOc_xQ.md",
+      "kind": "youtube_transcript",
+      "title": "What is GLP-1 & How Does It Reduce Appetite & Promote Weight Loss? | Dr. Andrew Huberman",
+      "video_id": "B8staZOc_xQ",
+      "method": "auto-cc",
+      "words": 2420,
+      "ingested": "2026-05-04T03:20:54+00:00"
+    },
+    "https://www.youtube.com/watch?v=Qm5vLDR2rXk": {
+      "file": "schulz-reacts-neuroscientist-dr-huberman-explains-peptides-Qm5vLDR2rXk.md",
+      "kind": "youtube_transcript",
+      "title": "Schulz Reacts: Neuroscientist Dr Huberman Explains PEPTIDES",
+      "video_id": "Qm5vLDR2rXk",
+      "method": "auto-cc",
+      "words": 5632,
+      "ingested": "2026-05-04T03:21:03+00:00"
+    },
+    "https://www.youtube.com/watch?v=KrSKoZXhl4c": {
+      "file": "trt-meets-glp-1-metabolic-dynamic-duo-doctor-s-analysis-KrSKoZXhl4c.md",
+      "kind": "youtube_transcript",
+      "title": "TRT Meets GLP-1: Metabolic Dynamic Duo - Doctor\u2019s Analysis",
+      "video_id": "KrSKoZXhl4c",
+      "method": "auto-cc",
+      "words": 7924,
+      "ingested": "2026-05-04T03:21:10+00:00"
+    },
+    "https://www.youtube.com/watch?v=DTCmprPCDqc": {
+      "file": "exercise-nutrition-hormones-for-vitality-longevity-dr-peter-attia-DTCmprPCDqc.md",
+      "kind": "youtube_transcript",
+      "title": "Exercise, Nutrition, Hormones for Vitality & Longevity | Dr. Peter Attia",
+      "video_id": "DTCmprPCDqc",
+      "method": "auto-cc",
+      "words": 32193,
+      "ingested": "2026-05-04T03:21:15+00:00"
+    },
+    "https://www.youtube.com/watch?v=spq8UKib3Zw": {
+      "file": "joe-rogan-experience-2195-andrew-huberman-spq8UKib3Zw.md",
+      "kind": "youtube_transcript",
+      "title": "Joe Rogan Experience #2195 - Andrew Huberman",
+      "video_id": "spq8UKib3Zw",
+      "method": "auto-cc",
+      "words": 78247,
+      "ingested": "2026-05-04T03:21:21+00:00"
+    },
+    "https://www.youtube.com/watch?v=wXFbs28wCVM": {
+      "file": "neuroscientist-what-are-peptides-how-do-they-work-wXFbs28wCVM.md",
+      "kind": "youtube_transcript",
+      "title": "Neuroscientist - What Are PEPTIDES & How Do They Work",
+      "video_id": "wXFbs28wCVM",
+      "method": "auto-cc",
+      "words": 3082,
+      "ingested": "2026-05-04T03:21:27+00:00"
+    },
+    "https://www.youtube.com/watch?v=-vjfaLY0y1o": {
+      "file": "exercise-scientist-reveals-his-thoughts-on-peptides-for-recovery-building-muscle--vjfaLY0y1o.md",
+      "kind": "youtube_transcript",
+      "title": "Exercise Scientist Reveals His Thoughts On PEPTIDES For Recovery, Building Muscle, & Losing Fat",
+      "video_id": "-vjfaLY0y1o",
+      "method": "auto-cc",
+      "words": 2207,
+      "ingested": "2026-05-04T03:21:31+00:00"
+    },
+    "https://www.youtube.com/watch?v=OQTsicKIajE": {
+      "file": "complete-guide-to-peptides-for-fat-loss-muscle-building-longevity-dr-kyle-gillet-OQTsicKIajE.md",
+      "kind": "youtube_transcript",
+      "title": "Complete Guide to Peptides for Fat Loss, Muscle Building & Longevity | Dr. Kyle Gillett MD",
+      "video_id": "OQTsicKIajE",
+      "method": "auto-cc",
+      "words": 12761,
+      "ingested": "2026-05-04T03:21:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=FsJYOdiDPno": {
+      "file": "doctor-explains-20-most-powerful-peptides-FsJYOdiDPno.md",
+      "kind": "youtube_transcript",
+      "title": "Doctor Explains 20 Most Powerful Peptides",
+      "video_id": "FsJYOdiDPno",
+      "method": "auto-cc",
+      "words": 2620,
+      "ingested": "2026-05-04T03:21:37+00:00"
+    },
+    "https://www.youtube.com/watch?v=vZX0U0owGT0": {
+      "file": "every-popular-peptide-ranked-glp-1-growth-hormone-hcg-nad-igf-1-peptide-tier-lis-vZX0U0owGT0.md",
+      "kind": "youtube_transcript",
+      "title": "Every Popular Peptide Ranked | GLP-1, Growth Hormone, HCG, NAD+, IGF-1, Peptide Tier List",
+      "video_id": "vZX0U0owGT0",
+      "method": "auto-cc",
+      "words": 28362,
+      "ingested": "2026-05-04T03:21:48+00:00"
+    },
+    "https://www.youtube.com/watch?v=ioQ1cvndrgA": {
+      "file": "tier-list-peptide-edition-ioQ1cvndrgA.md",
+      "kind": "youtube_transcript",
+      "title": "TIER LIST PEPTIDE EDITION",
+      "video_id": "ioQ1cvndrgA",
+      "method": "auto-cc",
+      "words": 2711,
+      "ingested": "2026-05-04T03:21:59+00:00"
+    },
+    "https://www.youtube.com/watch?v=3QdKIe8-v3g": {
+      "file": "peptide-hormone-therapies-for-health-performance-longevity-dr-craig-koniver-3QdKIe8-v3g.md",
+      "kind": "youtube_transcript",
+      "title": "Peptide & Hormone Therapies for Health, Performance & Longevity | Dr. Craig Koniver",
+      "video_id": "3QdKIe8-v3g",
+      "method": "auto-cc",
+      "words": 58069,
+      "ingested": "2026-05-04T03:22:06+00:00"
+    },
+    "https://www.youtube.com/watch?v=XXfvu1nWpPs": {
+      "file": "doctor-reveals-shocking-truth-about-peptides-XXfvu1nWpPs.md",
+      "kind": "youtube_transcript",
+      "title": "Doctor Reveals SHOCKING Truth About Peptides",
+      "video_id": "XXfvu1nWpPs",
+      "method": "auto-cc",
+      "words": 9173,
+      "ingested": "2026-05-04T03:22:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=f4cdu-QiKHo": {
+      "file": "lose-fat-with-science-based-tools-huberman-lab-essentials-f4cdu-QiKHo.md",
+      "kind": "youtube_transcript",
+      "title": "Lose Fat With Science-Based Tools | Huberman Lab Essentials",
+      "video_id": "f4cdu-QiKHo",
+      "method": "auto-cc",
+      "words": 5139,
+      "ingested": "2026-05-04T03:22:18+00:00"
+    },
+    "https://www.youtube.com/watch?v=alRkBOLlooQ": {
+      "file": "the-timeline-effect-of-sermorelin-alRkBOLlooQ.md",
+      "kind": "youtube_transcript",
+      "title": "The Timeline EFFECT of SERMORELIN",
+      "video_id": "alRkBOLlooQ",
+      "method": "auto-cc",
+      "words": 515,
+      "ingested": "2026-05-04T03:22:23+00:00"
+    },
+    "https://www.youtube.com/watch?v=jt5hHb6kzYM": {
+      "file": "peptide-expert-what-do-peptides-actually-do-explained-dr-alex-tatem-jt5hHb6kzYM.md",
+      "kind": "youtube_transcript",
+      "title": "Peptide Expert: What Do Peptides Actually Do? (EXPLAINED) - Dr Alex Tatem",
+      "video_id": "jt5hHb6kzYM",
+      "method": "auto-cc",
+      "words": 37404,
+      "ingested": "2026-05-04T03:22:29+00:00"
+    },
+    "https://www.youtube.com/watch?v=UyneMnERmnI": {
+      "file": "how-to-improve-your-vitality-heal-from-disease-dr-mark-hyman-UyneMnERmnI.md",
+      "kind": "youtube_transcript",
+      "title": "How to Improve Your Vitality & Heal From Disease | Dr. Mark Hyman",
+      "video_id": "UyneMnERmnI",
+      "method": "auto-cc",
+      "words": 32825,
+      "ingested": "2026-05-04T03:22:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=QGIFdakceHM": {
+      "file": "pros-cons-of-glp-1-weight-loss-drugs-dr-ralph-defronzo-QGIFdakceHM.md",
+      "kind": "youtube_transcript",
+      "title": "Pros & cons of GLP-1 weight loss drugs |  Dr. Ralph DeFronzo",
+      "video_id": "QGIFdakceHM",
+      "method": "auto-cc",
+      "words": 4180,
+      "ingested": "2026-05-04T03:22:39+00:00"
+    },
+    "https://www.youtube.com/watch?v=d898NBHvk8Y": {
+      "file": "why-i-stopped-bpc-157-and-tb-500-peptides-april-26-2024-d898NBHvk8Y.md",
+      "kind": "youtube_transcript",
+      "title": "Why I Stopped BPC-157 and TB-500 Peptides - April 26, 2024",
+      "video_id": "d898NBHvk8Y",
+      "method": "auto-cc",
+      "words": 2411,
+      "ingested": "2026-05-04T03:22:47+00:00"
+    },
+    "https://www.youtube.com/watch?v=3Xjn3aIHi3Y": {
+      "file": "retatrutide-the-longevity-secret-unbreakable-podcast-220-3Xjn3aIHi3Y.md",
+      "kind": "youtube_transcript",
+      "title": "Retatrutide The Longevity Secret - Unbreakable Podcast 220",
+      "video_id": "3Xjn3aIHi3Y",
+      "method": "auto-cc",
+      "words": 14068,
+      "ingested": "2026-05-04T03:22:56+00:00"
+    },
+    "https://www.youtube.com/watch?v=P6gt4A_3Whs": {
+      "file": "role-of-glp-1-receptor-agonists-for-weight-loss-P6gt4A_3Whs.md",
+      "kind": "youtube_transcript",
+      "title": "Role of GLP-1 Receptor Agonists for Weight Loss",
+      "video_id": "P6gt4A_3Whs",
+      "method": "auto-cc",
+      "words": 1711,
+      "ingested": "2026-05-04T03:23:04+00:00"
+    },
+    "https://www.youtube.com/watch?v=XLe_NLiHwwg": {
+      "file": "using-peptides-for-hormone-supplementation-with-dr-william-seeds-XLe_NLiHwwg.md",
+      "kind": "youtube_transcript",
+      "title": "Using PEPTIDES For HORMONE SUPPLEMENTATION With Dr.William Seeds",
+      "video_id": "XLe_NLiHwwg",
+      "method": "auto-cc",
+      "words": 2001,
+      "ingested": "2026-05-04T03:23:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=uEZpg0n7jcY": {
+      "file": "menstruation-menopause-and-hormone-replacement-therapy-for-women-uEZpg0n7jcY.md",
+      "kind": "youtube_transcript",
+      "title": "Menstruation, Menopause, and Hormone Replacement Therapy for Women",
+      "video_id": "uEZpg0n7jcY",
+      "method": "auto-cc",
+      "words": 8227,
+      "ingested": "2026-05-04T03:23:20+00:00"
+    },
+    "https://www.youtube.com/watch?v=QJ1VPchw3ns": {
+      "file": "peptides-ugl-gear-QJ1VPchw3ns.md",
+      "kind": "youtube_transcript",
+      "title": "Peptides & UGL Gear",
+      "video_id": "QJ1VPchw3ns",
+      "method": "auto-cc",
+      "words": 2805,
+      "ingested": "2026-05-04T03:23:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=Cu9PVWM2fJo": {
+      "file": "science-backed-peptides-more-muscle-dream-level-sleep-laser-focus-Cu9PVWM2fJo.md",
+      "kind": "youtube_transcript",
+      "title": "Science-Backed Peptides: More Muscle, Dream-Level Sleep, Laser Focus",
+      "video_id": "Cu9PVWM2fJo",
+      "method": "auto-cc",
+      "words": 6048,
+      "ingested": "2026-05-04T03:23:33+00:00"
+    },
+    "https://www.youtube.com/watch?v=QZr97DPMnr0": {
+      "file": "dr-craig-koniver-peptide-hormone-therapies-for-health-performance-longevity-hube-QZr97DPMnr0.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Craig Koniver: Peptide & Hormone Therapies for Health, Performance & Longevity | Huberman Lab",
+      "video_id": "QZr97DPMnr0",
+      "method": "auto-cc",
+      "words": 3599,
+      "ingested": "2026-05-04T03:23:43+00:00"
+    },
+    "https://www.youtube.com/watch?v=AQoawPLUKxk": {
+      "file": "i-tried-all-the-fat-loss-peptides-and-this-happened-AQoawPLUKxk.md",
+      "kind": "youtube_transcript",
+      "title": "I Tried All The Fat Loss Peptides And THIS Happened!",
+      "video_id": "AQoawPLUKxk",
+      "method": "auto-cc",
+      "words": 3688,
+      "ingested": "2026-05-04T03:23:51+00:00"
+    },
+    "https://www.youtube.com/watch?v=W4BrEVRKgW4": {
+      "file": "andrew-huberman-s-favorite-peptide-sermorelin-W4BrEVRKgW4.md",
+      "kind": "youtube_transcript",
+      "title": "Andrew Huberman's Favorite Peptide: Sermorelin",
+      "video_id": "W4BrEVRKgW4",
+      "method": "auto-cc",
+      "words": 1840,
+      "ingested": "2026-05-04T03:23:58+00:00"
+    },
+    "https://www.youtube.com/watch?v=Ay4Xb_ZrX_w": {
+      "file": "sermorelin-uses-dosage-side-effects-and-warnings-Ay4Xb_ZrX_w.md",
+      "kind": "youtube_transcript",
+      "title": "Sermorelin: Uses, Dosage, Side Effects and Warnings",
+      "video_id": "Ay4Xb_ZrX_w",
+      "method": "auto-cc",
+      "words": 997,
+      "ingested": "2026-05-04T03:24:05+00:00"
+    },
+    "https://www.youtube.com/watch?v=h_1zlead9ZU": {
+      "file": "how-to-lose-fat-gain-muscle-with-nutrition-alan-aragon-h_1zlead9ZU.md",
+      "kind": "youtube_transcript",
+      "title": "How to Lose Fat & Gain Muscle With Nutrition | Alan Aragon",
+      "video_id": "h_1zlead9ZU",
+      "method": "auto-cc",
+      "words": 25156,
+      "ingested": "2026-05-04T03:24:16+00:00"
+    },
+    "https://www.youtube.com/watch?v=LmOJf1nyRHs": {
+      "file": "doctor-reveals-the-best-peptide-stack-for-massive-muscle-growth-in-2026-LmOJf1nyRHs.md",
+      "kind": "youtube_transcript",
+      "title": "Doctor Reveals The Best Peptide Stack For Massive Muscle Growth in 2026",
+      "video_id": "LmOJf1nyRHs",
+      "method": "auto-cc",
+      "words": 7697,
+      "ingested": "2026-05-04T03:24:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=NimKqmSA_BQ": {
+      "file": "incretin-hormones-what-they-do-inside-you-NimKqmSA_BQ.md",
+      "kind": "youtube_transcript",
+      "title": "Incretin Hormones: What They Do Inside You",
+      "video_id": "NimKqmSA_BQ",
+      "method": "auto-cc",
+      "words": 618,
+      "ingested": "2026-05-04T03:24:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=OxKxYXcxegQ": {
+      "file": "growth-hormone-101-what-it-is-where-it-comes-from-and-what-it-does-peter-attia-d-OxKxYXcxegQ.md",
+      "kind": "youtube_transcript",
+      "title": "Growth Hormone 101: What it is, where it comes from, and what it does | Peter Attia & Derek MPMD",
+      "video_id": "OxKxYXcxegQ",
+      "method": "auto-cc",
+      "words": 5604,
+      "ingested": "2026-05-04T03:24:38+00:00"
+    },
+    "https://www.youtube.com/watch?v=RiN4AeROBlQ": {
+      "file": "glp-1-for-anti-aging-neurodegenerative-disease-peptides-for-women-with-dr-s-RiN4AeROBlQ.md",
+      "kind": "youtube_transcript",
+      "title": "GLP-1 for Anti-Aging, Neurodegenerative Disease - Peptides For Women with Dr. S",
+      "video_id": "RiN4AeROBlQ",
+      "method": "auto-cc",
+      "words": 1410,
+      "ingested": "2026-05-04T03:24:44+00:00"
+    },
+    "https://www.youtube.com/watch?v=QKTUTsSjIyg": {
+      "file": "the-strongest-peptide-for-building-muscle-cjc-1295-ipamorelin-benefits-risks-QKTUTsSjIyg.md",
+      "kind": "youtube_transcript",
+      "title": "The Strongest Peptide for Building Muscle | CJC 1295 & Ipamorelin Benefits & Risks",
+      "video_id": "QKTUTsSjIyg",
+      "method": "auto-cc",
+      "words": 5751,
+      "ingested": "2026-05-04T03:24:53+00:00"
+    },
+    "https://www.youtube.com/watch?v=YwyD1xJwFgw": {
+      "file": "the-best-peptide-for-insulin-resistance-mitochondrial-health-mots-c-masterclass-YwyD1xJwFgw.md",
+      "kind": "youtube_transcript",
+      "title": "The Best Peptide for Insulin Resistance & Mitochondrial Health: MOTS-C Masterclass",
+      "video_id": "YwyD1xJwFgw",
+      "method": "auto-cc",
+      "words": 5133,
+      "ingested": "2026-05-04T03:25:01+00:00"
+    },
+    "https://www.youtube.com/watch?v=6P8hrzjnetU": {
+      "file": "how-to-navigate-menopause-perimenopause-for-maximum-health-vitality-dr-mary-clai-6P8hrzjnetU.md",
+      "kind": "youtube_transcript",
+      "title": "How to Navigate Menopause & Perimenopause for Maximum Health & Vitality | Dr. Mary Claire Haver",
+      "video_id": "6P8hrzjnetU",
+      "method": "auto-cc",
+      "words": 52143,
+      "ingested": "2026-05-04T03:25:05+00:00"
+    },
+    "https://www.youtube.com/watch?v=2bjjIPs3Es0": {
+      "file": "understanding-igf-1-insulin-like-growth-factor-in-simple-terms-dr-berg-2bjjIPs3Es0.md",
+      "kind": "youtube_transcript",
+      "title": "Understanding IGF-1 (Insulin-Like Growth Factor) in Simple Terms \u2013 Dr. Berg",
+      "video_id": "2bjjIPs3Es0",
+      "method": "auto-cc",
+      "words": 979,
+      "ingested": "2026-05-04T03:25:11+00:00"
+    },
+    "https://www.youtube.com/watch?v=aXvDEmo6uS4": {
+      "file": "maximizing-productivity-physical-mental-health-with-daily-tools-aXvDEmo6uS4.md",
+      "kind": "youtube_transcript",
+      "title": "Maximizing Productivity, Physical & Mental Health with Daily Tools",
+      "video_id": "aXvDEmo6uS4",
+      "method": "auto-cc",
+      "words": 22931,
+      "ingested": "2026-05-04T03:25:26+00:00"
+    },
+    "https://www.youtube.com/watch?v=OfcexE9s4yw": {
+      "file": "taking-the-bpc-157-tb-500-wolverine-stack-thomas-delauer-OfcexE9s4yw.md",
+      "kind": "youtube_transcript",
+      "title": "Taking The BPC-157 & TB-500 WOLVERINE STACK | Thomas Delauer",
+      "video_id": "OfcexE9s4yw",
+      "method": "auto-cc",
+      "words": 3603,
+      "ingested": "2026-05-04T03:25:31+00:00"
+    },
+    "https://www.youtube.com/watch?v=PcZYGw4D3aw": {
+      "file": "retatrutide-is-changing-fat-loss-in-2026-beginners-guide-PcZYGw4D3aw.md",
+      "kind": "youtube_transcript",
+      "title": "Retatrutide is Changing Fat-Loss in 2026 (Beginners Guide)",
+      "video_id": "PcZYGw4D3aw",
+      "method": "auto-cc",
+      "words": 4143,
+      "ingested": "2026-05-04T03:25:37+00:00"
+    },
+    "https://www.youtube.com/watch?v=h9KcsUreBHM": {
+      "file": "12-weeks-on-retatrutide-what-now-h9KcsUreBHM.md",
+      "kind": "youtube_transcript",
+      "title": "12 Weeks on Retatrutide | What Now?",
+      "video_id": "h9KcsUreBHM",
+      "method": "auto-cc",
+      "words": 6384,
+      "ingested": "2026-05-04T03:25:46+00:00"
+    },
+    "https://www.youtube.com/watch?v=7czDHgISmKs": {
+      "file": "sermorelin-the-peptide-for-growth-hormone-optimization-in-anti-aging-medicine-7czDHgISmKs.md",
+      "kind": "youtube_transcript",
+      "title": "Sermorelin: The Peptide for Growth Hormone Optimization in Anti-Aging Medicine",
+      "video_id": "7czDHgISmKs",
+      "method": "auto-cc",
+      "words": 5460,
+      "ingested": "2026-05-04T03:25:56+00:00"
+    },
+    "https://www.youtube.com/watch?v=r1AfHN4hgjQ": {
+      "file": "everything-you-need-to-know-about-retatrutide-the-newest-glp1-agonist-r1AfHN4hgjQ.md",
+      "kind": "youtube_transcript",
+      "title": "Everything you need to know about Retatrutide, the newest GLP1 agonist",
+      "video_id": "r1AfHN4hgjQ",
+      "method": "auto-cc",
+      "words": 5664,
+      "ingested": "2026-05-04T03:26:03+00:00"
+    },
+    "https://www.youtube.com/watch?v=C0DMdUqF73Q": {
+      "file": "the-best-vitality-health-protocols-dr-rhonda-patrick-C0DMdUqF73Q.md",
+      "kind": "youtube_transcript",
+      "title": "The Best Vitality & Health Protocols | Dr. Rhonda Patrick",
+      "video_id": "C0DMdUqF73Q",
+      "method": "auto-cc",
+      "words": 86532,
+      "ingested": "2026-05-04T03:26:13+00:00"
+    },
+    "https://www.youtube.com/watch?v=qiLECVCtPkU": {
+      "file": "are-peptides-the-new-steroids-with-dr-michael-moeller-drmichaelmoeller-qiLECVCtPkU.md",
+      "kind": "youtube_transcript",
+      "title": "Are Peptides the New Steroids? with Dr. Michael Moeller @DrMichaelMoeller",
+      "video_id": "qiLECVCtPkU",
+      "method": "auto-cc",
+      "words": 33401,
+      "ingested": "2026-05-04T03:26:19+00:00"
+    },
+    "https://www.youtube.com/watch?v=NvxZFUCrw2Y": {
+      "file": "the-top-3-peptides-to-lose-fat-forever-NvxZFUCrw2Y.md",
+      "kind": "youtube_transcript",
+      "title": "The Top 3 Peptides to Lose Fat Forever",
+      "video_id": "NvxZFUCrw2Y",
+      "method": "auto-cc",
+      "words": 8590,
+      "ingested": "2026-05-04T03:26:22+00:00"
+    },
+    "https://www.youtube.com/watch?v=UGhCcQZzrFo": {
+      "file": "male-mortality-men-s-health-issues-barriers-testosterone-pde5-therapy-and-glp1-a-UGhCcQZzrFo.md",
+      "kind": "youtube_transcript",
+      "title": "Male Mortality & Men\u2019s Health Issues: Barriers, Testosterone, PDE5 Therapy, and GLP1 Agonist Therapy",
+      "video_id": "UGhCcQZzrFo",
+      "method": "auto-cc",
+      "words": 3353,
+      "ingested": "2026-05-04T03:26:27+00:00"
+    },
+    "https://www.youtube.com/watch?v=132HfSBXuBk": {
+      "file": "doctor-reviews-nad-vs-peptides-which-does-more-132HfSBXuBk.md",
+      "kind": "youtube_transcript",
+      "title": "Doctor Reviews NAD+ vs Peptides - Which Does MORE?",
+      "video_id": "132HfSBXuBk",
+      "method": "auto-cc",
+      "words": 3023,
+      "ingested": "2026-05-04T03:26:32+00:00"
+    },
+    "https://www.youtube.com/watch?v=KU4CgAIw584": {
+      "file": "what-is-retatrutide-how-it-works-my-5-week-results-KU4CgAIw584.md",
+      "kind": "youtube_transcript",
+      "title": "What Is Retatrutide? How It Works + My 5-Week Results",
+      "video_id": "KU4CgAIw584",
+      "method": "auto-cc",
+      "words": 4907,
+      "ingested": "2026-05-04T03:26:37+00:00"
+    },
+    "https://www.youtube.com/watch?v=FVNuMfa3ztU": {
+      "file": "the-only-peptide-stack-you-need-to-get-shredded-before-summer-2026-beginners-gui-FVNuMfa3ztU.md",
+      "kind": "youtube_transcript",
+      "title": "The ONLY Peptide Stack You Need to Get Shredded Before Summer 2026 (Beginners Guide)",
+      "video_id": "FVNuMfa3ztU",
+      "method": "auto-cc",
+      "words": 5097,
+      "ingested": "2026-05-04T03:26:44+00:00"
+    },
+    "https://www.youtube.com/watch?v=w_l6KHAA2fs": {
+      "file": "sarms-oxytocin-weight-loss-and-dysbiosis-peptides-for-women-with-dr-s-w_l6KHAA2fs.md",
+      "kind": "youtube_transcript",
+      "title": "SARMs, Oxytocin, Weight Loss, and Dysbiosis - Peptides For Women with Dr. S",
+      "video_id": "w_l6KHAA2fs",
+      "method": "auto-cc",
+      "words": 1736,
+      "ingested": "2026-05-04T03:26:48+00:00"
+    },
+    "https://www.youtube.com/watch?v=EPUdtm-h_WA": {
+      "file": "what-is-glucagon-like-peptide-1-glp-1-how-it-affects-diabetes-weight-loss-EPUdtm-h_WA.md",
+      "kind": "youtube_transcript",
+      "title": "What Is Glucagon-Like Peptide 1 (GLP-1)? How It Affects Diabetes & Weight Loss! \ud83d\udc89",
+      "video_id": "EPUdtm-h_WA",
+      "method": "auto-cc",
+      "words": 599,
+      "ingested": "2026-05-04T03:26:53+00:00"
+    },
+    "https://www.youtube.com/watch?v=m_OazsImOiI": {
+      "file": "the-science-treatment-of-bipolar-disorder-m_OazsImOiI.md",
+      "kind": "youtube_transcript",
+      "title": "The Science & Treatment of Bipolar Disorder",
+      "video_id": "m_OazsImOiI",
+      "method": "auto-cc",
+      "words": 24484,
+      "ingested": "2026-05-04T03:26:58+00:00"
+    },
+    "https://www.youtube.com/watch?v=3k9pBu27LcM": {
+      "file": "the-truth-about-popular-peptides-what-works-what-s-overhyped-peptide-tier-list-p-3k9pBu27LcM.md",
+      "kind": "youtube_transcript",
+      "title": "The Truth About Popular Peptides (What Works, What\u2019s Overhyped) | Peptide Tier List pt.1",
+      "video_id": "3k9pBu27LcM",
+      "method": "auto-cc",
+      "words": 12721,
+      "ingested": "2026-05-04T03:27:02+00:00"
+    },
+    "https://www.youtube.com/watch?v=4NEEmI0eNjQ": {
+      "file": "why-this-peptide-is-taking-over-bodybuilding-4NEEmI0eNjQ.md",
+      "kind": "youtube_transcript",
+      "title": "Why This Peptide Is Taking Over Bodybuilding",
+      "video_id": "4NEEmI0eNjQ",
+      "method": "auto-cc",
+      "words": 4454,
+      "ingested": "2026-05-04T03:27:07+00:00"
+    },
+    "https://www.youtube.com/watch?v=g9RAWb7Cmm4": {
+      "file": "fat-loss-just-changed-forever-g9RAWb7Cmm4.md",
+      "kind": "youtube_transcript",
+      "title": "Fat Loss Just Changed, Forever.",
+      "video_id": "g9RAWb7Cmm4",
+      "method": "auto-cc",
+      "words": 8353,
+      "ingested": "2026-05-04T03:27:13+00:00"
+    },
+    "https://www.youtube.com/watch?v=O7g54Zt8xmE": {
+      "file": "human-growth-hormone-hgh-for-longevity-does-it-slow-aging-the-peter-attia-drive--O7g54Zt8xmE.md",
+      "kind": "youtube_transcript",
+      "title": "Human growth hormone (HGH) for longevity: Does it slow aging? | The Peter Attia Drive Podcast",
+      "video_id": "O7g54Zt8xmE",
+      "method": "auto-cc",
+      "words": 3057,
+      "ingested": "2026-05-04T03:27:19+00:00"
+    },
+    "https://www.youtube.com/watch?v=gaQwrB8HW4o": {
+      "file": "what-science-actually-says-about-bpc-157-benefits-gaQwrB8HW4o.md",
+      "kind": "youtube_transcript",
+      "title": "What Science ACTUALLY Says About BPC 157 Benefits",
+      "video_id": "gaQwrB8HW4o",
+      "method": "auto-cc",
+      "words": 2082,
+      "ingested": "2026-05-04T03:27:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=EJ0nO0WQ55o": {
+      "file": "3-semaglutide-tips-for-max-weight-loss-complete-glp-1-guide-dr-stirrett-EJ0nO0WQ55o.md",
+      "kind": "youtube_transcript",
+      "title": "3 Semaglutide Tips for Max Weight Loss | Complete GLP-1 Guide | Dr. Stirrett",
+      "video_id": "EJ0nO0WQ55o",
+      "method": "auto-cc",
+      "words": 5343,
+      "ingested": "2026-05-04T03:27:30+00:00"
+    },
+    "https://www.youtube.com/watch?v=JNEOEFAychA": {
+      "file": "bpc-157-everything-you-need-to-know-benefits-risks-dosing-delivery-methods-JNEOEFAychA.md",
+      "kind": "youtube_transcript",
+      "title": "BPC-157: Everything You Need to Know\u2014Benefits, Risks, Dosing, & Delivery Methods",
+      "video_id": "JNEOEFAychA",
+      "method": "auto-cc",
+      "words": 12009,
+      "ingested": "2026-05-04T03:27:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=kdQ83_Je_qs": {
+      "file": "real-dr-explains-cjc-1295-ipamorelin-the-classic-peptide-stack-kdQ83_Je_qs.md",
+      "kind": "youtube_transcript",
+      "title": "Real Dr Explains CJC-1295 + Ipamorelin - The CLASSIC Peptide Stack",
+      "video_id": "kdQ83_Je_qs",
+      "method": "auto-cc",
+      "words": 3839,
+      "ingested": "2026-05-04T03:27:40+00:00"
+    },
+    "https://www.youtube.com/watch?v=804mwP1mx8w": {
+      "file": "world-s-leading-peptide-scientist-peptide-masterclass-for-building-muscle-dr-wil-804mwP1mx8w.md",
+      "kind": "youtube_transcript",
+      "title": "World\u2019s LEADING Peptide Scientist: Peptide Masterclass for Building Muscle | Dr. William Seeds",
+      "video_id": "804mwP1mx8w",
+      "method": "auto-cc",
+      "words": 18087,
+      "ingested": "2026-05-04T03:27:45+00:00"
+    },
+    "https://www.youtube.com/watch?v=fYt6_RwWu7c": {
+      "file": "losing-over-50-pounds-with-glp-1-agonists-fYt6_RwWu7c.md",
+      "kind": "youtube_transcript",
+      "title": "Losing Over 50 POUNDS With GLP-1 Agonists",
+      "video_id": "fYt6_RwWu7c",
+      "method": "auto-cc",
+      "words": 7414,
+      "ingested": "2026-05-04T03:27:51+00:00"
+    },
+    "https://www.youtube.com/watch?v=OooPbgMUwuM": {
+      "file": "top-10-reasons-type-2-should-supplement-with-peptides-OooPbgMUwuM.md",
+      "kind": "youtube_transcript",
+      "title": "Top 10 Reasons Type 2 Should Supplement With Peptides",
+      "video_id": "OooPbgMUwuM",
+      "method": "auto-cc",
+      "words": 659,
+      "ingested": "2026-05-04T03:27:56+00:00"
+    },
+    "https://www.youtube.com/watch?v=cLON5i89gpE": {
+      "file": "dr-peter-attia-pt-2-hormones-ozempic-weight-loss-insulin-resistance-testosterone-cLON5i89gpE.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Peter Attia Pt 2 - Hormones, Ozempic Weight Loss, Insulin Resistance, & Testosterone Replacement",
+      "video_id": "cLON5i89gpE",
+      "method": "auto-cc",
+      "words": 26114,
+      "ingested": "2026-05-04T03:28:04+00:00"
+    },
+    "https://www.youtube.com/watch?v=IrjswsuYZRU": {
+      "file": "mk-677-review-by-a-doctor-is-it-safe-or-hype-IrjswsuYZRU.md",
+      "kind": "youtube_transcript",
+      "title": "MK-677 Review by a Doctor | Is It Safe or Hype?",
+      "video_id": "IrjswsuYZRU",
+      "method": "auto-cc",
+      "words": 5100,
+      "ingested": "2026-05-04T03:28:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=S5Rw5brYMeI": {
+      "file": "insights-and-risks-with-cjc-1295-ipamorelin-S5Rw5brYMeI.md",
+      "kind": "youtube_transcript",
+      "title": "Insights and Risks with CJC-1295 Ipamorelin",
+      "video_id": "S5Rw5brYMeI",
+      "method": "auto-cc",
+      "words": 3490,
+      "ingested": "2026-05-04T03:28:20+00:00"
+    },
+    "https://www.youtube.com/watch?v=HQ1_umbFG2Y": {
+      "file": "anti-obesity-drug-9604-peptides-episode-11-fda-approved-for-fat-loss-HQ1_umbFG2Y.md",
+      "kind": "youtube_transcript",
+      "title": "Anti Obesity Drug-9604 | Peptides Episode 11 | FDA Approved For Fat Loss!",
+      "video_id": "HQ1_umbFG2Y",
+      "method": "auto-cc",
+      "words": 3554,
+      "ingested": "2026-05-04T03:28:29+00:00"
+    },
+    "https://www.youtube.com/watch?v=AjSl4n_KdOY": {
+      "file": "the-igf-1-trade-off-performance-vs-longevity-AjSl4n_KdOY.md",
+      "kind": "youtube_transcript",
+      "title": "The IGF-1 Trade-Off: Performance vs. Longevity",
+      "video_id": "AjSl4n_KdOY",
+      "method": "auto-cc",
+      "words": 1546,
+      "ingested": "2026-05-04T03:28:36+00:00"
+    },
+    "https://www.youtube.com/watch?v=GSdJ5i1wvQY": {
+      "file": "before-you-start-peptides-a-doctor-answers-your-biggest-questions-GSdJ5i1wvQY.md",
+      "kind": "youtube_transcript",
+      "title": "Before You Start Peptides: A Doctor Answers Your Biggest Questions",
+      "video_id": "GSdJ5i1wvQY",
+      "method": "auto-cc",
+      "words": 3349,
+      "ingested": "2026-05-04T03:28:45+00:00"
+    },
+    "https://www.youtube.com/watch?v=qcLl9GkaZkA": {
+      "file": "unlock-the-power-of-igf-1-lr3-revolutionizing-muscle-growth-and-metabolic-health-qcLl9GkaZkA.md",
+      "kind": "youtube_transcript",
+      "title": "Unlock the Power of IGF-1 LR3: Revolutionizing Muscle Growth and Metabolic Health",
+      "video_id": "qcLl9GkaZkA",
+      "method": "auto-cc",
+      "words": 1385,
+      "ingested": "2026-05-04T03:28:53+00:00"
+    },
+    "https://www.youtube.com/watch?v=Oq7UbOGBmRA": {
+      "file": "the-truth-about-peptides-do-they-really-burn-fat-Oq7UbOGBmRA.md",
+      "kind": "youtube_transcript",
+      "title": "The Truth About Peptides | Do They Really Burn Fat?",
+      "video_id": "Oq7UbOGBmRA",
+      "method": "auto-cc",
+      "words": 4195,
+      "ingested": "2026-05-04T03:28:59+00:00"
+    },
+    "https://www.youtube.com/watch?v=JWCOqoZP-gk": {
+      "file": "peptide-therapy-semaglutide-JWCOqoZP-gk.md",
+      "kind": "youtube_transcript",
+      "title": "Peptide Therapy | Semaglutide",
+      "video_id": "JWCOqoZP-gk",
+      "method": "auto-cc",
+      "words": 1294,
+      "ingested": "2026-05-04T03:29:05+00:00"
+    },
+    "https://www.youtube.com/watch?v=biZpKEr7ZuQ": {
+      "file": "the-only-3-peptides-you-need-to-get-shredded-in-2026-beginners-guide-biZpKEr7ZuQ.md",
+      "kind": "youtube_transcript",
+      "title": "The Only 3 Peptides You Need to Get Shredded in 2026 (Beginners Guide!)",
+      "video_id": "biZpKEr7ZuQ",
+      "method": "auto-cc",
+      "words": 6124,
+      "ingested": "2026-05-04T03:29:11+00:00"
+    },
+    "https://www.youtube.com/watch?v=RsfGEbbjlFU": {
+      "file": "wtf-are-peptides-risks-and-rewards-RsfGEbbjlFU.md",
+      "kind": "youtube_transcript",
+      "title": "WTF are Peptides? \u2013 Risks and Rewards",
+      "video_id": "RsfGEbbjlFU",
+      "method": "auto-cc",
+      "words": 1532,
+      "ingested": "2026-05-04T03:29:18+00:00"
+    },
+    "https://www.youtube.com/watch?v=HKWOcjajPo8": {
+      "file": "exercise-scientist-dismantles-gary-brecka-s-absurd-health-advice-HKWOcjajPo8.md",
+      "kind": "youtube_transcript",
+      "title": "Exercise Scientist Dismantles Gary Brecka\u2019s Absurd Health Advice",
+      "video_id": "HKWOcjajPo8",
+      "method": "auto-cc",
+      "words": 8847,
+      "ingested": "2026-05-04T03:29:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=GqPGXG5TlZw": {
+      "file": "how-to-lose-fat-with-science-based-tools-GqPGXG5TlZw.md",
+      "kind": "youtube_transcript",
+      "title": "How to Lose Fat with Science-Based Tools",
+      "video_id": "GqPGXG5TlZw",
+      "method": "auto-cc",
+      "words": 19107,
+      "ingested": "2026-05-04T03:29:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=15R2pMqU2ok": {
+      "file": "how-to-enhance-your-gut-microbiome-for-brain-overall-health-15R2pMqU2ok.md",
+      "kind": "youtube_transcript",
+      "title": "How to Enhance Your Gut Microbiome for Brain & Overall Health",
+      "video_id": "15R2pMqU2ok",
+      "method": "auto-cc",
+      "words": 19762,
+      "ingested": "2026-05-04T03:29:41+00:00"
+    },
+    "https://www.youtube.com/watch?v=lYVWU-BWEX0": {
+      "file": "peptide-journey-update-end-of-week-7-cjc1295-ipamorelin-lYVWU-BWEX0.md",
+      "kind": "youtube_transcript",
+      "title": "Peptide Journey Update - End of Week 7 (CJC1295/Ipamorelin)",
+      "video_id": "lYVWU-BWEX0",
+      "method": "auto-cc",
+      "words": 1989,
+      "ingested": "2026-05-04T03:29:47+00:00"
+    },
+    "https://www.youtube.com/watch?v=ZVTk7utqjHc": {
+      "file": "all-about-ghk-cu-peptide-more-than-just-cosmetic-ZVTk7utqjHc.md",
+      "kind": "youtube_transcript",
+      "title": "All About GHK-Cu Peptide | More Than Just Cosmetic",
+      "video_id": "ZVTk7utqjHc",
+      "method": "auto-cc",
+      "words": 1410,
+      "ingested": "2026-05-04T03:29:52+00:00"
+    },
+    "https://www.youtube.com/watch?v=819bZCHpV9Y": {
+      "file": "mechanism-of-action-for-glp-1-ras-the-how-819bZCHpV9Y.md",
+      "kind": "youtube_transcript",
+      "title": "Mechanism of Action for GLP 1 RAs: \"The How\"",
+      "video_id": "819bZCHpV9Y",
+      "method": "auto-cc",
+      "words": 1466,
+      "ingested": "2026-05-04T03:29:58+00:00"
+    },
+    "https://www.youtube.com/watch?v=meikd_6QOHA": {
+      "file": "how-to-optimize-sleep-naturally-with-medications-and-peptides-meikd_6QOHA.md",
+      "kind": "youtube_transcript",
+      "title": "How to Optimize Sleep: Naturally & With Medications and Peptides",
+      "video_id": "meikd_6QOHA",
+      "method": "auto-cc",
+      "words": 11898,
+      "ingested": "2026-05-04T03:30:06+00:00"
+    },
+    "https://www.youtube.com/watch?v=QlQyvXS6kLk": {
+      "file": "the-1-nutrient-deficiency-in-high-blood-pressure-hypertension-QlQyvXS6kLk.md",
+      "kind": "youtube_transcript",
+      "title": "The #1 Nutrient Deficiency in High Blood Pressure (Hypertension)",
+      "video_id": "QlQyvXS6kLk",
+      "method": "auto-cc",
+      "words": 1837,
+      "ingested": "2026-05-04T03:30:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=T6fhFLv2ERs": {
+      "file": "cause-for-caution-with-weight-loss-drugs-like-ozempic-peter-attia-m-d-T6fhFLv2ERs.md",
+      "kind": "youtube_transcript",
+      "title": "Cause for caution with weight loss drugs like Ozempic | Peter Attia, M.D.",
+      "video_id": "T6fhFLv2ERs",
+      "method": "auto-cc",
+      "words": 1976,
+      "ingested": "2026-05-04T03:30:19+00:00"
+    },
+    "https://www.youtube.com/watch?v=aIUPQ8K7FTI": {
+      "file": "medical-education-what-is-semaglutide-aIUPQ8K7FTI.md",
+      "kind": "youtube_transcript",
+      "title": "Medical Education - What is Semaglutide?",
+      "video_id": "aIUPQ8K7FTI",
+      "method": "auto-cc",
+      "words": 1792,
+      "ingested": "2026-05-04T03:30:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=QX6gCRJZ0dk": {
+      "file": "the-mind-blowing-benefits-of-berberine-QX6gCRJZ0dk.md",
+      "kind": "youtube_transcript",
+      "title": "The Mind-Blowing Benefits of Berberine",
+      "video_id": "QX6gCRJZ0dk",
+      "method": "auto-cc",
+      "words": 1219,
+      "ingested": "2026-05-04T03:30:33+00:00"
+    },
+    "https://www.youtube.com/watch?v=DGiwZXhxCDk": {
+      "file": "semaglutide-the-basics-DGiwZXhxCDk.md",
+      "kind": "youtube_transcript",
+      "title": "Semaglutide: The Basics",
+      "video_id": "DGiwZXhxCDk",
+      "method": "auto-cc",
+      "words": 2336,
+      "ingested": "2026-05-04T03:30:39+00:00"
+    },
+    "https://www.youtube.com/watch?v=Ykvkg2Jz3X8": {
+      "file": "essentials-the-biology-of-slowing-reversing-aging-dr-david-sinclair-Ykvkg2Jz3X8.md",
+      "kind": "youtube_transcript",
+      "title": "Essentials: The Biology of Slowing & Reversing Aging | Dr. David Sinclair",
+      "video_id": "Ykvkg2Jz3X8",
+      "method": "auto-cc",
+      "words": 12558,
+      "ingested": "2026-05-04T03:30:48+00:00"
+    },
+    "https://www.youtube.com/watch?v=_q6_2wDX1i8": {
+      "file": "5-best-holistic-treatments-for-mcas-mast-cell-activation-syndrome-_q6_2wDX1i8.md",
+      "kind": "youtube_transcript",
+      "title": "5 Best HOLISTIC Treatments for MCAS (Mast Cell Activation Syndrome)",
+      "video_id": "_q6_2wDX1i8",
+      "method": "auto-cc",
+      "words": 4001,
+      "ingested": "2026-05-04T03:30:53+00:00"
+    },
+    "https://www.youtube.com/watch?v=McgzzI1DEPE": {
+      "file": "risks-and-benefits-of-dhea-supplementation-peter-attia-derek-mpmd-McgzzI1DEPE.md",
+      "kind": "youtube_transcript",
+      "title": "Risks and benefits of DHEA supplementation | Peter Attia & Derek MPMD",
+      "video_id": "McgzzI1DEPE",
+      "method": "auto-cc",
+      "words": 2338,
+      "ingested": "2026-05-04T03:31:02+00:00"
+    },
+    "https://www.youtube.com/watch?v=9YtpI0E-9B8": {
+      "file": "the-fat-burning-peptide-aod-9604-9YtpI0E-9B8.md",
+      "kind": "youtube_transcript",
+      "title": "The Fat Burning Peptide | AOD-9604",
+      "video_id": "9YtpI0E-9B8",
+      "method": "auto-cc",
+      "words": 522,
+      "ingested": "2026-05-04T03:31:13+00:00"
+    },
+    "https://www.youtube.com/watch?v=xIcflQzN0cM": {
+      "file": "glp-1-agonists-in-nafld-xIcflQzN0cM.md",
+      "kind": "youtube_transcript",
+      "title": "GLP-1 Agonists in NAFLD",
+      "video_id": "xIcflQzN0cM",
+      "method": "auto-cc",
+      "words": 3735,
+      "ingested": "2026-05-04T03:31:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=iyaUJdpREyY": {
+      "file": "the-dark-side-of-using-ozempic-for-fat-loss-for-the-general-public-iyaUJdpREyY.md",
+      "kind": "youtube_transcript",
+      "title": "The DARK Side of using OZEMPIC for Fat Loss for the General Public \ud83e\udd74",
+      "video_id": "iyaUJdpREyY",
+      "method": "auto-cc",
+      "words": 1305,
+      "ingested": "2026-05-04T03:31:32+00:00"
+    },
+    "https://www.youtube.com/watch?v=gMyosH19G24": {
+      "file": "dr-ben-bikman-how-to-reverse-insulin-resistance-through-diet-exercise-sleep-gMyosH19G24.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Ben Bikman: How To Reverse Insulin Resistance Through Diet, Exercise, & Sleep",
+      "video_id": "gMyosH19G24",
+      "method": "auto-cc",
+      "words": 65676,
+      "ingested": "2026-05-04T03:31:41+00:00"
+    },
+    "https://www.youtube.com/watch?v=78_ubmcdH1Q": {
+      "file": "3-appetite-suppressants-better-than-ozempic-78_ubmcdH1Q.md",
+      "kind": "youtube_transcript",
+      "title": "3 Appetite suppressants better than Ozempic",
+      "video_id": "78_ubmcdH1Q",
+      "method": "auto-cc",
+      "words": 901,
+      "ingested": "2026-05-04T03:31:46+00:00"
+    },
+    "https://www.youtube.com/watch?v=qY6m7aR5w0s": {
+      "file": "shbg-sex-hormone-binding-globulin-effects-on-testosterone-levels-doctor-s-analys-qY6m7aR5w0s.md",
+      "kind": "youtube_transcript",
+      "title": "SHBG - Sex Hormone Binding Globulin Effects on Testosterone Levels - Doctor's Analysis",
+      "video_id": "qY6m7aR5w0s",
+      "method": "auto-cc",
+      "words": 2648,
+      "ingested": "2026-05-04T03:31:53+00:00"
+    }
+  },
+  "last_run": "2026-05-06T00:43:41+00:00"
+}

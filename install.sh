@@ -9,7 +9,10 @@ link() {
   local src="$DOTFILES_DIR/$1"
   local dst="$HOME/$2"
 
-  [ -e "$src" ] || { echo "skip $2 (source missing: $src)"; return; }
+  [ -e "$src" ] || {
+    echo "skip $2 (source missing: $src)"
+    return
+  }
 
   mkdir -p "$(dirname "$dst")"
 
@@ -32,31 +35,31 @@ link() {
   echo "link $2 -> $src"
 }
 
-link zshrc                .zshrc
-link zprofile             .zprofile
-link gitconfig            .gitconfig
-link gitignore_global     .gitignore_global
-link tmux.conf            .tmux.conf
-link ssh_config           .ssh/config
-link starship.toml        .config/starship.toml
-link ghostty_config       .config/ghostty/config
-link claude/CLAUDE.md     .claude/CLAUDE.md
+link zshrc .zshrc
+link zprofile .zprofile
+link gitconfig .gitconfig
+link gitignore_global .gitignore_global
+link tmux.conf .tmux.conf
+link ssh_config .ssh/config
+link starship.toml .config/starship.toml
+link ghostty_config .config/ghostty/config
+link claude/CLAUDE.md .claude/CLAUDE.md
 link claude/settings.json .claude/settings.json
-link claude/skills        .claude/skills
-link claude/agents        .claude/agents
-link claude/hooks/nonstop.sh           .claude/hooks/nonstop.sh
-link claude/hooks/loop-guard.sh        .claude/hooks/loop-guard.sh
-link claude/hooks/no-ask-human.sh      .claude/hooks/no-ask-human.sh
-link claude/hooks/context-monitor.sh   .claude/hooks/context-monitor.sh
-link claude/hooks/wired-up-stop.sh     .claude/hooks/wired-up-stop.sh
+link claude/skills .claude/skills
+link claude/agents .claude/agents
+link claude/hooks/nonstop.sh .claude/hooks/nonstop.sh
+link claude/hooks/loop-guard.sh .claude/hooks/loop-guard.sh
+link claude/hooks/no-ask-human.sh .claude/hooks/no-ask-human.sh
+link claude/hooks/context-monitor.sh .claude/hooks/context-monitor.sh
+link claude/hooks/wired-up-stop.sh .claude/hooks/wired-up-stop.sh
 link claude/hooks/secret-paste-guard.sh .claude/hooks/secret-paste-guard.sh
-link claude/hooks/session-handover.sh   .claude/hooks/session-handover.sh
-link claude/hooks/session-resume.sh     .claude/hooks/session-resume.sh
-link claude/hooks/error-gate.sh         .claude/hooks/error-gate.sh
-link claude/hooks/ntfy-notify.sh        .claude/hooks/ntfy-notify.sh
-link claude/hooks/bootstrap-check.sh    .claude/hooks/bootstrap-check.sh
+link claude/hooks/session-handover.sh .claude/hooks/session-handover.sh
+link claude/hooks/session-resume.sh .claude/hooks/session-resume.sh
+link claude/hooks/error-gate.sh .claude/hooks/error-gate.sh
+link claude/hooks/ntfy-notify.sh .claude/hooks/ntfy-notify.sh
+link claude/hooks/bootstrap-check.sh .claude/hooks/bootstrap-check.sh
 link claude/hooks/git-shadow-checkpoint.sh .claude/hooks/git-shadow-checkpoint.sh
-link claude/hooks/environment-details.sh   .claude/hooks/environment-details.sh
+link claude/hooks/environment-details.sh .claude/hooks/environment-details.sh
 # bin/cc-mercury is on PATH via ~/local/bin; symlink it there:
 # (handled by users symlinking ~/dotfiles/bin into PATH; no install.sh entry needed)
 # Note: individual skills are already covered by `link claude/skills .claude/skills`
@@ -64,15 +67,15 @@ link claude/hooks/environment-details.sh   .claude/hooks/environment-details.sh
 # self-loops because ~/.claude/skills resolves through the parent symlink to the
 # same dir as the source.
 link git-config/allowed_signers .config/git/allowed_signers
-link atuin/config.toml          .config/atuin/config.toml
-link hammerspoon/init.lua       .hammerspoon/init.lua
-link editorconfig               .editorconfig
-link ripgreprc                  .config/ripgreprc
-link gh-config.yml              .config/gh/config.yml
-link .aider.conf.yml            .aider.conf.yml
-link repomix.config.json        .repomixrc
-link .zellij.kdl                .config/zellij/config.kdl
-link zellij-layout.kdl          .config/zellij/layouts/dev.kdl
+link atuin/config.toml .config/atuin/config.toml
+link hammerspoon/init.lua .hammerspoon/init.lua
+link editorconfig .editorconfig
+link ripgreprc .config/ripgreprc
+link gh-config.yml .config/gh/config.yml
+link .aider.conf.yml .aider.conf.yml
+link repomix.config.json .repomixrc
+link .zellij.kdl .config/zellij/config.kdl
+link zellij-layout.kdl .config/zellij/layouts/dev.kdl
 
 # Ensure zellij layout dir exists
 mkdir -p "$HOME/.config/zellij/layouts"

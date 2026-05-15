@@ -16,6 +16,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Linear/api_key
+    auth_keychain_service: cc.linear.api_key
     auth_header: Authorization
     auth_prefix: ""
 
@@ -28,6 +29,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Linear/api_key
+    auth_keychain_service: cc.linear.api_key
     auth_header: Authorization
     auth_prefix: ""
 
@@ -40,5 +42,6 @@ actions:
     undo_window_seconds: 600
     rate_limit_per_hour: 30
     auth_op_path: op://Personal/Linear/api_key
+    auth_keychain_service: cc.linear.api_key
     auth_header: Authorization
     auth_prefix: ""

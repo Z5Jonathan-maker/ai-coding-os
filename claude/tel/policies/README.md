@@ -20,18 +20,20 @@ actions:
     reversible: true|false      # whether this action issues an undo_token
     undo_window_seconds: 0      # how long the undo_token is valid (if reversible)
     rate_limit_per_hour: 100    # per-action rate cap
-    auth_op_path: op://...      # 1Password ref to the credential
+    auth_keychain_service: cc.service.token   # preferred Keychain service
+    auth_op_path: op://...      # optional 1Password fallback
     auth_header: Authorization  # HTTP header name
     auth_prefix: Bearer         # prefix before the token (or "" for none)
 ```
 
 ## Adding a new service
 
-1. Store the credential in 1Password under `op://Personal/<service>/credential` (or whatever path you prefer)
-2. Write `policies/<service>.yaml` following the schema
-3. `curl -X POST http://127.0.0.1:8765/reload` to hot-reload the registry (or restart the launchd agent)
-4. Verify with `curl http://127.0.0.1:8765/registry` — your new service should appear
-5. Test with a `dry_run: true` request before letting Claude execute live
+1. Seed the credential into Keychain under the `auth_keychain_service` name you choose
+2. Optionally keep a matching `auth_op_path` if you still want a 1Password fallback
+3. Write `policies/<service>.yaml` following the schema
+4. `curl -X POST http://127.0.0.1:8765/reload` to hot-reload the registry (or restart the launchd agent)
+5. Verify with `curl http://127.0.0.1:8765/registry` — your new service should appear
+6. Test with a `dry_run: true` request before letting Claude execute live
 
 ## Reversibility guidance
 

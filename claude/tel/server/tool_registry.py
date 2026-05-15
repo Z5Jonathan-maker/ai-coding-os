@@ -27,6 +27,7 @@ class ActionSpec:
     undo_window_seconds: int = 0
     rate_limit_per_hour: int = 100
     auth_op_path: str = ""
+    auth_keychain_service: str = ""
     auth_header: str = "Authorization"
     auth_prefix: str = "Bearer"
 

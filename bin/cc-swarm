@@ -32,7 +32,10 @@ SWARM_DIR="$HOME/.claude/swarm"
 
 resolve_claude() {
   for c in "$(command -v claude 2>/dev/null)" /opt/homebrew/bin/claude /usr/local/bin/claude "$HOME/local/bin/claude"; do
-    [ -n "$c" ] && [ -x "$c" ] && { echo "$c"; return 0; }
+    [ -n "$c" ] && [ -x "$c" ] && {
+      echo "$c"
+      return 0
+    }
   done
   return 1
 }
@@ -45,19 +48,39 @@ cmd_spawn() {
   shift 2
   while [ $# -gt 0 ]; do
     case "$1" in
-      --repo) repo="$2"; shift 2 ;;
-      --branch-prefix) branch_prefix="$2"; shift 2 ;;
-      *) echo "cc-swarm: unknown option $1" >&2; exit 2 ;;
+      --repo)
+        repo="$2"
+        shift 2
+        ;;
+      --branch-prefix)
+        branch_prefix="$2"
+        shift 2
+        ;;
+      *)
+        echo "cc-swarm: unknown option $1" >&2
+        exit 2
+        ;;
     esac
   done
 
-  command -v tmux >/dev/null || { echo "cc-swarm: tmux not installed" >&2; exit 127; }
+  command -v tmux >/dev/null || {
+    echo "cc-swarm: tmux not installed" >&2
+    exit 127
+  }
   local claude_bin
-  claude_bin=$(resolve_claude) || { echo "cc-swarm: claude binary not found" >&2; exit 127; }
+  claude_bin=$(resolve_claude) || {
+    echo "cc-swarm: claude binary not found" >&2
+    exit 127
+  }
 
-  [ -f "$prompt_file" ] || { echo "cc-swarm: prompt file not found: $prompt_file" >&2; exit 2; }
-  ( cd "$repo" && git rev-parse --git-dir >/dev/null 2>&1 ) || {
-    echo "cc-swarm: --repo is not a git repo: $repo" >&2; exit 2; }
+  [ -f "$prompt_file" ] || {
+    echo "cc-swarm: prompt file not found: $prompt_file" >&2
+    exit 2
+  }
+  (cd "$repo" && git rev-parse --git-dir >/dev/null 2>&1) || {
+    echo "cc-swarm: --repo is not a git repo: $repo" >&2
+    exit 2
+  }
 
   mkdir -p "$SWARM_DIR"
   local prompt
@@ -70,12 +93,15 @@ cmd_spawn() {
 
     rm -rf "$agent_dir"
     mkdir -p "$agent_dir"
-    echo "AGENT_INITIALIZING" > "$agent_dir/status"
+    echo "AGENT_INITIALIZING" >"$agent_dir/status"
 
     # Create worktree (idempotent — clean up stale ones first)
-    ( cd "$repo" && git worktree remove --force "$worktree" 2>/dev/null || true )
-    ( cd "$repo" && git worktree add -B "$branch" "$worktree" HEAD ) \
-      || { echo "AGENT_ERROR worktree creation failed" > "$agent_dir/status"; continue; }
+    (cd "$repo" && git worktree remove --force "$worktree" 2>/dev/null || true)
+    (cd "$repo" && git worktree add -B "$branch" "$worktree" HEAD) \
+      || {
+        echo "AGENT_ERROR worktree creation failed" >"$agent_dir/status"
+        continue
+      }
 
     # Jitter: stagger launches 5-15s apart
     local jitter=$((RANDOM % 10 + 5))
@@ -100,15 +126,22 @@ cmd_spawn() {
 }
 
 cmd_status() {
-  [ -d "$SWARM_DIR" ] || { echo "no swarm state at $SWARM_DIR"; return; }
+  [ -d "$SWARM_DIR" ] || {
+    echo "no swarm state at $SWARM_DIR"
+    return
+  }
   printf '%-12s %-30s %-10s %s\n' "AGENT" "STATUS" "TMUX" "CYCLE.LOG (last line)"
   for d in "$SWARM_DIR"/agent-*/; do
     [ -d "$d" ] || continue
-    local id; id=$(basename "$d")
+    local id
+    id=$(basename "$d")
     local n="${id#agent-}"
-    local status; status=$(cat "$d/status" 2>/dev/null || echo "?")
-    local tmux_state; tmux_state=$(tmux has-session -t "swarm-agent-$n" 2>/dev/null && echo "alive" || echo "gone")
-    local last; last=$(tail -1 "$d/cycle.log" 2>/dev/null | head -c 60)
+    local status
+    status=$(cat "$d/status" 2>/dev/null || echo "?")
+    local tmux_state
+    tmux_state=$(tmux has-session -t "swarm-agent-$n" 2>/dev/null && echo "alive" || echo "gone")
+    local last
+    last=$(tail -1 "$d/cycle.log" 2>/dev/null | head -c 60)
     printf '%-12s %-30s %-10s %s\n' "$id" "$status" "$tmux_state" "$last"
   done
 }
@@ -121,7 +154,8 @@ cmd_tail() {
 cmd_collect() {
   for d in "$SWARM_DIR"/agent-*/; do
     [ -d "$d" ] || continue
-    local id; id=$(basename "$d")
+    local id
+    id=$(basename "$d")
     echo "=== $id ==="
     cat "$d/status" 2>/dev/null
     echo "--- cycle.log (tail 20) ---"
@@ -133,20 +167,25 @@ cmd_collect() {
 cmd_kill() {
   for d in "$SWARM_DIR"/agent-*/; do
     [ -d "$d" ] || continue
-    local id; id=$(basename "$d")
+    local id
+    id=$(basename "$d")
     local n="${id#agent-}"
     tmux kill-session -t "swarm-agent-$n" 2>/dev/null && echo "killed swarm-agent-$n"
   done
 }
 
-[ $# -eq 0 ] && { sed -n '2,30p' "$0"; exit 0; }
-sub="$1"; shift
+[ $# -eq 0 ] && {
+  sed -n '2,30p' "$0"
+  exit 0
+}
+sub="$1"
+shift
 case "$sub" in
-  status)  cmd_status ;;
-  tail)    cmd_tail "$@" ;;
+  status) cmd_status ;;
+  tail) cmd_tail "$@" ;;
   collect) cmd_collect ;;
-  kill)    cmd_kill ;;
-  ''|-h|--help) sed -n '2,30p' "$0" ;;
+  kill) cmd_kill ;;
+  '' | -h | --help) sed -n '2,30p' "$0" ;;
   *)
     # Treat first arg as N, second as prompt file.
     if [[ "$sub" =~ ^[0-9]+$ ]]; then

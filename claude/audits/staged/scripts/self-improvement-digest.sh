@@ -8,7 +8,10 @@ PROJ_DIR="${HOME}/.claude/projects"
 DAYS="${1:-7}"
 OUT="${HOME}/.claude/audits/digest-$(date +%Y-%m-%d).md"
 
-[ -d "$PROJ_DIR" ] || { echo "no projects dir" >&2; exit 1; }
+[ -d "$PROJ_DIR" ] || {
+  echo "no projects dir" >&2
+  exit 1
+}
 
 session_count=$(find "$PROJ_DIR" -name "*.jsonl" -mtime -"$DAYS" | wc -l | tr -d ' ')
 
@@ -32,7 +35,7 @@ top_tools=$(find "$PROJ_DIR" -name "*.jsonl" -mtime -"$DAYS" -exec jq -r '.messa
 hook_logs=$(ls "$HOME/.claude/cc-"*.log 2>/dev/null | head -5)
 hook_summary=""
 for h in $hook_logs; do
-  size=$(wc -l < "$h" 2>/dev/null)
+  size=$(wc -l <"$h" 2>/dev/null)
   hook_summary="${hook_summary}\n- $(basename "$h"): $size lines"
 done
 
@@ -54,7 +57,7 @@ done
   echo -e "$hook_summary"
   echo
   echo "## Recommendations"
-  if (( $(echo "$err_rate > 5" | bc -l 2>/dev/null || echo 0) )); then
+  if (($(echo "$err_rate > 5" | bc -l 2>/dev/null || echo 0))); then
     echo "- 🔴 Tool error rate above 5% — investigate via \`audit\` skill"
   fi
   if [ "$session_count" -gt 50 ]; then
@@ -63,6 +66,6 @@ done
   if [ "$session_count" -lt 5 ]; then
     echo "- 🟢 Low activity week — system idle"
   fi
-} > "$OUT"
+} >"$OUT"
 
 cat "$OUT"

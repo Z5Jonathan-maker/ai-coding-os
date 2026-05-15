@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+JSON=0
+PRINT=0
+PING=0
+SEEDS=()
+DEPTH="${PERPLEXITY_SWARM_DEPTH:-1}"
+CONCURRENCY="${PERPLEXITY_SWARM_CONCURRENCY:-3}"
+
+usage() {
+  cat <<'EOF'
+Usage: perplexity [options] [prompt]
+
+This is a local Perplexity-like research shell backed by your router's
+research/swarm path, not the official Perplexity product.
+
+Options:
+  --json                 Print full JSON result
+  --print                One-shot mode even in a TTY
+  --ping                 Run router health check
+  --seed <url>           Add a swarm seed URL (repeatable)
+  --depth <n>            Swarm crawl depth (default: 1)
+  --concurrency <n>      Swarm concurrency (default: 3)
+  -h, --help             Show this help
+EOF
+}
+
+run_once() {
+  local prompt="$1"
+  local seeds_json
+  seeds_json="$(python3 -c '
+import json, sys
+print(json.dumps([a for a in sys.argv[1:] if a]))
+' "${SEEDS[@]}")"
+  node - "$JSON" "$DEPTH" "$CONCURRENCY" "$seeds_json" "$prompt" <<'NODE'
+const [jsonMode, depthRaw, concurrencyRaw, seedsJson, prompt] = process.argv.slice(2);
+const { ask } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+
+(async () => {
+  const res = await ask({
+    purpose: 'research',
+    prompt,
+    flags: ['research'],
+    swarmDepth: Number(depthRaw || '1'),
+    swarmConcurrency: Number(concurrencyRaw || '3'),
+    swarmSeeds: JSON.parse(seedsJson || '[]'),
+  });
+  if (jsonMode === '1') {
+    process.stdout.write(JSON.stringify(res, null, 2) + '\n');
+  } else {
+    process.stdout.write((res.text || '').trimEnd() + '\n');
+  }
+})().catch((err) => {
+  process.stderr.write(`perplexity: ${err.message}\n`);
+  process.exit(1);
+});
+NODE
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --json)
+      JSON=1
+      shift
+      ;;
+    --print)
+      PRINT=1
+      shift
+      ;;
+    --ping)
+      PING=1
+      shift
+      ;;
+    --seed)
+      SEEDS+=("${2:-}")
+      shift 2
+      ;;
+    --depth)
+      DEPTH="${2:-1}"
+      shift 2
+      ;;
+    --concurrency)
+      CONCURRENCY="${2:-3}"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "perplexity: unknown option $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *) break ;;
+  esac
+done
+
+if [ "$PING" = "1" ]; then
+  node - <<'NODE'
+const { ping } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+(async () => {
+  const res = await ping();
+  const ok = !!(res.tier1?.ok && res.tier2?.ok && res.tier3?.ok);
+  process.stdout.write(JSON.stringify({ ok, tier1: res.tier1, tier2: res.tier2, tier3: res.tier3, swarm: res.shadow ? true : true }, null, 2) + '\n');
+  process.exit(ok ? 0 : 1);
+})().catch((err) => {
+  process.stderr.write(`perplexity: ${err.message}\n`);
+  process.exit(1);
+});
+NODE
+  exit $?
+fi
+
+PROMPT=""
+if [ $# -gt 0 ]; then
+  PROMPT="$*"
+elif [ ! -t 0 ]; then
+  PROMPT="$(cat)"
+fi
+
+if [ -n "$PROMPT" ] || [ "$PRINT" = "1" ]; then
+  [ -n "$PROMPT" ] || {
+    echo "perplexity: prompt required in --print mode" >&2
+    exit 2
+  }
+  run_once "$PROMPT"
+  exit $?
+fi
+
+echo "Perplexity-style research REPL. Type /exit to quit."
+while true; do
+  printf 'perplexity> '
+  IFS= read -r line || break
+  case "$line" in
+    "") continue ;;
+    /exit | /quit) break ;;
+  esac
+  run_once "$line"
+  echo
+done

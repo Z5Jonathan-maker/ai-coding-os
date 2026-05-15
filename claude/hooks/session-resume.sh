@@ -29,7 +29,7 @@ latest=$(ls -t "$CHECKPOINT_DIR"/*.md 2>/dev/null | head -1)
 mtime=$(stat -f %m "$latest" 2>/dev/null || stat -c %Y "$latest" 2>/dev/null)
 [ -z "$mtime" ] && exit 0
 now=$(date +%s)
-age=$(( now - mtime ))
+age=$((now - mtime))
 [ "$age" -gt "$MAX_AGE" ] && exit 0
 
 # CWD check (unless forced)

@@ -1,7 +1,7 @@
 # Ayubace (Peptide Lifestyle Educator)
 
-- **Videos in brain:** 167
-- **Word count:** 83,651
+- **Videos in brain:** 175
+- **Word count:** 117,491
 - **Channels:** youtube:@ayubace
 - **Credibility:** Lifestyle peptide educator, transformation-storytelling angle
 - **Tone:** Approachable, story-driven, beginner-accessible
@@ -15,13 +15,13 @@
 Need beginner-accessible framing; transformation case studies; first-time peptide user FAQ.
 
 ## Top compounds covered (by video count)
-- **Retatrutide** — 58 videos
-- **TRT / Testosterone** — 11 videos
-- **Estrogen mgmt** — 11 videos
-- **TB-500** — 7 videos
-- **GH (HGH)** — 5 videos
-- **Ipamorelin** — 5 videos
-- **MOTS-c** — 5 videos
+- **Retatrutide** — 60 videos
+- **TRT / Testosterone** — 14 videos
+- **Estrogen mgmt** — 12 videos
+- **GH (HGH)** — 9 videos
+- **TB-500** — 8 videos
+- **Ipamorelin** — 8 videos
+- **MOTS-c** — 6 videos
 - **GHK-Cu** — 5 videos
 - **NAD+** — 4 videos
 - **DSIP** — 3 videos

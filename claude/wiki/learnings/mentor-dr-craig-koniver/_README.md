@@ -1,7 +1,7 @@
 # Dr. Craig Koniver (Performance Medicine MD)
 
-- **Videos in brain:** 16
-- **Word count:** 152,889
+- **Videos in brain:** 81
+- **Word count:** 1,343,165
 - **Channels:** youtube:@craigkoniver
 - **Credibility:** MD, founder of Koniver Wellness, NAD+ IV pioneer, peptide clinician
 - **Tone:** Physician voice, conservative claims, polished
@@ -16,16 +16,16 @@
 Need MD-credentialed framing on peptides; NAD+ questions; executive/high-performer optimization angle.
 
 ## Top compounds covered (by video count)
-- **GH (HGH)** — 11 videos
-- **BPC-157** — 10 videos
-- **TB-500** — 8 videos
-- **Melanotan** — 7 videos
-- **Ipamorelin** — 6 videos
-- **CJC-1295** — 5 videos
-- **PT-141** — 5 videos
-- **Estrogen mgmt** — 5 videos
-- **Tesamorelin** — 4 videos
-- **Glutathione** — 4 videos
+- **GH (HGH)** — 34 videos
+- **Ipamorelin** — 27 videos
+- **BPC-157** — 26 videos
+- **NAD+** — 21 videos
+- **Estrogen mgmt** — 19 videos
+- **TB-500** — 12 videos
+- **Glutathione** — 12 videos
+- **Tesamorelin** — 11 videos
+- **TRT / Testosterone** — 11 videos
+- **Melanotan** — 9 videos
 
 ## Recall pattern
 ```

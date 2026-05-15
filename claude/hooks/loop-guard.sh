@@ -37,11 +37,11 @@ print(sid, tool, fp)
 
 log="$STATE_DIR/loop-${session_id}.log"
 now=$(date +%s)
-cutoff=$(( now - LOOP_GUARD_WINDOW ))
+cutoff=$((now - LOOP_GUARD_WINDOW))
 
 # Append this call, then prune anything older than the window.
-echo "$now $fp" >> "$log"
-awk -v c="$cutoff" '$1 >= c' "$log" > "$log.tmp" && mv "$log.tmp" "$log"
+echo "$now $fp" >>"$log"
+awk -v c="$cutoff" '$1 >= c' "$log" >"$log.tmp" && mv "$log.tmp" "$log"
 
 # Count how many times this fingerprint appears in the window.
 count=$(awk -v f="$fp" '$2 == f' "$log" | wc -l | tr -d ' ')
@@ -51,7 +51,7 @@ if [ "$count" -le "$LOOP_GUARD_MAX" ]; then
 fi
 
 # Reset so the next genuinely-different call after this nudge isn't blocked.
-: > "$log"
+: >"$log"
 
 cat <<JSON
 {"decision":"block","reason":"[loop-guard] You have called ${tool_name} with the same arguments ${count} times in the last ${LOOP_GUARD_WINDOW}s. Stop retrying. Change something:\n- Read a different file or use a different search pattern\n- Check the actual error output instead of re-running\n- Try a different tool entirely\n- If genuinely stuck, mark the task blocked and move on\nDo not re-run this exact call again until you have new information."}

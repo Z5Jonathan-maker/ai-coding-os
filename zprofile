@@ -17,6 +17,5 @@ export SUDO_ASKPASS="$HOME/dotfiles/bin/sudo-askpass"
 # ntfy.sh push topic — installed by cc-bootstrap 2026-04-30
 export NTFY_TOPIC="cc-imac-c1ac6b58f282"
 
-# Source local-only secret env file (NOT committed to dotfiles).
-# Currently holds Langfuse API keys until they're moved to 1P.
-[ -f "$HOME/.langfuse.local" ] && . "$HOME/.langfuse.local"
+# Shared environment contract for Codex, Claude, shells, and local agents.
+[ -f "$HOME/code/scripts/ecosystem-env.sh" ] && source "$HOME/code/scripts/ecosystem-env.sh"

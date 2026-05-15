@@ -28,4 +28,11 @@ Append-only. Designs that scored < 95% OR violated brand rules in production. Fu
 - **Why it failed:** Three AI-slop signatures stacked: rounded-card-with-border (Material 2020-2024 pattern), emoji as functional icon, no typographic personality.
 - **What to do instead:** Use brand display typeface as the design driver. One color, generous whitespace, line icons (Lucide 1.5px stroke, never emoji). If a slide doesn't have something interesting to say typographically, it doesn't earn a slot — cut it.
 
+## 2026-05-10 · v1 Claude-draft RUO editorial page · Helion Reagents (demo)
+
+- **Type:** Web — full editorial marketing/catalog page
+- **What failed:** Five compounding SaaS tropes that pulled a clinical catalog into consumer-landing-page register: (1) h1 at 64px (marketing-scale, not catalog-scale); (2) alternating tinted section bands (`--bg-soft`) breaking the single-ground hairline rule; (3) HPLC chromatogram drawn with straight-line segments rather than Bézier curves — read as wireframe, not instrument; (4) hero tagline "Reagents that behave the same way twice" — performative pun instead of specification statement; (5) ticker status dots using `border-radius: 50%` (rounds into circles, violates ≤4px rule) plus CSS transitions on buttons and hover effects on catalog rows.
+- **Why it failed:** Default LLM code-generation maps "marketing site" onto a SaaS landing page mental model. Type scale inflates for visual impact; section banding adds rhythm; transitions add "polish." All three are correct for SaaS; all three are wrong for a laboratory catalog that must read as an instrument output.
+- **What to do instead:** For RUO/lab-catalog editorial tier: clamp h1 ≤42px; strip all section background fills (hairline grid is the only structural element); draw data visualizations with Bézier curves + graticule; write the hero headline as a specification claim, not a tagline; set `border-radius: 0` globally and `transition: none` globally. Add a one-line CSS reset at the top of the editorial tier template: `*, *::before, *::after { border-radius: 0 !important; transition: none !important; }` — then allow only deliberate exceptions.
+
 ## (Add new entries above this line as designs reveal failure modes in production.)

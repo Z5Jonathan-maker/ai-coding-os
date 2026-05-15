@@ -22,7 +22,8 @@ mkdir -p "$CHECKPOINT_DIR"
 input=$(cat)
 
 export _SH_INPUT="$input"
-checkpoint=$(python3 <<'PY'
+checkpoint=$(
+  python3 <<'PY'
 import json, os, time
 from pathlib import Path
 
@@ -115,6 +116,6 @@ PY
 unset _SH_INPUT
 
 # Append a record to a rolling index for quick listing
-[ -n "$checkpoint" ] && echo "$(date '+%Y-%m-%d %H:%M:%S') $checkpoint" >> "$CHECKPOINT_DIR/.index"
+[ -n "$checkpoint" ] && echo "$(date '+%Y-%m-%d %H:%M:%S') $checkpoint" >>"$CHECKPOINT_DIR/.index"
 
 exit 0

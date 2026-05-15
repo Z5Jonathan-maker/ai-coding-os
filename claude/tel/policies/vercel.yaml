@@ -14,6 +14,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Vercel/token
+    auth_keychain_service: cc.vercel.token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -25,6 +26,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 500
     auth_op_path: op://Personal/Vercel/token
+    auth_keychain_service: cc.vercel.token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -37,6 +39,7 @@ actions:
     undo_window_seconds: 600
     rate_limit_per_hour: 30
     auth_op_path: op://Personal/Vercel/token
+    auth_keychain_service: cc.vercel.token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -48,5 +51,6 @@ actions:
     reversible: false
     rate_limit_per_hour: 100
     auth_op_path: op://Personal/Vercel/token
+    auth_keychain_service: cc.vercel.token
     auth_header: Authorization
     auth_prefix: Bearer

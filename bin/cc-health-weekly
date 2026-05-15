@@ -16,7 +16,7 @@ LOG="$HOME/.claude/cc-health-weekly.log"
 mkdir -p "$(dirname "$LOG")"
 
 ts=$(date '+%Y-%m-%d %H:%M:%S')
-echo "=== $ts cc-health-weekly start ===" >> "$LOG"
+echo "=== $ts cc-health-weekly start ===" >>"$LOG"
 
 issues=()
 checks_passed=0
@@ -28,11 +28,11 @@ check() {
   if echo "$out" | grep -qE "$expect"; then
     checks_passed=$((checks_passed + 1))
     [ "$VERBOSE" -eq 1 ] && echo "  ✓ $name"
-    echo "  ✓ $name" >> "$LOG"
+    echo "  ✓ $name" >>"$LOG"
   else
     issues+=("$name")
     [ "$VERBOSE" -eq 1 ] && echo "  ✗ $name — $out" | head -2
-    echo "  ✗ $name — $(echo "$out" | head -1)" >> "$LOG"
+    echo "  ✗ $name — $(echo "$out" | head -1)" >>"$LOG"
   fi
 }
 
@@ -68,7 +68,7 @@ check "tailscale: authed + on tailnet" \
   "^100\\."
 
 check "1P CLI: signed in" \
-  "/opt/homebrew/bin/op whoami 2>&1" \
+  "test \"${CC_ALLOW_1PASSWORD_FALLBACK:-0}\" = 1 && /opt/homebrew/bin/op whoami 2>&1 || echo 'op check skipped (Keychain-first mode)'" \
   "@"
 
 # 4. Dotfiles in sync
@@ -80,10 +80,10 @@ check "dotfiles: in sync with origin" \
 disk_pct=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
 if [ "${disk_pct:-100}" -gt 85 ]; then
   issues+=("disk: ${disk_pct}% full")
-  echo "  ✗ disk: ${disk_pct}% full" >> "$LOG"
+  echo "  ✗ disk: ${disk_pct}% full" >>"$LOG"
 else
   checks_passed=$((checks_passed + 1))
-  echo "  ✓ disk: ${disk_pct}% full" >> "$LOG"
+  echo "  ✓ disk: ${disk_pct}% full" >>"$LOG"
 fi
 
 # 6. ~/.claude size (cc-prune should keep this in check)
@@ -94,7 +94,7 @@ fi
 
 # Summary
 total=$((checks_passed + ${#issues[@]}))
-echo "=== $ts result: ${checks_passed}/${total} green ===" >> "$LOG"
+echo "=== $ts result: ${checks_passed}/${total} green ===" >>"$LOG"
 
 if [ ${#issues[@]} -eq 0 ]; then
   msg="✓ cc-health: all ${total} green"

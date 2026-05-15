@@ -7,7 +7,7 @@
 #     (succeeds if 'osascript' already has Accessibility permission;
 #     otherwise macOS prompts and the script falls through to manual)
 # What we cannot automate:
-#   - 1Password initial sign-in (needs Secret Key + master password)
+#   - 1Password initial sign-in (only if you still want 1Password on this machine)
 #   - Slack workspace + auth (needs email/password — autofill via 1P)
 #   - Notion email/auth (same)
 #   - macOS TCC database edits (SIP-protected)
@@ -54,31 +54,37 @@ echo "=== OrbStack onboarding ==="
 open -a OrbStack
 prompt_ok "Step through OrbStack onboarding (Personal license is free for personal use).\\nClick OK when 'orbctl --version' works in a fresh shell."
 
-# Step 5: 1Password — sign in with email + Secret Key + master password
+# Step 4.5: VS Code — primary editor/control plane for this machine
 echo
-echo "=== 1Password sign-in ==="
-say_or_print "Sign in to 1Password. After signing in, enable the SSH agent and CLI integration in Settings, Developer."
-open -a "1Password"
-prompt_ok "Sign in to 1Password (you'll need email + Secret Key from 1Password.com or another device + master password).\\n\\nThen open Settings → Developer → enable BOTH:\\n  • Use the SSH agent\\n  • Integrate with 1Password CLI\\n\\nClick OK when done."
+echo "=== VS Code onboarding ==="
+open -a "Visual Studio Code" 2>/dev/null || true
+prompt_ok "Open VS Code and sign in if you use Settings Sync.\\n\\nThis machine treats VS Code as the primary editor/control plane. Verify that the Claude Code extension is available and the 'code' CLI works in a fresh shell.\\n\\nClick OK when done."
+
+# Step 5: 1Password — optional if this machine is already Keychain-first
+echo
+echo "=== 1Password (optional) ==="
+say_or_print "If you still want 1Password available, sign in and enable its developer helpers. Otherwise you can skip this step."
+open -a "1Password" 2>/dev/null || true
+prompt_ok "1Password is optional on this machine now.\\n\\nIf you want it available as a fallback:\\n  • sign in\\n  • open Settings → Developer\\n  • enable Use the SSH agent\\n  • enable Integrate with 1Password CLI\\n\\nIf you're staying Keychain-first, just click OK to skip."
 
 # Verify 1P CLI works
 if /opt/homebrew/bin/op account list >/dev/null 2>&1; then
   echo "✓ 1Password CLI authenticated"
 else
-  echo "⚠ op CLI not yet authenticated — run 'op signin' or check 1P Developer settings"
+  echo "ℹ op CLI not authenticated — fine if this machine is staying Keychain-first"
 fi
 
 # Step 6: Slack
 echo
 echo "=== Slack sign-in ==="
 open -a Slack
-prompt_ok "Sign in to Slack workspace(s). 1Password will autofill if you have credentials saved.\\nClick OK when done."
+prompt_ok "Sign in to Slack workspace(s).\\nIf 1Password is installed it can autofill, but it is not required.\\nClick OK when done."
 
 # Step 7: Notion
 echo
 echo "=== Notion sign-in ==="
 open -a Notion
-prompt_ok "Sign in to Notion. 1Password autofill should work.\\nClick OK when done."
+prompt_ok "Sign in to Notion.\\nIf 1Password is installed it can autofill, but it is not required.\\nClick OK when done."
 
 # Final wrap-up
 echo
@@ -95,6 +101,6 @@ printf "1Password running:  %s\n" "$(pgrep -x 1Password >/dev/null && echo yes |
 printf "Slack running:      %s\n" "$(pgrep -x Slack >/dev/null && echo yes || echo no)"
 printf "Notion running:     %s\n" "$(pgrep -x Notion >/dev/null && echo yes || echo no)"
 echo
-echo "After 1Password Developer toggles are on, restart your shell and:"
+echo "If you enabled 1Password Developer toggles, restart your shell and:"
 echo "  - 'op signin' (then op-token <Item> works)"
 echo "  - 'ssh-add -l' should show 1P-managed keys"

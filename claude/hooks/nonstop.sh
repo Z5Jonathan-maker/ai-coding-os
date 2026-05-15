@@ -32,14 +32,14 @@ fi
 
 if [ -f "$STATE_DIR/nonstop.activate" ]; then
   rm -f "$STATE_DIR/nonstop.activate"
-  : > "$active_file"
+  : >"$active_file"
 fi
 
 [ -f "$active_file" ] || exit 0
 [ "$already_nudged" = "true" ] && exit 0
 
-count=$(( $(cat "$counter_file" 2>/dev/null || echo 0) + 1 ))
-echo "$count" > "$counter_file"
+count=$(($(cat "$counter_file" 2>/dev/null || echo 0) + 1))
+echo "$count" >"$counter_file"
 
 if [ "$NONSTOP_MAX" -gt 0 ] && [ "$count" -gt "$NONSTOP_MAX" ]; then
   rm -f "$active_file" "$counter_file"

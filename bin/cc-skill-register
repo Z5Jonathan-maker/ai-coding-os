@@ -35,7 +35,8 @@ EOF
 }
 
 [ $# -ge 1 ] || usage
-MODE="$1"; shift
+MODE="$1"
+shift
 
 # Insert a routing-table row right BEFORE the "**Built-in Anthropic skills**"
 # closing line of the SKILL ROUTING TABLE.
@@ -109,7 +110,9 @@ case "$MODE" in
     bash "$DRIFT_CHECK" 2>&1 | tail -3
     ;;
   cli)
-    NAME="${1:-}"; INTENT="${2:-}"; DESC="${3:-}"
+    NAME="${1:-}"
+    INTENT="${2:-}"
+    DESC="${3:-}"
     [ -z "$NAME" ] || [ -z "$INTENT" ] || [ -z "$DESC" ] && usage
     ROW="| \"$INTENT\" | \`$NAME\` (CLI, not a skill) | $DESC |"
     insert_skill_row "$ROW"

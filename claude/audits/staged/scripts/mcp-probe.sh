@@ -88,4 +88,4 @@ CACHE="${HOME}/.claude/mcp-needs-auth-cache.json"
   else
     echo "- 🟡 tel-canary.sh missing"
   fi
-} > "$OUT"
+} >"$OUT"

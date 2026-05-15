@@ -33,7 +33,7 @@ read session_id cwd tool <<<"$(printf '%s' "$input" | python3 -c \
 
 # Only snapshot for write-class tools
 case "$tool" in
-  Edit|Write|MultiEdit|NotebookEdit) ;;
+  Edit | Write | MultiEdit | NotebookEdit) ;;
   *) exit 0 ;;
 esac
 

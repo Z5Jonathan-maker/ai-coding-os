@@ -16,6 +16,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 500
     auth_op_path: op://Personal/GitHub/token
+    auth_keychain_service: cc.github.token
     auth_header: Authorization
     auth_prefix: token
 
@@ -27,6 +28,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 500
     auth_op_path: op://Personal/GitHub/token
+    auth_keychain_service: cc.github.token
     auth_header: Authorization
     auth_prefix: token
 
@@ -40,5 +42,6 @@ actions:
     undo_window_seconds: 300
     rate_limit_per_hour: 30
     auth_op_path: op://Personal/GitHub/token
+    auth_keychain_service: cc.github.token
     auth_header: Authorization
     auth_prefix: token

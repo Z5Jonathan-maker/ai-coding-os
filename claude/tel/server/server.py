@@ -2,7 +2,8 @@
 TEL — Trusted Execution Layer
 
 FastAPI server that receives structured action requests from Claude (via
-the tel-call.sh wrapper), resolves credentials from 1Password, validates
+the tel-call.sh wrapper), resolves credentials from Keychain first with
+optional 1Password fallback, validates
 against the per-service policy whitelist, executes, audits, and returns
 the result.
 
@@ -151,7 +152,7 @@ def execute(req: ExecuteRequest) -> ExecuteResponse:
         )
 
     try:
-        token = broker.get(spec.auth_op_path)
+        token = broker.get(spec.auth_op_path, getattr(spec, "auth_keychain_service", ""))
     except AuthBrokerError as e:
         audit_id = audit.write(
             service=req.service,

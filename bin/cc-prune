@@ -49,7 +49,8 @@ human_size() {
 prune_by_age() {
   local dir="$1" days="$2" pattern="$3"
   [ -d "$dir" ] || return
-  local before; before=$(human_size "$dir")
+  local before
+  before=$(human_size "$dir")
   local count
   count=$(find "$dir" -type f -name "$pattern" -mtime "+$days" 2>/dev/null | wc -l | tr -d ' ')
   if [ "$count" -gt 0 ]; then
@@ -57,7 +58,8 @@ prune_by_age() {
       log "[DRY-RUN] would remove $count files older than ${days}d in $dir (was: $before)"
     else
       find "$dir" -type f -name "$pattern" -mtime "+$days" -delete 2>/dev/null
-      local after; after=$(human_size "$dir")
+      local after
+      after=$(human_size "$dir")
       log "pruned $count files >${days}d in $dir (${before} → ${after})"
     fi
   fi
@@ -68,9 +70,11 @@ prune_by_age() {
 prune_checkpoints() {
   local dir="$CLAUDE_DIR/checkpoints"
   [ -d "$dir" ] || return
-  local total; total=$(ls "$dir"/*.md 2>/dev/null | wc -l | tr -d ' ')
+  local total
+  total=$(ls "$dir"/*.md 2>/dev/null | wc -l | tr -d ' ')
   [ "$total" -le "$CC_PRUNE_CHECKPOINTS_KEEP" ] && return
-  local to_remove; to_remove=$(( total - CC_PRUNE_CHECKPOINTS_KEEP ))
+  local to_remove
+  to_remove=$((total - CC_PRUNE_CHECKPOINTS_KEEP))
   if [ "$CC_PRUNE_DRY_RUN" = "1" ]; then
     log "[DRY-RUN] would remove $to_remove oldest checkpoints (keep $CC_PRUNE_CHECKPOINTS_KEEP of $total)"
   else
@@ -89,7 +93,7 @@ truncate_large_log() {
       log "[DRY-RUN] would truncate $f (${size_mb}MB > ${max_mb}MB)"
     else
       # Keep last 10MB of content
-      tail -c 10485760 "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+      tail -c 10485760 "$f" >"$f.tmp" && mv "$f.tmp" "$f"
       log "truncated $f from ${size_mb}MB → ~10MB"
     fi
   fi
@@ -99,14 +103,14 @@ main() {
   log "cc-prune START dry_run=$CC_PRUNE_DRY_RUN"
   log "  before: ~/.claude = $(human_size "$CLAUDE_DIR")"
 
-  prune_by_age "$CLAUDE_DIR/debug"        "$CC_PRUNE_DEBUG_DAYS"    '*.txt'
-  prune_by_age "$CLAUDE_DIR/projects"     "$CC_PRUNE_PROJECTS_DAYS" '*.jsonl'
-  prune_by_age "$CLAUDE_DIR/file-history" "$CC_PRUNE_HISTORY_DAYS"  '*'
+  prune_by_age "$CLAUDE_DIR/debug" "$CC_PRUNE_DEBUG_DAYS" '*.txt'
+  prune_by_age "$CLAUDE_DIR/projects" "$CC_PRUNE_PROJECTS_DAYS" '*.jsonl'
+  prune_by_age "$CLAUDE_DIR/file-history" "$CC_PRUNE_HISTORY_DAYS" '*'
   prune_checkpoints
 
-  truncate_large_log "$CLAUDE_DIR/cc-loop.log"   "$CC_PRUNE_LOG_MAX_MB"
-  truncate_large_log "$CLAUDE_DIR/executor.log"  "$CC_PRUNE_LOG_MAX_MB"
-  truncate_large_log "$LOG_FILE"                 "$CC_PRUNE_LOG_MAX_MB"
+  truncate_large_log "$CLAUDE_DIR/cc-loop.log" "$CC_PRUNE_LOG_MAX_MB"
+  truncate_large_log "$CLAUDE_DIR/executor.log" "$CC_PRUNE_LOG_MAX_MB"
+  truncate_large_log "$LOG_FILE" "$CC_PRUNE_LOG_MAX_MB"
 
   log "  after:  ~/.claude = $(human_size "$CLAUDE_DIR")"
   log "cc-prune DONE"

@@ -18,7 +18,8 @@ mkdir -p "$STATE_DIR"
 
 input=$(cat)
 export _EG_INPUT="$input"
-read session_id tool failed <<<"$(python3 <<'PY'
+read session_id tool failed <<<"$(
+  python3 <<'PY'
 import json, os, re
 raw = os.environ.get("_EG_INPUT", "")
 try:
@@ -62,8 +63,8 @@ if [ "$failed" != "true" ]; then
   exit 0
 fi
 
-count=$(( $(cat "$counter" 2>/dev/null || echo 0) + 1 ))
-echo "$count" > "$counter"
+count=$(($(cat "$counter" 2>/dev/null || echo 0) + 1))
+echo "$count" >"$counter"
 
 if [ "$count" -lt "$THRESHOLD" ]; then
   exit 0

@@ -2,7 +2,7 @@
 
 Every agent — when to invoke, what they do, what they NEVER do. Source files at `~/dotfiles/claude/agents/<name>.md`.
 
-## Custom agents (6)
+## Custom agents (24)
 
 ### code-reviewer
 - **When:** Any non-trivial diff (>50 lines, security-sensitive, public API change)
@@ -60,6 +60,60 @@ Every agent — when to invoke, what they do, what they NEVER do. Source files a
 - **Model:** haiku
 - **Output:** Categorized report (🔴 critical CVE / 🟡 major-behind / 🟢 minor-patch / unused)
 - **Never:** Run install/uninstall without approval; auto-fix audits with semver-major
+
+### aaa
+- **When:** "Run the X agent", any intent matching one of the 111 Python apps in `awesome-ai-apps` catalog
+- **Tools:** Read, Bash, Grep
+- **Model:** sonnet
+- **Output:** Launches the matched project's entry point, returns access URL + env-keys-sourced report
+- **Never:** Run with placeholder API keys; install Python deps globally (every project gets its own .venv); run score-1 or score-2 projects without explicit user request
+- **Special:** Reads `~/.claude/aaa-manifest.json` to dispatch. 111 projects scored 1–5; routes user intent → matching project → spawns Streamlit/uv-run/etc.
+
+### aaa-due-diligence
+- **When:** "Due diligence on X", "vet this startup", "background check on founder"
+- **Tools:** Read, Bash, Grep
+- **Model:** sonnet
+- **Output:** Streamlit URL with 6-specialist parallel research (founders/investors/press/financials/tech/social) pre-loaded
+- **Never:** Run without NEBIUS_API_KEY + TINYFISH_API_KEY confirmed
+- **Underlying:** `~/code/research/awesome-ai-apps/advance_ai_agents/due_diligence_agent/` (AG2 + TinyFish)
+
+### aaa-rag-rerank
+- **When:** "Chat with these PDFs", "RAG over a doc corpus", knowledge-base over docs
+- **Tools:** Read, Bash, Grep
+- **Model:** sonnet
+- **Output:** Streamlit URL with PDF corpus indexed (Qdrant hybrid dense+sparse, reranking, streaming citations)
+- **Never:** Skip the reranker; point at Aurex customer-facing PDFs without RUO compliance confirm
+- **Underlying:** `~/code/research/awesome-ai-apps/rag_apps/advanced_rag_with_reranking/`
+
+### aaa-arxiv-research
+- **When:** "Find papers on X", "continue my literature review", arxiv search with thread memory
+- **Tools:** Read, Bash, Grep
+- **Model:** sonnet
+- **Output:** Streamlit URL + active Memori session for paper-thread persistence
+- **Never:** Mix Memori sessions across unrelated topics; collide with `mempalace` MCP (different scope: arxiv-specific vs cross-session)
+- **Underlying:** `~/code/research/awesome-ai-apps/memory_agents/arxiv_researcher_agent_with_memori/` (OpenAI Agents + Memori v3)
+
+### aaa-ai-consultant
+- **When:** "Strategic consulting on X", standing consultant for a client/project
+- **Tools:** Read, Bash, Grep
+- **Model:** sonnet
+- **Output:** Streamlit URL + active Memori scope (per client/project)
+- **Never:** Route payment-rail-strategy queries (Stripe/NMI/BTCPay specifics) without user nod — OpenAI logging; let two unrelated clients share one Memori store
+- **Underlying:** `~/code/research/awesome-ai-apps/memory_agents/ai_consultant_agent/` (Agno + Memori v3 + Tavily)
+
+### SEO agent suite (12 agents — pillar/spoke marketing stack)
+- **seo-cluster-strategist** — topic cluster / pillar-spoke IA design
+- **seo-content-analyzer** — SERP / content gap / on-page analysis
+- **seo-cro-analyst** — conversion-rate optimization, funnel breakdowns
+- **seo-editor** — editorial polish on long-form content
+- **seo-headline-generator** — H1 + variant generation with copywriting formulas
+- **seo-internal-linker** — internal-link planning across a content cluster
+- **seo-keyword-mapper** — keyword → page mapping, intent classification
+- **seo-landing-page-optimizer** — landing-page-specific CRO audit
+- **seo-meta-creator** — meta title/description generation
+- **seo-optimizer** — generic on-page SEO optimization
+- **seo-performance** — Core Web Vitals + Lighthouse-driven perf audit
+- **Composition:** `seo-cluster-strategist` → `seo-keyword-mapper` → `seo-internal-linker` is the standard cluster build order. `seo-cro-analyst` + `seo-landing-page-optimizer` + `seo-headline-generator` stack for conversion work. Outputs feed into the design tier when a redesign is needed.
 
 ## Built-in agents (provided by Claude Code)
 

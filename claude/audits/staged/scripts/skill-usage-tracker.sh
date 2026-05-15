@@ -8,13 +8,16 @@ PROJ_DIR="${HOME}/.claude/projects"
 DAYS="${1:-30}"
 OUT="${HOME}/.claude/audits/skill-usage-$(date +%Y-%m-%d).md"
 
-[ -d "$PROJ_DIR" ] || { echo "no projects dir at $PROJ_DIR" >&2; exit 1; }
+[ -d "$PROJ_DIR" ] || {
+  echo "no projects dir at $PROJ_DIR" >&2
+  exit 1
+}
 
 # Collect every Skill tool invocation from sessions modified in the last N days.
 tmp=$(mktemp)
 find "$PROJ_DIR" -name "*.jsonl" -type f -mtime -"$DAYS" | while read -r f; do
   jq -r 'select(.message.content[]?.type == "tool_use" and .message.content[].name == "Skill") | .message.content[] | select(.name == "Skill") | .input.skill' "$f" 2>/dev/null
-done | sort | uniq -c | sort -rn > "$tmp"
+done | sort | uniq -c | sort -rn >"$tmp"
 
 # All skills on disk
 all_skills=$(find "$HOME/.claude/skills" -maxdepth 1 -mindepth 1 -printf "%f\n" 2>/dev/null)
@@ -40,9 +43,9 @@ fi
   echo
   used=$(awk '{print $2}' "$tmp")
   for s in $all_skills; do
-    grep -qx "$s" <<< "$used" || echo "- \`$s\`"
+    grep -qx "$s" <<<"$used" || echo "- \`$s\`"
   done
-} > "$OUT"
+} >"$OUT"
 
 rm -f "$tmp"
 cat "$OUT"

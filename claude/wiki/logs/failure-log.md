@@ -15,6 +15,38 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
 
 ---
 
+## 2026-05-05 · Circuit-open path silently produced "All tiers exhausted. Last error: unknown"
+
+- **Context:** While running the runtime gauntlet after locking the image tier to `fallbacks: []`, the gauntlet's image-fail-fast assertion failed with the message `"All tiers exhausted. Last error: unknown"` instead of the expected `"Image bridge unavailable: ..."`.
+- **Failure:** Final wrap message had no useful information about why the image tier failed. User-facing error degraded from "image bridge needs setup" (actionable) to "unknown" (useless).
+- **Root cause:** `dispatch()` BFS loop has two non-success branches: (a) circuit-open short-circuit at the top, (b) try/catch around the actual call. Only branch (b) sets `lastErr = e`. When the image tier's circuit had opened from prior session failures, every subsequent `ask({purpose:'image_gen'})` hit branch (a), which logged + skipped without setting `lastErr`. With `fallbacks: []`, the queue then drained empty, and the final `throw new Error(\`All tiers exhausted. Last error: ${lastErr?.message || 'unknown'}\`)` fell back to 'unknown'.
+- **Fix:** Set `lastErr = new Error(\`circuit breaker open for ${def.id}\`)` (with `code: 'CIRCUIT_OPEN'`) inside the circuit-open branch so the wrap message is meaningful regardless of which branch fired last. Updated the runtime gauntlet to accept either bridge-down or circuit-open as a valid image-failure signature; the gauntlet also resets the image CB before invoking `ask()` so the fresh-dispatch path runs when possible.
+- **Lesson:** Two non-success branches in the same loop must both update the error-tracking variable. Wrapping logic should never produce "unknown" as a user-facing message — that's a sign some failure path forgot to populate context. Trace every path that sets the error-summary variable; if a path can fail without writing to it, the wrap message will lie. Especially relevant when a tier transitions from "has fallbacks" to "fail-fast": empty-fallback drains the queue without ever entering the success-or-error branch.
+
+## 2026-05-05 · `flags:['cheap']` silently routed to Ollama instead of DeepSeek for weeks
+
+- **Context:** Router has both a `chat` tier (Ollama, T1) and a `cheap` tier (DeepSeek, T2). Flags exist as a way for callers to force a specific tier without using a full purpose name.
+- **Failure:** `classifyTask({ flags: ['cheap'] })` returned `'chat'` (→ Ollama llama3.2:3b) instead of `'cheap'` (→ DeepSeek). Quality regression on every cheap-flagged call: a 3B local model handled work intended for a frontier reasoner. Caught by DeepSeek's own audit of its host router.
+- **Root cause:** `CHAT_F` and `CHEAP_F` were defined as `CHAT_F = ['chat','light','cheap','mechanical']` and `CHEAP_F = ['deepseek','cheap_reasoning','long_context']`. The flag `'cheap'` lived in the wrong set. `classifyTask` checks CHAT_F before CHEAP_F (line ordering), so `'cheap'` always won as chat. The disjointness check in `check-integrity.cjs` ran on PURPOSE sets only — it did not detect this flag-set drift.
+- **Fix:** Moved `'cheap'` from CHAT_F to CHEAP_F. Extended `check-integrity.cjs` to also run pairwise disjointness across the flag sets. Added flag-routing tests to the Codex-generated runtime gauntlet so future flag misroutes are caught at module-load.
+- **Lesson:** Disjointness invariants must apply to every enumerated set the classifier reads from, not just the most prominent ones. The label of a set ("CHAT_F") doesn't tell you which tokens belong in it — token names don't carry their semantics. When extending an integrity check, verify it covers every input the function under test consumes; don't assume the obvious set is the only one. Also: `Codex's runtime gauntlet didn't catch this` — gauntlets must exercise both purpose-only and flag-only paths because they take different code branches.
+
+## 2026-05-05 · Router validator/classifier silent drift — codex+image+swarm purposes unreachable
+
+- **Context:** Router (`/Users/leonardofibonacci/Claude Code/lib/`) had codex (T5) and image (TI) tiers wired in `tiered-ask.cjs` classification sets (CODEX_P, IMAGE_P, CODEX_F, IMAGE_F), but `validate.cjs` had not been updated when those tiers were added. SWARM tier was added by the auto-improve background process during this same session with the same omission.
+- **Failure:** Calling `ask({ purpose: 'shell_script', flags: ['codex'] })` threw `Validation failed: unknown purpose: shell_script; unknown flag: codex`. The `validateAskInput()` gate at the top of `ask()` rejected legitimate forced-tier calls. Silent because the regex-based classifier still routed correctly when called with prompt text alone — only explicit `purpose:` / `flags:` were broken.
+- **Root cause:** No integrity check between `tiered-ask.cjs` classification sets and `validate.cjs` VALID_PURPOSES / VALID_FLAGS. Adding a tier required updating two files; the second file was forgotten.
+- **Fix:** (a) Patched `validate.cjs` to include all CODEX_P / IMAGE_P / SWARM_P purposes and CODEX_F / IMAGE_F / SWARM_F flags. (b) Added a startup integrity loop in `tiered-ask.cjs` that throws on first drift between classifier sets and validator sets — the module won't load if a future tier addition forgets the validator update. (c) Added a Claude Code project-level pre-commit hook that loads the module to surface the throw at commit time.
+- **Lesson:** Any gate that checks against an enumerated set must have a startup integrity check verifying the set covers every legal value the rest of the system can produce. Two-file invariants without a cross-check rot silently. The throw-at-load pattern is cheap and definitive — prefer it to documentation that asks a future maintainer to remember.
+
+## 2026-05-05 · Routing-drift weekly check was a no-op (column-extraction bug)
+
+- **Context:** Weekly launchd job `bio.claude.routing-drift` (Mondays 09:05) ran `routing-drift-check.sh` to surface skills/agents that were either named in CLAUDE.md but missing from disk, or on disk but unrouted.
+- **Failure:** Script had been silently passing on every run despite known drift (e.g. `cc-loop` referenced but doesn't exist; `skill-creator` on disk but not routed). Auditor surfaced the issues; weekly check had not.
+- **Root cause:** `awk -F'`' '/\| `/{print $2}'` extracted the FIRST backtick-quoted token from any line containing `` | ` `` — which in the SKILL ROUTING TABLE is the user-intent column (column 1), not the skill column (column 2). All "intents" matched the allowlists trivially because they're free-form English text, not skill names. The check was reading the wrong column from day one.
+- **Fix:** Replaced extraction with column-aware `awk -F'|' 'NF >= 4 && $1 ~ /^$/ ... { print $3 }'` that pulls column 2 of well-formed table rows. Also: added symlink-following (`find -L`) since `~/.claude/skills/` and `~/.claude/agents/` are themselves symlinks, and a built-in skills/agents allowlist for things like `claude-api`, `loop`, `Explore` that ship with Claude Code rather than living on disk. Re-ran: 37 skills + 13 agents + 2 MCP refs all aligned, exit 0.
+- **Lesson:** "The check passes" ≠ "there is no drift" until you've verified the check actually detects drift. Before trusting a guard, induce a known failure (rename a skill) and confirm the guard fires. A silent guard is worse than no guard — it provides false confidence.
+
 ## 2026-05-03 · Routing-drift detector false-positives on built-in agents and MCPs
 
 - **Context:** Wrote `routing-drift-check.sh` to compare CLAUDE.md routing tables against `~/.claude/skills/` and `~/.claude/agents/`

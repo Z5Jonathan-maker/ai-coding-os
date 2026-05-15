@@ -120,3 +120,6 @@ alias gwt='git worktree'
 alias gwta='git worktree add'
 alias gwtl='git worktree list'
 alias gwtr='git worktree remove'
+
+# cc-dispatch — fire-and-forget Claude CLI agent dispatch (bypasses harness watchdog)
+export PATH="$HOME/.claude/bin:$PATH"

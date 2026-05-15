@@ -33,8 +33,8 @@ log ""
 log "── brew update + upgrade ──"
 if command -v /opt/homebrew/bin/brew >/dev/null; then
   if [ "$DRY_RUN" = "0" ]; then
-    /opt/homebrew/bin/brew update >> "$LOG" 2>&1 || failed+=("brew update")
-    /opt/homebrew/bin/brew upgrade >> "$LOG" 2>&1 || failed+=("brew upgrade")
+    /opt/homebrew/bin/brew update >>"$LOG" 2>&1 || failed+=("brew update")
+    /opt/homebrew/bin/brew upgrade >>"$LOG" 2>&1 || failed+=("brew upgrade")
     updated+=("brew")
   else
     log "[DRY-RUN] brew update + upgrade"
@@ -51,12 +51,11 @@ for repo in \
   "$HOME/code/research/ui-ux-pro-max-skill" \
   "$HOME/code/research/langfuse" \
   "$HOME/code/research/wassim-drive/andrej-karpathy-skills-main" \
-  "$HOME/code/security/auto-browser" \
-  ; do
+  "$HOME/code/security/auto-browser"; do
   [ -d "$repo/.git" ] || continue
   log "  → $repo"
   if [ "$DRY_RUN" = "0" ]; then
-    if ( cd "$repo" && git pull --ff-only 2>&1 ); then
+    if (cd "$repo" && git pull --ff-only 2>&1); then
       updated+=("$(basename "$repo")")
     else
       failed+=("$(basename "$repo")")
@@ -71,7 +70,7 @@ for stack in "$HOME/code/research/langfuse" "$HOME/code/security/auto-browser"; 
   [ -f "$stack/docker-compose.yml" ] || [ -f "$stack/docker-compose.yaml" ] || continue
   log "  → $stack"
   if [ "$DRY_RUN" = "0" ]; then
-    if ( cd "$stack" && docker compose pull >> "$LOG" 2>&1 && docker compose up -d >> "$LOG" 2>&1 ); then
+    if (cd "$stack" && docker compose pull >>"$LOG" 2>&1 && docker compose up -d >>"$LOG" 2>&1); then
       updated+=("docker:$(basename "$stack")")
     else
       failed+=("docker:$(basename "$stack")")
@@ -84,7 +83,7 @@ log ""
 log "── uv tool upgrade --all ──"
 if [ -x /opt/homebrew/bin/uv ]; then
   if [ "$DRY_RUN" = "0" ]; then
-    /opt/homebrew/bin/uv tool upgrade --all >> "$LOG" 2>&1 \
+    /opt/homebrew/bin/uv tool upgrade --all >>"$LOG" 2>&1 \
       && updated+=("uv tools") \
       || failed+=("uv tool upgrade")
   fi
@@ -94,7 +93,7 @@ fi
 log ""
 log "── npm cache verify ──"
 if command -v npm >/dev/null; then
-  [ "$DRY_RUN" = "0" ] && npm cache verify >> "$LOG" 2>&1 || true
+  [ "$DRY_RUN" = "0" ] && npm cache verify >>"$LOG" 2>&1 || true
   updated+=("npm cache")
 fi
 

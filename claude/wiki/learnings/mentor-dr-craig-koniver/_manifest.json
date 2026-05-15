@@ -113,7 +113,592 @@
       "title": "interview-with-dr-craig-koniver-part-2-peptide-growth-hormone-koniver-wellness-k-BIduDDAU6tk",
       "words": 1023,
       "ingested": "2026-05-04T00:48:23+00:00"
+    },
+    "https://www.youtube.com/watch?v=f-ji6szVavI": {
+      "file": "is-peptide-therapy-the-future-of-medicine-dr-craig-koniver-f-ji6szVavI.md",
+      "kind": "youtube_transcript",
+      "title": "Is Peptide Therapy the Future of Medicine? | Dr. Craig Koniver",
+      "video_id": "f-ji6szVavI",
+      "method": "auto-cc",
+      "words": 22020,
+      "ingested": "2026-05-04T03:15:04+00:00"
+    },
+    "https://www.youtube.com/watch?v=5JNSa9WUDhM": {
+      "file": "what-you-need-to-know-to-be-your-best-with-dr-craig-koniver-the-powerful-man-sho-5JNSa9WUDhM.md",
+      "kind": "youtube_transcript",
+      "title": "What You Need To Know To Be Your Best With Dr. Craig Koniver | The Powerful Man Show | Episode #712",
+      "video_id": "5JNSa9WUDhM",
+      "method": "auto-cc",
+      "words": 15508,
+      "ingested": "2026-05-04T03:15:09+00:00"
+    },
+    "https://www.youtube.com/watch?v=7ax2d1HM1uk": {
+      "file": "performance-medicine-adrenals-circadian-rhythm-peptides-nad-ketamine-w-dr-craig--7ax2d1HM1uk.md",
+      "kind": "youtube_transcript",
+      "title": "Performance Medicine: Adrenals, Circadian Rhythm, Peptides, NAD, Ketamine w/ Dr. Craig Koniver #303",
+      "video_id": "7ax2d1HM1uk",
+      "method": "auto-cc",
+      "words": 40478,
+      "ingested": "2026-05-04T03:15:19+00:00"
+    },
+    "https://www.youtube.com/watch?v=yNmDNkN1KUY": {
+      "file": "dr-craig-koniver-health-optimization-with-peptides-light-therapy-and-methylene-b-yNmDNkN1KUY.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Craig Koniver: Health Optimization with Peptides, Light Therapy, and Methylene Blue",
+      "video_id": "yNmDNkN1KUY",
+      "method": "auto-cc",
+      "words": 26653,
+      "ingested": "2026-05-04T03:15:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=gkwzhuCnuA4": {
+      "file": "episode-95-dr-craig-koniver-founder-of-koniver-wellness-performance-medicine-exp-gkwzhuCnuA4.md",
+      "kind": "youtube_transcript",
+      "title": "Episode 95: Dr. Craig Koniver - Founder of Koniver Wellness, Performance Medicine Expert",
+      "video_id": "gkwzhuCnuA4",
+      "method": "auto-cc",
+      "words": 27776,
+      "ingested": "2026-05-04T03:15:32+00:00"
+    },
+    "https://www.youtube.com/watch?v=tgc6LM8sVBw": {
+      "file": "summary-of-hubermanlab-dr-craig-koniver-peptide-hormone-therapies-for-health-lon-tgc6LM8sVBw.md",
+      "kind": "youtube_transcript",
+      "title": "Summary of Hubermanlab \u2014 \"Dr. Craig Koniver: Peptide & Hormone Therapies for Health & Longevity\"",
+      "video_id": "tgc6LM8sVBw",
+      "method": "auto-cc",
+      "words": 2103,
+      "ingested": "2026-05-04T03:15:40+00:00"
+    },
+    "https://www.youtube.com/watch?v=QZr97DPMnr0": {
+      "file": "dr-craig-koniver-peptide-hormone-therapies-for-health-performance-longevity-hube-QZr97DPMnr0.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Craig Koniver: Peptide & Hormone Therapies for Health, Performance & Longevity | Huberman Lab",
+      "video_id": "QZr97DPMnr0",
+      "method": "auto-cc",
+      "words": 3599,
+      "ingested": "2026-05-04T03:15:57+00:00"
+    },
+    "https://www.youtube.com/watch?v=6uMjuzu950E": {
+      "file": "what-the-f-is-performance-medicine-dr-craig-koniver-md-6uMjuzu950E.md",
+      "kind": "youtube_transcript",
+      "title": "What the F*&$ is Performance Medicine ??? | Dr Craig Koniver, MD",
+      "video_id": "6uMjuzu950E",
+      "method": "auto-cc",
+      "words": 15896,
+      "ingested": "2026-05-04T03:16:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=Pf-NpanZiKM": {
+      "file": "36-dr-craig-koniver-onnit-podcast-w-kyle-kingsbury-Pf-NpanZiKM.md",
+      "kind": "youtube_transcript",
+      "title": "#36 Dr. Craig Koniver | Onnit Podcast w/ Kyle Kingsbury",
+      "video_id": "Pf-NpanZiKM",
+      "method": "auto-cc",
+      "words": 22338,
+      "ingested": "2026-05-04T03:16:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=j_-eXs39e8U": {
+      "file": "hormone-regulation-modern-medicine-personal-well-being-ft-dr-craig-koniver-keli--j_-eXs39e8U.md",
+      "kind": "youtube_transcript",
+      "title": "Hormone Regulation, Modern Medicine, & Personal Well Being Ft. Dr. Craig Koniver & Keli Koniver",
+      "video_id": "j_-eXs39e8U",
+      "method": "auto-cc",
+      "words": 28074,
+      "ingested": "2026-05-04T03:16:59+00:00"
+    },
+    "https://www.youtube.com/watch?v=yIg_y8n753c": {
+      "file": "dr-phillips-and-her-team-discuss-longevity-medicine-ethics-nad-and-methylene-blu-yIg_y8n753c.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Phillips and her team discuss longevity medicine ethics, NAD+ and methylene blue.",
+      "video_id": "yIg_y8n753c",
+      "method": "auto-cc",
+      "words": 5249,
+      "ingested": "2026-05-04T03:17:03+00:00"
+    },
+    "https://www.youtube.com/watch?v=wbRua6sdZDw": {
+      "file": "the-stress-of-success-managing-health-holistically-with-dr-craig-koniver-md-the--wbRua6sdZDw.md",
+      "kind": "youtube_transcript",
+      "title": "The Stress of Success: Managing Health Holistically, With Dr. Craig Koniver, MD | The DUTCH Test",
+      "video_id": "wbRua6sdZDw",
+      "method": "auto-cc",
+      "words": 15560,
+      "ingested": "2026-05-04T03:17:06+00:00"
+    },
+    "https://www.youtube.com/watch?v=pxz9CblNTqA": {
+      "file": "nad-and-fast-vitamin-iv-101-nad-iv-ivtherapy-pxz9CblNTqA.md",
+      "kind": "youtube_transcript",
+      "title": "NAD+ and Fast Vitamin IV 101 #NAD #IV # IVTherapy",
+      "video_id": "pxz9CblNTqA",
+      "method": "auto-cc",
+      "words": 13231,
+      "ingested": "2026-05-04T03:17:09+00:00"
+    },
+    "https://www.youtube.com/watch?v=FkKHIyg3VqA": {
+      "file": "how-to-get-your-own-vitamin-and-nad-iv-s-the-truth-about-umbilical-stem-cells-pe-FkKHIyg3VqA.md",
+      "kind": "youtube_transcript",
+      "title": "How To Get Your Own Vitamin and NAD IV's, The Truth About Umbilical Stem Cells, Peptide Injections",
+      "video_id": "FkKHIyg3VqA",
+      "method": "auto-cc",
+      "words": 28096,
+      "ingested": "2026-05-04T03:17:14+00:00"
+    },
+    "https://www.youtube.com/watch?v=AXy7yDqRZA8": {
+      "file": "74-dr-craig-koniver-health-optimization-through-nervous-system-regulation-AXy7yDqRZA8.md",
+      "kind": "youtube_transcript",
+      "title": "74. Dr. Craig Koniver | Health Optimization Through Nervous System Regulation",
+      "video_id": "AXy7yDqRZA8",
+      "method": "auto-cc",
+      "words": 29280,
+      "ingested": "2026-05-04T03:17:17+00:00"
+    },
+    "https://www.youtube.com/watch?v=XnVfg8aaQDY": {
+      "file": "celebrity-doctor-honesty-about-ozempic-peptides-will-drastically-improve-your-he-XnVfg8aaQDY.md",
+      "kind": "youtube_transcript",
+      "title": "Celebrity Doctor: Honesty About Ozempic! Peptides Will Drastically Improve Your Health (Masterclass)",
+      "video_id": "XnVfg8aaQDY",
+      "method": "auto-cc",
+      "words": 30548,
+      "ingested": "2026-05-04T03:17:20+00:00"
+    },
+    "https://www.youtube.com/watch?v=Om9Uq8srNF8": {
+      "file": "the-future-of-real-medicine-what-s-next-with-doctor-craig-koniver-Om9Uq8srNF8.md",
+      "kind": "youtube_transcript",
+      "title": "The Future of REAL Medicine: What\u2019s Next? with Doctor Craig Koniver",
+      "video_id": "Om9Uq8srNF8",
+      "method": "auto-cc",
+      "words": 24559,
+      "ingested": "2026-05-04T03:17:27+00:00"
+    },
+    "https://www.youtube.com/watch?v=5zHoOUgyi6s": {
+      "file": "knowing-when-to-use-what-tools-dr-craig-koniver-md-5zHoOUgyi6s.md",
+      "kind": "youtube_transcript",
+      "title": "Knowing When to Use What Tools | Dr Craig Koniver, MD",
+      "video_id": "5zHoOUgyi6s",
+      "method": "auto-cc",
+      "words": 1194,
+      "ingested": "2026-05-04T03:17:30+00:00"
+    },
+    "https://www.youtube.com/watch?v=8GOrj-WeRys": {
+      "file": "episode-76-how-does-nad-become-the-catalyst-to-healing-most-health-issues-8GOrj-WeRys.md",
+      "kind": "youtube_transcript",
+      "title": "Episode #76:How Does NAD Become The Catalyst To Healing Most Health Issues?",
+      "video_id": "8GOrj-WeRys",
+      "method": "auto-cc",
+      "words": 25536,
+      "ingested": "2026-05-04T03:17:33+00:00"
+    },
+    "https://www.youtube.com/watch?v=J19ZcTjbUgs": {
+      "file": "how-nad-works-how-to-series-J19ZcTjbUgs.md",
+      "kind": "youtube_transcript",
+      "title": "How NAD+ Works - HOW TO SERIES",
+      "video_id": "J19ZcTjbUgs",
+      "method": "auto-cc",
+      "words": 524,
+      "ingested": "2026-05-04T03:17:36+00:00"
+    },
+    "https://www.youtube.com/watch?v=OyJvz4rps6Y": {
+      "file": "interview-with-dr-koniver-regenerative-medicine-koniver-wellness-kienvuumd-OyJvz4rps6Y.md",
+      "kind": "youtube_transcript",
+      "title": "Interview with Dr. Koniver | Regenerative Medicine | KONIVER WELLNESS | KIENVUUMD",
+      "video_id": "OyJvz4rps6Y",
+      "method": "auto-cc",
+      "words": 2415,
+      "ingested": "2026-05-04T03:17:38+00:00"
+    },
+    "https://www.youtube.com/watch?v=PAQHEZ7weIo": {
+      "file": "156-dr-craig-koniver-md-kyle-kingsbury-podcast-PAQHEZ7weIo.md",
+      "kind": "youtube_transcript",
+      "title": "#156 Dr. Craig Koniver MD | Kyle Kingsbury Podcast",
+      "video_id": "PAQHEZ7weIo",
+      "method": "auto-cc",
+      "words": 21885,
+      "ingested": "2026-05-04T03:17:42+00:00"
+    },
+    "https://www.youtube.com/watch?v=m8MvKGttkJY": {
+      "file": "craig-koniver-md-how-mindset-affects-your-health-covid-19-consciousness-ketamine-m8MvKGttkJY.md",
+      "kind": "youtube_transcript",
+      "title": "Craig Koniver, MD | How Mindset Affects Your Health: COVID-19, Consciousness, & Ketamine.. | Ep.19",
+      "video_id": "m8MvKGttkJY",
+      "method": "auto-cc",
+      "words": 20662,
+      "ingested": "2026-05-04T03:17:45+00:00"
+    },
+    "https://www.youtube.com/watch?v=804mwP1mx8w": {
+      "file": "world-s-leading-peptide-scientist-peptide-masterclass-for-building-muscle-dr-wil-804mwP1mx8w.md",
+      "kind": "youtube_transcript",
+      "title": "World\u2019s LEADING Peptide Scientist: Peptide Masterclass for Building Muscle | Dr. William Seeds",
+      "video_id": "804mwP1mx8w",
+      "method": "auto-cc",
+      "words": 18087,
+      "ingested": "2026-05-04T03:17:48+00:00"
+    },
+    "https://www.youtube.com/watch?v=Xp6hOoEFhh8": {
+      "file": "biohacks-for-overcoming-cravings-and-more-with-dr-craig-koniver-Xp6hOoEFhh8.md",
+      "kind": "youtube_transcript",
+      "title": "Biohacks for Overcoming Cravings and more with Dr. Craig Koniver",
+      "video_id": "Xp6hOoEFhh8",
+      "method": "auto-cc",
+      "words": 19215,
+      "ingested": "2026-05-04T03:17:51+00:00"
+    },
+    "https://www.youtube.com/watch?v=BR4y-8WL4uc": {
+      "file": "benefits-of-nad-therapy-BR4y-8WL4uc.md",
+      "kind": "youtube_transcript",
+      "title": "Benefits of NAD therapy",
+      "video_id": "BR4y-8WL4uc",
+      "method": "auto-cc",
+      "words": 534,
+      "ingested": "2026-05-04T03:17:53+00:00"
+    },
+    "https://www.youtube.com/watch?v=h_coC_VRPV0": {
+      "file": "doctor-breaks-down-peptides-hype-risks-and-legal-implications-h_coC_VRPV0.md",
+      "kind": "youtube_transcript",
+      "title": "Doctor Breaks Down Peptides: Hype, Risks, and Legal Implications",
+      "video_id": "h_coC_VRPV0",
+      "method": "auto-cc",
+      "words": 2182,
+      "ingested": "2026-05-04T03:17:59+00:00"
+    },
+    "https://www.youtube.com/watch?v=12b9XkCzhb0": {
+      "file": "the-best-legal-performance-enhancers-why-i-m-taking-the-bpc-157-peptide-12b9XkCzhb0.md",
+      "kind": "youtube_transcript",
+      "title": "The Best Legal Performance Enhancers & Why I\u2019m Taking the BPC-157 Peptide",
+      "video_id": "12b9XkCzhb0",
+      "method": "auto-cc",
+      "words": 3928,
+      "ingested": "2026-05-04T03:18:01+00:00"
+    },
+    "https://www.youtube.com/watch?v=Q35LjavAh6E": {
+      "file": "when-is-the-best-time-to-take-tesamorelin-Q35LjavAh6E.md",
+      "kind": "youtube_transcript",
+      "title": "When Is The Best Time To Take Tesamorelin?",
+      "video_id": "Q35LjavAh6E",
+      "method": "auto-cc",
+      "words": 2993,
+      "ingested": "2026-05-04T03:18:05+00:00"
+    },
+    "https://www.youtube.com/watch?v=JNCAqPQU67I": {
+      "file": "amp-146-the-perils-and-promise-of-medicine-with-dr-craig-koniver-aubrey-marcus-p-JNCAqPQU67I.md",
+      "kind": "youtube_transcript",
+      "title": "AMP #146 - The Perils and Promise of Medicine with Dr. Craig Koniver | Aubrey Marcus Podcast",
+      "video_id": "JNCAqPQU67I",
+      "method": "auto-cc",
+      "words": 25535,
+      "ingested": "2026-05-04T03:18:07+00:00"
+    },
+    "https://www.youtube.com/watch?v=2PhailQN-wo": {
+      "file": "how-words-can-be-used-to-heal-and-harm-with-dr-craig-koniver-md-aubrey-marcus-po-2PhailQN-wo.md",
+      "kind": "youtube_transcript",
+      "title": "How Words Can Be Used To Heal and Harm with Dr. Craig Koniver MD | Aubrey Marcus Podcast",
+      "video_id": "2PhailQN-wo",
+      "method": "auto-cc",
+      "words": 22433,
+      "ingested": "2026-05-04T03:18:10+00:00"
+    },
+    "https://www.youtube.com/watch?v=Sx4LJ3_py58": {
+      "file": "the-new-darling-supplement-of-the-anti-aging-industry-the-truth-about-whether-it-Sx4LJ3_py58.md",
+      "kind": "youtube_transcript",
+      "title": "The New Darling Supplement Of The Anti-Aging Industry (& The Truth About Whether It Actually Works)",
+      "video_id": "Sx4LJ3_py58",
+      "method": "auto-cc",
+      "words": 25500,
+      "ingested": "2026-05-04T03:18:13+00:00"
+    },
+    "https://www.youtube.com/watch?v=99FsOBoYIBY": {
+      "file": "dr-tracy-gapin-powering-into-peptides-99FsOBoYIBY.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Tracy Gapin \u2013 Powering Into Peptides",
+      "video_id": "99FsOBoYIBY",
+      "method": "auto-cc",
+      "words": 17756,
+      "ingested": "2026-05-04T03:18:19+00:00"
+    },
+    "https://www.youtube.com/watch?v=_hsKLKa_Pq8": {
+      "file": "methylene-blue-risks-benefits-dr-chris-palmer-dr-andrew-huberman-_hsKLKa_Pq8.md",
+      "kind": "youtube_transcript",
+      "title": "Methylene Blue: Risks & Benefits | Dr. Chris Palmer & Dr. Andrew Huberman",
+      "video_id": "_hsKLKa_Pq8",
+      "method": "auto-cc",
+      "words": 2566,
+      "ingested": "2026-05-04T03:18:22+00:00"
+    },
+    "https://www.youtube.com/watch?v=_CZDVlPsC9A": {
+      "file": "how-tilly-can-do-more-by-using-iv-drip-therapy-restore-hyper-wellness-_CZDVlPsC9A.md",
+      "kind": "youtube_transcript",
+      "title": "How Tilly Can Do More By Using IV Drip Therapy | Restore Hyper Wellness",
+      "video_id": "_CZDVlPsC9A",
+      "method": "auto-cc",
+      "words": 165,
+      "ingested": "2026-05-04T03:18:25+00:00"
+    },
+    "https://www.youtube.com/watch?v=Cq4-iT0SjNE": {
+      "file": "dr-joseph-jemsek-reviews-the-use-of-methylene-blue-for-lyme-borreliosis-complex-Cq4-iT0SjNE.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Joseph Jemsek reviews the use of Methylene Blue for Lyme Borreliosis Complex",
+      "video_id": "Cq4-iT0SjNE",
+      "method": "auto-cc",
+      "words": 10617,
+      "ingested": "2026-05-04T03:18:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=rcOq4sGUEZM": {
+      "file": "kristin-s-experience-with-iv-therapy-at-revitalyzemd-knoxville-ivtherapy-865-293-rcOq4sGUEZM.md",
+      "kind": "youtube_transcript",
+      "title": "Kristin's Experience with IV Therapy at RevitalyzeMD #knoxville #IVTherapy  (865) 293-5828",
+      "video_id": "rcOq4sGUEZM",
+      "method": "auto-cc",
+      "words": 1370,
+      "ingested": "2026-05-04T03:18:30+00:00"
+    },
+    "https://www.youtube.com/watch?v=zRXC2pEbj5w": {
+      "file": "how-do-ozempic-mounjaro-other-gpl-1-agonists-work-dr-zachary-knight-dr-andrew-hu-zRXC2pEbj5w.md",
+      "kind": "youtube_transcript",
+      "title": "How Do Ozempic, Mounjaro & Other GPL-1 Agonists Work? | Dr. Zachary Knight & Dr. Andrew Huberman",
+      "video_id": "zRXC2pEbj5w",
+      "method": "auto-cc",
+      "words": 5608,
+      "ingested": "2026-05-04T03:18:34+00:00"
+    },
+    "https://www.youtube.com/watch?v=nHyyZ5Lmgkc": {
+      "file": "397-how-to-get-carbs-on-a-carnivore-diet-the-4-laws-of-muscle-how-to-recover-fas-nHyyZ5Lmgkc.md",
+      "kind": "youtube_transcript",
+      "title": "397: How To Get Carbs On A Carnivore Diet, The 4 Laws Of Muscle, How To Recover Faster, Which Artif",
+      "video_id": "nHyyZ5Lmgkc",
+      "method": "auto-cc",
+      "words": 31283,
+      "ingested": "2026-05-04T03:18:38+00:00"
+    },
+    "https://www.youtube.com/watch?v=zJSuZ28i35o": {
+      "file": "how-hypochlorous-acid-really-heals-your-body-with-justin-gardner-zJSuZ28i35o.md",
+      "kind": "youtube_transcript",
+      "title": "How Hypochlorous Acid Really Heals Your Body with Justin Gardner",
+      "video_id": "zJSuZ28i35o",
+      "method": "auto-cc",
+      "words": 25785,
+      "ingested": "2026-05-04T03:18:41+00:00"
+    },
+    "https://www.youtube.com/watch?v=0VpIS-Bsep4": {
+      "file": "methylene-blue-everything-you-need-to-know-0VpIS-Bsep4.md",
+      "kind": "youtube_transcript",
+      "title": "Methylene Blue: Everything You Need To Know!",
+      "video_id": "0VpIS-Bsep4",
+      "method": "auto-cc",
+      "words": 7847,
+      "ingested": "2026-05-04T03:18:43+00:00"
+    },
+    "https://www.youtube.com/watch?v=O640yAgq5f8": {
+      "file": "tools-for-hormone-optimization-in-males-dr-kyle-gillett-O640yAgq5f8.md",
+      "kind": "youtube_transcript",
+      "title": "Tools for Hormone Optimization in Males | Dr. Kyle Gillett",
+      "video_id": "O640yAgq5f8",
+      "method": "auto-cc",
+      "words": 25088,
+      "ingested": "2026-05-04T03:18:46+00:00"
+    },
+    "https://www.youtube.com/watch?v=cLON5i89gpE": {
+      "file": "dr-peter-attia-pt-2-hormones-ozempic-weight-loss-insulin-resistance-testosterone-cLON5i89gpE.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Peter Attia Pt 2 - Hormones, Ozempic Weight Loss, Insulin Resistance, & Testosterone Replacement",
+      "video_id": "cLON5i89gpE",
+      "method": "auto-cc",
+      "words": 26114,
+      "ingested": "2026-05-04T03:18:49+00:00"
+    },
+    "https://www.youtube.com/watch?v=LHoc0joXYxk": {
+      "file": "this-is-my-brain-on-drugs-booze-emf-trauma-with-dr-daniel-amen-luke-s-spect-scan-LHoc0joXYxk.md",
+      "kind": "youtube_transcript",
+      "title": "This Is My Brain On Drugs, Booze, EMF, & Trauma with Dr. Daniel Amen (Luke's SPECT Scan Results)...",
+      "video_id": "LHoc0joXYxk",
+      "method": "auto-cc",
+      "words": 41597,
+      "ingested": "2026-05-04T03:18:52+00:00"
+    },
+    "https://www.youtube.com/watch?v=mkZk8_mimZg": {
+      "file": "hitting-bottom-rising-from-opiate-addiction-to-a-life-of-purpose-w-doug-bopst-36-mkZk8_mimZg.md",
+      "kind": "youtube_transcript",
+      "title": "Hitting Bottom & Rising: From Opiate Addiction to a Life of Purpose w/ Doug Bopst #369",
+      "video_id": "mkZk8_mimZg",
+      "method": "auto-cc",
+      "words": 35614,
+      "ingested": "2026-05-04T03:18:55+00:00"
+    },
+    "https://www.youtube.com/watch?v=qyG472kJSp8": {
+      "file": "the-missing-ingredient-to-losing-weight-building-lean-muscle-ft-kion-founder-ang-qyG472kJSp8.md",
+      "kind": "youtube_transcript",
+      "title": "The Missing Ingredient To Losing Weight & Building Lean Muscle Ft. Kion Founder Angelo Keely",
+      "video_id": "qyG472kJSp8",
+      "method": "auto-cc",
+      "words": 34359,
+      "ingested": "2026-05-04T03:18:59+00:00"
+    },
+    "https://www.youtube.com/watch?v=mSBeyrFuGXY": {
+      "file": "the-secret-to-a-happy-healthy-relationship-mSBeyrFuGXY.md",
+      "kind": "youtube_transcript",
+      "title": "The Secret To A Happy & Healthy Relationship",
+      "video_id": "mSBeyrFuGXY",
+      "method": "auto-cc",
+      "words": 10283,
+      "ingested": "2026-05-04T03:19:02+00:00"
+    },
+    "https://www.youtube.com/watch?v=ML3Th4RbUQE": {
+      "file": "methylene-blue-and-red-light-therapy-are-a-power-duo-ML3Th4RbUQE.md",
+      "kind": "youtube_transcript",
+      "title": "Methylene Blue and Red Light Therapy Are A Power Duo!",
+      "video_id": "ML3Th4RbUQE",
+      "method": "auto-cc",
+      "words": 2061,
+      "ingested": "2026-05-04T03:19:05+00:00"
+    },
+    "https://www.youtube.com/watch?v=Of-b_bYqKGY": {
+      "file": "from-life-as-an-addict-to-life-stylist-with-luke-storey-awesome-health-podcast-Of-b_bYqKGY.md",
+      "kind": "youtube_transcript",
+      "title": "From Life As An Addict To Life Stylist With Luke Storey / Awesome Health Podcast",
+      "video_id": "Of-b_bYqKGY",
+      "method": "auto-cc",
+      "words": 27984,
+      "ingested": "2026-05-04T03:19:08+00:00"
+    },
+    "https://www.youtube.com/watch?v=R4BjIgrqGQU": {
+      "file": "62-anthony-diclementi-human-optimization-hour-w-kyle-kingsbury-R4BjIgrqGQU.md",
+      "kind": "youtube_transcript",
+      "title": "#62 Anthony DiClementi | Human Optimization Hour w/ Kyle Kingsbury",
+      "video_id": "R4BjIgrqGQU",
+      "method": "auto-cc",
+      "words": 22706,
+      "ingested": "2026-05-04T03:19:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=LI5z_il5seU": {
+      "file": "you-are-the-love-of-your-life-neelam-verma-LI5z_il5seU.md",
+      "kind": "youtube_transcript",
+      "title": "YOU are the Love of your Life | Neelam Verma",
+      "video_id": "LI5z_il5seU",
+      "method": "auto-cc",
+      "words": 1052,
+      "ingested": "2026-05-04T03:19:15+00:00"
+    },
+    "https://www.youtube.com/watch?v=MD-0F8hLBGo": {
+      "file": "how-to-solve-your-ibs-problems-MD-0F8hLBGo.md",
+      "kind": "youtube_transcript",
+      "title": "How to Solve Your IBS Problems",
+      "video_id": "MD-0F8hLBGo",
+      "method": "auto-cc",
+      "words": 7325,
+      "ingested": "2026-05-04T03:19:20+00:00"
+    },
+    "https://www.youtube.com/watch?v=Mm-GTgqznwE": {
+      "file": "klarity-klinic-reviews-dr-devin-tang-ketamine-therapy-treatment-review-upland-ca-Mm-GTgqznwE.md",
+      "kind": "youtube_transcript",
+      "title": "Klarity Klinic Reviews | Dr. Devin Tang Ketamine Therapy Treatment Review | Upland CA",
+      "video_id": "Mm-GTgqznwE",
+      "method": "auto-cc",
+      "words": 548,
+      "ingested": "2026-05-04T03:19:24+00:00"
+    },
+    "https://www.youtube.com/watch?v=zeBtlkhRsrw": {
+      "file": "aniracetam-and-alzheimer-s-disease-the-lion-s-den-feb-27-2023-zeBtlkhRsrw.md",
+      "kind": "youtube_transcript",
+      "title": "Aniracetam and Alzheimer's Disease: The Lion's Den, Feb 27, 2023",
+      "video_id": "zeBtlkhRsrw",
+      "method": "auto-cc",
+      "words": 24797,
+      "ingested": "2026-05-04T03:19:27+00:00"
+    },
+    "https://www.youtube.com/watch?v=LL87PyXKwCg": {
+      "file": "ketamine-research-dr-j-john-mann-LL87PyXKwCg.md",
+      "kind": "youtube_transcript",
+      "title": "Ketamine Research - Dr. J John Mann",
+      "video_id": "LL87PyXKwCg",
+      "method": "auto-cc",
+      "words": 520,
+      "ingested": "2026-05-04T03:19:31+00:00"
+    },
+    "https://www.youtube.com/watch?v=FBlJVJZbVs8": {
+      "file": "dr-ted-achacoso-gaba-brain-function-and-health-optimization-FBlJVJZbVs8.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Ted Achacoso: GABA, Brain Function, and Health Optimization",
+      "video_id": "FBlJVJZbVs8",
+      "method": "auto-cc",
+      "words": 19319,
+      "ingested": "2026-05-04T03:19:35+00:00"
+    },
+    "https://www.youtube.com/watch?v=8sELxD2HXtY": {
+      "file": "day-11-after-5-days-of-ketamine-infusions-at-the-remedy-in-st-paul-minneapolis-m-8sELxD2HXtY.md",
+      "kind": "youtube_transcript",
+      "title": "Day 11 after 5 days of ketamine infusions at The Remedy in St. Paul Minneapolis Minnesota",
+      "video_id": "8sELxD2HXtY",
+      "method": "auto-cc",
+      "words": 1382,
+      "ingested": "2026-05-04T03:19:46+00:00"
+    },
+    "https://www.youtube.com/watch?v=kunkgpCX97E": {
+      "file": "yankee-s-live-murica-guns-and-freedom-chat-kunkgpCX97E.md",
+      "kind": "youtube_transcript",
+      "title": "Yankee\u2019s LIVE Murica, Guns and Freedom Chat!",
+      "video_id": "kunkgpCX97E",
+      "method": "auto-cc",
+      "words": 19739,
+      "ingested": "2026-05-04T03:19:55+00:00"
+    },
+    "https://www.youtube.com/watch?v=TokvciO6SzU": {
+      "file": "community-q-a-spiritual-surrender-healing-lyme-add-vision-support-colon-cleansin-TokvciO6SzU.md",
+      "kind": "youtube_transcript",
+      "title": "Community Q&A :Spiritual Surrender, Healing Lyme & ADD, Vision Support, Colon Cleansing, & More #305",
+      "video_id": "TokvciO6SzU",
+      "method": "auto-cc",
+      "words": 31169,
+      "ingested": "2026-05-04T03:20:12+00:00"
+    },
+    "https://www.youtube.com/watch?v=U919FK_u6tI": {
+      "file": "40-the-life-stylist-luke-storey-onnit-podcast-w-kyle-kingsbury-U919FK_u6tI.md",
+      "kind": "youtube_transcript",
+      "title": "#40 The Life Stylist Luke Storey | Onnit Podcast w/ Kyle Kingsbury",
+      "video_id": "U919FK_u6tI",
+      "method": "auto-cc",
+      "words": 30872,
+      "ingested": "2026-05-04T03:20:27+00:00"
+    },
+    "https://www.youtube.com/watch?v=aVCwAPeaXsA": {
+      "file": "ketamine-therapy-the-psychedelic-medicine-revolution-w-zappy-zapolin-393-aVCwAPeaXsA.md",
+      "kind": "youtube_transcript",
+      "title": "Ketamine Therapy & the Psychedelic Medicine Revolution w/ Zappy Zapolin #393",
+      "video_id": "aVCwAPeaXsA",
+      "method": "auto-cc",
+      "words": 32439,
+      "ingested": "2026-05-04T03:20:37+00:00"
+    },
+    "https://www.youtube.com/watch?v=ytI163x2apY": {
+      "file": "the-rasha-quantum-space-travel-the-key-to-consciousness-expansion-w-dr-jere-rive-ytI163x2apY.md",
+      "kind": "youtube_transcript",
+      "title": "The RASHA: Quantum Space Travel & The Key To Consciousness Expansion W/ Dr. Jere Rivera-Dugenio #309",
+      "video_id": "ytI163x2apY",
+      "method": "auto-cc",
+      "words": 33442,
+      "ingested": "2026-05-04T03:20:47+00:00"
+    },
+    "https://www.youtube.com/watch?v=68eQd1UA24g": {
+      "file": "dr-dwight-jennings-bonus-show-luke-s-shocking-dental-exam-321-68eQd1UA24g.md",
+      "kind": "youtube_transcript",
+      "title": "Dr. Dwight Jennings Bonus Show: Luke\u2019s Shocking Dental Exam #321",
+      "video_id": "68eQd1UA24g",
+      "method": "auto-cc",
+      "words": 10540,
+      "ingested": "2026-05-04T03:20:54+00:00"
+    },
+    "https://www.youtube.com/watch?v=0ZHR_DS-ass": {
+      "file": "dissolving-the-ego-ketamine-therapy-the-core-of-consciousness-w-dr-ted-achacoso--0ZHR_DS-ass.md",
+      "kind": "youtube_transcript",
+      "title": "Dissolving The Ego, Ketamine Therapy, & The Core Of Consciousness W/ Dr. Ted Achacoso #291",
+      "video_id": "0ZHR_DS-ass",
+      "method": "auto-cc",
+      "words": 52878,
+      "ingested": "2026-05-04T03:21:04+00:00"
+    },
+    "https://www.youtube.com/watch?v=4OzXVUm9D3s": {
+      "file": "ending-infant-trauma-dangers-of-hospital-birth-ultrasound-circumcision-w-jeanice-4OzXVUm9D3s.md",
+      "kind": "youtube_transcript",
+      "title": "Ending Infant Trauma: Dangers of Hospital Birth, Ultrasound, & Circumcision w/ Jeanice Barcelo #308",
+      "video_id": "4OzXVUm9D3s",
+      "method": "auto-cc",
+      "words": 48977,
+      "ingested": "2026-05-04T03:21:14+00:00"
     }
   },
-  "last_run": "2026-05-04T00:48:23+00:00"
+  "last_run": "2026-05-04T03:21:14+00:00"
 }

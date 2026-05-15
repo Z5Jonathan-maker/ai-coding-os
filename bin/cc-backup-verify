@@ -39,7 +39,7 @@ SUBSET="5%"
 [ "$FULL" = "1" ] && SUBSET="100%"
 
 if "$HOME/dotfiles/bin/cc-backup" snapshots >/dev/null 2>&1; then
-  if ! "$HOME/dotfiles/bin/cc-backup" check --read-data-subset="$SUBSET" >> "$LOG" 2>&1; then
+  if ! "$HOME/dotfiles/bin/cc-backup" check --read-data-subset="$SUBSET" >>"$LOG" 2>&1; then
     issues+=("restic check failed (${SUBSET})")
   else
     log "  ✓ restic check passed (${SUBSET} verified)"
@@ -54,7 +54,7 @@ TARGET=$(mktemp -d -t cc-backup-test.XXXXXX)
 trap 'rm -rf "$TARGET"' EXIT
 
 if [ ${#issues[@]} -eq 0 ]; then
-  if "$HOME/dotfiles/bin/cc-backup" restore latest --target "$TARGET" --include "/Users/leonardofibonacci/dotfiles/zprofile" >> "$LOG" 2>&1; then
+  if "$HOME/dotfiles/bin/cc-backup" restore latest --target "$TARGET" --include "/Users/leonardofibonacci/dotfiles/zprofile" >>"$LOG" 2>&1; then
     if [ -f "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" ]; then
       if cmp -s "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" "$HOME/dotfiles/zprofile"; then
         log "  ✓ restored zprofile matches current"

@@ -47,7 +47,7 @@ grep -q '^export NTFY_TOPIC' "$HOME/.zprofile" 2>/dev/null \
 
 # Stamp the date BEFORE bailing on empty so we don't re-check on every
 # session start once everything is done.
-echo "$today" > "$LAST_FILE"
+echo "$today" >"$LAST_FILE"
 
 [ ${#pending[@]} -eq 0 ] && exit 0
 
@@ -57,7 +57,7 @@ echo "$today" > "$LAST_FILE"
   for p in "${pending[@]}"; do echo "  • $p"; done
   echo ""
   echo "Run 'cc-bootstrap all' for an interactive walkthrough, or 'cc-bootstrap status' for read-only check. Mention this to the user only if relevant to the current task — don't lead with it."
-} > /tmp/bootstrap-check.$$.txt
+} >/tmp/bootstrap-check.$$.txt
 
 # Emit JSON. Skip on any python error.
 python3 -c "

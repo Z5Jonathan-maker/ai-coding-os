@@ -19,10 +19,10 @@ set -euo pipefail
 KEYCHAIN_SERVICE="cc.notion.integration_token"
 INTEGRATIONS_URL="https://www.notion.so/my-integrations"
 
-cyan()   { printf "\033[36m%s\033[0m\n" "$*"; }
+cyan() { printf "\033[36m%s\033[0m\n" "$*"; }
 yellow() { printf "\033[33m%s\033[0m\n" "$*"; }
-green()  { printf "\033[32m%s\033[0m\n" "$*"; }
-red()    { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
 
 cyan "=== Notion → TEL onboarding ==="
 echo

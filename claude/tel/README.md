@@ -11,11 +11,11 @@
                                  │ logs in via browser
                                  ↓
                 ┌─────────────────────────────────┐
-                │  1Password vault (keystore)     │
+                │  Keychain / 1Password vault     │
                 │  ─ tokens, OAuth refresh creds  │
                 │  ─ never read by Claude         │
                 └────────────────┬────────────────┘
-                                 │ op://Personal/<service>/credential
+                                 │ Keychain first, op:// fallback
                                  ↓
        ┌─────────────────────────────────────────────────┐
        │  TEL EXECUTOR (FastAPI on 127.0.0.1:8765)       │
@@ -47,8 +47,8 @@
 | Layer | Sees | Doesn't see |
 |---|---|---|
 | Claude (planner) | Action intent, allowed-action list, structured response | Tokens, passwords, API keys |
-| TEL (executor) | Tokens (via 1Password), action requests, responses | Why Claude wants this; just executes structured intent |
-| 1Password (vault) | Secrets at rest | Anything else |
+| TEL (executor) | Tokens (via Keychain first, 1Password fallback), action requests, responses | Why Claude wants this; just executes structured intent |
+| Keychain / 1Password | Secrets at rest | Anything else |
 | User | One-time OAuth approval per service | Repetitive auth prompts |
 
 ## Protocol
@@ -88,7 +88,7 @@ Claude never sees the bearer token, OAuth refresh, or API key. The TEL signs req
 | Component | File | Purpose |
 |---|---|---|
 | **Server** | `server/server.py` | FastAPI HTTP listener on 127.0.0.1:8765 |
-| **Auth broker** | `server/auth_broker.py` | 1Password CLI lookup + OAuth refresh + in-memory cache |
+| **Auth broker** | `server/auth_broker.py` | Keychain-first lookup, optional 1Password fallback, in-memory cache |
 | **Tool registry** | `server/tool_registry.py` | Whitelist of allowed actions per service (loaded from `policies/*.yaml`) |
 | **Policy engine** | `server/policy.py` | Per-action approval rules + rate limits + dry-run mode |
 | **Audit log** | `server/audit.py` | Append-only JSONL at `audit/<date>.jsonl` (NEVER committed) |
@@ -123,7 +123,7 @@ Claude never sees the bearer token, OAuth refresh, or API key. The TEL signs req
 | Service has MCP but it's down + you have a manual fallback | TEL |
 | You want strict whitelisting on a service | TEL (even if MCP exists) |
 | Local file/CLI ops, no credentials | Bash directly |
-| Credential needed but action is read-only single-shot | Bash + `op read` inline (existing pattern, no TEL needed) |
+| Credential needed but action is read-only single-shot | Bash + Keychain lookup (or explicit `op read` if still unmigrated) |
 
 See [wiki/decision-rules.md](../wiki/decision-rules.md) D13 for the routing rule.
 
@@ -133,8 +133,8 @@ See [ops/INSTALL.md](ops/INSTALL.md). Two-step:
 1. `pip install -r server/requirements.txt`
 2. `launchctl load ~/Library/LaunchAgents/bio.tel.plist`
 
-Then for each service: store credential in 1Password under `op://Personal/<service-name>/credential`, write a `policies/<service>.yaml`, restart TEL.
+Then for each service: seed the matching Keychain entry, optionally keep an `op://...` fallback, write a `policies/<service>.yaml`, restart TEL.
 
 ## Status (iter 8)
 
-Architecture + protocol + first 3 service policies (gamma/github/gmail) shipped as ready-to-run code. **Not yet running** — the FastAPI server requires `pip install` (which crosses the dependency-add approval gate) and a `launchctl load` (which needs your nod). Everything is staged at production-grade quality; flip the switch when ready via the install guide.
+Architecture + protocol are now live on this Mac. The FastAPI server is running under launchd on `127.0.0.1:8765`, the auth broker is Keychain-capable, and GitHub has already been seeded into Keychain. Remaining service migrations are per-service credential work, not platform bring-up.

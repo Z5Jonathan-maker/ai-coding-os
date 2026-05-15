@@ -12,7 +12,10 @@ AGENTS_DIR="${HOME}/.claude/agents"
 OUT="${HOME}/.claude/audits/drift-$(date +%Y-%m-%d).md"
 NTFY_TOPIC="${NTFY_TOPIC:-}"
 
-[ -f "$CLAUDE_MD" ] || { echo "CLAUDE.md missing at $CLAUDE_MD" >&2; exit 1; }
+[ -f "$CLAUDE_MD" ] || {
+  echo "CLAUDE.md missing at $CLAUDE_MD" >&2
+  exit 1
+}
 mkdir -p "${HOME}/.claude/audits"
 
 tmpdir="$(mktemp -d)"
@@ -104,31 +107,41 @@ CLIS
   grep -E '^\*\*Built-in Anthropic skills\*\*' "$CLAUDE_MD" \
     | grep -Eo '`[^`]+`' | sed 's/^`//; s/`$//' \
     | grep -E '^[A-Za-z0-9][A-Za-z0-9_-]*$'
-} | sort -u > "$tmpdir/routed_skills"
+} | sort -u >"$tmpdir/routed_skills"
 
-section "## AGENT ROUTING TABLE" | table_column2_backticks > "$tmpdir/routed_agents"
-section "## MCP ROUTING TABLE" | grep -Eo 'mcp__[A-Za-z0-9_:-]+' | sort -u > "$tmpdir/routed_mcps" || true
+section "## AGENT ROUTING TABLE" | table_column2_backticks >"$tmpdir/routed_agents"
+section "## MCP ROUTING TABLE" | grep -Eo 'mcp__[A-Za-z0-9_:-]+' | sort -u >"$tmpdir/routed_mcps" || true
 
-{ disk_skills; builtin_skills; commands_disk; cli_allowlist; } | sort -u > "$tmpdir/disk_skills"
-{ disk_agents; builtin_agents; } | sort -u > "$tmpdir/disk_agents"
+{
+  disk_skills
+  builtin_skills
+  commands_disk
+  cli_allowlist
+} | sort -u >"$tmpdir/disk_skills"
+{
+  disk_agents
+  builtin_agents
+} | sort -u >"$tmpdir/disk_agents"
 
-comm -23 "$tmpdir/routed_skills" "$tmpdir/disk_skills" | sed 's/^/skill /' > "$tmpdir/routed_missing"
-comm -23 "$tmpdir/routed_agents" "$tmpdir/disk_agents" | sed 's/^/agent /' >> "$tmpdir/routed_missing"
+comm -23 "$tmpdir/routed_skills" "$tmpdir/disk_skills" | sed 's/^/skill /' >"$tmpdir/routed_missing"
+comm -23 "$tmpdir/routed_agents" "$tmpdir/disk_agents" | sed 's/^/agent /' >>"$tmpdir/routed_missing"
 
-comm -13 "$tmpdir/routed_skills" "$tmpdir/disk_skills" | sed 's/^/skill /' > "$tmpdir/disk_unrouted"
-comm -13 "$tmpdir/routed_agents" "$tmpdir/disk_agents" | sed 's/^/agent /' >> "$tmpdir/disk_unrouted"
+comm -13 "$tmpdir/routed_skills" "$tmpdir/disk_skills" | sed 's/^/skill /' >"$tmpdir/disk_unrouted"
+comm -13 "$tmpdir/routed_agents" "$tmpdir/disk_agents" | sed 's/^/agent /' >>"$tmpdir/disk_unrouted"
 
 skill_ok="$(comm -12 "$tmpdir/routed_skills" "$tmpdir/disk_skills" | wc -l | awk '{print $1}')"
 agent_ok="$(comm -12 "$tmpdir/routed_agents" "$tmpdir/disk_agents" | wc -l | awk '{print $1}')"
-mcp_refs="$(wc -l < "$tmpdir/routed_mcps" | awk '{print $1}')"
+mcp_refs="$(wc -l <"$tmpdir/routed_mcps" | awk '{print $1}')"
 _total_ok="$((skill_ok + agent_ok))"
 
 issue_count=0
-[ -s "$tmpdir/routed_missing" ] && issue_count=$((issue_count + $(wc -l < "$tmpdir/routed_missing")))
-[ -s "$tmpdir/disk_unrouted" ] && issue_count=$((issue_count + $(wc -l < "$tmpdir/disk_unrouted")))
+[ -s "$tmpdir/routed_missing" ] && issue_count=$((issue_count + $(wc -l <"$tmpdir/routed_missing")))
+[ -s "$tmpdir/disk_unrouted" ] && issue_count=$((issue_count + $(wc -l <"$tmpdir/disk_unrouted")))
 
 {
-  echo "# Routing drift report — $(date)"
+  # Use date-only (matches filename); avoids non-idempotent wall-clock timestamps
+  # that cause pre-commit "files modified by hook" false-failures on re-runs.
+  echo "# Routing drift report — $(date +%Y-%m-%d)"
   echo
   if [ "$issue_count" -eq 0 ]; then
     echo "✓ No drift. CLAUDE.md routing tables are in sync."
@@ -151,7 +164,7 @@ issue_count=0
     fi
     echo "Coverage: $skill_ok skills, $agent_ok agents, $mcp_refs MCP refs."
   fi
-} > "$OUT"
+} >"$OUT"
 
 if [ "$issue_count" -gt 0 ] && [ -n "$NTFY_TOPIC" ]; then
   curl -fsS -d "Routing drift: $issue_count item(s). See $OUT" \

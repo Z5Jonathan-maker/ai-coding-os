@@ -8,12 +8,15 @@ set -euo pipefail
 AUDIT_DIR="${HOME}/.claude/audits"
 ARCHIVE_DIR="${AUDIT_DIR}/archive"
 
-[ -d "$AUDIT_DIR" ] || { echo "audit dir missing" >&2; exit 1; }
+[ -d "$AUDIT_DIR" ] || {
+  echo "audit dir missing" >&2
+  exit 1
+}
 mkdir -p "$ARCHIVE_DIR"
 
 # Find .md files older than 30 days, group by year-month, tar.gz them
-find "$AUDIT_DIR" -maxdepth 1 -name "*.md" -type f -mtime +30 -print0 | \
-  while IFS= read -r -d '' f; do
+find "$AUDIT_DIR" -maxdepth 1 -name "*.md" -type f -mtime +30 -print0 \
+  | while IFS= read -r -d '' f; do
     # Extract YYYY-MM from filename if it has a date pattern
     base=$(basename "$f")
     ym=$(echo "$base" | grep -oE '[0-9]{4}-[0-9]{2}' | head -1)
@@ -35,8 +38,8 @@ find "$AUDIT_DIR" -maxdepth 1 -name "*.md" -type f -mtime +30 -print0 | \
   done
 
 # Delete tarballs older than 1 year
-find "$ARCHIVE_DIR" -name "audits-*.tar.gz" -type f -mtime +365 -print0 | \
-  while IFS= read -r -d '' t; do
+find "$ARCHIVE_DIR" -name "audits-*.tar.gz" -type f -mtime +365 -print0 \
+  | while IFS= read -r -d '' t; do
     echo "expiring: $(basename "$t") (>1y old)"
     rm -f "$t"
   done

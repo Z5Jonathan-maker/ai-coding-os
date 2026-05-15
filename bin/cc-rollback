@@ -15,7 +15,10 @@
 # multiple if multiple Claude Code sessions edited this repo.
 set -euo pipefail
 
-git rev-parse --git-dir >/dev/null 2>&1 || { echo "cc-rollback: not in a git repo" >&2; exit 2; }
+git rev-parse --git-dir >/dev/null 2>&1 || {
+  echo "cc-rollback: not in a git repo" >&2
+  exit 2
+}
 
 list_shadow_refs() {
   git for-each-ref --format='%(refname)' refs/cc-shadow/
@@ -31,7 +34,10 @@ most_recent_shadow_ref() {
 cmd_list() {
   local ref
   ref=$(most_recent_shadow_ref)
-  [ -z "$ref" ] && { echo "no shadow checkpoints in this repo"; return 0; }
+  [ -z "$ref" ] && {
+    echo "no shadow checkpoints in this repo"
+    return 0
+  }
   echo "shadow ref: $ref"
   echo
   git log "$ref" --pretty=format:'%h  %ad  %s' --date=format:'%H:%M:%S' -20
@@ -41,23 +47,38 @@ cmd_list() {
 cmd_show() {
   local n="$1" ref commit
   ref=$(most_recent_shadow_ref)
-  [ -z "$ref" ] && { echo "no shadow checkpoints"; return 1; }
-  commit=$(git log "$ref" --pretty=format:'%H' | sed -n "$((n+1))p")
-  [ -z "$commit" ] && { echo "no step $n back"; return 1; }
+  [ -z "$ref" ] && {
+    echo "no shadow checkpoints"
+    return 1
+  }
+  commit=$(git log "$ref" --pretty=format:'%H' | sed -n "$((n + 1))p")
+  [ -z "$commit" ] && {
+    echo "no step $n back"
+    return 1
+  }
   git diff "$commit" -- .
 }
 
 cmd_restore() {
   local n="$1" ref commit
   ref=$(most_recent_shadow_ref)
-  [ -z "$ref" ] && { echo "no shadow checkpoints"; return 1; }
-  commit=$(git log "$ref" --pretty=format:'%H' | sed -n "$((n+1))p")
-  [ -z "$commit" ] && { echo "no step $n back"; return 1; }
+  [ -z "$ref" ] && {
+    echo "no shadow checkpoints"
+    return 1
+  }
+  commit=$(git log "$ref" --pretty=format:'%H' | sed -n "$((n + 1))p")
+  [ -z "$commit" ] && {
+    echo "no step $n back"
+    return 1
+  }
   echo "this will overwrite working tree files with the contents at:"
   git log -1 --pretty=format:'  %h  %ad  %s' --date=iso "$commit"
   echo
   read -rp "proceed? [y/N] " ans
-  [[ "$ans" =~ ^[yY] ]] || { echo "aborted"; return 0; }
+  [[ "$ans" =~ ^[yY] ]] || {
+    echo "aborted"
+    return 0
+  }
   # Restore working tree from that commit, leaving HEAD alone
   git checkout "$commit" -- .
   echo "restored. HEAD untouched. run 'git status' to see what changed."
@@ -66,9 +87,12 @@ cmd_restore() {
 cmd_diff() {
   local a="$1" b="$2" ref commit_a commit_b
   ref=$(most_recent_shadow_ref)
-  [ -z "$ref" ] && { echo "no shadow checkpoints"; return 1; }
-  commit_a=$(git log "$ref" --pretty=format:'%H' | sed -n "$((a+1))p")
-  commit_b=$(git log "$ref" --pretty=format:'%H' | sed -n "$((b+1))p")
+  [ -z "$ref" ] && {
+    echo "no shadow checkpoints"
+    return 1
+  }
+  commit_a=$(git log "$ref" --pretty=format:'%H' | sed -n "$((a + 1))p")
+  commit_b=$(git log "$ref" --pretty=format:'%H' | sed -n "$((b + 1))p")
   git diff "$commit_a" "$commit_b" -- .
 }
 
@@ -80,11 +104,15 @@ cmd_clean() {
 }
 
 case "${1:-list}" in
-  list|"")     cmd_list ;;
-  show)        cmd_show "${2:?need step N back}" ;;
-  restore)     cmd_restore "${2:?need step N back}" ;;
-  diff)        cmd_diff "${2:?need first N}" "${3:?need second N}" ;;
-  clean)       cmd_clean ;;
-  -h|--help)   sed -n '2,16p' "$0" ;;
-  *)           echo "cc-rollback: unknown subcommand: $1" >&2; sed -n '2,16p' "$0" >&2; exit 2 ;;
+  list | "") cmd_list ;;
+  show) cmd_show "${2:?need step N back}" ;;
+  restore) cmd_restore "${2:?need step N back}" ;;
+  diff) cmd_diff "${2:?need first N}" "${3:?need second N}" ;;
+  clean) cmd_clean ;;
+  -h | --help) sed -n '2,16p' "$0" ;;
+  *)
+    echo "cc-rollback: unknown subcommand: $1" >&2
+    sed -n '2,16p' "$0" >&2
+    exit 2
+    ;;
 esac

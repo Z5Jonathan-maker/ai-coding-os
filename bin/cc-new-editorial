@@ -33,9 +33,11 @@ PROJECTS="$HOME/code/projects"
 DST="$PROJECTS/$NAME"
 
 # Sanity
-[ -d "$SRC" ] || { echo "cc-new-editorial: source not found at $SRC" >&2
-                   echo "  cc-bootstrap doctor will tell you whether augen is downloaded." >&2
-                   exit 1; }
+[ -d "$SRC" ] || {
+  echo "cc-new-editorial: source not found at $SRC" >&2
+  echo "  cc-bootstrap doctor will tell you whether augen is downloaded." >&2
+  exit 1
+}
 
 if [ -e "$DST" ]; then
   echo "cc-new-editorial: $DST already exists — refusing to clobber" >&2
@@ -61,7 +63,7 @@ fi
 
 # DESIGN.md scaffold so /design has a spec to anchor against
 if [ ! -f DESIGN.md ]; then
-  cat > DESIGN.md <<'DESIGN'
+  cat >DESIGN.md <<'DESIGN'
 # DESIGN.md
 
 Visual identity spec for this site. /design reads this as source of truth.

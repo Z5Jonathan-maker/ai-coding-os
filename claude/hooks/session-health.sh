@@ -19,7 +19,7 @@ _input=$(cat 2>/dev/null || true)
 
 # Run cc-health in quiet mode (only non-OK rows). 8s hard timeout — session
 # start shouldn't be delayed.
-( cc-health --instant 2>&1 ) >/tmp/session-health-$$.out &
+(cc-health --instant 2>&1) >/tmp/session-health-$$.out &
 hpid=$!
 elapsed=0
 while [ $elapsed -lt 8 ]; do

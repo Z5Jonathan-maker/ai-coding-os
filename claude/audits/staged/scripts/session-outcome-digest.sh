@@ -13,7 +13,10 @@ OUT="${HOME}/.claude/wiki/logs/session-candidates-$(date +%Y-%m-%d).md"
 # Most recent jsonl across all project dirs
 LATEST=$(find "$PROJ_DIR" -name "*.jsonl" -type f -print0 2>/dev/null \
   | xargs -0 ls -t 2>/dev/null | head -1)
-[ -n "$LATEST" ] || { echo "no session jsonl found" >&2; exit 0; }
+[ -n "$LATEST" ] || {
+  echo "no session jsonl found" >&2
+  exit 0
+}
 
 # Pattern signals — extracted from message content
 fail_signals=$(jq -r '
@@ -53,6 +56,6 @@ mkdir -p "$(dirname "$OUT")"
   echo '```'
   echo "${top_tools:-(empty)}"
   echo '```'
-} > "$OUT"
+} >"$OUT"
 
 echo "$OUT"

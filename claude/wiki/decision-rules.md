@@ -118,3 +118,70 @@ cat ~/.claude/wiki/learnings/_COMPOUND_INDEX.md | grep -i 'BPC-157'
 ```
 
 Index is in `~/.claude/wiki/learnings/_INDEX.md`; per-mentor profiles + when-to-use in each `_README.md`.
+
+## D15: Brain-grounding is a continuous sweep, not a one-time fix
+
+When a "brain-grounded reauthoring" commit lands for one content surface (e.g. landing free-guides), drift persists in OTHER surfaces. Today's audit (2026-05-11) found dose drift surviving in: Coach RAG, Gumroad packs, library compound pages, blog posts, comparison pages, protocol cards, sales components, marketing copy.
+
+**Rule:** When the user asks for a "brain-grounded sweep," dispatch parallel agents to every content surface simultaneously. Don't ship one surface and assume the others followed. Drift recurs because content surfaces are authored at different times by different paths and they all drift independently.
+
+**Reference:** dosecraft commits 4cff79df (free-guides), 34ca0c4a (library+protocols+showcase), cd4858ca (Coach prompt), 60045123 (blog), d008287 (Gumroad packs in dosecraft-companion).
+
+## D16: GSAP ScrollTrigger viewport gotcha — `start: "top 82%"` silently fails
+
+If a GSAP element is already in viewport at first paint AND its ScrollTrigger uses `start: "top 82%"`, the trigger never fires. Elements stuck at `opacity:0`.
+
+**Fix:** Use `start: "top bottom-=50"` with `toggleActions: "play none none none"`. Fires the moment ANY pixel approaches the viewport, plays once, stays.
+
+**Production incident:** 2026-05-11 — `/pricing` page on dosecraftapp.com had NO TIER CARDS VISIBLE for unknown duration. Three buyable cards rendered with `opacity:0` because the scroll trigger never fired on page load. Founder lost conversions for the duration. Fixed in commit 60045123.
+
+## D17: Protocol-context RAG filtering — compound chapter ≠ protocol chapter
+
+Standalone compound chapters give baseline dose. Protocol chapters (ch.18 Top4, ch.20 Wolverine, ch.22 Longevity) give protocol-context dose, which can differ:
+- MOTS-c chapter 07: 5–10 mg per WEEK TOTAL (baseline)
+- MOTS-c chapter 22 longevity: 10–15 mg, 2–3×/week (longevity context warrants more)
+- BPC-157 chapter 06: 500 mcg–1 mg daily (foundational)
+- BPC-157 chapter 20 wolverine: 1 mg/day AT INJURY SITE (acute injury context)
+
+**Rule:** When querying brain for a compound dose, ALSO filter by protocol context if the user is asking in-context. Implementation: `brain-query.py --protocol=<name>` (commit 118833f in dosecraft-companion) — provides 9 named protocol allowlists + dose-line regex extraction.
+
+## D18: Stripe is GLOBALLY banned
+
+Was previously: banned for peptide/RUO vendors only. Updated 2026-05-11 to: banned for the entire DoseCraft stack and any sibling brand the founder ships.
+
+**Replacements:**
+- Web subscriptions → Paddle (merchant of record)
+- Digital products → Gumroad
+- iOS subscriptions → Apple App Store IAP
+- Crypto (where applicable) → BTCPay
+
+If Stripe code is found in any project, route through the Stripe-rip workflow (W18). Memory `user_role.md` is the canonical source of this rule.
+
+## D19: Premium-pharma-biotech 3D hero motifs must be wireframe-at-7%-opacity
+
+Three compounding problems killed the original DoseCraft DNA helix as a screensaver: (1) vivid dual-color saturation, (2) solid sphere atoms, (3) perceptible rotation. Eliminate all three simultaneously: monochromatic teal/cyan, LineSegments wireframe at ≤7% opacity, rotation ≤0.06 rad/s.
+
+**Rule:** For premium-pharma-biotech brands (DoseCraft, Aurex, future biotech ventures), default the central 3D hero motif to wireframe-at-7%-opacity. Vivid ball-and-stick is the wellness-app aesthetic, not the brand we're shipping.
+
+**Reference:** commit 437782cf (GhostHelix replacement of MiniHelix). Memory `feedback_subtle_motifs_over_chunky.md`.
+
+## D20: Payment-rail commits require code-reviewer pass before declaring done
+
+The Stripe→Paddle rip shipped with 5 P0 security ship-blockers caught only by an independent code-review agent pass:
+- Timing-unsafe signature comparison (timing-attack surface)
+- Missing webhook timestamp freshness check (replay attack — free PRO forever)
+- 200-on-unresolved-user webhook response (silent payment-event drops)
+- `createCheckout` returning success URL instead of hosted checkout URL (users redirect straight to success without paying)
+- `createPortal` URL fabrication with customer_id query param (auth bypass — anyone holding any customer ID could land on that customer's portal)
+
+**Rule:** When ripping or migrating payment rails, ALWAYS route the diff through the `code-reviewer` agent BEFORE pushing. Don't trust the implementing agent's self-verification on security-critical code paths.
+
+**Reference:** dosecraft commit 9df18ed3 (5 P0 patches landed after code-review). Pattern logged in `~/.claude/design/logs/winning-patterns.md` under "2026-05-11 · Payment-rail security audit pattern."
+
+## D21: Before declaring "Anthropic infrastructure issue," check local contention
+
+When parallel sub-agents die under heavy MCP usage (especially chrome-devtools, playwright, anything browser-wrapping), the first hypothesis should be **local lock/profile/port contention**, not an Anthropic harness bug. Symptom looks identical: tools hang, watchdog SIGKILLs the agent. Root cause is usually that every parallel sub-agent spawned its own MCP and they're fighting over a shared global resource (Chrome profile dir, fixed port, single backing file).
+
+**Rule:** If a swarm dies and the surface symptom is "harness killed the agents," check `~/.claude/wiki/parallel-safety.md` BEFORE concluding it's an Anthropic issue. The fix is usually one flag (`--isolated`) or one env var (`MEMORY_FILE_PATH`), not a re-architecture.
+
+**Reference:** 2026-05-12 incident — chrome-devtools profile contention killed a 6-parallel swarm in `claude-code-router`; the dying session called it "Anthropic infrastructure" and fell back to sequential. Real fix took 90 seconds.

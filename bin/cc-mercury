@@ -23,11 +23,14 @@ set -u
 CFG="${MERCURY_HOME:-$HOME/.mercury}/mercury.yaml"
 MERCURY_BIN="${MERCURY_BIN:-$HOME/local/bin/mercury}"
 
-[ -x "$MERCURY_BIN" ] || { echo "cc-mercury: mercury not at $MERCURY_BIN" >&2; exit 127; }
+[ -x "$MERCURY_BIN" ] || {
+  echo "cc-mercury: mercury not at $MERCURY_BIN" >&2
+  exit 127
+}
 
 # Skip injection for the setup wizard — user is choosing to re-enter.
 case "${1:-}" in
-  setup|doctor) exec "$MERCURY_BIN" "$@" ;;
+  setup | doctor) exec "$MERCURY_BIN" "$@" ;;
 esac
 
 if [ -n "${DEEPSEEK_API_KEY:-}" ] && [ -f "$CFG" ]; then
@@ -40,7 +43,7 @@ if [ -n "${DEEPSEEK_API_KEY:-}" ] && [ -f "$CFG" ]; then
         done = 1
       }
       { print }
-    ' "$CFG" > "$tmp" && mv "$tmp" "$CFG"
+    ' "$CFG" >"$tmp" && mv "$tmp" "$CFG"
     chmod 600 "$CFG"
   fi
 fi

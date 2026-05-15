@@ -19,8 +19,8 @@ COUNTER_FILE="$HOME/.claude/hooks/state/context-monitor.count"
 mkdir -p "$(dirname "$COUNTER_FILE")"
 
 prev_pct=$(cat "$PCT_FILE" 2>/dev/null || echo 100)
-count=$(( $(cat "$COUNTER_FILE" 2>/dev/null || echo 0) + 1 ))
-echo "$count" > "$COUNTER_FILE"
+count=$(($(cat "$COUNTER_FILE" 2>/dev/null || echo 0) + 1))
+echo "$count" >"$COUNTER_FILE"
 
 # Throttle: only re-read every 3rd call if we're above 25% remaining
 if [ "$prev_pct" -gt 25 ] && [ $((count % 3)) -ne 0 ]; then
@@ -39,8 +39,8 @@ window=$(printf '%s' "$last" | grep -oE 'effectiveWindow=[0-9]+' | cut -d= -f2)
 [ -z "$tokens" ] || [ -z "$window" ] || [ "$window" -eq 0 ] && exit 0
 
 # % remaining
-remaining=$(( (window - tokens) * 100 / window ))
-echo "$remaining" > "$PCT_FILE"
+remaining=$(((window - tokens) * 100 / window))
+echo "$remaining" >"$PCT_FILE"
 
 # Only warn on threshold crossings (don't spam every call)
 warn=""

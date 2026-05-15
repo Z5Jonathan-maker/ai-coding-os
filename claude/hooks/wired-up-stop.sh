@@ -35,7 +35,7 @@ if [ -f "$STATE_DIR/wired-up.deactivate" ]; then
 fi
 if [ -f "$STATE_DIR/wired-up.activate" ]; then
   rm -f "$STATE_DIR/wired-up.activate"
-  : > "$active_file"
+  : >"$active_file"
 fi
 
 [ -f "$active_file" ] || exit 0
@@ -47,9 +47,11 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0
 
 # Collect changed + untracked files (one shot)
 files=$(
-  { git diff --name-only HEAD 2>/dev/null; \
-    git ls-files --others --exclude-standard 2>/dev/null; } \
-  | sort -u
+  {
+    git diff --name-only HEAD 2>/dev/null
+    git ls-files --others --exclude-standard 2>/dev/null
+  } \
+    | sort -u
 )
 [ -z "$files" ] && exit 0
 
@@ -76,7 +78,7 @@ while IFS= read -r f; do
   if [ -z "$refs" ]; then
     orphans="${orphans}${f}\n"
   fi
-done <<< "$filtered"
+done <<<"$filtered"
 
 [ -z "$orphans" ] && exit 0
 

@@ -21,7 +21,10 @@ fi
 PY_VERSION=$("$VENV_PY" --version 2>&1)
 echo "✓ tel-canary: $PY_VERSION"
 
-cd "$TEL_DIR" || { echo "🔴 tel-canary: cannot cd $TEL_DIR"; exit 1; }
+cd "$TEL_DIR" || {
+  echo "🔴 tel-canary: cannot cd $TEL_DIR"
+  exit 1
+}
 
 OUT=$("$VENV_PY" -c "
 import sys

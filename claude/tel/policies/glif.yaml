@@ -1,0 +1,35 @@
+service: glif
+base_url: https://simple-api.glif.app
+notes: |
+  Glif AI workflow runner. Two paths:
+  1. Web bridge (lib/glif-bridge.cjs) — Playwright automation using the user's
+     glif.app subscription. Preferred for creative workflows (memes, avatars,
+     style transfer) since it uses the monthly membership.
+  2. Simple API — this TEL policy. Requires GLIF_API_TOKEN from
+     https://glif.app/settings/api-tokens. Best for programmatic batch runs.
+
+actions:
+  run_workflow:
+    description: Run a Glif workflow by ID with ordered inputs
+    method: POST
+    endpoint: /
+    required_args: [id, inputs]
+    optional_args: []
+    reversible: false
+    rate_limit_per_hour: 60
+    auth_op_path: op://Personal/Glif/api_token
+    auth_keychain_service: cc.glif.api_token
+    auth_header: Authorization
+    auth_prefix: Bearer
+
+  workflow_info:
+    description: Get workflow metadata and input block names
+    method: GET
+    endpoint: /glifs
+    required_args: [id]
+    reversible: false
+    rate_limit_per_hour: 120
+    auth_op_path: op://Personal/Glif/api_token
+    auth_keychain_service: cc.glif.api_token
+    auth_header: Authorization
+    auth_prefix: Bearer

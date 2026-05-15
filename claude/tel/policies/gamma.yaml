@@ -16,6 +16,7 @@ actions:
     undo_window_seconds: 600
     rate_limit_per_hour: 20
     auth_op_path: op://Personal/Gamma/credential
+    auth_keychain_service: cc.gamma.credential
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -27,6 +28,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Gamma/credential
+    auth_keychain_service: cc.gamma.credential
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -38,5 +40,6 @@ actions:
     reversible: false
     rate_limit_per_hour: 100
     auth_op_path: op://Personal/Gamma/credential
+    auth_keychain_service: cc.gamma.credential
     auth_header: Authorization
     auth_prefix: Bearer

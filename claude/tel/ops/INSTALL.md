@@ -41,9 +41,9 @@ In another terminal:
 curl -s http://127.0.0.1:8765/health | jq .
 ```
 
-You should see `{"ok": true, "version": "0.1.0", "auth_broker": {...}, "services": ["gamma","github","gmail"]}`.
+You should see `{"ok": true, "version": "0.1.0", "auth_broker": {...}, "services": [...]}`.
 
-If `auth_broker.ok` is false: you're not signed into 1Password CLI. Run `eval $(op signin)` interactively and retry. **`op whoami` will time out if 1Password is locked** — this is the most common first-run hiccup. Sign in once before kicking the launchd agent.
+If `auth_broker.ok` is false: check Keychain access first. TEL is Keychain-first now, with 1Password as an optional fallback for unmigrated services. If Keychain is healthy but `op whoami` fails, TEL can still be healthy; you'll just see an auth-broker warning instead of a hard failure.
 
 Stop the interactive server (Ctrl-C) and proceed to step 3.
 
@@ -63,23 +63,21 @@ Logs:
 
 ## 4. Per-service credential setup (one-time per service)
 
-For each service in `~/.claude/tel/policies/<service>.yaml`, store the credential in 1Password at the `auth_op_path` listed in the YAML.
+For each service in `~/.claude/tel/policies/<service>.yaml`, prefer seeding the Keychain service named in `auth_keychain_service`. Keep `auth_op_path` only as a compatibility fallback if you still want 1Password in the loop.
 
 ### Gamma example
 
 ```bash
-op item create --category="API Credential" --vault=Personal \
-  --title="Gamma" credential[concealed]="<paste-gamma-api-key>"
+security add-generic-password -U -a "$USER" -s cc.gamma.credential -w '<paste-gamma-api-key>'
 ```
 
 ### GitHub example
 
 ```bash
-op item create --category="API Credential" --vault=Personal \
-  --title="GitHub" credential[concealed]="<paste-PAT>"
+security add-generic-password -U -a "$USER" -s cc.github.token -w '<paste-PAT>'
 ```
 
-(Or use the 1Password GUI — same vault, item titled per the YAML, field named `credential`.)
+If you're still using 1Password fallback, the GUI path is fine too — same vault, item titled per the YAML, field named `credential`.
 
 ## 5. Smoke test
 
@@ -127,4 +125,4 @@ The TEL is monitored by the SessionStart hook `mcp-session-probe.sh` (extended i
 
 ## Adding a new service
 
-See [policies/README.md](../policies/README.md). Three steps: write YAML, store cred in 1Password, hot-reload via `tel-call.sh --reload`.
+See [policies/README.md](../policies/README.md). Three steps: write YAML, seed Keychain (plus optional 1Password fallback), hot-reload via `tel-call.sh --reload`.

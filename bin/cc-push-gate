@@ -69,10 +69,11 @@ fi
 
 # Background-with-timeout pattern (portable, no GNU coreutils dep)
 run_with_timeout() {
-  local timeout_s="$1"; shift
+  local timeout_s="$1"
+  shift
   local cmd="$*"
   local pid
-  ( eval "$cmd" ) &
+  (eval "$cmd") &
   pid=$!
   local elapsed=0
   while [ $elapsed -lt $timeout_s ]; do

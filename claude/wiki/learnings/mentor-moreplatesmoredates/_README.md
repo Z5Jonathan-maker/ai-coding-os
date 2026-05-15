@@ -1,7 +1,7 @@
 # More Plates More Dates (Derek)
 
-- **Videos in brain:** 17
-- **Word count:** 47,452
+- **Videos in brain:** 506
+- **Word count:** 4,911,434
 - **Channels:** youtube:@moreplatesmoredates
 - **Credibility:** Independent researcher, 1M+ subs, deep compound-breakdown niche
 - **Tone:** Research-style, citation-heavy, contrarian skeptic
@@ -17,16 +17,16 @@
 Mechanism-of-action depth; compound side-effect risk profiles; vendor/sourcing skepticism; bloodwork analysis.
 
 ## Top compounds covered (by video count)
-- **GH (HGH)** — 8 videos
-- **BPC-157** — 7 videos
-- **TRT / Testosterone** — 6 videos
-- **TB-500** — 5 videos
-- **Retatrutide** — 4 videos
-- **Ipamorelin** — 3 videos
-- **CJC-1295** — 3 videos
-- **Melanotan** — 3 videos
-- **Semaglutide** — 3 videos
-- **Glutathione** — 2 videos
+- **TRT / Testosterone** — 199 videos
+- **Estrogen mgmt** — 138 videos
+- **Retatrutide** — 126 videos
+- **GH (HGH)** — 86 videos
+- **Ipamorelin** — 81 videos
+- **Glutathione** — 13 videos
+- **BPC-157** — 12 videos
+- **TB-500** — 9 videos
+- **Semaglutide** — 7 videos
+- **Melanotan** — 5 videos
 
 ## Recall pattern
 ```

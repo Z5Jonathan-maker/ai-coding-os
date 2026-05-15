@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PURPOSE=""
+SYSTEM=""
+JSON=0
+VERIFY=0
+READ_STDIN=0
+CONTEXT_LIMIT=0
+FLAGS=()
+
+usage() {
+  cat <<'EOF'
+Usage: cc-ask [options] <prompt>
+
+Options:
+  --purpose <name>       Router purpose, e.g. ui_design, implementation, research
+  --system <text>        System prompt override
+  --flag <name>          Add a routing flag (repeatable)
+  --json                 Print full router result as JSON
+  --verify               Enable verify mode
+  --stdin                Read prompt from stdin
+  --context-limit <n>    Pass contextLimit to the router
+  -h, --help             Show this help
+
+Examples:
+  cc-ask --purpose research "Compare these competitors"
+  cc-ask --purpose implementation --json "Add a health endpoint"
+  pbpaste | cc-ask --stdin --purpose ui_design
+EOF
+}
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --purpose)
+      PURPOSE="${2:-}"
+      shift 2
+      ;;
+    --system)
+      SYSTEM="${2:-}"
+      shift 2
+      ;;
+    --flag)
+      FLAGS+=("${2:-}")
+      shift 2
+      ;;
+    --json)
+      JSON=1
+      shift
+      ;;
+    --verify)
+      VERIFY=1
+      shift
+      ;;
+    --stdin)
+      READ_STDIN=1
+      shift
+      ;;
+    --context-limit)
+      CONTEXT_LIMIT="${2:-0}"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "cc-ask: unknown option $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *) break ;;
+  esac
+done
+
+PROMPT=""
+if [ "$READ_STDIN" = "1" ] || [ $# -eq 0 ]; then
+  if [ ! -t 0 ]; then
+    PROMPT="$(cat)"
+  fi
+fi
+if [ -z "$PROMPT" ] && [ $# -gt 0 ]; then
+  PROMPT="$*"
+fi
+if [ -z "$PROMPT" ]; then
+  echo "cc-ask: prompt required" >&2
+  usage >&2
+  exit 2
+fi
+
+FLAGS_JSON="$(python3 -c '
+import json, sys
+print(json.dumps([a for a in sys.argv[1:] if a]))
+' "${FLAGS[@]}")"
+
+node - "$PURPOSE" "$SYSTEM" "$JSON" "$VERIFY" "$CONTEXT_LIMIT" "$FLAGS_JSON" "$PROMPT" <<'NODE'
+const [purpose, system, jsonMode, verifyMode, contextLimitRaw, flagsJson, prompt] = process.argv.slice(2);
+const { ask } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+
+(async () => {
+  const flags = JSON.parse(flagsJson || '[]');
+  const contextLimit = Number(contextLimitRaw || '0');
+  const result = await ask({
+    purpose: purpose || undefined,
+    prompt,
+    system: system || undefined,
+    flags,
+    verify: verifyMode === '1',
+    contextLimit,
+  });
+  if (jsonMode === '1') {
+    process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+  } else {
+    process.stdout.write((result.text || '').trimEnd() + '\n');
+  }
+})().catch((err) => {
+  process.stderr.write(`cc-ask: ${err.message}\n`);
+  process.exit(1);
+});
+NODE

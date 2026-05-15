@@ -26,7 +26,8 @@ prompt=$(printf '%s' "$input" | python3 -c \
 
 # Pass the prompt via env var (stdin is consumed by the script heredoc).
 export _SECRET_GUARD_PROMPT="$prompt"
-matches=$(python3 <<'PY'
+matches=$(
+  python3 <<'PY'
 import os, re
 text = os.environ.get("_SECRET_GUARD_PROMPT", "")
 patterns = [

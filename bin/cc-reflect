@@ -29,19 +29,24 @@ usage() {
 }
 
 [ $# -ge 1 ] || usage
-TYPE="$1"; shift
+TYPE="$1"
+shift
 
 # Parse --flag value pairs into associative array
 declare -A F
 while [ $# -gt 0 ]; do
   case "$1" in
     --*)
-      key="${1#--}"; key="${key//-/_}"
+      key="${1#--}"
+      key="${key//-/_}"
       val="${2:-}"
       F["$key"]="$val"
-      shift 2 ;;
+      shift 2
+      ;;
     *)
-      echo "cc-reflect: unknown arg: $1" >&2; exit 64 ;;
+      echo "cc-reflect: unknown arg: $1" >&2
+      exit 64
+      ;;
   esac
 done
 
@@ -49,23 +54,30 @@ case "${TYPE}" in
   digest)
     # Show pending queue entries (no drain)
     if [ -f "$QUEUE" ]; then
-      lines=$(wc -l < "$QUEUE" | tr -d ' ')
+      lines=$(wc -l <"$QUEUE" | tr -d ' ')
       echo "pending reflections: $lines (at $QUEUE)"
       [ "$lines" -gt 0 ] && tail -5 "$QUEUE" | python3 -m json.tool --json-lines 2>/dev/null || tail -5 "$QUEUE"
     else
       echo "pending reflections: 0 (queue empty)"
     fi
-    exit 0 ;;
+    exit 0
+    ;;
   drain)
     # Manual drain (Stop hook would normally do this)
-    if [ ! -s "$QUEUE" ]; then echo "nothing to drain"; exit 0; fi
+    if [ ! -s "$QUEUE" ]; then
+      echo "nothing to drain"
+      exit 0
+    fi
     bash "${HOME}/.claude/hooks/wiki-writeback.sh" || true
-    exit 0 ;;
-  optimization|cycle|failure)
-    : ;;
+    exit 0
+    ;;
+  optimization | cycle | failure)
+    :
+    ;;
   *)
     echo "cc-reflect: unknown type '$TYPE' (use optimization|cycle|failure|digest|drain)" >&2
-    exit 64 ;;
+    exit 64
+    ;;
 esac
 
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"

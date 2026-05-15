@@ -5,22 +5,49 @@
 # Wired into /etc/sudoers.d/00-askpass so plain `sudo` honors it
 # without programs needing to pass -A explicitly.
 set -euo pipefail
+ALLOW_OP_FALLBACK="${CC_ALLOW_1PASSWORD_FALLBACK:-0}"
+SECRET_REGISTRY_PATH="${SECRET_REGISTRY_PATH:-$HOME/code/scripts/secret-registry.json}"
 
 # Resolve `op` to an absolute path so we work under sudo's reset PATH and
 # under non-login subshells (playwright, hooks, claude code). Brew prefix on
 # Apple Silicon is /opt/homebrew; Intel is /usr/local.
 OP_BIN=""
 for cand in /opt/homebrew/bin/op /usr/local/bin/op "$HOME/local/bin/op"; do
-  [ -x "$cand" ] && { OP_BIN="$cand"; break; }
+  [ -x "$cand" ] && {
+    OP_BIN="$cand"
+    break
+  }
 done
 [ -z "$OP_BIN" ] && command -v op >/dev/null 2>&1 && OP_BIN="$(command -v op)"
 
-# Try 1Password — needs Settings → Developer → "Integrate with 1Password CLI" enabled,
-# and an item named "macOS" with a "password" field in your Personal vault.
+registry_field() {
+  [ $# -ge 2 ] || return 1
+  [ -f "$SECRET_REGISTRY_PATH" ] || return 1
+  python3 - "$SECRET_REGISTRY_PATH" "$1" "$2" <<'PY'
+import json, sys
+registry_path, name, field = sys.argv[1:4]
+with open(registry_path, 'r', encoding='utf-8') as fh:
+    data = json.load(fh)
+entry = data.get(name, {})
+value = entry.get(field)
+if isinstance(value, list):
+    value = value[0] if value else ""
+if value:
+    print(value)
+PY
+}
+
+# Try Keychain first. Seed service cc.macos.password to make sudo non-chatty.
+if pw="$(security find-generic-password -a "${USER:-$LOGNAME}" -s "$(registry_field macos_password keychainService || echo cc.macos.password)" -w 2>/dev/null)" && [ -n "$pw" ]; then
+  printf '%s' "$pw"
+  exit 0
+fi
+
+# Optional 1Password fallback — only when explicitly enabled.
 # If OP_SERVICE_ACCOUNT_TOKEN is set, op uses it instead of biometric and never
 # prompts — that is the path for full headless autonomy.
-if [ -n "$OP_BIN" ]; then
-  if pw=$("$OP_BIN" read 'op://Personal/macOS/password' 2>/dev/null) && [ -n "$pw" ]; then
+if [ "$ALLOW_OP_FALLBACK" = "1" ] && [ -n "$OP_BIN" ]; then
+  if pw=$("$OP_BIN" read "$(registry_field macos_password opRef || echo 'op://Personal/macOS/password')" 2>/dev/null) && [ -n "$pw" ]; then
     printf '%s' "$pw"
     exit 0
   fi

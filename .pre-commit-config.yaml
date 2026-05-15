@@ -9,12 +9,14 @@ repos:
     hooks:
       - id: shellcheck
         args: ["-S", "warning"]
+        exclude: '^bin/fzf-git\.sh$'  # vendored zsh script from junegunn/fzf-git.sh; shellcheck does not support zsh dialect
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.10.0-2
     hooks:
       - id: shfmt
         args: ["-i", "2", "-ci", "-bn"]
+        exclude: '^bin/fzf-git\.sh$'  # vendored zsh script — shfmt cannot parse zsh ${(%):-%x} syntax
 
   - repo: local
     hooks:

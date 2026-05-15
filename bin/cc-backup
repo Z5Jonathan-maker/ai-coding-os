@@ -14,13 +14,14 @@
 # Excluded: ~/.claude/debug/ (regenerable), ~/.claude/file-history/ (regenerable),
 #          *.log, MCP auth tokens (regenerable via re-auth).
 #
-# First-time setup (one shot):
+# First-time setup (optional; currently not configured on this machine):
 #   1. brew install restic
 #   2. Create a B2 bucket "cc-backup-imac" (or S3, etc.)
-#   3. Add a 1P item "Restic B2 backup" with fields:
-#        - password         (random 32-byte string, generate in 1P)
-#        - b2_account_id    (your B2 application key ID)
-#        - b2_account_key   (your B2 application key)
+#   3. Seed Keychain entries:
+#        - cc.restic.password
+#        - cc.b2.account_id
+#        - cc.b2.account_key
+#      or rerun with CC_ALLOW_1PASSWORD_FALLBACK=1 against a legacy 1Password item
 #   4. Run: cc-backup init
 #   5. Run: cc-backup once     (test)
 #   6. Run: cc-backup install  (LaunchAgent for daily 03:30 run)
@@ -35,33 +36,86 @@ set -u
 REPO_NAME="${CC_BACKUP_REPO_NAME:-cc-backup-imac}"
 OP_ITEM="${CC_BACKUP_OP_ITEM:-Restic B2 backup}"
 OP_VAULT="${CC_BACKUP_OP_VAULT:-Personal}"
+ALLOW_OP_FALLBACK="${CC_ALLOW_1PASSWORD_FALLBACK:-0}"
 
 OP_BIN=""
 for cand in /opt/homebrew/bin/op /usr/local/bin/op; do
-  [ -x "$cand" ] && { OP_BIN="$cand"; break; }
+  [ -x "$cand" ] && {
+    OP_BIN="$cand"
+    break
+  }
 done
 
 RESTIC_BIN=""
 for cand in /opt/homebrew/bin/restic /usr/local/bin/restic; do
-  [ -x "$cand" ] && { RESTIC_BIN="$cand"; break; }
+  [ -x "$cand" ] && {
+    RESTIC_BIN="$cand"
+    break
+  }
 done
 
 LOG_FILE="$HOME/.claude/cc-backup.log"
 EXCLUDE_FILE="$HOME/dotfiles/etc/cc-backup-excludes.txt"
+SECRET_REGISTRY_PATH="${SECRET_REGISTRY_PATH:-$HOME/code/scripts/secret-registry.json}"
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG_FILE"; }
 
+read_keychain() {
+  local service="${1:-}"
+  [ -n "$service" ] || return 1
+  command -v security >/dev/null 2>&1 || return 1
+  security find-generic-password -a "${USER:-$LOGNAME}" -s "$service" -w 2>/dev/null || return 1
+}
+
+read_op() {
+  local ref="${1:-}"
+  [ "$ALLOW_OP_FALLBACK" = "1" ] || return 1
+  [ -n "$OP_BIN" ] || return 1
+  [ -n "$ref" ] || return 1
+  "$OP_BIN" read "$ref" 2>/dev/null || return 1
+}
+
+registry_field() {
+  [ $# -ge 2 ] || return 1
+  [ -f "$SECRET_REGISTRY_PATH" ] || return 1
+  python3 - "$SECRET_REGISTRY_PATH" "$1" "$2" <<'PY'
+import json, sys
+registry_path, name, field = sys.argv[1:4]
+with open(registry_path, 'r', encoding='utf-8') as fh:
+    data = json.load(fh)
+entry = data.get(name, {})
+value = entry.get(field)
+if isinstance(value, list):
+    value = value[0] if value else ""
+if value:
+    print(value)
+PY
+}
+
 require() {
-  [ -n "$RESTIC_BIN" ] || { echo "cc-backup: restic not installed (brew install restic)" >&2; exit 127; }
-  [ -n "$OP_BIN" ]     || { echo "cc-backup: op (1Password CLI) not found" >&2; exit 127; }
+  [ -n "$RESTIC_BIN" ] || {
+    echo "cc-backup: restic not installed (brew install restic)" >&2
+    exit 127
+  }
 }
 
 load_creds() {
   require
-  RESTIC_PASSWORD=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/password" 2>/dev/null) \
-    || { echo "cc-backup: cannot read 1P password (item: $OP_ITEM in vault: $OP_VAULT)" >&2; exit 1; }
-  B2_ACCOUNT_ID=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/b2_account_id" 2>/dev/null) || true
-  B2_ACCOUNT_KEY=$("$OP_BIN" read "op://${OP_VAULT}/${OP_ITEM}/b2_account_key" 2>/dev/null) || true
+  RESTIC_PASSWORD="${RESTIC_PASSWORD:-}"
+  B2_ACCOUNT_ID="${B2_ACCOUNT_ID:-}"
+  B2_ACCOUNT_KEY="${B2_ACCOUNT_KEY:-}"
+
+  [ -n "$RESTIC_PASSWORD" ] || RESTIC_PASSWORD="$(read_keychain "$(registry_field restic_password keychainService || true)" || true)"
+  [ -n "$RESTIC_PASSWORD" ] || RESTIC_PASSWORD="$(read_op "op://${OP_VAULT}/${OP_ITEM}/password" || true)"
+  [ -n "$RESTIC_PASSWORD" ] || {
+    echo "cc-backup: missing RESTIC_PASSWORD. Seed Keychain service cc.restic.password or rerun with CC_ALLOW_1PASSWORD_FALLBACK=1" >&2
+    exit 1
+  }
+
+  [ -n "$B2_ACCOUNT_ID" ] || B2_ACCOUNT_ID="$(read_keychain "$(registry_field b2_account_id keychainService || true)" || true)"
+  [ -n "$B2_ACCOUNT_ID" ] || B2_ACCOUNT_ID="$(read_op "op://${OP_VAULT}/${OP_ITEM}/b2_account_id" || true)"
+  [ -n "$B2_ACCOUNT_KEY" ] || B2_ACCOUNT_KEY="$(read_keychain "$(registry_field b2_account_key keychainService || true)" || true)"
+  [ -n "$B2_ACCOUNT_KEY" ] || B2_ACCOUNT_KEY="$(read_op "op://${OP_VAULT}/${OP_ITEM}/b2_account_key" || true)"
   export RESTIC_PASSWORD B2_ACCOUNT_ID B2_ACCOUNT_KEY
   export RESTIC_REPOSITORY="b2:${REPO_NAME}:imac"
 }
@@ -128,7 +182,10 @@ cmd_restore() {
 cmd_install() {
   local plist_src="$HOME/dotfiles/launchd/com.user.cc-backup.plist"
   local plist_dst="$HOME/Library/LaunchAgents/com.user.cc-backup.plist"
-  [ -f "$plist_src" ] || { echo "cc-backup: plist source missing: $plist_src" >&2; exit 1; }
+  [ -f "$plist_src" ] || {
+    echo "cc-backup: plist source missing: $plist_src" >&2
+    exit 1
+  }
   cp "$plist_src" "$plist_dst"
   launchctl load -w "$plist_dst"
   echo "installed: $plist_dst (daily 03:30 local)"
@@ -139,15 +196,37 @@ cmd_status() {
   echo "OP_BIN:     ${OP_BIN:-<not installed>}"
   echo "REPO_NAME:  $REPO_NAME"
   echo "OP_ITEM:    $OP_ITEM (vault: $OP_VAULT)"
+  echo "1P fallback:${ALLOW_OP_FALLBACK}"
   echo
-  if [ -n "$RESTIC_BIN" ] && [ -n "$OP_BIN" ]; then
+  if read_keychain 'cc.restic.password' >/dev/null 2>&1; then
+    echo "Keychain:   cc.restic.password present"
+  else
+    echo "Keychain:   cc.restic.password missing"
+  fi
+  if read_keychain "$(registry_field b2_account_id keychainService || true)" >/dev/null 2>&1; then
+    echo "Keychain:   cc.b2.account_id present"
+  else
+    echo "Keychain:   cc.b2.account_id missing"
+  fi
+  if read_keychain "$(registry_field b2_account_key keychainService || true)" >/dev/null 2>&1; then
+    echo "Keychain:   cc.b2.account_key present"
+  else
+    echo "Keychain:   cc.b2.account_key missing"
+  fi
+  if [ "$ALLOW_OP_FALLBACK" = "1" ] && [ -n "$OP_BIN" ]; then
     if "$OP_BIN" item get "$OP_ITEM" --vault "$OP_VAULT" >/dev/null 2>&1; then
-      echo "1P:         item '$OP_ITEM' exists in vault '$OP_VAULT'"
+      echo "1Password:  item '$OP_ITEM' exists in vault '$OP_VAULT'"
     else
-      echo "1P:         item '$OP_ITEM' NOT found in vault '$OP_VAULT' (or op session locked)"
+      echo "1Password:  item '$OP_ITEM' NOT found in vault '$OP_VAULT' (or op session locked)"
     fi
   else
-    echo "1P:         skipped (restic or op missing)"
+    echo "1Password:  skipped"
+  fi
+  if ! read_keychain "$(registry_field restic_password keychainService || true)" >/dev/null 2>&1 \
+    || ! read_keychain "$(registry_field b2_account_id keychainService || true)" >/dev/null 2>&1 \
+    || ! read_keychain "$(registry_field b2_account_key keychainService || true)" >/dev/null 2>&1; then
+    echo
+    echo "STATUS:     backup not configured on this machine yet"
   fi
   echo
   if launchctl list | grep -q com.user.cc-backup; then
@@ -164,14 +243,21 @@ cmd_status() {
   fi
 }
 
-[ $# -eq 0 ] && { sed -n '2,40p' "$0"; exit 0; }
+[ $# -eq 0 ] && {
+  sed -n '2,40p' "$0"
+  exit 0
+}
 case "$1" in
-  init)      cmd_init ;;
-  once)      cmd_once ;;
+  init) cmd_init ;;
+  once) cmd_once ;;
   snapshots) cmd_snapshots ;;
-  forget)    cmd_forget ;;
-  restore)   cmd_restore ;;
-  install)   cmd_install ;;
-  status)    cmd_status ;;
-  *)         echo "cc-backup: unknown subcommand: $1" >&2; sed -n '2,40p' "$0" >&2; exit 2 ;;
+  forget) cmd_forget ;;
+  restore) cmd_restore ;;
+  install) cmd_install ;;
+  status) cmd_status ;;
+  *)
+    echo "cc-backup: unknown subcommand: $1" >&2
+    sed -n '2,40p' "$0" >&2
+    exit 2
+    ;;
 esac

@@ -15,11 +15,11 @@ mkdir -p "$WIKI/logs"
 # Heartbeat: last session timestamp + cwd
 {
   echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) cwd=${PWD}"
-} >> "$HEARTBEAT"
+} >>"$HEARTBEAT"
 
 # If the session set explicit env vars, append structured entries
 if [ -n "${CC_WIKI_FAILURE:-}" ]; then
-  cat >> "$WIKI/logs/failure-log.md" <<EOF
+  cat >>"$WIKI/logs/failure-log.md" <<EOF
 
 ## $(date +%Y-%m-%d) · ${CC_WIKI_FAILURE_TITLE:-(untitled)}
 $CC_WIKI_FAILURE
@@ -27,7 +27,7 @@ EOF
 fi
 
 if [ -n "${CC_WIKI_OPTIMIZATION:-}" ]; then
-  cat >> "$WIKI/logs/optimization-log.md" <<EOF
+  cat >>"$WIKI/logs/optimization-log.md" <<EOF
 
 ## $(date +%Y-%m-%d) · ${CC_WIKI_OPTIMIZATION_TITLE:-(untitled)}
 $CC_WIKI_OPTIMIZATION
@@ -90,8 +90,8 @@ PY
 fi
 
 # Cap heartbeat at 1000 lines (rotate)
-if [ -f "$HEARTBEAT" ] && [ "$(wc -l < "$HEARTBEAT")" -gt 1000 ]; then
-  tail -500 "$HEARTBEAT" > "$HEARTBEAT.tmp" && mv "$HEARTBEAT.tmp" "$HEARTBEAT"
+if [ -f "$HEARTBEAT" ] && [ "$(wc -l <"$HEARTBEAT")" -gt 1000 ]; then
+  tail -500 "$HEARTBEAT" >"$HEARTBEAT.tmp" && mv "$HEARTBEAT.tmp" "$HEARTBEAT"
 fi
 
 exit 0

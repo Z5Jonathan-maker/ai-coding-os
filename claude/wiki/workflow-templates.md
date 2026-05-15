@@ -229,6 +229,44 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 
 **Source:** Liam Haley (@liambuilds.ai), "Claude Body — Setup Guide" PDF, retrieved 2026-05-04. Full source preserved at `wiki/learnings/external-references/claude-body-liam-haley-2026-04-26.md`.
 
+## W18: Payment-rail rip ("Stripe → Paddle/Gumroad/BTCPay")
+
+**Trigger:** A project is on Stripe and needs to be ripped (Stripe is globally banned per D18 — RUO peptide vendor risk). Replacement depends on product shape: digital subscriptions → Paddle/Gumroad (MoR handles tax); physical/RUO peptide ecom → BTCPay (crypto) + NMI Direct Post (card); SaaS with EU customers → Paddle.
+
+**Steps:**
+
+1. **Inventory Stripe surfaces.** `rg -i 'stripe|sk_test|sk_live|pk_test|pk_live|/v1/checkout|/v1/payment_intents|@stripe/stripe-js|stripe-node|loadStripe' --hidden -g '!node_modules' -g '!.next' -g '!dist'`. Output: files, env vars, packages, webhook endpoints.
+
+2. **Pick replacement per product shape.**
+   - Digital product / SaaS / subscription → **Paddle** (MoR, tax handled) or **Gumroad** (simpler, smaller MoR cut)
+   - Physical / RUO peptide / regulated → **BTCPay** (crypto, self-hosted) + **NMI Direct Post** (card)
+   - One-off digital download → **Gumroad** is fastest
+
+3. **Delete the Stripe layer cleanly.** Remove `@stripe/*` packages, env vars (`STRIPE_*`), `/api/stripe/webhook` routes, `loadStripe(...)` imports, all `pk_*`/`sk_*` references. Don't leave dead imports for "future migration back" — Stripe is permanently banned.
+
+4. **Wire the replacement.** Per-rail pattern:
+   - **Paddle:** `npm i @paddle/paddle-node-sdk`, server-side `createCheckout` returning hosted checkout URL, `/api/paddle/webhook` with signature verification (timing-safe), idempotent event handlers
+   - **Gumroad:** link to product URL, webhook on sale completion
+   - **BTCPay:** self-hosted instance + REST API, invoice creation, webhook on payment confirmation
+   - **NMI Direct Post:** direct POST to gateway, no JS SDK, response handling server-side
+
+5. **Webhook security (NON-NEGOTIABLE — per D20):** route the diff through `code-reviewer` agent BEFORE pushing. Check for:
+   - Timing-safe signature comparison (`crypto.timingSafeEqual`, not `===`)
+   - Webhook timestamp freshness check (reject events >5min old — prevents replay)
+   - Idempotent event handling (don't double-process same `event_id`)
+   - Correct HTTP codes (200 only after success; 4xx invalid; 5xx for retry)
+   - No URL fabrication with `customer_id` in query params (auth-bypass surface)
+
+6. **Test the failure paths.** Try: stale webhook signature, replayed event, unknown customer_id, missing required fields, malformed JSON. All must fail closed.
+
+7. **Ship gate.** `code-reviewer` pass → integration tests against new rail's sandbox → smoke test on staging → promote.
+
+**Reference incidents:**
+- DoseCraft commit `9df18ed3` — 5 P0 security ship-blockers caught in Paddle-rip code review (timing-attack, replay, silent-drop, URL leak, auth bypass). All landed before push.
+- Aurex Stripe ban — `project_aurex.md` documents BTCPay + NMI scaffolded as canonical pattern.
+
+**Pairs with:** D18 (Stripe ban scope), D20 (payment-rail commits require code-reviewer gate), `code-reviewer` agent.
+
 ## How to add a new workflow
 
 If during a session you build a multi-step recipe that worked well:

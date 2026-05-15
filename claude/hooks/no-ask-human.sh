@@ -31,7 +31,7 @@ fi
 
 if [ -f "$STATE_DIR/no-ask-human.activate" ]; then
   rm -f "$STATE_DIR/no-ask-human.activate"
-  : > "$active_file"
+  : >"$active_file"
 fi
 
 [ -f "$active_file" ] || exit 0

@@ -21,7 +21,7 @@ case "${1:-}" in
     curl -fsS "$TEL_URL/health" | jq .
     exit 0
     ;;
-  --list|--registry)
+  --list | --registry)
     curl -fsS "$TEL_URL/registry" | jq .
     exit 0
     ;;
@@ -30,7 +30,10 @@ case "${1:-}" in
     exit 0
     ;;
   --undo)
-    [ -z "${2:-}" ] && { echo "usage: $0 --undo <undo_token>" >&2; exit 1; }
+    [ -z "${2:-}" ] && {
+      echo "usage: $0 --undo <undo_token>" >&2
+      exit 1
+    }
     curl -fsS -X POST "$TEL_URL/undo/$2" | jq .
     exit 0
     ;;

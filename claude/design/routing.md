@@ -12,14 +12,14 @@ Task type → which tool, which prompt, which template, which export spec, which
 | Token system | "design tokens", "build the token architecture" | `design-system` skill | n/a (it's a system, not a one-shot) | three-layer template | n/a |
 | Style/palette/font lookup | "what palette for fintech", "font for editorial" | `ui-ux-pro-max` skill | n/a (lookup only) | n/a | n/a |
 | Brand voice / messaging | "brand voice", "tone for X audience" | `brand` skill | [prompts/brand-voice.md](prompts/brand-voice.md) (TBD) | n/a | n/a |
-| Product photography | "render the vial", "product photo", pharmaceutical product | `cc-image` (gpt-image-2) | [prompts/product-photo.md](prompts/product-photo.md) | n/a | [exports/print.md](exports/print.md) |
-| Vial label | "design vial label", peptide label | `cc-image` + Figma post-edit | [prompts/vial-label.md](prompts/vial-label.md) | label dieline templates | [exports/label-printer.md](exports/label-printer.md) |
-| Box / outer carton | "design carton", packaging, box | `cc-image` + dieline | [prompts/box-packaging.md](prompts/box-packaging.md) | dieline templates | [exports/print.md](exports/print.md) |
-| Social post (square) | "Instagram post", "X graphic" | `cc-image` + Figma | [prompts/social-post.md](prompts/social-post.md) | square 1080×1080 / 1080×1350 | [exports/instagram.md](exports/instagram.md) |
-| Carousel (multi-slide) | "carousel", "slide series", multi-frame social | `cc-image` per slide + deck shell | [prompts/carousel.md](prompts/carousel.md) | 1080×1350 × N | [exports/instagram.md](exports/instagram.md) |
-| Banner / hero asset | "social hero", "ad banner", platform-specific banner | `banner-design` skill + `cc-image` | [prompts/ad-creative.md](prompts/ad-creative.md) | platform-specific dims | [exports/instagram.md](exports/instagram.md) / [exports/web.md](exports/web.md) |
+| Product photography | "render the vial", "product photo", pharmaceutical product | `design` skill (HTML/CSS mockup) + external raster tool | [prompts/product-photo.md](prompts/product-photo.md) | n/a | [exports/print.md](exports/print.md) |
+| Vial label | "design vial label", peptide label | `design` skill (HTML/CSS layout) + Figma post-edit | [prompts/vial-label.md](prompts/vial-label.md) | label dieline templates | [exports/label-printer.md](exports/label-printer.md) |
+| Box / outer carton | "design carton", packaging, box | `design` skill (HTML/CSS layout) + dieline | [prompts/box-packaging.md](prompts/box-packaging.md) | dieline templates | [exports/print.md](exports/print.md) |
+| Social post (square) | "Instagram post", "X graphic" | `banner-design` skill | [prompts/social-post.md](prompts/social-post.md) | square 1080×1080 / 1080×1350 | [exports/instagram.md](exports/instagram.md) |
+| Carousel (multi-slide) | "carousel", "slide series", multi-frame social | `slides` skill (HTML deck) or `banner-design` per slide | [prompts/carousel.md](prompts/carousel.md) | 1080×1350 × N | [exports/instagram.md](exports/instagram.md) |
+| Banner / hero asset | "social hero", "ad banner", platform-specific banner | `banner-design` skill | [prompts/ad-creative.md](prompts/ad-creative.md) | platform-specific dims | [exports/instagram.md](exports/instagram.md) / [exports/web.md](exports/web.md) |
 | Slide deck | "presentation", "pitch deck" | `slides` skill (HTML+Chart.js) | [prompts/deck-slide.md](prompts/deck-slide.md) | 1920×1080 deck shell | [exports/pdf.md](exports/pdf.md) |
-| Print collateral | "flyer", "business card", print-ready | `cc-image` + InDesign brief | [prompts/print-collateral.md](prompts/print-collateral.md) (TBD) | n/a | [exports/print.md](exports/print.md) |
+| Print collateral | "flyer", "business card", print-ready | `design` skill (HTML/CSS layout) + InDesign brief | [prompts/print-collateral.md](prompts/print-collateral.md) (TBD) | n/a | [exports/print.md](exports/print.md) |
 | Marketing landing copy | "landing page copy", "ad copy" | `brand` + `prompt-master` | [prompts/marketing-copy.md](prompts/marketing-copy.md) (TBD) | n/a | n/a |
 
 ## Pre-flight checklist (run before any design tool fires)

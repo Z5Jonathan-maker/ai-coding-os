@@ -28,10 +28,10 @@ log() {
   echo "$line" | tee -a "$LOG"
 }
 
-ok()    { printf '  \033[32m✓\033[0m %s\n' "$*"; }
-warn()  { printf '  \033[33m○\033[0m %s\n' "$*"; }
-fail()  { printf '  \033[31m✗\033[0m %s\n' "$*"; }
-hdr()   { printf '\n\033[1m== %s ==\033[0m\n' "$*"; }
+ok() { printf '  \033[32m✓\033[0m %s\n' "$*"; }
+warn() { printf '  \033[33m○\033[0m %s\n' "$*"; }
+fail() { printf '  \033[31m✗\033[0m %s\n' "$*"; }
+hdr() { printf '\n\033[1m== %s ==\033[0m\n' "$*"; }
 
 confirm() {
   local prompt="${1:-proceed?}"
@@ -59,7 +59,10 @@ do_mempalace() {
     ok "palace already initialized at $palace"
   else
     log "initializing palace at $palace"
-    "$mp" --palace "$palace" init || { fail "init failed"; return 1; }
+    "$mp" --palace "$palace" init || {
+      fail "init failed"
+      return 1
+    }
     ok "palace initialized"
   fi
 
@@ -100,11 +103,17 @@ do_sudoers() {
     ok "$dst already installed and matches dotfiles"
     return 0
   fi
-  [ -f "$src" ] || { fail "$src not found"; return 1; }
+  [ -f "$src" ] || {
+    fail "$src not found"
+    return 1
+  }
 
   if confirm "install $dst (requires sudo password)?"; then
     log "validating $src"
-    sudo visudo -cf "$src" || { fail "visudo validation failed; aborting"; return 1; }
+    sudo visudo -cf "$src" || {
+      fail "visudo validation failed; aborting"
+      return 1
+    }
     log "installing $dst"
     sudo install -m 440 -o root -g wheel "$src" "$dst"
     ok "installed $dst"
@@ -125,10 +134,16 @@ do_launchd() {
     ok "cc-prune already loaded in launchd"
     return 0
   fi
-  [ -f "$src" ] || { fail "$src not found"; return 1; }
+  [ -f "$src" ] || {
+    fail "$src not found"
+    return 1
+  }
 
   cp "$src" "$dst"
-  launchctl load -w "$dst" || { fail "launchctl load failed"; return 1; }
+  launchctl load -w "$dst" || {
+    fail "launchctl load failed"
+    return 1
+  }
   ok "cc-prune loaded; runs daily 04:30"
 }
 
@@ -140,7 +155,10 @@ do_restic() {
 
   if ! command -v restic >/dev/null && ! [ -x /opt/homebrew/bin/restic ]; then
     if confirm "brew install restic?"; then
-      brew install restic || { fail "brew install failed"; return 1; }
+      brew install restic || {
+        fail "brew install failed"
+        return 1
+      }
     else
       warn "skipped restic install"
       return 0
@@ -158,7 +176,10 @@ do_restic() {
   ok "1P item 'Restic B2 backup' present"
 
   if confirm "run cc-backup init (creates B2 repo if missing)?"; then
-    "$HOME/dotfiles/bin/cc-backup" init || { fail "cc-backup init failed"; return 1; }
+    "$HOME/dotfiles/bin/cc-backup" init || {
+      fail "cc-backup init failed"
+      return 1
+    }
     ok "repo initialized"
   fi
 
@@ -245,7 +266,7 @@ do_ntfy() {
       echo ""
       echo "# ntfy.sh push topic — installed by cc-bootstrap $(date +%Y-%m-%d)"
       echo "export NTFY_TOPIC=\"$topic\""
-    } >> "$HOME/.zprofile"
+    } >>"$HOME/.zprofile"
     ok "added NTFY_TOPIC. Subscribe in the ntfy iOS app to topic: $topic"
   else
     warn "skipped"
@@ -360,17 +381,24 @@ cmd_all() {
   do_doctor
 }
 
-[ $# -eq 0 ] && { sed -n '2,20p' "$0"; exit 0; }
+[ $# -eq 0 ] && {
+  sed -n '2,20p' "$0"
+  exit 0
+}
 case "$1" in
-  all)          cmd_all ;;
-  status|doctor) do_doctor ;;
-  mempalace)    do_mempalace ;;
-  sudoers)      do_sudoers ;;
-  launchd)      do_launchd ;;
-  restic)       do_restic ;;
-  ntfy|ntfy-prompt) do_ntfy ;;
-  mercury)      do_mercury ;;
-  browser-harness|harness) do_browser_harness ;;
-  -h|--help)    sed -n '2,20p' "$0" ;;
-  *)            echo "unknown subcommand: $1" >&2; sed -n '2,20p' "$0" >&2; exit 2 ;;
+  all) cmd_all ;;
+  status | doctor) do_doctor ;;
+  mempalace) do_mempalace ;;
+  sudoers) do_sudoers ;;
+  launchd) do_launchd ;;
+  restic) do_restic ;;
+  ntfy | ntfy-prompt) do_ntfy ;;
+  mercury) do_mercury ;;
+  browser-harness | harness) do_browser_harness ;;
+  -h | --help) sed -n '2,20p' "$0" ;;
+  *)
+    echo "unknown subcommand: $1" >&2
+    sed -n '2,20p' "$0" >&2
+    exit 2
+    ;;
 esac

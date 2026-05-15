@@ -18,7 +18,8 @@ if [ $# -lt 1 ]; then
   exit 2
 fi
 
-SENDER="$1"; shift
+SENDER="$1"
+shift
 SINCE_NOW=0
 TIMEOUT=60
 DIGITS_MIN=6

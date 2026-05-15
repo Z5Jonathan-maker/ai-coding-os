@@ -27,7 +27,8 @@ input=$(cat)
 export _NTFY_INPUT="$input"
 
 # Build a short summary from the transcript tail.
-summary=$(python3 <<'PY'
+summary=$(
+  python3 <<'PY'
 import json, os
 from pathlib import Path
 raw = os.environ.get("_NTFY_INPUT", "")

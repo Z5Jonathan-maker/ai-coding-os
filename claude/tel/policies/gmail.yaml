@@ -17,6 +17,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 100
     auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_keychain_service: cc.gmail_oauth.access_token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -29,6 +30,7 @@ actions:
     reversible: false
     rate_limit_per_hour: 200
     auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_keychain_service: cc.gmail_oauth.access_token
     auth_header: Authorization
     auth_prefix: Bearer
 
@@ -39,5 +41,6 @@ actions:
     reversible: false
     rate_limit_per_hour: 60
     auth_op_path: op://Personal/Gmail-OAuth/access_token
+    auth_keychain_service: cc.gmail_oauth.access_token
     auth_header: Authorization
     auth_prefix: Bearer

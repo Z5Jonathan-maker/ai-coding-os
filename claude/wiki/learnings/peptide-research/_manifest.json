@@ -1,0 +1,2779 @@
+{
+  "topic": "peptide-research",
+  "created": "2026-05-04T01:25:01.094989+00:00",
+  "docs": {
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6443325/": {
+      "file": "prr11-and-ska2-gene-pair-is-overexpressed-and-regulated-by-p-44454ca4f3.md",
+      "kind": "article",
+      "title": "PRR11 and SKA2 gene pair is overexpressed and regulated by p53 in breast cancer",
+      "words": 4272,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4488874/": {
+      "file": "anatase-tio-aff043f6ff.md",
+      "kind": "article",
+      "title": "Anatase TiO",
+      "words": 6627,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7926533/": {
+      "file": "cooperative-localization-using-distance-measurements-for-mob-704100e112.md",
+      "kind": "article",
+      "title": "Cooperative Localization Using Distance Measurements for Mobile Nodes",
+      "words": 11618,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://pubmed.ncbi.nlm.nih.gov/30915550/": {
+      "file": "therapeutic-peptides-in-gerontology-mechanisms-and-applicati-64b5a5862e.md",
+      "kind": "article",
+      "title": "Therapeutic peptides in gerontology: mechanisms and applications for healthy aging",
+      "words": 7465,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8512012/": {
+      "file": "evolutionary-mahalanobis-distance-based-oversampling-for-mul-9a847e8f7c.md",
+      "kind": "article",
+      "title": "Evolutionary Mahalanobis Distance-Based Oversampling for Multi-Class Imbalanced Data Classification",
+      "words": 12461,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4133084/": {
+      "file": "contribution-of-antimicrobial-stewardship-programs-to-reduct-1ae3790ae6.md",
+      "kind": "article",
+      "title": "Contribution of antimicrobial stewardship programs to reduction of antimicrobial therapy costs in community hospital with 429 Beds --before-after comparative two-year trial in Japan",
+      "words": 4039,
+      "ingested": "2026-05-04T01:25:05+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2754380/": {
+      "file": "incidence-and-risk-factors-for-stroke-in-american-indians-th-02fa10f5d6.md",
+      "kind": "article",
+      "title": "Incidence and Risk Factors for Stroke in American Indians: The Strong Heart Study",
+      "words": 6501,
+      "ingested": "2026-05-04T01:42:28+00:00"
+    },
+    "https://www.fda.gov/drugs/human-drug-compounding/bulk-drug-substances-used-compounding-under-section-503a-fdc-act": {
+      "file": "bulk-drug-substances-used-in-compounding-under-section-503a-d17b11c7f4.md",
+      "kind": "article",
+      "title": "Bulk Drug Substances Used in Compounding Under Section 503A",
+      "words": 919,
+      "ingested": "2026-05-04T01:44:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13095733/": {
+      "file": "therapeutic-peptides-in-gerontology-mechanisms-and-applicati-24aef4022b.md",
+      "kind": "article",
+      "title": "Therapeutic peptides in gerontology: mechanisms and applications for healthy aging",
+      "words": 7465,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13026520/": {
+      "file": "from-regeneration-to-analgesia-the-role-of-bpc-157-in-tissue-c021eefc83.md",
+      "kind": "article",
+      "title": "From Regeneration to Analgesia: The Role of BPC-157 in Tissue Repair and Pain Management",
+      "words": 6737,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12845017/": {
+      "file": "fourier-transform-infrared-spectroscopic-characterization-of-0a3e5dd846.md",
+      "kind": "article",
+      "title": "Fourier Transform Infrared Spectroscopic Characterization of Aortic Wall Remodeling by Stable Gastric Pentadecapeptide BPC 157 After Unilateral Adrenalectomy in Rats",
+      "words": 8368,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13028870/": {
+      "file": "cytoprotection-as-a-unifying-strategy-for-hemorrhage-and-thr-9daf7f45b1.md",
+      "kind": "article",
+      "title": "Cytoprotection as a Unifying Strategy for Hemorrhage and Thrombosis: The Role of BPC 157 and Related Therapeutics",
+      "words": 22636,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12944561/": {
+      "file": "tendon-ligament-and-muscle-injury-osteotendinous-myotendinou-50ed0a341f.md",
+      "kind": "article",
+      "title": "Tendon, Ligament, and Muscle Injury, Osteotendinous, Myotendinous, and Muscle-to-Bone Junction Therapy Perspectives with Growth Factors and Stable Gastric Pentadecapeptide BPC 157\u2014A Review",
+      "words": 28396,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12943208/": {
+      "file": "conventional-antiarrhythmics-class-i-iv-late-ina-inhibitors--9871c74124.md",
+      "kind": "article",
+      "title": "Conventional Antiarrhythmics Class I\u2013IV, Late INa Inhibitors, IKs Enhancers, RyR2 Stabilizers, Gap Junction Modulators, Atrial-Selective Antiarrhythmics, and Stable Gastric Pentadecapeptide BPC 157 as Useful Cytoprotective Therapy in Arrhythmias",
+      "words": 24410,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12753158/": {
+      "file": "therapeutic-peptides-in-orthopaedics-applications-challenges-c23dd5e166.md",
+      "kind": "article",
+      "title": "Therapeutic Peptides in Orthopaedics: Applications, Challenges, and Future Directions",
+      "words": 6512,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12844668/": {
+      "file": "tracheocutaneous-fistula-resolved-by-pentadecapeptide-bpc-15-e8ac9e5828.md",
+      "kind": "article",
+      "title": "Tracheocutaneous Fistula Resolved by Pentadecapeptide BPC 157 Therapy Through the NO-System\u2014Triple NO-Agent Approach in Rats",
+      "words": 12848,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12827327/": {
+      "file": "sh3bgrl-proteins-are-thioredoxin-fold-containing-actin-filam-63154b19e2.md",
+      "kind": "article",
+      "title": "SH3BGRL proteins are thioredoxin fold\u2013containing actin filament pointed end capping proteins (TPECs)",
+      "words": 11740,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12090304/": {
+      "file": "type-2-diabetes-mellitus-conventional-therapies-and-future-p-0c4550e071.md",
+      "kind": "article",
+      "title": "Type 2 diabetes mellitus \u2013 conventional therapies and future perspectives in innovative treatment",
+      "words": 17387,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11964602/": {
+      "file": "protein-to-biomaterials-unraveling-the-antiviral-and-proangi-413895b819.md",
+      "kind": "article",
+      "title": "Protein to biomaterials: Unraveling the antiviral and proangiogenic activities of Ac-T\u03b2",
+      "words": 14036,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13068362/": {
+      "file": "redefining-therapies-for-drug-resistant-tuberculosis-synergi-5e9b775193.md",
+      "kind": "article",
+      "title": "Redefining Therapies for Drug\u2010Resistant Tuberculosis: Synergistic Effects of Antimicrobial Peptides, Nanotechnology, and Computational Design",
+      "words": 31954,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10931619/": {
+      "file": "exploring-the-molecular-tapestry-organ-specific-peptide-and--15027d5ee9.md",
+      "kind": "article",
+      "title": "Exploring the Molecular Tapestry: Organ-Specific Peptide and Protein Ultrafiltrates and Their Role in Therapeutics",
+      "words": 11802,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11556548/": {
+      "file": "peptides-for-targeting-chondrogenic-induction-and-cartilage--a4344ad1ec.md",
+      "kind": "article",
+      "title": "Peptides for Targeting Chondrogenic Induction and Cartilage Regeneration in Osteoarthritis",
+      "words": 10333,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12729999/": {
+      "file": "protective-functions-of-\u03b2-alanyl-l-histidine-and-glycyl-l-hi-b5146658aa.md",
+      "kind": "article",
+      "title": "Protective Functions of \u03b2-Alanyl-L-Histidine and Glycyl-L-Histidyl-L-Lysine Glycoconjugates and Copper in Concert",
+      "words": 21308,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12562857/": {
+      "file": "structure-based-understanding-of-cu-54a80f683b.md",
+      "kind": "article",
+      "title": "Structure-Based Understanding of Cu",
+      "words": 12427,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12595317/": {
+      "file": "exploring-the-role-of-tripeptides-in-wound-healing-and-skin--6a08ae457a.md",
+      "kind": "article",
+      "title": "Exploring the Role of Tripeptides in Wound Healing and Skin Regeneration: A Comprehensive Review",
+      "words": 19964,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12995374/": {
+      "file": "emerging-biologics-in-lumbar-disc-degeneration-prp-stem-cell-af84f9cf17.md",
+      "kind": "article",
+      "title": "Emerging Biologics in Lumbar Disc Degeneration: PRP, Stem Cell Therapy, and Pharmacotherapy in Mobility Restoration and Rehabilitation",
+      "words": 5401,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13054063/": {
+      "file": "a-framework-for-the-safety-evaluation-of-peptides-in-cosmeti-d71983c393.md",
+      "kind": "article",
+      "title": "A framework for the safety evaluation of peptides in cosmetics",
+      "words": 16905,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12263609/": {
+      "file": "exploring-the-beneficial-effects-of-ghk-cu-on-an-experimenta-747a712f21.md",
+      "kind": "article",
+      "title": "Exploring the beneficial effects of GHK-Cu on an experimental model of colitis and the underlying mechanisms",
+      "words": 9657,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12963462/": {
+      "file": "comparative-efficacy-and-safety-of-glucagon-receptor-agonist-97a9c862ad.md",
+      "kind": "article",
+      "title": "Comparative Efficacy and Safety of Glucagon Receptor Agonists on Metabolic Outcomes: A Network Meta\u2010Analysis of Randomised Controlled Trials",
+      "words": 7746,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13088735/": {
+      "file": "the-use-of-glp-1-receptor-agonists-and-co-agonists-in-adults-d4af7dccfa.md",
+      "kind": "article",
+      "title": "The use of GLP-1 receptor agonists and co-agonists in adults without diabetes: a systematic review and network meta-analysis protocol",
+      "words": 5703,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13056526/": {
+      "file": "efficacy-of-glp-1-analog-peptides-semaglutide-tirzepatide-an-f8da4991f5.md",
+      "kind": "article",
+      "title": "Efficacy of GLP-1 analog peptides, semaglutide, tirzepatide, and retatrutide on MC4R deficient obesity and their comparison",
+      "words": 7955,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13000107/": {
+      "file": "innovative-diabetes-therapies-and-impact-on-peripheral-and-a-4d418736c2.md",
+      "kind": "article",
+      "title": "Innovative Diabetes Therapies and Impact on Peripheral and Autonomic Diabetic Neuropathies: A State-of-the-Art Review",
+      "words": 11274,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12992036/": {
+      "file": "do-no-harm-managing-nausea-and-vomiting-in-glp-1-based-obesi-8280b3790e.md",
+      "kind": "article",
+      "title": "Do no harm: managing nausea and vomiting in GLP-1 based obesity therapies",
+      "words": 3911,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13010809/": {
+      "file": "incretin-polyagonists-as-an-alternative-to-bariatric-surgery-14746ae8b5.md",
+      "kind": "article",
+      "title": "Incretin polyagonists as an alternative to bariatric surgery to manage obesity",
+      "words": 7199,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13051938/": {
+      "file": "obesity-pharmacotherapy-reimagined-the-era-of-multi-receptor-32589faa0a.md",
+      "kind": "article",
+      "title": "Obesity pharmacotherapy reimagined: The era of multi-receptor agonists and next-generation metabolic modulators, perspectives and controversies",
+      "words": 11113,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13092657/": {
+      "file": "novel-evidence-for-tirzepatide-a-dual-glp-1-gip-receptor-ago-dfb3c88283.md",
+      "kind": "article",
+      "title": "Novel evidence for tirzepatide, a dual GLP-1/GIP receptor agonist, to reduce the motivation for cocaine in rodents",
+      "words": 1150,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12991648/": {
+      "file": "glp-1-receptor-agonists-for-weight-loss-a-systematic-review--3c953e54a6.md",
+      "kind": "article",
+      "title": "GLP-1 receptor agonists for weight loss: A systematic review and meta-analysis of randomized controlled trials",
+      "words": 6458,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13055641/": {
+      "file": "tirzepatide-induced-ketoacidosis-with-hyperglycemia-in-a-pat-8632e0380c.md",
+      "kind": "article",
+      "title": "Tirzepatide-induced ketoacidosis with hyperglycemia in a patient\nwithout diabetes",
+      "words": 2497,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13050665/": {
+      "file": "acute-onset-of-neovascular-age-related-macular-degeneration--fe96f7165d.md",
+      "kind": "article",
+      "title": "Acute onset of neovascular age-related macular degeneration after initiation of tirzepatide",
+      "words": 3578,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13094863/": {
+      "file": "merging-t1d-and-t2d-management-shared-strategies-for-common--b18e96d838.md",
+      "kind": "article",
+      "title": "Merging T1D and T2D Management: Shared Strategies for Common Goals\u2014Building on Early Lessons From GLP-1 Trials in T1D",
+      "words": 2840,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13043246/": {
+      "file": "emerging-role-of-dual-glucagon-like-peptide-1-glp-1-glucose--a33b8bb379.md",
+      "kind": "article",
+      "title": "Emerging Role of Dual Glucagon-Like Peptide-1 (GLP-1)/Glucose-Dependent Insulinotropic Polypeptide (GIP) Receptor Agonists in Cardiovascular Prevention",
+      "words": 4992,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13026324/": {
+      "file": "a-narrative-review-of-the-metabolic-benefits-of-glp-1-and-gi-0f6e816bfa.md",
+      "kind": "article",
+      "title": "A Narrative Review of the Metabolic Benefits of GLP-1 and GIP Receptor Agonists in Obesity",
+      "words": 10233,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13023396/": {
+      "file": "current-insights-and-future-directions-on-the-role-of-glp-1--b242e5dcc8.md",
+      "kind": "article",
+      "title": "Current Insights and Future Directions on the Role of GLP-1 Receptor Agonists in Chronic Kidney Disease",
+      "words": 5387,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13009101/": {
+      "file": "oral-glucagon-like-peptide-1-receptor-agonists-for-preventin-c1b283aa86.md",
+      "kind": "article",
+      "title": "Oral Glucagon-Like Peptide-1 Receptor Agonists for Preventing Cardiorenal Complications",
+      "words": 4689,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13083220/": {
+      "file": "a-multicentre-prospective-non-interventional-single-arm-stud-62a5dfad83.md",
+      "kind": "article",
+      "title": "A Multicentre, Prospective, Non\u2010Interventional Single\u2010Arm Study Investigating the Impact of Once\u2010Daily Oral Semaglutide in a Real\u2010World Adult Population With Type 2 Diabetes in Mexico",
+      "words": 8002,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13070973/": {
+      "file": "reframing-obesity-related-hfpef-as-a-multiorgan-syndrome-inc-95768ad84d.md",
+      "kind": "article",
+      "title": "Reframing obesity-related HFpEF as a multiorgan syndrome: incretin-based therapies and imaging endpoints",
+      "words": 7685,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13073578/": {
+      "file": "disproportionality-analysis-of-tirzepatide-vs-semaglutide-an-5a53027c1e.md",
+      "kind": "article",
+      "title": "Disproportionality Analysis of Tirzepatide vs. Semaglutide and Liraglutide: System Organ Class-Level Post-Marketing Reporting Patterns in EudraVigilance",
+      "words": 12185,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13034523/": {
+      "file": "projected-life-year-gains-with-semaglutide-in-individuals-wi-047398e4b4.md",
+      "kind": "article",
+      "title": "Projected life-year gains with semaglutide in individuals with cardiovascular disease without type 2 diabetes in the UK",
+      "words": 5941,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13061728/": {
+      "file": "real-world-use-of-semaglutide-in-patients-with-type-2-diabet-4b18e03abc.md",
+      "kind": "article",
+      "title": "Real-world use of semaglutide in patients with type 2 diabetes and end-stage renal disease: a multicenter retrospective cohort study",
+      "words": 8321,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13094869/": {
+      "file": "semaglutide-effects-on-insulin-sensitivity-and-\u03b2-cell-functi-b56cf4467c.md",
+      "kind": "article",
+      "title": "Semaglutide Effects on Insulin Sensitivity and \u03b2-Cell Function in Patients With Schizophrenia, Prediabetes, and Obesity Treated With Second-Generation Antipsychotics: Findings From the HISTORI Trial, a 30-Week Randomized, Placebo-Controlled Trial With Semaglutide 1.0 mg Weekly",
+      "words": 7142,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9631397/": {
+      "file": "synthetic-peptides-in-doping-control-a-powerful-tool-for-an--9e265ae34d.md",
+      "kind": "article",
+      "title": "Synthetic Peptides\nin Doping Control: A Powerful Tool\nfor an Analytical Challenge",
+      "words": 13658,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13040425/": {
+      "file": "annual-banned-substance-review-18th-edition-analytical-appro-52bd4b3602.md",
+      "kind": "article",
+      "title": "Annual Banned\u2010Substance Review 18th Edition\u2014Analytical Approaches in Human Sports Drug Testing 2024/2025",
+      "words": 19531,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12319490/": {
+      "file": "annual-banned-substance-review-17th-edition-analytical-appro-25467d6321.md",
+      "kind": "article",
+      "title": "Annual Banned\u2010Substance Review 17th Edition\u2014Analytical Approaches in Human Sports Drug Testing 2023/2024",
+      "words": 19773,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12401869/": {
+      "file": "facelift-as-a-novel-surgical-treatment-for-hiv-associated-fa-1575966b37.md",
+      "kind": "article",
+      "title": "Facelift as a novel surgical treatment for HIV-associated facial lipodystrophy: a case report and literature review",
+      "words": 2036,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11962791/": {
+      "file": "illegal-and-falsified-medicines-self-administrated-in-not-ap-63efbf3a72.md",
+      "kind": "article",
+      "title": "Illegal and falsified medicines self-administrated in not approved post-cycle therapy after the cessation of anabolic-androgenic steroids \u2013 qualitative analysis",
+      "words": 11080,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13091937/": {
+      "file": "deoxycholic-acid-treatment-for-hiv-associated-dorsocervical--d5479df056.md",
+      "kind": "article",
+      "title": "Deoxycholic acid treatment for HIV-associated dorsocervical fat pad",
+      "words": 1383,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12932276/": {
+      "file": "obesity-and-weight-management-in-hiv-epidemiology-complicati-1a7327d9cc.md",
+      "kind": "article",
+      "title": "Obesity and Weight Management in HIV: Epidemiology, Complications, and Emerging Treatments",
+      "words": 14958,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12159276/": {
+      "file": "carpal-tunnel-syndrome-attributed-to-medication-use-a-pharma-c2893fd791.md",
+      "kind": "article",
+      "title": "Carpal Tunnel Syndrome Attributed to Medication Use: A Pharmacovigilance Study",
+      "words": 4028,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12842597/": {
+      "file": "pharmacologic-treatments-for-the-preservation-of-lean-body-m-591d193427.md",
+      "kind": "article",
+      "title": "Pharmacologic Treatments for the Preservation of Lean Body Mass During Weight Loss",
+      "words": 9092,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10999207/": {
+      "file": "biological-depiction-of-lipodystrophy-and-its-associated-cha-8822630ff5.md",
+      "kind": "article",
+      "title": "Biological Depiction of Lipodystrophy and Its Associated Challenges Among HIV AIDS Patients: Literature Review",
+      "words": 5663,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12976357/": {
+      "file": "reduced-serum-and-skeletal-muscle-mots-c-levels-in-women-wit-2209749f42.md",
+      "kind": "article",
+      "title": "Reduced serum and skeletal muscle MOTS c levels in women with polycystic ovary syndrome are associated with mitochondrial dysfunction",
+      "words": 5506,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12137473/": {
+      "file": "ghrh-in-diabetes-and-metabolism-82b3eb3c95.md",
+      "kind": "article",
+      "title": "GHRH in diabetes and metabolism",
+      "words": 14058,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13055642/": {
+      "file": "are-serum-mots-c-levels-and-mots-c-m-1382a-gt-c-polymorphism-8fa93f2695.md",
+      "kind": "article",
+      "title": "Are serum MOTS-c levels and MOTS-c m.1382A&gt;C polymorphism related\nto polycystic ovary syndrome?",
+      "words": 7652,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12788896/": {
+      "file": "mitochondria-derived-peptides-in-liver-disease-emerging-regu-e436016933.md",
+      "kind": "article",
+      "title": "Mitochondria-derived peptides in liver disease: Emerging regulators of hepatic metabolism and therapeutic targets",
+      "words": 9372,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12930096/": {
+      "file": "mitochondrial-derived-peptides-61d2119d3d.md",
+      "kind": "article",
+      "title": "Mitochondrial\u2010derived peptides",
+      "words": 8370,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12754562/": {
+      "file": "serum-mitochondrial-open-reading-frame-of-the-12s-rrna-c-mot-c2a65c76ec.md",
+      "kind": "article",
+      "title": "Serum Mitochondrial Open Reading Frame of the 12S rRNA-c (MOTS-c) Dynamics as a Complementary Marker of Treatment Response in Newly Diagnosed Multiple Myeloma: A Prospective Analysis",
+      "words": 5654,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12754282/": {
+      "file": "interlaced-roles-of-mitochondrial-dna-in-colorectal-cancer-l-a544c7fa3f.md",
+      "kind": "article",
+      "title": "Interlaced roles of mitochondrial DNA in colorectal cancer: Liquid-biopsy biomarkers, nuclear mtDNA-driven genomic instability, and mito-encoded micro peptide signaling",
+      "words": 11444,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12909204/": {
+      "file": "aerobic-exercise-and-mots-c-attenuate-diabetic-myocardial-fi-9913cc17f5.md",
+      "kind": "article",
+      "title": "Aerobic exercise and MOTS-c attenuate diabetic myocardial fibrosis via inhibition of the THBS1/TGF-\u03b2 signaling pathway",
+      "words": 7547,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12722213/": {
+      "file": "simple-molecules-make-difference-short-peptides-play-a-novel-02e1235d8e.md",
+      "kind": "article",
+      "title": "Simple molecules make difference: short peptides play a novel role in slowing senescence",
+      "words": 8148,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12411320/": {
+      "file": "epitalon-increases-telomere-length-in-human-cell-lines-throu-a71a40c3fc.md",
+      "kind": "article",
+      "title": "Epitalon increases telomere length in human cell lines through telomerase upregulation or ALT activity",
+      "words": 7785,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11943447/": {
+      "file": "overview-of-epitalon-highly-bioactive-pineal-tetrapeptide-wi-a365214829.md",
+      "kind": "article",
+      "title": "Overview of Epitalon\u2014Highly Bioactive Pineal Tetrapeptide with Promising Properties",
+      "words": 16144,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12356729/": {
+      "file": "the-antioxidant-tetrapeptide-epitalon-enhances-delayed-wound-21f3391042.md",
+      "kind": "article",
+      "title": "The Antioxidant Tetrapeptide Epitalon Enhances Delayed Wound Healing in an in Vitro Model of Diabetic Retinopathy",
+      "words": 8914,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9037278/": {
+      "file": "epitalon-protects-against-post-ovulatory-aging-related-damag-486a24e40a.md",
+      "kind": "article",
+      "title": "Epitalon protects against post-ovulatory aging-related damage of mouse oocytes",
+      "words": 6376,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8999041/": {
+      "file": "peptides-regulating-proliferative-activity-and-inflammatory--3c91b89185.md",
+      "kind": "article",
+      "title": "Peptides Regulating Proliferative Activity and Inflammatory Pathways in the Monocyte/Macrophage THP-1 Cell Line",
+      "words": 9292,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7037223/": {
+      "file": "aedg-peptide-epitalon-stimulates-gene-expression-and-protein-47e60bc9c2.md",
+      "kind": "article",
+      "title": "AEDG Peptide (Epitalon) Stimulates Gene Expression and Protein Synthesis during Neurogenesis: Possible Epigenetic Mechanism",
+      "words": 8080,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10113730/": {
+      "file": "development-of-gerontology-would-be-more-effective-under-gov-2a4c83e2ac.md",
+      "kind": "article",
+      "title": "\u201cDevelopment of gerontology would be more effective under governmental support\u201d: an interview with Vladimir N. Anisimov",
+      "words": 13814,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12492343/": {
+      "file": "brain-doping-substances-prohibited-or-not-in-sports-838b11f66c.md",
+      "kind": "article",
+      "title": "\u201eBrain doping\u201d substances: prohibited or not in sports?",
+      "words": 9139,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8469576/": {
+      "file": "antistress-action-of-melanocortin-derivatives-associated-wit-0ceab0677b.md",
+      "kind": "article",
+      "title": "Antistress Action of Melanocortin Derivatives Associated with Correction of Gene Expression Patterns in the Hippocampus of Male Rats Following Acute Stress",
+      "words": 11959,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10501497/": {
+      "file": "interventional-mental-health-a-transdisciplinary-approach-to-039c6cf355.md",
+      "kind": "article",
+      "title": "Interventional Mental Health: A Transdisciplinary Approach to Novel Psychiatric Care Delivery",
+      "words": 7777,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13017269/": {
+      "file": "the-melanocortin-receptors-as-targets-for-general-obesity-co-c44d5932e6.md",
+      "kind": "article",
+      "title": "The melanocortin receptors as targets for general obesity: contextualizing clinical failures and analyzing future perspectives",
+      "words": 17094,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9599618/": {
+      "file": "ligands-for-melanocortin-receptors-beyond-melanocyte-stimula-aab1964453.md",
+      "kind": "article",
+      "title": "Ligands for Melanocortin Receptors: Beyond Melanocyte-Stimulating Hormones and Adrenocorticotropin",
+      "words": 16252,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11581859/": {
+      "file": "the-multifaceted-nature-of-diabetic-erectile-dysfunction-unc-ab6b90842c.md",
+      "kind": "article",
+      "title": "The multifaceted nature of diabetic erectile dysfunction: uncovering the intricate mechanisms and treatment strategies",
+      "words": 14420,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8788464/": {
+      "file": "bremelanotide-for-treatment-of-female-hypoactive-sexual-desi-0b8a28c262.md",
+      "kind": "article",
+      "title": "Bremelanotide for Treatment of Female Hypoactive Sexual Desire",
+      "words": 8998,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7752520/": {
+      "file": "novel-emerging-therapies-for-erectile-dysfunction-9b559d6151.md",
+      "kind": "article",
+      "title": "Novel Emerging Therapies for Erectile Dysfunction",
+      "words": 11200,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10418475/": {
+      "file": "melanocortin-1-receptor-mc1r-pharmacological-and-therapeutic-d97f401ee1.md",
+      "kind": "article",
+      "title": "Melanocortin 1 Receptor (MC1R): Pharmacological and Therapeutic Aspects",
+      "words": 9854,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12814393/": {
+      "file": "intact-proteoform-analysis-by-capillary-electrophoresis-mass-8d5f9524d9.md",
+      "kind": "article",
+      "title": "Intact Proteoform Analysis by Capillary Electrophoresis\u2013Mass Spectrometry. Are We There Yet?",
+      "words": 10904,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9698007/": {
+      "file": "sexual-health-after-a-breast-cancer-diagnosis-addressing-a-f-89a4b464f7.md",
+      "kind": "article",
+      "title": "Sexual Health after a Breast Cancer Diagnosis: Addressing a Forgotten Aspect of Survivorship",
+      "words": 13754,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13093602/": {
+      "file": "acupuncture-modulates-neurotransmitter-related-molecules-in--cbe0c7e69e.md",
+      "kind": "article",
+      "title": "Acupuncture Modulates Neurotransmitter\u2010Related Molecules in the Amygdala to Ameliorate Generalized Anxiety Disorder",
+      "words": 9480,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13006021/": {
+      "file": "exosome-cargo-molecules-and-nlrp3-bdnf-clinical-and-preclini-245aac97d8.md",
+      "kind": "article",
+      "title": "Exosome Cargo Molecules and NLRP3/BDNF: Clinical and Preclinical Evidence for Acupuncture-Mediated Spinal Cord Injury Recovery",
+      "words": 13579,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12912032/": {
+      "file": "acupuncture-s-regulatory-role-in-glial-cells-and-their-inter-9d28305d29.md",
+      "kind": "article",
+      "title": "Acupuncture\u2019s Regulatory Role in Glial Cells and Their Interactions for Antidepressant Effects: A Review of Research Progress",
+      "words": 11565,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12368429/": {
+      "file": "acupuncture-as-an-adjunct-therapy-for-enhancing-endometrial--4171ca1ab5.md",
+      "kind": "article",
+      "title": "Acupuncture as an adjunct therapy for enhancing endometrial receptivity in female infertility: a literature review",
+      "words": 16308,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12956446/": {
+      "file": "cerebrolysin-and-risk-of-hemorrhagic-transformation-a-pooled-cb1b9edfe9.md",
+      "kind": "article",
+      "title": "Cerebrolysin and Risk of Hemorrhagic Transformation: A Pooled Analysis of Recent Studies",
+      "words": 1283,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13097123/": {
+      "file": "decoding-the-molecular-landscape-of-the-placenta-in-maternal-54b3aad92f.md",
+      "kind": "article",
+      "title": "Decoding the molecular landscape of the placenta in maternal diabetes: a systematic review of high-throughput data",
+      "words": 9661,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12682014/": {
+      "file": "interleukin-27-is-a-multitarget-regulator-of-fibroblast-remo-0a5371e886.md",
+      "kind": "article",
+      "title": "Interleukin-27 is a multitarget regulator of fibroblast remodeling in thyroid-associated ophthalmopathy",
+      "words": 10892,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12985125/": {
+      "file": "research-progress-on-dance-training-as-a-mechanical-stimulus-7c512c54c2.md",
+      "kind": "article",
+      "title": "Research Progress on Dance Training as a Mechanical Stimulus for the Prevention and Treatment of Osteoporosis: A Narrative Review",
+      "words": 11127,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12705382/": {
+      "file": "combined-citicoline-and-cerebrolysin-for-neuroprotection-in--91934ae009.md",
+      "kind": "article",
+      "title": "Combined citicoline and Cerebrolysin for neuroprotection in traumatic brain injury: a retrospective cohort analysis",
+      "words": 6432,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12980209/": {
+      "file": "the-role-of-cerebrolysin-in-promoting-axonal-regeneration-an-10680ebf32.md",
+      "kind": "article",
+      "title": "The Role of Cerebrolysin in Promoting Axonal Regeneration and Functional Recovery after Peripheral Nerve Injury: A Focus on Macrophage Activation",
+      "words": 7543,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12577782/": {
+      "file": "cerebrolysin-treatment-in-a-case-of-post-herpes-simplex-ence-d74c44b1c7.md",
+      "kind": "article",
+      "title": "Cerebrolysin treatment in a case of post-herpes simplex encephalitis with neuropsychiatric symptoms",
+      "words": 2568,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13045362/": {
+      "file": "efficacy-and-safety-of-cerebrolysin-as-an-adjunct-to-mechani-8179ef921d.md",
+      "kind": "article",
+      "title": "Efficacy and Safety of Cerebrolysin as an Adjunct to Mechanical Thrombectomy in Acute Ischemic Stroke: A Systematic Review and Meta\u2010Analysis of Observational Studies",
+      "words": 6359,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12935719/": {
+      "file": "cerebrolysin-after-endovascular-thrombectomy-in-stroke-12-mo-81cf4bb05c.md",
+      "kind": "article",
+      "title": "Cerebrolysin after Endovascular Thrombectomy in Stroke: 12\u2011Month Functional Outcomes in a Propensity\u2011Matched Cohort",
+      "words": 11221,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12595893/": {
+      "file": "cerebrolysin-ameliorates-ketamine-mediated-anxiety-and-cogni-4416f5eb22.md",
+      "kind": "article",
+      "title": "Cerebrolysin ameliorates ketamine-mediated anxiety and cognitive impairments via modulation of mitochondrial function and CREB/PGC-1\u03b1 pathway",
+      "words": 8868,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13007441/": {
+      "file": "combined-resistance-exercise-and-essential-amino-acid-intake-4cbdad4b56.md",
+      "kind": "article",
+      "title": "Combined resistance exercise and essential amino acid intake enhance follistatin/myostatin ratio and muscle fitness in older women: a randomized controlled trial",
+      "words": 10389,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12623516/": {
+      "file": "microglial-polarization-and-therapeutic-strategies-in-post-s-3691eff048.md",
+      "kind": "article",
+      "title": "Microglial Polarization and Therapeutic Strategies in Post-stroke Neuroinflammation",
+      "words": 10346,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13065385/": {
+      "file": "screening-performance-of-a-lifestyle-based-questionnaire-sco-8abd22120b.md",
+      "kind": "article",
+      "title": "Screening performance of a lifestyle-based questionnaire score for vitamin D deficiency and related functional and physiological characteristics in older women",
+      "words": 6465,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12943779/": {
+      "file": "effects-of-8-weeks-of-resistance-training-combined-with-a-hi-ef835e6ac9.md",
+      "kind": "article",
+      "title": "Effects of 8 Weeks of Resistance Training Combined with a High-Protein Diet and Omega-3 Supplementation on Body Composition, Muscular Performance, and Muscle-Related Biomarkers in Overweight Women",
+      "words": 13130,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12592514/": {
+      "file": "cardiac-rehabilitation-influences-serum-myokine-levels-in-pa-fa647c62bd.md",
+      "kind": "article",
+      "title": "Cardiac rehabilitation influences serum myokine levels in patients after acute coronary syndrome: the randomised CARDIO-REH study",
+      "words": 13035,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12899546/": {
+      "file": "adipo-myokine-modulation-in-obesity-integrative-effects-of-s-6f8417fe37.md",
+      "kind": "article",
+      "title": "Adipo-Myokine Modulation in Obesity: Integrative Effects of Spinach Thylakoids and Functional Training in Men with Obesity: A Randomized Controlled Clinical Trial",
+      "words": 13516,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12937736/": {
+      "file": "synergistic-effects-of-protein-intake-and-exercise-on-biomar-570d90c54c.md",
+      "kind": "article",
+      "title": "Synergistic Effects of Protein Intake and Exercise on Biomarkers of Sarcopenia: A Systematic Review",
+      "words": 10171,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12849793/": {
+      "file": "skeletal-muscle-as-an-auto-para-and-endocrine-organ-the-role-4bb23e8f86.md",
+      "kind": "article",
+      "title": "Skeletal Muscle as an Auto-, Para- and Endocrine Organ: The Role of Myokines in Muscle Metabolism and Other Metabolic Organs",
+      "words": 10782,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12813391/": {
+      "file": "exercise-exerkines-and-sarcopenia-dc43c1af4a.md",
+      "kind": "article",
+      "title": "Exercise, Exerkines, and Sarcopenia",
+      "words": 7279,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12802832/": {
+      "file": "inflammation-triggered-self-immolative-conjugates-enable-ora-59a6f6be3f.md",
+      "kind": "article",
+      "title": "Inflammation-triggered self-immolative conjugates enable oral peptide delivery by overcoming gastrointestinal barriers",
+      "words": 15880,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12921201/": {
+      "file": "mechanistic-studies-of-hydrogels-in-oral-cancer-treatment-sy-dab96d1448.md",
+      "kind": "article",
+      "title": "Mechanistic studies of hydrogels in oral cancer treatment: Synergistic effects of drug delivery and immune modulation",
+      "words": 10075,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12717863/": {
+      "file": "the-construction-strategy-of-curcumin-nanomedicine-delivery--2013f85218.md",
+      "kind": "article",
+      "title": "The Construction Strategy of Curcumin Nanomedicine Delivery System and Its Application in the Treatment of Ulcerative Colitis",
+      "words": 20046,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11357942/": {
+      "file": "pept1-targeted-nanodrug-based-on-co-assembly-of-anti-inflamm-53535ff094.md",
+      "kind": "article",
+      "title": "PepT1-targeted nanodrug based on co-assembly of anti-inflammatory peptide and immunosuppressant for combined treatment of acute and chronic DSS-induced ColitiS",
+      "words": 9260,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12446670/": {
+      "file": "recent-advances-in-albumin-based-nanoparticle-drug-delivery--b46ae8c083.md",
+      "kind": "article",
+      "title": "Recent advances in albumin-based nanoparticle drug delivery systems for intestinal disease treatment",
+      "words": 13541,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12844886/": {
+      "file": "selective-nanoparticulate-systems-for-drug-delivery-in-infla-4d8179bc0f.md",
+      "kind": "article",
+      "title": "Selective Nanoparticulate Systems for Drug Delivery in Inflammatory Bowel Disease",
+      "words": 14074,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12883329/": {
+      "file": "a-case-report-of-a-multisystemic-immune-related-adverse-even-f7ef990b86.md",
+      "kind": "article",
+      "title": "A Case Report of a Multisystemic Immune\u2010Related Adverse Event Caused by Sintilimab in Combination With Thymosin Alpha\u20101",
+      "words": 2841,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12157963/": {
+      "file": "multi-functional-applications-of-hydrogel-delivery-systems-i-197d231f64.md",
+      "kind": "article",
+      "title": "Multi-Functional Applications of Hydrogel Delivery Systems in Inflammatory Bowel Disease: Drug Delivery, Anti-Inflammation, and Intestinal Repair",
+      "words": 9973,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12792209/": {
+      "file": "p-30-thymosin-\u03b11-for-sepsis-management-a-systematic-review-a-30ba713c3f.md",
+      "kind": "article",
+      "title": "P-30. Thymosin-\u03b11 for Sepsis Management: A Systematic Review and Meta-Analysis of 1972 Patients",
+      "words": 645,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12643963/": {
+      "file": "case-report-long-term-disease-free-survival-in-an-advanced-h-e78f51ea02.md",
+      "kind": "article",
+      "title": "Case Report: Long-term disease-free survival in an advanced hepatocellular carcinoma patient: an exceptional response to PD-1 inhibitor therapy",
+      "words": 4774,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12692621/": {
+      "file": "aging-and-thymosin-alpha-1-7ab2e78cbe.md",
+      "kind": "article",
+      "title": "Aging and Thymosin Alpha-1",
+      "words": 10959,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12463929/": {
+      "file": "expression-levels-of-thymosin-\u03b11-in-acute-myocardial-infarct-41c0c6bb86.md",
+      "kind": "article",
+      "title": "Expression levels of thymosin \u03b11 in acute myocardial infarction patients and its correlation to cardiac function",
+      "words": 6633,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12440967/": {
+      "file": "efficacy-of-thymosin-\u03b11-for-sepsis-a-systematic-review-and-m-e1fa445dca.md",
+      "kind": "article",
+      "title": "Efficacy of thymosin \u03b11 for sepsis: a systematic review and meta-analysis of randomized controlled trials",
+      "words": 7858,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13015770/": {
+      "file": "low-temperature-fabrication-of-thymosin-\u03b24-loaded-soluble-mi-5baefadfc7.md",
+      "kind": "article",
+      "title": "Low\u2010Temperature Fabrication of Thymosin \u03b24\u2010Loaded Soluble Microneedles to Promote Wound Healing by Specific Binding to Downregulated Immune Regulators Vsig4 and IL22r\u02512",
+      "words": 8837,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13023911/": {
+      "file": "targeting-leukopoiesis-pharmacological-and-biotechnological--35b91799de.md",
+      "kind": "article",
+      "title": "Targeting Leukopoiesis: Pharmacological and Biotechnological Strategies for the Treatment of Leukopenia",
+      "words": 19823,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12896874/": {
+      "file": "new-insights-on-mitochondria-targeted-neurological-drugs-9bc02fb97e.md",
+      "kind": "article",
+      "title": "New Insights on Mitochondria-Targeted Neurological Drugs",
+      "words": 9267,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12427237/": {
+      "file": "mitochondrial-targeted-protective-potential-of-elamipretide--1df257e565.md",
+      "kind": "article",
+      "title": "Mitochondrial-Targeted Protective Potential of Elamipretide for the In Vitro Production of Porcine Embryos",
+      "words": 7775,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12938358/": {
+      "file": "next-generation-antioxidants-in-cardiovascular-disease-mecha-7c2fd3fc00.md",
+      "kind": "article",
+      "title": "Next-Generation Antioxidants in Cardiovascular Disease: Mechanistic Insights and Emerging Therapeutic Strategies",
+      "words": 15201,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12938911/": {
+      "file": "mitochondria-at-the-crossroads-of-cardiovascular-disease-mec-66abedef6e.md",
+      "kind": "article",
+      "title": "Mitochondria at the Crossroads of Cardiovascular Disease: Mechanistic Drivers and Emerging Therapeutic Strategies",
+      "words": 15932,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13026253/": {
+      "file": "structural-and-metabolic-remodeling-of-skeletal-muscle-in-he-f9e8e2fb7c.md",
+      "kind": "article",
+      "title": "Structural and Metabolic Remodeling of Skeletal Muscle in Heart Failure with Reduced Ejection Fraction: A Review: Beyond the Failing Heart",
+      "words": 9374,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13095658/": {
+      "file": "mitochondria-targeted-nanotechnology-in-cardiovascular-disea-d7a3d95b8b.md",
+      "kind": "article",
+      "title": "Mitochondria-targeted nanotechnology in cardiovascular diseases: a review of recent advances",
+      "words": 19258,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12282820/": {
+      "file": "synergies-from-a-distance-inspirations-from-the-struggles-of-bb345a2d7f.md",
+      "kind": "article",
+      "title": "Synergies from a distance: Inspirations from the struggles of Dr James M Krueger",
+      "words": 3003,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12838562/": {
+      "file": "mitochondrial-dysfunction-in-acute-kidney-injury-intersectio-2753ea1469.md",
+      "kind": "article",
+      "title": "Mitochondrial Dysfunction in Acute Kidney Injury: Intersections Between Chemotherapy and Novel Cancer Immunotherapies",
+      "words": 10134,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12164653/": {
+      "file": "contemporary-insights-into-elamipretide-s-mitochondrial-mech-c526b87927.md",
+      "kind": "article",
+      "title": "Contemporary insights into elamipretide\u2019s mitochondrial mechanism of action and therapeutic effects",
+      "words": 8103,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11498945/": {
+      "file": "https-www-ncbi-nlm-nih-gov-pmc-articles-pmc11498945-85d3954a45.md",
+      "kind": "article",
+      "title": "",
+      "words": 10465,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12841283/": {
+      "file": "peptide-based-approaches-for-pain-relief-and-healing-in-woun-ab2017209f.md",
+      "kind": "article",
+      "title": "Peptide-Based Approaches for Pain Relief and Healing in Wounds",
+      "words": 20340,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12282848/": {
+      "file": "sleep-and-immune-health-how-dogs-goats-and-factor-s-shaped-a-0672bfcbdf.md",
+      "kind": "article",
+      "title": "Sleep and immune health: How dogs, goats and \u2018factor S\u2019 shaped a field",
+      "words": 19437,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10984558/": {
+      "file": "deuterium-labeling-of-isoaspartic-and-isoglutamic-acids-for--62315d9925.md",
+      "kind": "article",
+      "title": "Deuterium Labeling\nof Isoaspartic and Isoglutamic\nAcids for Mass Spectrometry Analysis",
+      "words": 8461,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10603086/": {
+      "file": "practical-n-to-c-peptide-synthesis-with-minimal-protecting-g-69d36f0804.md",
+      "kind": "article",
+      "title": "Practical N-to-C peptide synthesis with minimal protecting groups",
+      "words": 5732,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8434407/": {
+      "file": "delta-sleep-inducing-peptide-recovers-motor-function-in-sd-r-f769a4e65c.md",
+      "kind": "article",
+      "title": "Delta Sleep-Inducing Peptide Recovers Motor Function in SD Rats after Focal Stroke",
+      "words": 6245,
+      "ingested": "2026-05-04T02:00:54+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12396989/": {
+      "file": "concerning-bpc-157-a-natural-pentadecapeptide-that-acts-as-a-cace19456b.md",
+      "kind": "article",
+      "title": "Concerning BPC-157, a natural pentadecapeptide, that acts as a cytoprotectant and is believed to protect the gastro-intestinal tract (GIT)",
+      "words": 1498,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12567171/": {
+      "file": "reply-to-sikiric-et-al-bpc-157-therapy-targeting-angiogenesi-a03e06f96a.md",
+      "kind": "article",
+      "title": "Reply to Sikiric et al. BPC 157 Therapy: Targeting Angiogenesis and Nitric Oxide\u2019s Cytotoxic and Damaging Actions, but Maintaining, Promoting, or Recovering Their Essential Protective Functions. Comment on \u201cJ\u00f3zwiak et al. Multifunctionality and Possible Medical Application of the BPC 157 Peptide\u2014Literature and Patent Review.",
+      "words": 2130,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12820979/": {
+      "file": "covalently-active-metabolites-of-bisphenol-a-analogs-by-mass-37d655177c.md",
+      "kind": "article",
+      "title": "Covalently\nActive Metabolites of Bisphenol A Analogs\nby Mass Spectrometry Diagnostic Ions: Possible Mechanisms of Their\nToxicity",
+      "words": 7301,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12567428/": {
+      "file": "bpc-157-therapy-targeting-angiogenesis-and-nitric-oxide-s-cy-9e363e1166.md",
+      "kind": "article",
+      "title": "BPC 157 Therapy: Targeting Angiogenesis and Nitric Oxide\u2019s Cytotoxic and Damaging Actions, but Maintaining, Promoting, or Recovering Their Essential Protective Functions. Comment on J\u00f3zwiak et al. Multifunctionality and Possible Medical Application of the BPC 157 Peptide\u2014Literature and Patent Review.",
+      "words": 4941,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12735534/": {
+      "file": "challenge-of-corneal-ulcer-healing-a-novel-conceptual-framew-93e1b630e7.md",
+      "kind": "article",
+      "title": "Challenge of Corneal Ulcer Healing: A Novel Conceptual Framework, the \u201cTriad\u201d of Corneal Ulcer Healing/Corneal Neovascularization/Intraocular Pressure, and Avascular Tendon Healing, for Evaluation of Corneal Ulcer Therapy, Therapy of Neovascularization, Glaucoma Therapy, and Pentadecapeptide BPC 157 Efficacy",
+      "words": 38073,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12195719/": {
+      "file": "stable-gastric-pentadecapeptide-bpc-157-as-a-therapy-and-saf-7ff613cd0f.md",
+      "kind": "article",
+      "title": "Stable Gastric Pentadecapeptide BPC 157 as a Therapy and Safety Key: A Special Beneficial Pleiotropic Effect Controlling and Modulating Angiogenesis and the NO-System",
+      "words": 36261,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11859134/": {
+      "file": "multifunctionality-and-possible-medical-application-of-the-b-e3fad71e5d.md",
+      "kind": "article",
+      "title": "Multifunctionality and Possible Medical Application of the BPC 157 Peptide\u2014Literature and Patent Review",
+      "words": 13365,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12196487/": {
+      "file": "acute-compartment-syndrome-and-intra-abdominal-hypertension--e4bf14f3f3.md",
+      "kind": "article",
+      "title": "Acute Compartment Syndrome and Intra-Abdominal Hypertension, Decompression, Current Pharmacotherapy, and Stable Gastric Pentadecapeptide BPC 157 Solution",
+      "words": 24345,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12947506/": {
+      "file": "bpc157-drives-angiogenesis-through-fbxo22-dependent-stabiliz-54bb3cce50.md",
+      "kind": "article",
+      "title": "BPC157 drives angiogenesis through FBXO22-dependent stabilization of BACH1",
+      "words": 6583,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11768438/": {
+      "file": "stable-gastric-pentadecapeptide-bpc-157-as-therapy-after-sur-32a8706f7a.md",
+      "kind": "article",
+      "title": "Stable Gastric Pentadecapeptide BPC 157 as Therapy After Surgical Detachment of the Quadriceps Muscle from Its Attachments for Muscle-to-Bone Reattachment in Rats",
+      "words": 16291,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11703442/": {
+      "file": "compounded-glucagon-like-peptide-1-receptor-agonists-for-wei-75fcc1af20.md",
+      "kind": "article",
+      "title": "Compounded glucagon-like peptide-1 receptor agonists for weight loss: the direct-to-consumer market in Colorado",
+      "words": 5880,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11426299/": {
+      "file": "local-and-systemic-peptide-therapies-for-soft-tissue-regener-dfc8721d89.md",
+      "kind": "article",
+      "title": "Local and Systemic Peptide Therapies for Soft Tissue Regeneration: A\nNarrative Review",
+      "words": 11068,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11857380/": {
+      "file": "protective-effects-of-bpc-157-on-liver-kidney-and-lung-dista-e98276f2b6.md",
+      "kind": "article",
+      "title": "Protective Effects of BPC 157 on Liver, Kidney, and Lung Distant Organ Damage in Rats with Experimental Lower-Extremity Ischemia\u2013Reperfusion Injury",
+      "words": 13371,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12881042/": {
+      "file": "the-process-of-angiogenesis-in-neurodegeneration-pathomechan-5b6d603646.md",
+      "kind": "article",
+      "title": "The process of angiogenesis in neurodegeneration\u2014pathomechanisms and new therapeutic interventions",
+      "words": 14881,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12887662/": {
+      "file": "oral-delivery-of-glp-1-analogues-by-recombinant-36e4a5c840.md",
+      "kind": "article",
+      "title": "Oral delivery of GLP-1 analogues by recombinant",
+      "words": 10865,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12985113/": {
+      "file": "antihypertensive-peptides-and-hydrolysates-derived-from-plan-2fad6f897a.md",
+      "kind": "article",
+      "title": "Antihypertensive Peptides and Hydrolysates Derived from Plant Proteins and Their Bioavailability",
+      "words": 17035,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11143747/": {
+      "file": "transient-induction-of-actin-cytoskeletal-remodeling-associa-74b30e9d92.md",
+      "kind": "article",
+      "title": "Transient induction of actin cytoskeletal remodeling associated with dedifferentiation, proliferation, and redifferentiation stimulates cardiac regeneration",
+      "words": 11224,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8751378/": {
+      "file": "thymosin-beta-4-improves-endothelial-function-and-reparative-bc88d178e5.md",
+      "kind": "article",
+      "title": "Thymosin beta-4 improves endothelial function and reparative potency of diabetic endothelial cells differentiated from patient induced pluripotent stem cells",
+      "words": 6989,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11447406/": {
+      "file": "integrative-transcriptomics-and-proteomics-analysis-provide--a4d73dfa9b.md",
+      "kind": "article",
+      "title": "Integrative transcriptomics and proteomics analysis provide a deep insight into goose astrovirus-host interactions during GAstV infection",
+      "words": 9072,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8745404/": {
+      "file": "thymosin-\u03b24-is-an-endogenous-iron-chelator-and-molecular-swi-6fa1176035.md",
+      "kind": "article",
+      "title": "Thymosin \u03b24 Is an Endogenous Iron Chelator and Molecular Switcher of Ferroptosis",
+      "words": 12454,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11717054/": {
+      "file": "https-www-ncbi-nlm-nih-gov-pmc-articles-pmc11717054-557862f8b6.md",
+      "kind": "article",
+      "title": "",
+      "words": 13280,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10808728/": {
+      "file": "identification-of-a-novel-msc-induced-macrophage-subtype-via-cbb80d1a57.md",
+      "kind": "article",
+      "title": "Identification of a novel, MSC-induced macrophage subtype via single-cell sequencing: implications for intervertebral disc degeneration therapy",
+      "words": 11170,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11520223/": {
+      "file": "screening-and-expression-validation-of-key-proteins-for-seco-3e2466c04c.md",
+      "kind": "article",
+      "title": "Screening and expression validation of key proteins for secondary hair follicle growth in cashmere goats based on iTRAQ quantitative proteomics technology",
+      "words": 11770,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9565351/": {
+      "file": "a-solution-to-the-long-standing-problem-of-actin-expression--c2ce0ba777.md",
+      "kind": "article",
+      "title": "A solution to the long-standing problem of actin expression and purification",
+      "words": 9619,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10957077/": {
+      "file": "intact-a-nondisruptive-internal-tagging-strategy-to-study-th-10daff2147.md",
+      "kind": "article",
+      "title": "IntAct: A nondisruptive internal tagging strategy to study the organization and function of actin isoforms",
+      "words": 25493,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9266650/": {
+      "file": "pmc9266650-01bb0e0899.md",
+      "kind": "article",
+      "title": "PMC9266650",
+      "words": 13149,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11093951/": {
+      "file": "pmc11093951-dde54ce4f8.md",
+      "kind": "article",
+      "title": "PMC11093951",
+      "words": 17176,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10028750/": {
+      "file": "abstracts-of-the-papers-presented-in-the-international-confe-0b136e1a57.md",
+      "kind": "article",
+      "title": "Abstracts of the papers presented in the international conference of Indian Virological Society, VIROCON 2022 on \u201cEmerging and re-emerging viral infections impacting humans, animals, plants, fish and environment\u201d held during 05\u201306 November, 2022 at Sher-e-Kashmir University of Agricultural Sciences and Technology of Kashmir (SKUAST-K), Srinagar (J&amp;K), India",
+      "words": 70685,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5669175/": {
+      "file": "thymosin-beta-4-is-elevated-in-women-with-heart-failure-with-fdb1bd2cd1.md",
+      "kind": "article",
+      "title": "Thymosin Beta\u20104 Is Elevated in Women With Heart Failure With Preserved Ejection Fraction",
+      "words": 8834,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12837584/": {
+      "file": "smart-healing-for-wound-repair-emerging-multifunctional-stra-aaecce27aa.md",
+      "kind": "article",
+      "title": "Smart Healing for Wound Repair: Emerging Multifunctional Strategies in Personalized Regenerative Medicine and Their Relevance to Orthopedics",
+      "words": 14850,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12818720/": {
+      "file": "nanoengineered-self-assembling-peptides-with-increased-prote-128c8b0ccd.md",
+      "kind": "article",
+      "title": "Nanoengineered\nSelf-Assembling\nPeptides with Increased\nProteolytic Stability Promote Wound Healing",
+      "words": 7421,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11707400/": {
+      "file": "mucosal-immune-response-in-biology-disease-prevention-and-tr-71acf2a536.md",
+      "kind": "article",
+      "title": "Mucosal immune response in biology, disease prevention and treatment",
+      "words": 34971,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12154373/": {
+      "file": "tripeptide-loaded-liposomes-as-multifunctional-components-in-e0d23585b9.md",
+      "kind": "article",
+      "title": "Tripeptide-Loaded Liposomes as Multifunctional Components in Topical Formulations",
+      "words": 10708,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11788471/": {
+      "file": "food-derived-tripeptide-copper-self-healing-hydrogel-for-inf-a263f926d9.md",
+      "kind": "article",
+      "title": "Food-Derived Tripeptide\u2013Copper Self-Healing Hydrogel for Infected Wound Healing",
+      "words": 7316,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11762834/": {
+      "file": "peptides-emerging-candidates-for-the-prevention-and-treatmen-e943776e23.md",
+      "kind": "article",
+      "title": "Peptides: Emerging Candidates for the Prevention and Treatment of Skin Senescence: A Review",
+      "words": 16703,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11830136/": {
+      "file": "topically-applied-ghk-as-an-anti-wrinkle-peptide-advantages--90edaac1a3.md",
+      "kind": "article",
+      "title": "Topically applied GHK as an anti-wrinkle peptide: Advantages, problems and prospective",
+      "words": 6705,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12965852/": {
+      "file": "reprogramming-skin-aging-a-regenerative-and-epigenetic-persp-429687505a.md",
+      "kind": "article",
+      "title": "Reprogramming Skin Aging: A Regenerative and Epigenetic Perspective on Cutaneous Longevity",
+      "words": 3945,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11946782/": {
+      "file": "current-approaches-in-cosmeceuticals-peptides-biotics-and-ma-420032d492.md",
+      "kind": "article",
+      "title": "Current Approaches in Cosmeceuticals: Peptides, Biotics and Marine Biopolymers",
+      "words": 21060,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12516759/": {
+      "file": "cuproptosis-and-cardiovascular-diseases-mechanisms-pathophys-0dcacf59fb.md",
+      "kind": "article",
+      "title": "Cuproptosis and Cardiovascular Diseases: Mechanisms, Pathophysiology, and Therapeutic Strategies\u2014A Narrative Review",
+      "words": 15185,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11619988/": {
+      "file": "advancing-diabetic-wound-care-the-role-of-copper-containing--7ca263bfa8.md",
+      "kind": "article",
+      "title": "Advancing diabetic wound care: The role of copper-containing hydrogels",
+      "words": 23499,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12389719/": {
+      "file": "advances-in-transdermal-delivery-systems-for-treating-androg-44e3da6fc1.md",
+      "kind": "article",
+      "title": "Advances in Transdermal Delivery Systems for Treating Androgenetic Alopecia",
+      "words": 11749,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12348504/": {
+      "file": "the-inhibitory-effect-and-adsorption-properties-of-testagen--7d58ebc9bb.md",
+      "kind": "article",
+      "title": "The Inhibitory Effect and Adsorption Properties of Testagen Peptide on Copper Surfaces in Saline Environments: An Experimental and Computational Study",
+      "words": 14227,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11135135/": {
+      "file": "glycyl-98ae09437a.md",
+      "kind": "article",
+      "title": "Glycyl-",
+      "words": 18881,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12828160/": {
+      "file": "peptides-in-wound-healing-a-comprehensive-review-of-their-ro-effe6808a8.md",
+      "kind": "article",
+      "title": "Peptides in wound healing: A comprehensive review of their roles, challenges, and hydrogel-based delivery systems",
+      "words": 11667,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12935680/": {
+      "file": "glucagon-like-peptide-1-and-dual-triple-receptor-agonists-in-ec1b8889fc.md",
+      "kind": "article",
+      "title": "Glucagon-like peptide-1 and dual/triple receptor agonists in the treatment of metabolic dysfunction-associated steatotic liver disease: advances in mechanistic research",
+      "words": 6241,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10610410/": {
+      "file": "liposomes-as-carriers-of-ghk-cu-tripeptide-for-cosmetic-appl-ca313de667.md",
+      "kind": "article",
+      "title": "Liposomes as Carriers of GHK-Cu Tripeptide for Cosmetic Application",
+      "words": 9590,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12578377/": {
+      "file": "glp-1-receptor-agonists-and-cancer-current-clinical-evidence-e7f9dd79e5.md",
+      "kind": "article",
+      "title": "GLP-1 receptor agonists and cancer: current clinical evidence and translational opportunities for preclinical research",
+      "words": 9243,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12551431/": {
+      "file": "the-effects-of-glucagon-like-peptide-1-glp-1-receptor-agonis-dcdffebd48.md",
+      "kind": "article",
+      "title": "The Effects of Glucagon-Like Peptide-1 (GLP-1) Receptor Agonists on Polycystic Ovarian Syndrome: A Scoping Review",
+      "words": 8559,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12587234/": {
+      "file": "appetite-eating-attitudes-and-eating-behaviours-during-treat-0b7422415a.md",
+      "kind": "article",
+      "title": "Appetite, eating attitudes, and eating behaviours during treatment with retatrutide in adults with type 2 diabetes: Results of a phase 2 study",
+      "words": 7555,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12918571/": {
+      "file": "effect-of-glucagon-like-peptide-1-receptor-agonists-on-heart-e9d6e94265.md",
+      "kind": "article",
+      "title": "Effect of glucagon-like peptide-1 receptor agonists on heart rate in non-diabetic individuals with overweight or obesity: a systematic review and pairwise and network meta-analysis of randomized controlled trials",
+      "words": 8660,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12989002/": {
+      "file": "pharmacologic-treatment-of-metabolic-dysfunction-associated--f84f602a64.md",
+      "kind": "article",
+      "title": "Pharmacologic Treatment of Metabolic Dysfunction-Associated Steatotic Liver Disease in the Context of Type 2 Diabetes",
+      "words": 12493,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12304053/": {
+      "file": "triple-agonism-based-therapies-for-obesity-d8081c9663.md",
+      "kind": "article",
+      "title": "Triple Agonism Based Therapies for Obesity",
+      "words": 11601,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12457091/": {
+      "file": "evaluating-the-rates-of-pancreatitis-and-pancreatic-cancer-a-afa0ee3ea7.md",
+      "kind": "article",
+      "title": "Evaluating the Rates of Pancreatitis and Pancreatic Cancer Among",
+      "words": 9599,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12867866/": {
+      "file": "potential-application-of-mono-dual-and-triple-target-glp-1-r-ca00e56cff.md",
+      "kind": "article",
+      "title": "Potential application of mono-, dual-, and triple-target GLP-1 receptor agonists in improving the prognosis of patients with diabetic foot ulcers",
+      "words": 4978,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12701534/": {
+      "file": "medical-management-of-obesity-a-comprehensive-review-of-food-1f1e33cb2f.md",
+      "kind": "article",
+      "title": "Medical Management of Obesity: A Comprehensive Review of Food and Drug Administration (FDA)-Approved and Investigational Therapies",
+      "words": 3509,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12894140/": {
+      "file": "inotropic-effects-of-retatrutide-in-isolated-human-atrial-pr-398119209c.md",
+      "kind": "article",
+      "title": "Inotropic effects of retatrutide in isolated human atrial preparations",
+      "words": 7556,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13096749/": {
+      "file": "genetic-architecture-of-obesity-and-advances-in-precision-ph-e019be8c49.md",
+      "kind": "article",
+      "title": "Genetic architecture of obesity and advances in precision pharmacotherapy: a comprehensive review",
+      "words": 15077,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12476660/": {
+      "file": "efficacy-and-safety-of-anti-obesity-drugs-in-metabolic-dysfu-c94d74a986.md",
+      "kind": "article",
+      "title": "Efficacy and safety of anti-obesity drugs in metabolic dysfunction-associated steatotic liver disease: An updated review",
+      "words": 16125,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12972522/": {
+      "file": "factors-influencing-patient-preferences-for-obesity-pharmaco-856745086f.md",
+      "kind": "article",
+      "title": "Factors influencing patient preferences for obesity pharmacotherapy: The triangulation of semi-structured interviews, photovoice study and focus group discussions",
+      "words": 8988,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12409224/": {
+      "file": "association-between-patient-reported-eating-behaviours-and-w-dbadc1c2c7.md",
+      "kind": "article",
+      "title": "Association between patient\u2010reported eating behaviours and weight change: Secondary analyses of a randomized, double\u2010blind trial comparing retatrutide and placebo in people with obesity or overweight",
+      "words": 2951,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12872343/": {
+      "file": "lithium-toxicity-following-a-change-from-semaglutide-to-tirz-c87d93410d.md",
+      "kind": "article",
+      "title": "Lithium toxicity following a change from semaglutide to tirzepatide for weight loss management",
+      "words": 3671,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12409240/": {
+      "file": "decreases-in-circulating-998b75add0.md",
+      "kind": "article",
+      "title": "Decreases in circulating",
+      "words": 7548,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12678479/": {
+      "file": "contractile-effects-of-retatrutide-in-isolated-mouse-atrial--c31d6bb16b.md",
+      "kind": "article",
+      "title": "Contractile effects of retatrutide in isolated mouse atrial preparations",
+      "words": 8684,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13100445/": {
+      "file": "glp-1-therapies-and-hair-loss-a-systematic-review-of-current-72a7c43403.md",
+      "kind": "article",
+      "title": "GLP-1 therapies and hair loss: A systematic review of current evidence and implications for counseling",
+      "words": 7485,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13071187/": {
+      "file": "dose-escalation-regimens-for-incretin-mimetics-in-type-2-dia-c1bed14730.md",
+      "kind": "article",
+      "title": "Dose\u2010Escalation Regimens for Incretin Mimetics in Type 2 Diabetes Are Associated With Tolerance for Nausea and Vomiting",
+      "words": 8843,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13104288/": {
+      "file": "starvation-ketoacidosis-associated-with-tirzepatide-use-for--b3563d3295.md",
+      "kind": "article",
+      "title": "Starvation ketoacidosis associated with tirzepatide use for weight loss in a non-diabetic East Asian woman: a case report",
+      "words": 2694,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13012139/": {
+      "file": "gastrointestinal-adverse-effects-of-glp-1-and-dual-glp-1-gip-c073f5cf0c.md",
+      "kind": "article",
+      "title": "Gastrointestinal Adverse Effects of GLP-1 and Dual GLP-1/GIP Receptor Agonists: A Comprehensive Update in Diabetic and Obese Populations",
+      "words": 9474,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13052175/": {
+      "file": "targeting-multiple-gut-brain-pathways-in-obesity-rationale-f-5db6c6cadf.md",
+      "kind": "article",
+      "title": "Targeting Multiple Gut\u2010Brain Pathways in Obesity: Rationale for Combination Pharmacotherapy",
+      "words": 7571,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12912186/": {
+      "file": "revitalizing-gip-therapeutic-potential-in-metabolic-and-neur-7d1b9e0ce4.md",
+      "kind": "article",
+      "title": "Revitalizing GIP: Therapeutic Potential in Metabolic and Neurodegenerative Disorders",
+      "words": 9594,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13033170/": {
+      "file": "cardiorenal-outcomes-with-tirzepatide-compared-with-dulaglut-bb55f14935.md",
+      "kind": "article",
+      "title": "Cardiorenal Outcomes With Tirzepatide Compared With Dulaglutide in Patients With Diabetes and Cardiovascular Disease",
+      "words": 6620,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12851108/": {
+      "file": "a-case-of-euglycemic-diabetic-ketoacidosis-with-tirzepatide--abed671f77.md",
+      "kind": "article",
+      "title": "A Case of Euglycemic Diabetic Ketoacidosis With Tirzepatide Use and Severe Calorie Restriction",
+      "words": 4045,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12908611/": {
+      "file": "comparative-gynecological-safety-of-the-dual-gip-glp-1-recep-0f9abc8840.md",
+      "kind": "article",
+      "title": "Comparative Gynecological Safety of the Dual GIP/GLP-1 Receptor Agonist Tirzepatide vs. the GLP-1 Receptor Agonist Semaglutide: A Real-World Pharmacovigilance Analysis (2022\u20132025)",
+      "words": 2840,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12857648/": {
+      "file": "incretin-analogues-for-weight-reduction-in-non-diabetic-obes-c9bbdaea0c.md",
+      "kind": "article",
+      "title": "Incretin Analogues for Weight Reduction in Non-Diabetic Obese: A Review of Liraglutide, Semaglutide, and Tirzepatide Beyond Glycemic Control",
+      "words": 3594,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12851106/": {
+      "file": "correction-to-tirzepatide-induced-syndrome-of-inappropriate--9bfc18e741.md",
+      "kind": "article",
+      "title": "Correction to: \u201cTirzepatide-Induced Syndrome of Inappropriate Antidiuretic Hormone Secretion (SIADH) Presenting With Seizures\u201d",
+      "words": 557,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13021596/": {
+      "file": "safety-and-efficacy-of-tirzepatide-in-transplant-recipients--4a97d54507.md",
+      "kind": "article",
+      "title": "Safety and efficacy of tirzepatide in transplant recipients: a systematic review and meta-analysis",
+      "words": 10996,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12981728/": {
+      "file": "a-critical-analysis-of-the-clinical-use-of-incretin-based-th-3e9bb640cf.md",
+      "kind": "article",
+      "title": "A Critical Analysis of the Clinical Use of Incretin-Based Therapies: Efficacy and Adverse Events",
+      "words": 7826,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13076170/": {
+      "file": "efficacy-and-safety-of-novel-antidiabetic-drugs-in-patients--eed441f2b3.md",
+      "kind": "article",
+      "title": "Efficacy and safety of novel antidiabetic drugs in patients with type 2 diabetes and chronic kidney disease: a network meta-analysis",
+      "words": 9619,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13080269/": {
+      "file": "glp-1-receptor-agonists-and-blood-pressure-a-state-of-the-ar-baf91ab9c9.md",
+      "kind": "article",
+      "title": "GLP-1 Receptor Agonists and Blood Pressure: A State-of-the-Art Review of Mechanisms, Evidence, and Clinical Implications",
+      "words": 10761,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13064920/": {
+      "file": "glucagon-like-peptide-1-receptor-agonists-for-prevention-of--f991243b3a.md",
+      "kind": "article",
+      "title": "Glucagon-like peptide-1 receptor agonists for prevention of heart failure events in type 2 diabetes and/or obesity",
+      "words": 7287,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13018845/": {
+      "file": "the-ethics-of-ozempic-and-wegovy-6a0d5dd543.md",
+      "kind": "article",
+      "title": "The Ethics of Ozempic and Wegovy",
+      "words": 9924,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13087639/": {
+      "file": "evaluating-the-efficacy-safety-and-practical-considerations--b1138883d3.md",
+      "kind": "article",
+      "title": "Evaluating the Efficacy, Safety, and Practical Considerations of Semaglutide for Weight Loss in Non\u2010Diabetic Adults: A Narrative Review",
+      "words": 6363,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13032732/": {
+      "file": "a-comprehensive-review-on-the-cardioprotective-and-nephropro-5cc49adf67.md",
+      "kind": "article",
+      "title": "A Comprehensive Review on the Cardioprotective and Nephroprotective Effects of Semaglutide, and Its Therapeutic Efficacy and Mechanisms in Cardiorenal Syndrome",
+      "words": 11692,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12927803/": {
+      "file": "evaluating-semaglutide-s-protection-in-h-r-injured-ac16-card-fafddd95de.md",
+      "kind": "article",
+      "title": "Evaluating Semaglutide\u2019s Protection in H/R - Injured AC16 Cardiomyocytes: Oxidative Stress, Inflammation, Apoptosis, and Autophagy Insights",
+      "words": 5209,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13043148/": {
+      "file": "semaglutide-as-a-potential-tool-in-pre-lung-transplant-weigh-e6fd9fa085.md",
+      "kind": "article",
+      "title": "Semaglutide as a potential tool in pre\u2013lung transplant weight loss optimization",
+      "words": 3933,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13103031/": {
+      "file": "real-world-cohort-study-of-semaglutide-in-adults-with-type-2-0bbb8520d8.md",
+      "kind": "article",
+      "title": "Real-World Cohort Study of Semaglutide in Adults with Type\u00a02 Diabetes Using an Electronic Health Records Database in Tianjin, China",
+      "words": 8967,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13016833/": {
+      "file": "semaglutide-promotes-bone-marrow-derived-progenitor-cell-flu-1f2ecda129.md",
+      "kind": "article",
+      "title": "Semaglutide promotes bone marrow\u2013derived progenitor cell flux towards an anti-inflammatory and pro-regenerative profile in high-risk patients: the SEMA-VR CardioLink-15 trial",
+      "words": 10110,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13094292/": {
+      "file": "glp-1-receptor-agonists-in-stroke-prevention-a-narrative-rev-fc5a193201.md",
+      "kind": "article",
+      "title": "GLP-1 receptor agonists in stroke prevention: a narrative review on emerging therapeutic frontiers",
+      "words": 8269,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13100657/": {
+      "file": "unexplained-hypercapnia-with-normal-pulmonary-evaluation-in--1358c10889.md",
+      "kind": "article",
+      "title": "Unexplained hypercapnia with normal pulmonary evaluation in a patient receiving semaglutide: a diagnostic challenge",
+      "words": 3181,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12992155/": {
+      "file": "risk-stratification-using-coronary-artery-calcium-and-potent-0c9d5eedae.md",
+      "kind": "article",
+      "title": "Risk stratification using coronary artery calcium and potential benefit of semaglutide therapy: A cost\u2010effectiveness modelling study",
+      "words": 5647,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13010075/": {
+      "file": "ai-enabled-personalization-of-semaglutide-therapy-in-type-2--83f931c527.md",
+      "kind": "article",
+      "title": "AI-Enabled Personalization of Semaglutide Therapy in Type 2 Diabetes: Systematic Review With an Integration Framework",
+      "words": 11671,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13019341/": {
+      "file": "oral-semaglutide-and-change-in-cardiovascular-risk-factors-i-a146795775.md",
+      "kind": "article",
+      "title": "Oral Semaglutide and Change in Cardiovascular Risk Factors in High-Risk Type 2 Diabetes",
+      "words": 8127,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12865694/": {
+      "file": "oral-semaglutide-and-heart-failure-outcomes-in-persons-with--ddd5444785.md",
+      "kind": "article",
+      "title": "Oral Semaglutide and Heart Failure Outcomes in Persons With Type 2 Diabetes",
+      "words": 8749,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11632222/": {
+      "file": "growth-hormone-insulin-like-growth-factor-i-axis-in-health-a-973a4677e8.md",
+      "kind": "article",
+      "title": "Growth hormone/insulin-like growth factor I axis in health and disease states: an update on the role of intra-portal insulin",
+      "words": 14074,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12164294/": {
+      "file": "changes-after-leptin-administration-in-partial-lipodystrophy-f03e883d98.md",
+      "kind": "article",
+      "title": "Changes After Leptin Administration in Partial Lipodystrophy and Factors Associated With Hepatic and Metabolic Response",
+      "words": 14620,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9947601/": {
+      "file": "effect-of-tesamorelin-in-people-with-hiv-with-and-without-do-16d36bac23.md",
+      "kind": "article",
+      "title": "Effect of tesamorelin in people with HIV with and without dorsocervical fat: Post hoc analysis of phase III double-blind placebo-controlled trial",
+      "words": 4318,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13083347/": {
+      "file": "the-relationship-between-acromegaly-and-hepatic-steatosis-in-73e6c5551d.md",
+      "kind": "article",
+      "title": "The relationship between acromegaly and hepatic steatosis: insights from FibroScan imaging",
+      "words": 7325,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10740154/": {
+      "file": "big-peptide-drugs-in-a-small-molecule-world-5e75877fce.md",
+      "kind": "article",
+      "title": "Big peptide drugs in a small molecule world",
+      "words": 8820,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10911955/": {
+      "file": "adipose-tissue-dysfunction-and-energy-balance-paradigms-in-p-30e2d87c6f.md",
+      "kind": "article",
+      "title": "Adipose Tissue Dysfunction and Energy Balance Paradigms in People Living With HIV",
+      "words": 22374,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10968328/": {
+      "file": "exploring-fda-approved-frontiers-insights-into-natural-and-e-7bcbdd9d15.md",
+      "kind": "article",
+      "title": "Exploring FDA-Approved Frontiers: Insights into Natural and Engineered Peptide Analogues in the GLP-1, GIP, GHRH, CCK, ACTH, and \u03b1-MSH Realms",
+      "words": 14798,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12758496/": {
+      "file": "at-the-crossroads-of-health-and-disease-consequences-of-fat--c0315ace82.md",
+      "kind": "article",
+      "title": "At the Crossroads of Health and Disease: Consequences of Fat in the Liver",
+      "words": 17003,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12137518/": {
+      "file": "growth-hormone-releasing-hormone-receptor-ghrh-r-and-its-sig-74a3d6b036.md",
+      "kind": "article",
+      "title": "Growth hormone-releasing hormone receptor (GHRH-R) and its signaling",
+      "words": 9116,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12799441/": {
+      "file": "associations-between-dietary-carbohydrate-intakes-fatty-acid-532a947ab2.md",
+      "kind": "article",
+      "title": "Associations between Dietary Carbohydrate Intakes, Fatty Acid Oxidation Rates, and Sites of Ectopic Fat Deposition Over Two Years in Persons with Treated HIV",
+      "words": 7125,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10987053/": {
+      "file": "lipidization-as-a-tool-toward-peptide-therapeutics-6012c3dc6f.md",
+      "kind": "article",
+      "title": "Lipidization as a tool toward peptide therapeutics",
+      "words": 14153,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12598739/": {
+      "file": "growth-hormone-in-disease-and-treatment-review-90ab5772da.md",
+      "kind": "article",
+      "title": "Growth hormone in disease and treatment (Review)",
+      "words": 8494,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10901320/": {
+      "file": "dietary-regimens-appear-to-possess-significant-effects-on-th-19aadb976c.md",
+      "kind": "article",
+      "title": "Dietary regimens appear to possess significant effects on the development of combined antiretroviral therapy (cART)-associated metabolic syndrome",
+      "words": 22132,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12843355/": {
+      "file": "sarcopenia-as-a-multisystem-disorder-connections-with-neural-3427dedcf5.md",
+      "kind": "article",
+      "title": "Sarcopenia as a Multisystem Disorder\u2014Connections with Neural and Cardiovascular Systems\u2014A Related PRISMA Systematic Literature Review",
+      "words": 18013,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7776066/": {
+      "file": "935-effect-of-tesamorelin-in-people-with-hiv-with-and-withou-668399e4b8.md",
+      "kind": "article",
+      "title": "935. Effect of Tesamorelin in People with HIV with and without Dorsocervical Fat: Post Hoc Analysis of Phase III Double Blind Placebo Control Trial",
+      "words": 616,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8627937/": {
+      "file": "excisional-lipectomy-versus-liposuction-in-hiv-associated-li-6cbb5a9d6c.md",
+      "kind": "article",
+      "title": "Excisional lipectomy versus liposuction in HIV-associated lipodystrophy",
+      "words": 4087,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8879342/": {
+      "file": "metabolic-complications-of-chronic-hiv-infection-a-narrative-69508294cf.md",
+      "kind": "article",
+      "title": "Metabolic Complications of Chronic HIV Infection: A Narrative Review",
+      "words": 2915,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12916525/": {
+      "file": "therapeutic-effects-of-mots-c-in-the-valproic-acid-induced-a-2cd39872eb.md",
+      "kind": "article",
+      "title": "Therapeutic Effects of MOTS-c in the Valproic Acid\u2013Induced Autism Model in Rats: Role of Tetrahydrobiopterin and Brain-Derived Neurotrophic Factor",
+      "words": 15352,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12807633/": {
+      "file": "systemic-mots-c-levels-are-increased-in-adults-with-obesity--000d864efd.md",
+      "kind": "article",
+      "title": "Systemic MOTS-c levels are increased in adults with obesity in association with metabolic dysregulation and remain unchanged after weight loss",
+      "words": 6595,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12652385/": {
+      "file": "insights-into-the-biomarker-potential-of-humanin-and-mots-c--ad4ceb51e2.md",
+      "kind": "article",
+      "title": "Insights into the Biomarker Potential of Humanin and Mots-c Expression and Telomere Length in Alzheimer\u2019s Disease",
+      "words": 8912,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12826893/": {
+      "file": "circulating-mitochondrial-open-reading-frame-of-the-12s-ribo-e3248b3b48.md",
+      "kind": "article",
+      "title": "Circulating Mitochondrial Open Reading Frame of the 12S Ribosomal RNA Type\u2010c Is Higher in Acute Coronary Syndrome and Is a Prognostic Biomarker for Major Cardiac Events in Patients With Acute Myocardial Infarction: A Case\u2013Control Study",
+      "words": 10173,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12416303/": {
+      "file": "a-mighty-mitochondrial-microprotein-the-protective-role-of-m-d5df462f9f.md",
+      "kind": "article",
+      "title": "A Mighty Mitochondrial Microprotein: The Protective Role of MOTS-c in Acute Lung Injury",
+      "words": 1333,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12468430/": {
+      "file": "mots-c-levels-\u0131n-\u0131ndividuals-with-and-without-obesity-and-\u0131t-c3ce683ce8.md",
+      "kind": "article",
+      "title": "MOTS-C levels \u0131n \u0131ndividuals with and without obesity\nand \u0131ts association with \u0131nflammation, insulin resistance and\nendothelial dysfunction",
+      "words": 4532,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13085293/": {
+      "file": "effects-of-graviola-oil-extract-on-fattening-performance-and-ad1160e676.md",
+      "kind": "article",
+      "title": "Effects of graviola oil extract on fattening performance and circadian rhythms of adipokine, cardiac and mitochondrial function markers in lambs",
+      "words": 11968,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12651125/": {
+      "file": "mots-c-protects-against-placental-injury-via-nrf2-activation-4fdea87a28.md",
+      "kind": "article",
+      "title": "MOTS-c protects against placental injury via Nrf2 activation in hypoxia-induced intrauterine growth restriction mice",
+      "words": 11775,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12795920/": {
+      "file": "mitochondria-as-a-therapeutic-target-in-neurodegeneration-ca-021137724d.md",
+      "kind": "article",
+      "title": "Mitochondria as a therapeutic target in neurodegeneration caused by hypoxia and ischemia during the perinatal period",
+      "words": 18610,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12345487/": {
+      "file": "characterization-of-the-avian-mitochondrial-derived-peptide--cffcdadd9b.md",
+      "kind": "article",
+      "title": "Characterization of the Avian Mitochondrial-Derived Peptide MOTS-c and Its Potential Role as a Metabolic Regulator",
+      "words": 7589,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12257629/": {
+      "file": "mitochondria-derived-peptide-mots-c-restores-mitochondrial-r-246f5bb8f9.md",
+      "kind": "article",
+      "title": "Mitochondria-derived peptide MOTS-c restores mitochondrial respiration in type 2 diabetic heart",
+      "words": 9157,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13023665/": {
+      "file": "mitochondrial-impairment-in-unloaded-postural-muscle-mechani-a10ff99269.md",
+      "kind": "article",
+      "title": "Mitochondrial Impairment in Unloaded Postural Muscle: Mechanisms Driving Loss of Muscle Function and Mass",
+      "words": 18769,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12328530/": {
+      "file": "diagnostic-relevance-of-humanin-gas5-and-mir-21-mir-103-in-p-7493c5b0d7.md",
+      "kind": "article",
+      "title": "Diagnostic relevance of Humanin, GAS5 and miR-21/miR-103 in prostate disease risk stratification",
+      "words": 9694,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12411631/": {
+      "file": "mitochondrial-encoded-peptide-mots-c-prevents-pancreatic-isl-e412ca757d.md",
+      "kind": "article",
+      "title": "Mitochondrial-encoded peptide MOTS-c prevents pancreatic islet cell senescence to delay diabetes",
+      "words": 17844,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12733331/": {
+      "file": "microproteins-in-metabolic-biology-emerging-functions-and-po-c1e5eadde9.md",
+      "kind": "article",
+      "title": "Microproteins in Metabolic Biology: Emerging Functions and Potential Roles as Nutrient-Linked Biomarkers",
+      "words": 20807,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12144051/": {
+      "file": "mots-c-modulates-pancreatic-islet-function-in-rats-and-pigs--f4a5058ad0.md",
+      "kind": "article",
+      "title": "MOTS-c modulates pancreatic islet function in rats and pigs in vitro",
+      "words": 6983,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7370547/": {
+      "file": "the-role-of-melatonin-in-colorectal-cancer-treatment-a-compr-793903e3d9.md",
+      "kind": "article",
+      "title": "The role of melatonin in colorectal cancer treatment: a comprehensive review",
+      "words": 8120,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10962562/": {
+      "file": "biomedicines-in-longevity-and-aging-the-quest-to-resist-biol-a455523446.md",
+      "kind": "article",
+      "title": "Biomedicines in Longevity and Aging the Quest to Resist Biological Decline",
+      "words": 7342,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8619776/": {
+      "file": "peptide-regulation-of-gene-expression-a-systematic-review-5a7a4733c8.md",
+      "kind": "article",
+      "title": "Peptide Regulation of Gene Expression: A Systematic Review",
+      "words": 11669,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12940889/": {
+      "file": "systematic-examination-of-gene-expression-and-proteomic-evid-4d78cf26b5.md",
+      "kind": "article",
+      "title": "Systematic Examination of Gene Expression and Proteomic Evidence Across Tissues Supports the Role of Mitochondrial Dysregulation in ME/CFS",
+      "words": 9530,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7699871/": {
+      "file": "thymus-pineal-gland-axis-revisiting-its-role-in-human-life-a-0a71a452e1.md",
+      "kind": "article",
+      "title": "Thymus-Pineal Gland Axis: Revisiting Its Role in Human Life and Ageing",
+      "words": 23246,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5990390/": {
+      "file": "it-is-necessary-to-establish-an-international-agency-for-res-b6470b554a.md",
+      "kind": "article",
+      "title": "It is necessary to establish an International Agency for Research on Aging",
+      "words": 3153,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8050006/": {
+      "file": "the-melanocortin-pathway-and-energy-homeostasis-from-discove-ecf2694a76.md",
+      "kind": "article",
+      "title": "The melanocortin pathway and energy homeostasis: From discovery to obesity therapy",
+      "words": 18220,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8463644/": {
+      "file": "psychometric-validation-of-the-female-sexual-distress-scale--959ab7a155.md",
+      "kind": "article",
+      "title": "Psychometric validation of the Female Sexual Distress Scale-Desire/Arousal/Orgasm",
+      "words": 7428,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4979545/": {
+      "file": "advances-in-the-treatment-of-erectile-dysfunction-what-s-new-6c87aa9211.md",
+      "kind": "article",
+      "title": "Advances in the treatment of erectile dysfunction: what\u2019s new and upcoming?",
+      "words": 3824,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5422707/": {
+      "file": "research-in-pharmacotherapy-for-erectile-dysfunction-ebf3fbc1be.md",
+      "kind": "article",
+      "title": "Research in pharmacotherapy for erectile dysfunction",
+      "words": 6141,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10216368/": {
+      "file": "erectile-dysfunction-treatments-advances-and-new-therapeutic-29a524601e.md",
+      "kind": "article",
+      "title": "Erectile Dysfunction: Treatments, Advances and New Therapeutic Strategies",
+      "words": 24981,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7385936/": {
+      "file": "abstracts-from-the-2020-annual-meeting-of-the-society-of-gen-3607a81ad4.md",
+      "kind": "article",
+      "title": "Abstracts from the 2020 Annual Meeting of the Society of General Internal Medicine",
+      "words": 119,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12634512/": {
+      "file": "molecular-communication-from-bone-to-skeletal-muscle-an-over-6d2d335380.md",
+      "kind": "article",
+      "title": "Molecular communication from bone to skeletal muscle: an overview",
+      "words": 11030,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13105681/": {
+      "file": "the-interrelationship-between-prostate-cancer-and-osteoporos-f3f00f912f.md",
+      "kind": "article",
+      "title": "The interrelationship between prostate cancer and osteoporosis: new perspectives on shared molecular pathways and treatment strategies",
+      "words": 13430,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13100485/": {
+      "file": "m6a-demethylase-alkbh5-mediated-igfbp4-mrna-m6a-modification-567b314a35.md",
+      "kind": "article",
+      "title": "M6A demethylase ALKBH5 mediated Igfbp4 mRNA m6A modification drives fibroblast activation and pathological upper airway fibrosis",
+      "words": 9592,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7460885/": {
+      "file": "structural-complexity-and-plasticity-of-signaling-regulation-b80796ee58.md",
+      "kind": "article",
+      "title": "Structural Complexity and Plasticity of Signaling Regulation at the Melanocortin-4 Receptor",
+      "words": 16640,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12525403/": {
+      "file": "genetic-variability-in-child-growth-among-south-american-pop-e17f433100.md",
+      "kind": "article",
+      "title": "Genetic Variability in Child Growth Among South American Populations: A Perspective Integrating Population Genetics, Growth Standards, and Precision Growth Medicine",
+      "words": 15072,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12605575/": {
+      "file": "the-role-of-cancer-stem-cells-in-the-progression-of-colorect-6947e9ba56.md",
+      "kind": "article",
+      "title": "The role of cancer stem cells in the progression of colorectal cancer and the tumor microenvironment: new perspectives from single-cell RNA sequencing and spatial transcriptomics analyses",
+      "words": 9612,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7617298/": {
+      "file": "overexpression-of-028b6200ce.md",
+      "kind": "article",
+      "title": "Overexpression of",
+      "words": 19165,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12786644/": {
+      "file": "spectrum-of-osteoporosis-etiologies-with-associated-vertebra-5f1c43801b.md",
+      "kind": "article",
+      "title": "Spectrum of Osteoporosis Etiologies with Associated Vertebral Compression Fractures in Children: Analysis of 11 Cases",
+      "words": 8448,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13000202/": {
+      "file": "fast-swimming-biohybrid-ostrabot-with-self-trained-high-stre-51866d3590.md",
+      "kind": "article",
+      "title": "Fast-swimming biohybrid OstraBot with self-trained high-strength muscles",
+      "words": 10398,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10160534/": {
+      "file": "effect-of-insulin-like-growth-factor-system-on-luteinising-a-5d3e2886d4.md",
+      "kind": "article",
+      "title": "Effect of insulin-like growth factor system on luteinising angiogenesis",
+      "words": 9016,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13055200/": {
+      "file": "electroacupuncture-modulates-multiple-pathways-for-neuroprot-38678ff467.md",
+      "kind": "article",
+      "title": "Electroacupuncture Modulates Multiple Pathways for Neuroprotection and Neurorepair in Ischemic Stroke",
+      "words": 37080,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12196388/": {
+      "file": "crossing-the-blood-brain-barrier-innovations-in-receptor-and-670c491268.md",
+      "kind": "article",
+      "title": "Crossing the Blood\u2013Brain Barrier: Innovations in Receptor- and Transporter-Mediated Transcytosis Strategies",
+      "words": 17153,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12543544/": {
+      "file": "sun-740-hepatitis-c-associated-high-bone-mass-presenting-wit-bda335e033.md",
+      "kind": "article",
+      "title": "SUN-740 Hepatitis C associated High Bone Mass Presenting with Bone Pain, Edentulism, and Neuropathy: A Rare Case Report",
+      "words": 631,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12678456/": {
+      "file": "the-association-between-body-mass-index-and-total-lumbar-bon-f6f957bce3.md",
+      "kind": "article",
+      "title": "The association between body mass index and total lumbar bone mineral density in obese adults: the national health and nutrition examination survey (NHANES) 2011\u20132020",
+      "words": 5304,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12665535/": {
+      "file": "emerging-roles-of-traditional-chinese-medicine-in-the-treatm-8acf809681.md",
+      "kind": "article",
+      "title": "Emerging roles of traditional Chinese medicine in the treatment of diabetic gastroparesis",
+      "words": 15315,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12413497/": {
+      "file": "advances-in-lipid-based-nanomedicine-pathway-specific-sirna--57dee1b95f.md",
+      "kind": "article",
+      "title": "Advances in Lipid-Based Nanomedicine: Pathway Specific siRNA Therapy and Optimizing Delivery for Hepatocellular Carcinoma",
+      "words": 12080,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12388546/": {
+      "file": "the-promotion-of-cell-proliferation-by-food-derived-bioactiv-8a28dadeea.md",
+      "kind": "article",
+      "title": "The Promotion of Cell Proliferation by Food-Derived Bioactive Peptides: Sources and Mechanisms",
+      "words": 10982,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12692543/": {
+      "file": "development-of-norrin-based-protein-therapeutic-for-activati-3402f003f9.md",
+      "kind": "article",
+      "title": "Development of Norrin-Based Protein Therapeutic for Activation of Norrin-Wnt Signaling in Human Retinal Endothelial Cells",
+      "words": 8345,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12794102/": {
+      "file": "surgical-excision-of-cerebral-glioma-and-multimodal-treatmen-d871863ae1.md",
+      "kind": "article",
+      "title": "Surgical excision of cerebral glioma and multimodal treatment including Cerebrolysin: a case report",
+      "words": 2747,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12472081/": {
+      "file": "evaluating-the-effect-of-cerebrolysin-as-an-adjuvant-to-stan-7a4a5be7a5.md",
+      "kind": "article",
+      "title": "Evaluating the Effect of Cerebrolysin as an Adjuvant to Standard Therapy in Patients with Acute Ischemic Stroke: A Prospective Observational Study",
+      "words": 9178,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12865818/": {
+      "file": "cerebrolysin-hemorrhagic-transformation-and-anticoagulation--6440871330.md",
+      "kind": "article",
+      "title": "Cerebrolysin, hemorrhagic transformation, and anticoagulation timing after reperfusion therapy in stroke:",
+      "words": 13194,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12292664/": {
+      "file": "is-cerebrolysin-useful-in-psychiatry-disorders-ac714f59ca.md",
+      "kind": "article",
+      "title": "Is Cerebrolysin Useful in Psychiatry Disorders?",
+      "words": 4528,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12748144/": {
+      "file": "cerebrolysin-ameliorates-age-induced-dendritic-spine-degener-89c9bccc7f.md",
+      "kind": "article",
+      "title": "Cerebrolysin Ameliorates Age-Induced Dendritic Spine Degeneration and Memory Decline in C57BL6 Mice",
+      "words": 14545,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12465088/": {
+      "file": "safety-and-efficacy-of-cerebrolysin-for-neurorecovery-after--99495d5403.md",
+      "kind": "article",
+      "title": "Safety and Efficacy of Cerebrolysin for Neurorecovery After Acute Ischemic Stroke: A Systematic Review and Meta-Analysis of 14 Randomized Controlled Trials",
+      "words": 7109,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12589672/": {
+      "file": "c-regs2-a-multinational-high-quality-comparative-effectivene-8cfe3b99aa.md",
+      "kind": "article",
+      "title": "C-REGS2\u2014A multinational, high-quality comparative effectiveness study of Cerebrolysin in moderate acute ischemic stroke",
+      "words": 5822,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12821547/": {
+      "file": "pharmacological-management-of-mild-cognitive-impairment-from-4720899a72.md",
+      "kind": "article",
+      "title": "Pharmacological Management of Mild Cognitive Impairment: From Symptomatic Treatment to Disease Modification\u2014A Narrative Review",
+      "words": 12860,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12071296/": {
+      "file": "influence-of-exogenous-neuropeptides-on-the-astrocyte-respon-6571a914b3.md",
+      "kind": "article",
+      "title": "Influence of Exogenous Neuropeptides on the Astrocyte Response Under Conditions of Continuous and Cyclic Hypoxia and Red Blood Cell Lysate",
+      "words": 10541,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11932442/": {
+      "file": "speech-therapy-combined-with-cerebrolysin-in-enhancing-nonfl-6a215edfc0.md",
+      "kind": "article",
+      "title": "Speech Therapy Combined With Cerebrolysin in Enhancing Nonfluent Aphasia Recovery After Acute Ischemic Stroke: ESCAS Randomized Pilot Study",
+      "words": 8026,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12695505/": {
+      "file": "delta-power-surge-and-alpha-power-decline-in-traumatic-brain-68f320a495.md",
+      "kind": "article",
+      "title": "Delta power surge and alpha power decline in traumatic brain injury recovery: A quantitative EEG analysis of the CAPTAIN-rTMS trial",
+      "words": 8565,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12598679/": {
+      "file": "efficacy-of-cerebrolysin-treatment-as-an-add-on-therapy-to-m-a333470768.md",
+      "kind": "article",
+      "title": "Efficacy of Cerebrolysin Treatment as an Add-On Therapy to Mechanical Thrombectomy in Patients with Acute Ischemic Stroke Due to Large Vessel Occlusion in Anterior Circulation: Results of a 3-Month Follow-up of a Prospective, Open Label, Single-Center Study",
+      "words": 10962,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11868704/": {
+      "file": "cerebrolysin-as-an-adjuvant-therapy-after-mechanical-thrombe-42d3c2a9ac.md",
+      "kind": "article",
+      "title": "Cerebrolysin as an adjuvant therapy after mechanical thrombectomy in large vessel occlusion cardioembolic stroke: a propensity score matching analysis",
+      "words": 7978,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12083191/": {
+      "file": "effect-of-cerebrolysin-on-cognitive-function-and-delirium-in-3772a62319.md",
+      "kind": "article",
+      "title": "Effect of Cerebrolysin on Cognitive Function and Delirium in Coronary Artery Bypass Graft Patients",
+      "words": 7144,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11272398/": {
+      "file": "life-threatening-anaphylaxis-due-to-cerebrolysin-d0f54d0e59.md",
+      "kind": "article",
+      "title": "Life-Threatening Anaphylaxis due to Cerebrolysin\u00ae",
+      "words": 3623,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11860653/": {
+      "file": "complex-antidepressant-therapy-with-the-inclusion-of-various-eac3d813fe.md",
+      "kind": "article",
+      "title": "Complex antidepressant therapy with the inclusion of various neuroprotectors in inpatient gerontopsychiatric practice",
+      "words": 630,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11300962/": {
+      "file": "cerebrolysin-concentrate-therapeutic-potential-for-severe-or-6abf9563ef.md",
+      "kind": "article",
+      "title": "Cerebrolysin Concentrate: Therapeutic Potential for Severe Oral Apraxia After Stroke: A Case Report",
+      "words": 4462,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12543519/": {
+      "file": "circulating-muscle-markers-for-sarcopenia-in-peritoneal-dial-b4c8fc6b37.md",
+      "kind": "article",
+      "title": "Circulating Muscle Markers for Sarcopenia in Peritoneal Dialysis",
+      "words": 9893,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13076028/": {
+      "file": "intramuscular-fat-content-and-the-risk-of-peritonitis-in-per-de3a6c0543.md",
+      "kind": "article",
+      "title": "Intramuscular fat content and the risk of peritonitis in peritoneal dialysis patients",
+      "words": 7122,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13045380/": {
+      "file": "fibro-adipogenic-progenitors-regulate-orofacial-neuromuscula-eb3a52b008.md",
+      "kind": "article",
+      "title": "Fibro\u2010Adipogenic Progenitors Regulate Orofacial Neuromuscular Junction Regeneration via Myostatin",
+      "words": 8813,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12855297/": {
+      "file": "effect-of-exercise-on-hormonal-responses-in-adolescents-with-3173715a7e.md",
+      "kind": "article",
+      "title": "Effect of exercise on hormonal responses in adolescents with obesity and leptin resistance: a randomized trial",
+      "words": 9085,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12737248/": {
+      "file": "exercise-induced-biomarker-modulation-in-sarcopenia-from-inf-6c12347ee6.md",
+      "kind": "article",
+      "title": "Exercise-Induced Biomarker Modulation in Sarcopenia: From Inflamm-Aging to Muscle Regeneration",
+      "words": 10997,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12546142/": {
+      "file": "the-role-and-mechanisms-of-myokines-in-sarcopenia-new-interv-44d3c930e2.md",
+      "kind": "article",
+      "title": "The role and mechanisms of myokines in sarcopenia: new intervention strategies for the challenges of aging",
+      "words": 14368,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12641824/": {
+      "file": "dystrophin-restorative-and-compensatory-gene-addition-therap-998ba96086.md",
+      "kind": "article",
+      "title": "Dystrophin Restorative and Compensatory Gene Addition Therapies for Duchenne Muscular Dystrophy: Could CRISPRa Provide a Realistic Alternative?",
+      "words": 19904,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12718992/": {
+      "file": "myostatin-function-during-3612b01f4a.md",
+      "kind": "article",
+      "title": "Myostatin Function during",
+      "words": 4347,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12864835/": {
+      "file": "muscle-mass-as-a-resilence-factor-for-endothelial-health-in--e48985c03e.md",
+      "kind": "article",
+      "title": "Muscle mass as a resilence factor for endothelial health in obesity",
+      "words": 9778,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12909218/": {
+      "file": "higher-serum-follistatin-levels-are-associated-with-increase-3b417c1702.md",
+      "kind": "article",
+      "title": "Higher serum follistatin levels are associated with increased vascular calcification in haemodialysis patients",
+      "words": 6286,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12719006/": {
+      "file": "emerging-role-of-myostatin-inhibitors-in-the-management-of-g-df7331af69.md",
+      "kind": "article",
+      "title": "Emerging Role of Myostatin Inhibitors in the Management of Glucagon-Like Peptide-1-Associated Sarcopenia and Metabolic Disorders",
+      "words": 7296,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12429647/": {
+      "file": "musculoskeletal-complications-in-covid-19-exploring-the-role-4da1a8da1f.md",
+      "kind": "article",
+      "title": "Musculoskeletal Complications in COVID-19: Exploring the Role of Key Biomarkers",
+      "words": 13173,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12752164/": {
+      "file": "deletion-of-fibro-adipogenic-progenitors-specific-follistati-2581037737.md",
+      "kind": "article",
+      "title": "Deletion of fibro-adipogenic progenitors-specific follistatin impairs muscle function and accelerates skeletal muscle atrophy in obese mice",
+      "words": 12097,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12613835/": {
+      "file": "role-of-peptides-in-skeletal-muscle-wasting-a-scoping-review-a2d6d87f66.md",
+      "kind": "article",
+      "title": "Role of Peptides in Skeletal Muscle Wasting: A Scoping Review",
+      "words": 14925,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13073154/": {
+      "file": "unravelling-sarcopenia-in-chronic-kidney-disease-from-pathog-7d44cef4ce.md",
+      "kind": "article",
+      "title": "Unravelling Sarcopenia in Chronic Kidney Disease: From Pathogenesis to Diagnosis and Therapeutics",
+      "words": 10121,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12428594/": {
+      "file": "relationship-between-high-serum-levels-of-follistatin-with-i-6b6c847839.md",
+      "kind": "article",
+      "title": "Relationship Between High Serum Levels of Follistatin with Impaired Physical Function, and Severe Disease Activity in Rheumatoid Arthritis",
+      "words": 9700,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12192919/": {
+      "file": "myostatin-modulation-in-spinal-muscular-atrophy-a-systematic-cf2a249a02.md",
+      "kind": "article",
+      "title": "Myostatin Modulation in Spinal Muscular Atrophy: A Systematic Review of Preclinical and Clinical Evidence",
+      "words": 6996,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12272339/": {
+      "file": "peptide-based-therapeutic-and-delivery-strategies-for-inflam-2b47f60e96.md",
+      "kind": "article",
+      "title": "Peptide-based therapeutic and delivery strategies for inflammatory bowel disease: challenges and future directions",
+      "words": 14208,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12957217/": {
+      "file": "structural-and-temporal-dynamics-of-nano-based-therapies-in--37e8dfa1bc.md",
+      "kind": "article",
+      "title": "Structural and temporal dynamics of nano-based therapies in ulcerative colitis: history, hotspots, and emerging trends",
+      "words": 10800,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10582360/": {
+      "file": "a-nanoparticle-platform-for-combined-mucosal-healing-and-imm-998c309692.md",
+      "kind": "article",
+      "title": "A nanoparticle platform for combined mucosal healing and immunomodulation in inflammatory bowel disease treatment",
+      "words": 11712,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11941962/": {
+      "file": "recent-advances-in-polysaccharide-based-hydrogels-for-tumor--c54fe3ce70.md",
+      "kind": "article",
+      "title": "Recent Advances in Polysaccharide-Based Hydrogels for Tumor Immunotherapy",
+      "words": 10618,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10378568/": {
+      "file": "the-melanocortin-system-in-inflammatory-bowel-diseases-insig-55cb6887da.md",
+      "kind": "article",
+      "title": "The Melanocortin System in Inflammatory Bowel Diseases: Insights into Its Mechanisms and Therapeutic Potentials",
+      "words": 9794,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11413617/": {
+      "file": "gut-hormone-stimulation-as-a-therapeutic-approach-in-oral-pe-a45d4061a0.md",
+      "kind": "article",
+      "title": "Gut hormone stimulation as a therapeutic approach in oral peptide delivery",
+      "words": 5978,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12045021/": {
+      "file": "stimuli-responsive-nanomedicines-for-the-treatment-of-non-ca-ae57ec0051.md",
+      "kind": "article",
+      "title": "Stimuli-Responsive\nNanomedicines for the Treatment\nof Non-cancer Related Inflammatory Diseases",
+      "words": 21519,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11485891/": {
+      "file": "recognizing-the-biological-barriers-and-pathophysiological-c-f042c32378.md",
+      "kind": "article",
+      "title": "Recognizing the biological barriers and pathophysiological characteristics of the gastrointestinal tract for the design and application of nanotherapeutics",
+      "words": 15624,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11681319/": {
+      "file": "lyssyl-loaded-ph-switchable-self-assembling-peptide-hydrogel-39d5938eca.md",
+      "kind": "article",
+      "title": "LysSYL\u2010Loaded pH\u2010Switchable Self\u2010Assembling Peptide Hydrogels Promote Methicillin\u2010Resistant",
+      "words": 11891,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11176790/": {
+      "file": "unleashing-the-potential-of-oral-deliverable-nanomedicine-in-86187c7eac.md",
+      "kind": "article",
+      "title": "Unleashing the Potential of Oral Deliverable Nanomedicine in the Treatment of Inflammatory Bowel Disease",
+      "words": 7346,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12952585/": {
+      "file": "detecting-the-body-s-reproductive-hormonal-brake-against-tis-8f6056f46b.md",
+      "kind": "article",
+      "title": "Detecting the body\u2019s reproductive hormonal brake against tissue overgrowth: Micrin/SgII-70",
+      "words": 24423,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12850241/": {
+      "file": "hydrogel-microspheres-for-biomedical-applications-8cb179d47c.md",
+      "kind": "article",
+      "title": "Hydrogel Microspheres for Biomedical Applications",
+      "words": 23364,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11984237/": {
+      "file": "fluorescent-probes-in-autoimmune-disease-research-current-st-81698a97f0.md",
+      "kind": "article",
+      "title": "Fluorescent probes in autoimmune disease research: current status and future prospects",
+      "words": 29802,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11619216/": {
+      "file": "bioactive-peptides-and-proteins-for-tissue-repair-microenvir-1e7a83624d.md",
+      "kind": "article",
+      "title": "Bioactive peptides and proteins for tissue repair: microenvironment modulation, rational delivery, and clinical potential",
+      "words": 46065,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11750799/": {
+      "file": "analysis-of-nanomedicine-applications-for-inflammatory-bowel-b2419d943f.md",
+      "kind": "article",
+      "title": "Analysis of nanomedicine applications for inflammatory bowel disease: structural and temporal dynamics, research hotspots, and emerging trends",
+      "words": 13443,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12323423/": {
+      "file": "comprehensive-analysis-of-human-keratinocyte-interactions-wi-6ca1f4a027.md",
+      "kind": "article",
+      "title": "Comprehensive analysis of human keratinocyte interactions with",
+      "words": 11221,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8209478/": {
+      "file": "oral-delivery-of-biologics-in-inflammatory-bowel-disease-tre-70f19ec816.md",
+      "kind": "article",
+      "title": "Oral Delivery of Biologics in Inflammatory Bowel Disease Treatment",
+      "words": 14689,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12635226/": {
+      "file": "mrap-mediated-adipocyte-differentiation-by-thymic-mesenchyma-1d2d7785f3.md",
+      "kind": "article",
+      "title": "MRAP mediated adipocyte differentiation by thymic mesenchymal stromal cells contributes to thymic involution",
+      "words": 13521,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12521540/": {
+      "file": "thymosin-\u03b11-alleviates-pulpitis-by-inhibiting-ferroptosis-of-2e28f733e5.md",
+      "kind": "article",
+      "title": "Thymosin \u03b11 alleviates pulpitis by inhibiting ferroptosis of dental pulp cells",
+      "words": 10450,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12208829/": {
+      "file": "thymosin-alpha-1-alleviates-inflammation-and-prevents-infect-8f83307d61.md",
+      "kind": "article",
+      "title": "Thymosin alpha 1 alleviates inflammation and prevents infection in patients with severe acute pancreatitis through immune regulation: a systematic review and meta-analysis",
+      "words": 9142,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12640775/": {
+      "file": "thymosin-\u03b11-elevates-lymphocyte-counts-and-improves-immunora-f587933f74.md",
+      "kind": "article",
+      "title": "Thymosin \u03b11 Elevates Lymphocyte Counts and Improves Immunoradiotherapy Outcomes in Patients with Advanced Cancer",
+      "words": 6185,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12481784/": {
+      "file": "effectiveness-and-safety-of-thymopentin-for-infection-prophy-f14c12fd67.md",
+      "kind": "article",
+      "title": "Effectiveness and safety of thymopentin for infection prophylaxis in peritoneal dialysis patients: a retrospective study",
+      "words": 4936,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12015295/": {
+      "file": "the-efficacy-and-safety-of-thymosin-alpha-1-combined-with-le-d615ac8c05.md",
+      "kind": "article",
+      "title": "The efficacy and safety of thymosin alpha-1 combined with lenvatinib plus sintilimab in unresectable hepatocellular carcinoma: a retrospective study",
+      "words": 6225,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12235015/": {
+      "file": "association-between-thymosin-\u03b24-and-coronary-arterial-lesion-d5b54ba1af.md",
+      "kind": "article",
+      "title": "Association Between Thymosin \u03b24 and\u00a0Coronary Arterial Lesions in Children with Kawasaki Disease",
+      "words": 6146,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13044498/": {
+      "file": "mechanistic-insights-into-the-roles-of-astragalosides-and-8a10d66bd1.md",
+      "kind": "article",
+      "title": "Mechanistic insights into the roles of astragalosides and",
+      "words": 8753,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12640218/": {
+      "file": "multiomics-comparison-of-proline-rich-peptide-enhanced-hyalu-9dfc82b3af.md",
+      "kind": "article",
+      "title": "Multiomics Comparison of Proline\u2010Rich Peptide\u2010Enhanced Hyaluronic Acid Gels Versus Conventional Regenerative Materials: An Early Wound\u2010Healing Model",
+      "words": 13086,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12433645/": {
+      "file": "the-immunomodulatory-activity-of-thymosin-alpha-1-on-tumor-c-90c613f498.md",
+      "kind": "article",
+      "title": "The Immunomodulatory Activity of Thymosin Alpha 1 on Tumor Cell Lines and Distinct Immune Cell Subsets",
+      "words": 10448,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12184707/": {
+      "file": "acupoint-injection-combined-with-bcg-psn-and-thymosin-enteri-3e54b0589b.md",
+      "kind": "article",
+      "title": "Acupoint Injection Combined with BCG-PSN and Thymosin Enteric-Coated Tablets Improve China Han Psoriasis Vulgaris by Regulating T Cell Subsets",
+      "words": 5561,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11898352/": {
+      "file": "every-cloud-has-a-silver-lining-deepseek-s-light-through-acu-16e5ae6a9d.md",
+      "kind": "article",
+      "title": "Every cloud has a silver lining: DeepSeek\u2019s light through acute respiratory distress syndrome shadows",
+      "words": 3266,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12636994/": {
+      "file": "engineered-tandem-thymosin-peptide-promotes-corneal-wound-he-edd560d8e4.md",
+      "kind": "article",
+      "title": "Engineered Tandem Thymosin Peptide Promotes Corneal Wound Healing",
+      "words": 10423,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13043362/": {
+      "file": "case-report-and-literature-review-immune-checkpoint-inhibito-eb85eedf99.md",
+      "kind": "article",
+      "title": "Case Report and literature review: immune checkpoint inhibitor-associated myasthenia gravis and myocarditis",
+      "words": 9284,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12619471/": {
+      "file": "bm-msc-derived-migrasomes-reverse-stroke-induced-thymic-atro-4e07630d94.md",
+      "kind": "article",
+      "title": "BM-MSC-derived migrasomes reverse stroke-induced thymic atrophy and immunosuppression via Pin1 delivery to thymic epithelial cells",
+      "words": 15840,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12942927/": {
+      "file": "bench-to-bedside-insights-into-the-challenges-of-immunosuppr-0e8b62937c.md",
+      "kind": "article",
+      "title": "Bench-to-Bedside Insights into the Challenges of Immunosuppression in Sepsis",
+      "words": 14902,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12881234/": {
+      "file": "zerumbone-mediated-cd1d-inhibition-suppresses-epithelial-to--3e924aaebd.md",
+      "kind": "article",
+      "title": "Zerumbone mediated CD1d inhibition suppresses epithelial to mesenchymal transition in triple negative breast cancer",
+      "words": 9156,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13023987/": {
+      "file": "oxidative-stress-in-diabetic-cardiomyopathy-molecular-mechan-4999d6302a.md",
+      "kind": "article",
+      "title": "Oxidative Stress in Diabetic Cardiomyopathy: Molecular Mechanisms and Emerging Therapeutic Targets",
+      "words": 14738,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12837595/": {
+      "file": "natural-vitamins-and-novel-synthetic-antioxidants-targeting--6862dabe52.md",
+      "kind": "article",
+      "title": "Natural Vitamins and Novel Synthetic Antioxidants Targeting Mitochondria in Cognitive Health: A Scoping Review of In Vivo Evidence",
+      "words": 11007,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12799515/": {
+      "file": "targeting-ant1-to-regulate-pink1-parkin-mediated-mitophagy-i-a03a334919.md",
+      "kind": "article",
+      "title": "Targeting ANT1 to regulate PINK1/Parkin-mediated mitophagy is an effective treatment of trauma-induced tendon heterotopic ossification",
+      "words": 13535,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12710611/": {
+      "file": "mitochondrial-dysfunction-reactive-oxygen-species-and-diabet-71ce6d7e42.md",
+      "kind": "article",
+      "title": "Mitochondrial dysfunction, reactive oxygen species, and diabetes mellitus\u2014A triangular relationship: A review",
+      "words": 8870,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12946333/": {
+      "file": "repurposing-imeglimin-for-chemotherapy-induced-cognitive-imp-5db86b8096.md",
+      "kind": "article",
+      "title": "Repurposing Imeglimin for Chemotherapy-Induced Cognitive Impairment: Targeting Mitochondrial Dysfunction and Neuroinflammation",
+      "words": 18200,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13070836/": {
+      "file": "mitochondrial-dysfunction-in-immune-cells-during-the-periope-58931b132b.md",
+      "kind": "article",
+      "title": "Mitochondrial dysfunction in immune cells during the perioperative period: mechanisms, emerging therapeutic strategies, and implications for multi-organ protection",
+      "words": 29927,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12729673/": {
+      "file": "reprogramming-the-mitochondrion-in-atherosclerosis-targets-f-0ad995faf3.md",
+      "kind": "article",
+      "title": "Reprogramming the Mitochondrion in Atherosclerosis: Targets for Vascular Protection",
+      "words": 13195,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13059366/": {
+      "file": "cyclic-tensile-loading-regulates-nucleus-pulposus-cell-autop-8684fb1153.md",
+      "kind": "article",
+      "title": "Cyclic tensile loading regulates nucleus pulposus cell autophagy through mitochondrial dynamics: molecular mechanisms and implications",
+      "words": 13330,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12814324/": {
+      "file": "targeting-mitochondrial-oxidative-stress-a-novel-therapeutic-188668b883.md",
+      "kind": "article",
+      "title": "Targeting mitochondrial oxidative stress: A novel therapeutic strategy for degenerative joint diseases (Review)",
+      "words": 9223,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12886081/": {
+      "file": "mitochondria-targeted-delivery-strategies-for-age-related-di-0bc00a5be8.md",
+      "kind": "article",
+      "title": "Mitochondria-targeted delivery strategies for age-related diseases",
+      "words": 13147,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12835629/": {
+      "file": "cardiovascular-dysfunction-in-polycystic-ovary-syndrome-mito-d8a0466833.md",
+      "kind": "article",
+      "title": "Cardiovascular Dysfunction in Polycystic Ovary Syndrome: Mitochondrial and Inflammatory Mechanisms",
+      "words": 14114,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12985761/": {
+      "file": "mitochondrial-dynamics-in-diabetic-kidney-disease-underlying-51a96c82d8.md",
+      "kind": "article",
+      "title": "Mitochondrial Dynamics in Diabetic Kidney Disease: Underlying Mechanisms and Novel Therapeutics",
+      "words": 12663,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12895878/": {
+      "file": "mitochondrial-dysfunction-and-applications-of-mitochondrial--e5d63d398b.md",
+      "kind": "article",
+      "title": "Mitochondrial dysfunction and applications of mitochondrial-targeted delivery systems in atherosclerosis",
+      "words": 9456,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC13089171/": {
+      "file": "mitochondrial-dynamics-and-their-role-in-the-pathogenesis-of-8f8df5d715.md",
+      "kind": "article",
+      "title": "Mitochondrial dynamics and their role in the pathogenesis of age-related macular degeneration: A comprehensive review",
+      "words": 11485,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12811007/": {
+      "file": "narrative-review-of-mitochondrial-dysfunction-in-aging-relat-17720e9aca.md",
+      "kind": "article",
+      "title": "Narrative review of mitochondrial dysfunction in aging-related salt-sensitive hypertension: outcomes, mechanisms, and therapeutic implications",
+      "words": 10577,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12979182/": {
+      "file": "metabolic-dysfunction-and-mitochondrial-failure-in-alzheimer-83175be6dd.md",
+      "kind": "article",
+      "title": "Metabolic dysfunction and mitochondrial failure in Alzheimer's disease: integrating pathophysiology, clinical evidence and emerging interventions",
+      "words": 25300,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11799937/": {
+      "file": "expanded-access-use-of-elamipretide-in-a-newborn-with-barth--12baf93e1e.md",
+      "kind": "article",
+      "title": "Expanded-access use of elamipretide in a newborn with Barth syndrome: a case report",
+      "words": 2655,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12512172/": {
+      "file": "research-progress-on-the-correlation-between-biological-rhyt-db429ef763.md",
+      "kind": "article",
+      "title": "Research progress on the correlation between biological rhythms and the blood-brain barrier after ischemic stroke",
+      "words": 10377,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8069497/": {
+      "file": "dsip-like-knd-peptide-reduces-brain-infarction-in-c57bl-6-an-7db6dbf4d4.md",
+      "kind": "article",
+      "title": "DSIP-Like KND Peptide Reduces Brain Infarction in C57Bl/6 and Reduces Myocardial Infarction in SD Rats When Administered during Reperfusion",
+      "words": 7585,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11143018/": {
+      "file": "insomnische-symptome-und-suizidalit\u00e4t-zusammenh\u00e4nge-und-mana-1073495e91.md",
+      "kind": "article",
+      "title": "Insomnische Symptome und Suizidalit\u00e4t\u00a0\u2013 Zusammenh\u00e4nge und Management",
+      "words": 5500,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10161643/": {
+      "file": "probing-pathways-by-which-rhynchophylline-modifies-sleep-usi-3dcea72efa.md",
+      "kind": "article",
+      "title": "Probing pathways by which rhynchophylline modifies sleep using spatial transcriptomics",
+      "words": 12575,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9835375/": {
+      "file": "circadian-rhythms-in-the-blood-brain-barrier-impact-on-neuro-e09810b272.md",
+      "kind": "article",
+      "title": "Circadian rhythms in the blood\u2013brain barrier: impact on neurological disorders and stress responses",
+      "words": 14200,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8615594/": {
+      "file": "neuropeptides-involved-in-facial-nerve-regeneration-da9527677c.md",
+      "kind": "article",
+      "title": "Neuropeptides Involved in Facial Nerve Regeneration",
+      "words": 7532,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9687921/": {
+      "file": "rodent-models-of-audiogenic-epilepsy-genetic-aspects-advanta-aaa3b6be95.md",
+      "kind": "article",
+      "title": "Rodent Models of Audiogenic Epilepsy: Genetic Aspects, Advantages, Current Problems and Perspectives",
+      "words": 23447,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7468880/": {
+      "file": "circadian-variation-in-human-milk-composition-a-systematic-r-f4434ae3cd.md",
+      "kind": "article",
+      "title": "Circadian Variation in Human Milk Composition, a Systematic Review",
+      "words": 9208,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9580518/": {
+      "file": "development-of-cu-b21d402fa9.md",
+      "kind": "article",
+      "title": "Development of Cu(",
+      "words": 9407,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8222607/": {
+      "file": "disruptions-of-circadian-rhythms-and-thrombolytic-therapy-du-89c0b09651.md",
+      "kind": "article",
+      "title": "Disruptions of Circadian Rhythms and Thrombolytic Therapy During Ischemic Stroke Intervention",
+      "words": 14681,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9147080/": {
+      "file": "nutrients-and-the-circadian-clock-a-partnership-controlling--f91c885c80.md",
+      "kind": "article",
+      "title": "Nutrients and the Circadian Clock: A Partnership Controlling Adipose Tissue Function and Health",
+      "words": 11382,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5072831/": {
+      "file": "novel-nuclear-factor-kappab-targeting-peptide-suppresses-\u03b2-a-f1bbc4ee56.md",
+      "kind": "article",
+      "title": "Novel Nuclear Factor-KappaB Targeting Peptide Suppresses \u03b2-Amyloid Induced Inflammatory and Apoptotic Responses in Neuronal Cells",
+      "words": 10056,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6453885/": {
+      "file": "brain-transportable-dipeptides-across-the-blood-brain-barrie-5e25b45b8d.md",
+      "kind": "article",
+      "title": "Brain-transportable dipeptides across the blood-brain barrier in mice",
+      "words": 7076,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7091567/": {
+      "file": "physicians-poster-sessions-385a43424e.md",
+      "kind": "article",
+      "title": "Physicians Poster Sessions",
+      "words": 122,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4843170/": {
+      "file": "is-there-progress-an-overview-of-selecting-biomarker-candida-14747c2668.md",
+      "kind": "article",
+      "title": "Is there Progress? An Overview of Selecting Biomarker Candidates for Major Depressive Disorder",
+      "words": 14503,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    },
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5076442/": {
+      "file": "polyphenolic-drug-composition-based-on-benzenepolycarboxylic-6bfeca36a2.md",
+      "kind": "article",
+      "title": "Polyphenolic drug composition based on benzenepolycarboxylic acids (BP-C3) increases life span and inhibits spontaneous tumorigenesis in female SHR mice",
+      "words": 5434,
+      "ingested": "2026-05-04T03:16:48+00:00"
+    }
+  },
+  "last_run": "2026-05-04T03:16:48+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "topic": "mentor-rhonda-patrick",
+  "created": "2026-05-06T00:55:43.205319+00:00",
+  "docs": {
+    "https://www.foundmyfitness.com/episodes": {
+      "file": "foundmyfitness-episodes-bd74279e66.md",
+      "kind": "article",
+      "title": "FoundMyFitness Episodes",
+      "words": 295,
+      "ingested": "2026-05-06T00:55:44+00:00"
+    },
+    "https://www.foundmyfitness.com/topics": {
+      "file": "get-the-cognitive-enhancement-blueprint-c06b9ed493.md",
+      "kind": "article",
+      "title": "Get the Cognitive Enhancement Blueprint",
+      "words": 2940,
+      "ingested": "2026-05-06T00:55:44+00:00"
+    }
+  },
+  "last_run": "2026-05-06T00:55:44+00:00"
+}

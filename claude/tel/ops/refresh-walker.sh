@@ -23,7 +23,7 @@ LOG="${TEL_REFRESH_LOG:-$HOME/Library/Logs/tel-refresh.log}"
 mkdir -p "$CACHE_DIR" "$(dirname "$LOG")"
 
 ts() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
-log() { echo "[$(ts)] $*" >> "$LOG"; }
+log() { echo "[$(ts)] $*" >>"$LOG"; }
 
 if [ ! -f "$CONFIG" ]; then
   log "skip: no config at $CONFIG (copy refresh.yaml.example to opt in)"
@@ -40,7 +40,7 @@ fi
 #     action: search_threads
 #     args: '{"q": "is:unread", "maxResults": 10}'
 # Lines starting with '#' are comments; blank lines ignored.
-python3 - "$CONFIG" <<'PY' > "$CACHE_DIR/.entries.tmp"
+python3 - "$CONFIG" <<'PY' >"$CACHE_DIR/.entries.tmp"
 import sys, yaml, json
 try:
     with open(sys.argv[1]) as f:

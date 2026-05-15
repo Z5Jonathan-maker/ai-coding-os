@@ -1,7 +1,7 @@
 # Jay Campbell (TRT/Peptide Author)
 
-- **Videos in brain:** 21
-- **Word count:** 105,651
+- **Videos in brain:** 214
+- **Word count:** 2,312,922
 - **Channels:** youtube:@jaycampbell
 - **Credibility:** Author of 'TRT MANual' + 4 peptide books; 20+ years self-experimentation
 - **Tone:** Strong opinions, contrarian to mainstream pop-medicine, sales-aware
@@ -17,16 +17,16 @@
 TRT decision-making; peptide stack longevity vs performance trade-offs; fact-checking mainstream peptide claims.
 
 ## Top compounds covered (by video count)
-- **GH (HGH)** — 9 videos
-- **Estrogen mgmt** — 6 videos
-- **BPC-157** — 6 videos
-- **TB-500** — 6 videos
-- **Ipamorelin** — 4 videos
-- **Melanotan** — 3 videos
-- **TRT / Testosterone** — 3 videos
-- **Tesamorelin** — 2 videos
-- **IGF-1 LR3** — 1 videos
-- **CJC-1295** — 1 videos
+- **TRT / Testosterone** — 126 videos
+- **Estrogen mgmt** — 106 videos
+- **GH (HGH)** — 94 videos
+- **Ipamorelin** — 57 videos
+- **BPC-157** — 40 videos
+- **TB-500** — 39 videos
+- **Retatrutide** — 38 videos
+- **CJC-1295** — 23 videos
+- **GHK-Cu** — 18 videos
+- **Melanotan** — 16 videos
 
 ## Recall pattern
 ```

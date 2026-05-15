@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: openai <command> [args]
+
+Local OpenAI shim for this machine.
+
+Commands:
+  image [args...]        Run the OpenAI image client (same surface as cc-image)
+  ping                   Probe OpenAI image API health
+  ask <prompt>           Route a coding/general ask through the OpenAI/Codex tier
+  help                   Show this help
+
+Examples:
+  openai ping
+  openai ask "Refactor this function"
+  openai image -p product_shot -n 4 "A cobalt supplement bottle"
+EOF
+}
+
+cmd="${1:-help}"
+case "$cmd" in
+  image)
+    shift
+    exec /Users/leonardofibonacci/dotfiles/bin/cc-image "$@"
+    ;;
+  ping)
+    exec node -e "require('/Users/leonardofibonacci/Claude Code/lib/load-env.cjs').loadEnv(); require('/Users/leonardofibonacci/Claude Code/lib/openai-image-client.cjs').probeHealth().then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message); process.exit(1);})"
+    ;;
+  ask)
+    shift
+    [ $# -gt 0 ] || {
+      echo 'openai ask: prompt required' >&2
+      exit 2
+    }
+    exec /Users/leonardofibonacci/dotfiles/bin/cc-ask --purpose implementation --flag codex "$*"
+    ;;
+  help | -h | --help | "")
+    usage
+    ;;
+  *)
+    echo "openai: unknown command '$cmd'" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

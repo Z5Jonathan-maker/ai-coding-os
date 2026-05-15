@@ -1,0 +1,105 @@
+{
+  "topic": "karpathy",
+  "created": "2026-05-04T01:25:24.119868+00:00",
+  "docs": {
+    "https://karpathy.github.io/2014/07/03/feature-learning-escapades/": {
+      "file": "feature-learning-escapades-ebf8975e68.md",
+      "kind": "article",
+      "title": "Feature Learning Escapades",
+      "words": 2491,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.github.io/2019/04/25/recipe/": {
+      "file": "a-recipe-for-training-neural-networks-49f22e39b2.md",
+      "kind": "article",
+      "title": "A Recipe for Training Neural Networks",
+      "words": 3798,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.github.io/2021/03/27/forward-pass/": {
+      "file": "short-story-on-ai-forward-pass-ead67a553b.md",
+      "kind": "article",
+      "title": "Short Story on AI: Forward Pass",
+      "words": 1255,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.github.io/2022/03/14/lecun1989/": {
+      "file": "deep-neural-nets-33-years-ago-and-33-years-from-now-b6df9df05e.md",
+      "kind": "article",
+      "title": "Deep Neural Nets: 33 years ago and 33 years from now",
+      "words": 2621,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.github.io/2016/05/31/rl/": {
+      "file": "deep-reinforcement-learning-pong-from-pixels-9580f2bad9.md",
+      "kind": "article",
+      "title": "Deep Reinforcement Learning: Pong from Pixels",
+      "words": 6785,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.github.io/2015/05/21/rnn-effectiveness/": {
+      "file": "the-unreasonable-effectiveness-of-recurrent-neural-networks-63d7dedf6d.md",
+      "kind": "article",
+      "title": "The Unreasonable Effectiveness of Recurrent Neural Networks",
+      "words": 7523,
+      "ingested": "2026-05-04T01:25:38+00:00"
+    },
+    "https://karpathy.medium.com/software-2-0-a64152b37c35": {
+      "file": "software-2-0-229f3ea9a3.md",
+      "kind": "article",
+      "title": "Software 2.0",
+      "words": 2134,
+      "ingested": "2026-05-04T01:43:28+00:00"
+    },
+    "https://karpathy.medium.com/yes-you-should-understand-backprop-e2f06eab496b": {
+      "file": "yes-you-should-understand-backprop-ba876aa19e.md",
+      "kind": "article",
+      "title": "Yes you should understand backprop",
+      "words": 1522,
+      "ingested": "2026-05-04T01:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=TCH_1BHY58I": {
+      "file": "building-makemore-part-2-mlp-486386d046.md",
+      "kind": "video",
+      "title": "Building makemore Part 2: MLP",
+      "words": 14952,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=P6sfmUTpUmc": {
+      "file": "building-makemore-part-3-activations-gradients-batchnorm-ca9976bac7.md",
+      "kind": "video",
+      "title": "Building makemore Part 3: Activations & Gradients, BatchNorm",
+      "words": 24144,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=q8SA3rM6ckI": {
+      "file": "building-makemore-part-4-becoming-a-backprop-ninja-5dd2b0795a.md",
+      "kind": "video",
+      "title": "Building makemore Part 4: Becoming a Backprop Ninja",
+      "words": 22679,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=t3YJ5hKiMQ0": {
+      "file": "building-makemore-part-5-building-a-wavenet-ae49e39564.md",
+      "kind": "video",
+      "title": "Building makemore Part 5: Building a WaveNet",
+      "words": 11129,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=kCc8FmEb1nY": {
+      "file": "let-s-build-gpt-from-scratch-in-code-spelled-out-0e63bca925.md",
+      "kind": "video",
+      "title": "Let's build GPT: from scratch, in code, spelled out.",
+      "words": 22581,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    },
+    "https://www.youtube.com/watch?v=zjkBMFhNj_g": {
+      "file": "1hr-talk-intro-to-large-language-models-6f8091d496.md",
+      "kind": "video",
+      "title": "[1hr Talk] Intro to Large Language Models",
+      "words": 13079,
+      "ingested": "2026-05-04T10:43:28+00:00"
+    }
+  },
+  "last_run": "2026-05-04T10:43:28+00:00"
+}

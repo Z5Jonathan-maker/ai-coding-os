@@ -1,7 +1,7 @@
 # Nathalie Niddam (Longevity Educator)
 
-- **Videos in brain:** 28
-- **Word count:** 338,137
+- **Videos in brain:** 467
+- **Word count:** 10,823,827
 - **Channels:** youtube:@nathalieniddam
 - **Credibility:** Holistic Nutritionist (NANP), peptide bioregulator focus
 - **Tone:** Educational, evidence-leaning, less protocol-prescriptive than clinical voices
@@ -17,16 +17,16 @@
 Bioregulator/longevity questions; women-specific protocol nuance; peptide + lifestyle stack design.
 
 ## Top compounds covered (by video count)
-- **BPC-157** — 23 videos
-- **GH (HGH)** — 13 videos
-- **Epitalon** — 11 videos
-- **Ipamorelin** — 10 videos
-- **KPV** — 10 videos
-- **GHK-Cu** — 8 videos
-- **Estrogen mgmt** — 5 videos
-- **Retatrutide** — 5 videos
-- **Thymosin Alpha-1** — 5 videos
-- **SS-31** — 5 videos
+- **Ipamorelin** — 191 videos
+- **Estrogen mgmt** — 117 videos
+- **Retatrutide** — 93 videos
+- **GH (HGH)** — 79 videos
+- **BPC-157** — 73 videos
+- **Glutathione** — 63 videos
+- **GHK-Cu** — 38 videos
+- **NAD+** — 30 videos
+- **Epitalon** — 27 videos
+- **Semaglutide** — 23 videos
 
 ## Recall pattern
 ```

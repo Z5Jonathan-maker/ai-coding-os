@@ -78,7 +78,7 @@ commit=$(git -C "$repo_root" commit-tree "$tree" "${parent_arg[@]}" \
 [ -z "$commit" ] && exit 0
 
 # Update the ref
-git -C "$repo_root" update-ref "$ref" "$commit" "${parent:-}" 2>/dev/null || \
-  git -C "$repo_root" update-ref "$ref" "$commit" 2>/dev/null
+git -C "$repo_root" update-ref "$ref" "$commit" "${parent:-}" 2>/dev/null \
+  || git -C "$repo_root" update-ref "$ref" "$commit" 2>/dev/null
 
 exit 0

@@ -9,7 +9,7 @@ set -e
 # If user already passed -A or -n, defer to the real sudo as-is
 for arg in "$@"; do
   case "$arg" in
-    -A|-n|--askpass|--non-interactive) exec /usr/bin/sudo "$@" ;;
+    -A | -n | --askpass | --non-interactive) exec /usr/bin/sudo "$@" ;;
     --) break ;;
   esac
 done

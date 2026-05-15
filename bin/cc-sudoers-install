@@ -16,7 +16,10 @@ set -euo pipefail
 SRC="$HOME/dotfiles/etc/sudoers.d/00-askpass"
 DST="/etc/sudoers.d/00-askpass"
 
-[ -f "$SRC" ] || { echo "cc-sudoers-install: source missing at $SRC" >&2; exit 1; }
+[ -f "$SRC" ] || {
+  echo "cc-sudoers-install: source missing at $SRC" >&2
+  exit 1
+}
 
 # Pre-flight syntax check (no privilege needed for visudo -cf)
 if ! /usr/sbin/visudo -cf "$SRC" >/dev/null 2>&1; then

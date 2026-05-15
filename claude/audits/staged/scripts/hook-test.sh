@@ -8,7 +8,10 @@ set -u
 OUT="${1:-/dev/stdout}"
 HOOKS_DIR="$HOME/dotfiles/claude/hooks"
 
-[ -d "$HOOKS_DIR" ] || { echo "🔴 $HOOKS_DIR missing"; exit 1; }
+[ -d "$HOOKS_DIR" ] || {
+  echo "🔴 $HOOKS_DIR missing"
+  exit 1
+}
 
 declare -i pass=0 fail=0
 
@@ -23,9 +26,9 @@ declare -i pass=0 fail=0
     rc=$?
     ended=$(date +%s%N 2>/dev/null || date +%s)
     if [ "${#started}" -gt 10 ]; then
-      ms=$(( (ended - started) / 1000000 ))
+      ms=$(((ended - started) / 1000000))
     else
-      ms=$(( (ended - started) * 1000 ))
+      ms=$(((ended - started) * 1000))
     fi
 
     if [ $rc -eq 0 ] || [ $rc -eq 2 ]; then
@@ -46,4 +49,4 @@ declare -i pass=0 fail=0
     echo "Failed hooks need investigation before next session."
     exit 1
   fi
-} > "$OUT"
+} >"$OUT"

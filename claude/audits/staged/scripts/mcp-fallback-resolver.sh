@@ -35,7 +35,7 @@ shadcn
 chain=$(echo "$FALLBACKS" | awk -v p="$PRIMARY" '$1 == p { for (i=2; i<=NF; i++) print $i }')
 
 if [ -z "$chain" ]; then
-  exit 0  # no fallback chain defined
+  exit 0 # no fallback chain defined
 fi
 
 # Get current MCP status

@@ -11,7 +11,10 @@ AGENTS_DIR="${HOME}/.claude/agents"
 OUT="${HOME}/.claude/audits/drift-$(date +%Y-%m-%d).md"
 NTFY_TOPIC="${NTFY_TOPIC:-}"
 
-[ -f "$CLAUDE_MD" ] || { echo "CLAUDE.md missing at $CLAUDE_MD" >&2; exit 1; }
+[ -f "$CLAUDE_MD" ] || {
+  echo "CLAUDE.md missing at $CLAUDE_MD" >&2
+  exit 1
+}
 
 declare -a issues=()
 
@@ -20,8 +23,14 @@ BUILTINS="Explore Plan general-purpose claude-code-guide statusline-setup code-r
 # MCP servers (validated by mcp-probe.sh, not by file presence)
 MCPS="auto-browser chrome-devtools claude_ai_Amplitude claude_ai_Figma claude_ai_Gamma claude_ai_Gmail claude_ai_Google_Calendar claude_ai_Google_Drive claude_ai_Vibe_Prospecting context7 github mempalace playwright shadcn webclaw"
 
-is_builtin() { for b in $BUILTINS; do [ "$1" = "$b" ] && return 0; done; return 1; }
-is_mcp() { for m in $MCPS; do [ "$1" = "$m" ] && return 0; done; return 1; }
+is_builtin() {
+  for b in $BUILTINS; do [ "$1" = "$b" ] && return 0; done
+  return 1
+}
+is_mcp() {
+  for m in $MCPS; do [ "$1" = "$m" ] && return 0; done
+  return 1
+}
 
 referenced=$(awk -F'`' '/\| `/{print $2}' "$CLAUDE_MD" | grep -v '^$' | sort -u)
 
@@ -54,7 +63,7 @@ done
     echo
     printf '%s\n' "${issues[@]}"
   fi
-} > "$OUT"
+} >"$OUT"
 
 if [ ${#issues[@]} -gt 0 ] && [ -n "$NTFY_TOPIC" ]; then
   curl -fsS -d "Routing drift: ${#issues[@]} item(s). See $OUT" \

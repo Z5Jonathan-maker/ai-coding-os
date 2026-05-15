@@ -52,7 +52,7 @@ SKILLS_USED=$(tail -300 "$LATEST_JSONL" 2>/dev/null \
 # Initialize metrics file if missing or empty
 if [ ! -s "$METRICS_FILE" ]; then
   mkdir -p "$(dirname "$METRICS_FILE")"
-  echo '{"version":1,"updated":"","skills":{}}' > "$METRICS_FILE"
+  echo '{"version":1,"updated":"","skills":{}}' >"$METRICS_FILE"
 fi
 
 NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -67,10 +67,10 @@ while IFS= read -r skill; do
   [ -z "$skill" ] && continue
   JQ_ARGS+=(--arg "s$i" "$skill")
   JQ_FILTER="$JQ_FILTER | .skills[\$s$i].applied = ((.skills[\$s$i].applied // 0) + 1) | .skills[\$s$i].last_seen = \$now | (.skills[\$s$i].first_seen //= \$now)"
-  i=$((i+1))
-done <<< "$SKILLS_USED"
+  i=$((i + 1))
+done <<<"$SKILLS_USED"
 
-jq "${JQ_ARGS[@]}" "$JQ_FILTER" "$METRICS_FILE" > "$TMP" 2>/dev/null \
+jq "${JQ_ARGS[@]}" "$JQ_FILTER" "$METRICS_FILE" >"$TMP" 2>/dev/null \
   && mv "$TMP" "$METRICS_FILE" \
   || rm -f "$TMP"
 

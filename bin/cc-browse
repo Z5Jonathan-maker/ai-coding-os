@@ -36,16 +36,18 @@ BU_BIN="${BU_BIN:-$HOME/.local/bin/browser-use}"
 # Set this if you want logged-in sessions from your everyday Chrome.
 CC_BROWSE_PROFILE="${CC_BROWSE_PROFILE:-}"
 
-[ -x "$BU_BIN" ] || { echo "cc-browse: browser-use not found at $BU_BIN" >&2
-                      echo "  install: uv tool install browser-use" >&2
-                      exit 127; }
+[ -x "$BU_BIN" ] || {
+  echo "cc-browse: browser-use not found at $BU_BIN" >&2
+  echo "  install: uv tool install browser-use" >&2
+  exit 127
+}
 
 # Warn (not fail) if no LLM key is set — some subcommands don't need one
 if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ] \
-   && [ -z "${GOOGLE_API_KEY:-}" ] && [ -z "${AZURE_OPENAI_KEY:-}" ] \
-   && [ -z "${DEEPSEEK_API_KEY:-}" ]; then
+  && [ -z "${GOOGLE_API_KEY:-}" ] && [ -z "${AZURE_OPENAI_KEY:-}" ] \
+  && [ -z "${DEEPSEEK_API_KEY:-}" ]; then
   case "${1:-}" in
-    open|state|cookies|screenshot|profile|doctor|setup|mcp|''|-h|--help) ;;
+    open | state | cookies | screenshot | profile | doctor | setup | mcp | '' | -h | --help) ;;
     *)
       echo "cc-browse: warning — no LLM key in env (ANTHROPIC/OPENAI/GOOGLE/AZURE/DEEPSEEK API_KEY)." >&2
       echo "          autonomous tasks will fail. add a key to ~/.zprofile and re-source." >&2
@@ -58,11 +60,17 @@ fi
 ARGS=()
 [ -n "$CC_BROWSE_PROFILE" ] && ARGS+=(--profile "$CC_BROWSE_PROFILE")
 
-[ $# -eq 0 ] && { sed -n '2,30p' "$0"; exit 0; }
+[ $# -eq 0 ] && {
+  sed -n '2,30p' "$0"
+  exit 0
+}
 
 case "$1" in
-  -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
-  open|click|type|input|scroll|back|screenshot|state|switch|close-tab|keys|select|upload|eval|extract|hover|dblclick|rightclick|cookies|wait|get|python|tunnel|close|sessions|cloud|profile|install|init|setup|doctor)
+  -h | --help)
+    sed -n '2,30p' "$0"
+    exit 0
+    ;;
+  open | click | type | input | scroll | back | screenshot | state | switch | close-tab | keys | select | upload | eval | extract | hover | dblclick | rightclick | cookies | wait | get | python | tunnel | close | sessions | cloud | profile | install | init | setup | doctor)
     # known subcommand — pass through
     exec "$BU_BIN" ${ARGS[@]+"${ARGS[@]}"} "$@"
     ;;
@@ -89,9 +97,9 @@ case "$1" in
     # Prefer DeepSeek when available (cheapest + matches the user's
     # Tier-2 router). Otherwise let browser-use auto-pick.
     if [ -n "${DEEPSEEK_API_KEY:-}" ] \
-       && [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}" ]; then
+      && [ -z "${ANTHROPIC_API_KEY:-}${OPENAI_API_KEY:-}${GOOGLE_API_KEY:-}${AZURE_OPENAI_KEY:-}" ]; then
       export _CC_BROWSE_MODEL="${BROWSER_USE_LLM_MODEL:-deepseek-chat}"
-      cat > "$runner" <<'PY'
+      cat >"$runner" <<'PY'
 import asyncio, os
 from browser_use import Agent
 from browser_use.llm import ChatDeepSeek
@@ -112,7 +120,7 @@ async def main():
 asyncio.run(main())
 PY
     else
-      cat > "$runner" <<'PY'
+      cat >"$runner" <<'PY'
 import asyncio, os
 from browser_use import Agent
 

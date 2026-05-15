@@ -1,7 +1,7 @@
 # Nick Trigili (Biohacking & Performance Specialist)
 
-- **Videos in brain:** 20
-- **Word count:** 65,086
+- **Videos in brain:** 42
+- **Word count:** 219,550
 - **Channels:** youtube:@nicktrigili
 - **Credibility:** IFBB pro background, peptide-stack-for-physique focus
 - **Tone:** Pragmatic, physique-outcome-driven, dose-specific
@@ -17,16 +17,16 @@
 Bodybuilding/aesthetic peptide stacks; retatrutide cycling specifics; MOTS-C masterclass details.
 
 ## Top compounds covered (by video count)
-- **Retatrutide** — 12 videos
-- **GH (HGH)** — 9 videos
-- **TRT / Testosterone** — 9 videos
-- **Estrogen mgmt** — 9 videos
-- **CJC-1295** — 6 videos
-- **Tesamorelin** — 5 videos
-- **TB-500** — 4 videos
-- **GHK-Cu** — 3 videos
-- **Ipamorelin** — 3 videos
-- **IGF-1 LR3** — 3 videos
+- **TRT / Testosterone** — 27 videos
+- **GH (HGH)** — 19 videos
+- **Retatrutide** — 18 videos
+- **Estrogen mgmt** — 17 videos
+- **TB-500** — 13 videos
+- **GHK-Cu** — 10 videos
+- **CJC-1295** — 9 videos
+- **Tesamorelin** — 9 videos
+- **BPC-157** — 9 videos
+- **Ipamorelin** — 8 videos
 
 ## Recall pattern
 ```

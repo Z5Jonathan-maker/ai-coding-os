@@ -14,6 +14,27 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 
 ---
 
+## 2026-05-15 · Dify (LLMOps platform) — evaluated, deferred
+
+- **Before:** No formal stance on Dify or LLMOps-class platforms (LangSmith, Humanloop, Helicone, Langfuse cloud). Implicit assumption that Langfuse self-hosted + `aaa-rag-rerank` agent + Agent SDK already covered the LLMOps tier.
+- **Change:** Deep-dive eval by research-scout agent. Verified: (1) Dify's observability is a pass-through to Langfuse/Phoenix/Opik — adds zero net observability since Langfuse already runs at `127.0.0.1:3000`. (2) Dify requires `ANTHROPIC_API_KEY` (Anthropic Console key), not OAuth — hard mismatch with `CLAUDE_CODE_OAUTH_TOKEN` billing setup. (3) License is modified-Apache with multi-tenant restriction clause + producer reserves right to change terms — not clean Apache 2.0. (4) Target use case is teams building LLM *products* (chatbots, copilots for external users); current portfolio is e-commerce (Aurex) + mobile (DoseCraft) — no external-facing LLM product exists.
+- **After:** Verdict: SKIP / DEFER-UNTIL-USE-CASE-EMERGES. The only genuine gap Dify fills is prompt versioning + A/B testing; the cost (docker-compose stack, license risk, auth mismatch) exceeds the benefit. **Revisit trigger:** when a future Aurex internal AI agent OR DoseCraft Coach becomes a product feature for external users, AND a non-engineer needs to iterate on the prompts without PRs.
+- **Why it matters:** Closes the "should we adopt Dify" loop without leaving the question open. Future sessions reading this entry skip the eval cost. Verdent (sibling eval same day) skipped without log because no realistic re-evaluation condition exists.
+
+## 2026-05-15 · Lifted 3 novel patterns from GSD/OpenSpace/PAI deep dives
+
+- **Before:** Identified gaps from deep-dive evals: (a) no pre-task definition-of-done primitive (post-hoc audit only), (b) no machine-readable resume artifact (markdown checkpoints only), (c) no test-coverage gate before execution, (d) no long-horizon teleology file (factual memory only), (e) `/evolve` is manual not metric-driven.
+- **Change:** Wired 4 additive surfaces in `~/.claude/`:
+  - `skills/isa/SKILL.md` — ISA primitive (PAI lift): Vision + numbered ISCs + anti-goals + constraints, written to `.ai/ISA-<slug>.md` before non-trivial tasks
+  - `memory/TELOS.md` — long-horizon goals (PAI lift): north-stars + active campaigns + anti-goals + operating posture
+  - `skills/nyquist-gate/SKILL.md` — pre-execution test mapping gate (GSD lift): requirement → test command table, fails if any requirement lacks a sampler
+  - `state/loop-status.md` — ambient status surface (Verdent UX lift): mega-cycle / autonomous-loop / design-director write phase transitions here for observer visibility
+- **After:** ISA + Nyquist + Telos compose with existing /writing-plans + /executing-plans + /verification-before-completion. Drift-check should now register `isa` and `nyquist-gate` in next run (CLAUDE.md routing table updated same-day).
+- **Why it matters:** Pre-task "what does done look like" + per-requirement verification signals close the audit→fix asymmetry (you could find problems after but not specify the win condition before). Telos converts implicit direction into a referenceable file skills can cite. Status surface unblocks observability into autonomous loops without standing up a real dashboard.
+- **Lifts SKIPPED as redundant or not-yet-justified:** GSD context-window monitor (`context-monitor.sh` already superior — 4 thresholds + real autocompact parsing vs GSD's env-var-guess). Dify (above). Verdent runtime (skip; only the status-pane UX pattern lifted). PAI installer (would overwrite brain).
+
+---
+
 ## 2026-05-05 · Classifier precedence inverted to "purpose > flag" uniformly
 
 - **Before:** `classifyTask` checked DESIGN_F before IMAGE_P, and CHAT_F/CHEAP_F flags before CHAT_P/CHEAP_P purposes — same code path used inconsistent precedence depending on tier. Symptom: `purpose:'image_gen', flags:['design']` returned `'design'` (flag won over purpose), but `purpose:'ui_design', flags:['image']` returned `'design'` (purpose won over flag). Routing was hard to reason about.
@@ -239,3 +260,43 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** Sessions can now leave a structured learning trail with one CLI call per reflection. Autonomous cycles can do the same. The wiki logs become a queryable corpus instead of a hand-curated record.
 - **Why:** Second piece of closed-loop architecture (after autotuner→CB). Multi-cycle pattern detection becomes possible — e.g. 'show me all cycles with depth<=2 in the last 7 days' would now be a single grep against optimization-log.md.
 - **Timestamp:** 2026-05-14T08:47:08Z
+
+## 2026-05-14 · loop-2 ship
+- **Change:** shellcheck cleanup + commit
+- **Why:** demonstrate end-to-end with hook drain still working
+- **Timestamp:** 2026-05-14T12:11:18Z
+
+## 2026-05-14 · Closed feedback loop #3: every session auto-deposits into mempalace
+- **Before:** mempalace had 106k drawers but no skill or session auto-wrote to it. Every session ended, the brain forgot. Manual writes via mempalace_kg_add MCP tool were the only path. Most sessions left no trace beyond the markdown logs.
+- **Change:** Built ~/.claude/hooks/mempalace-stop.sh (defensive wrapper: timeout-bounded, fail-soft, logged). Added as 6th entry in settings.json Stop hook chain. Every session Stop now pipes the standard Claude Code hook stdin (session_id, transcript_path) to 'mempalace hook run --hook stop --harness claude-code' which spawns a background convo-mode mine on the transcript directory.
+- **After:** Every session Stop event auto-deposits a session digest into mempalace's 'sessions' wing. Cross-session muscle memory accumulates without any per-session effort. Verified end-to-end: hook fires cleanly (exit 0), mempalace acknowledges (returns {}), audit log captures timestamp + result.
+- **Why:** Third piece of closed-loop architecture (after autotuner→CB and reflection-queue→logs). Hands-off semantic recall now covers EVERY session, not just ones where I remember to manually write a memory entry. Three months from now /recall queries will return relevant work-history from sessions I'm not even aware existed.
+- **Timestamp:** 2026-05-14T12:22:50Z
+
+## 2026-05-14 · Built cc-health: single-call truth table across the whole stack
+- **Before:** Truth was spread across router-ping (tier-only, JSON), /health skill (markdown instruction to model), bridge-keeper alerts log, mcp probe cache, mempalace status, task queue stats, vec list — and they disagreed. Two times today bridge ping returned ok=true while alerts log said down.
+- **Change:** New bin/cc-health probes 17 components in ~3s: 5 router tiers (real ping), Kimi + ChatGPT image bridges (honest pings post fix), camofox/TEL HTTP, task queue + vec store + mempalace, plus closed-loop signals (autotuner age, reflection queue depth, mempalace-stop last-fire) and 15-min alert window. Color-coded TTY output, exit code reflects worst status (0=all OK, 1=warn, 2=fail).
+- **After:** One command, one truth. Caught Kimi logged-out + image-bridge keeper-failures + corroborating 3 bridge alerts in 15min — all surfaced in a single coherent display. Verified mempalace-stop hook fires in real time (timestamped <1s before cc-health output).
+- **Why:** Closes the visibility gap that made 'ok=true while keeper says down' possible. Composes with loops #1-3 — those generate signals, cc-health makes them visible. The next time bridge ping or router state lies, cc-health will catch it because it cross-references every layer.
+- **Timestamp:** 2026-05-14T12:37:06Z
+
+## 2026-05-14 · cc-deploy-watch — autonomous loops can no longer push into the void
+- **Before:** aurex-bio's autonomous fresh-audit loop has shipped 20+ cycles in the last several hours. Each cycle commits, pushes, and reports done. But GitHub Actions is billing-blocked — every CI run since at least cycle 38 returns 'The job was not started because recent account payments have failed.' Result: typecheck/build/alias-to-aurex.bio all skipped; aurex.bio likely serving stale build. The loop has been blind to this for ~20 cycles.
+- **Change:** Built bin/cc-deploy-watch — cross-references GitHub HEAD vs check-runs vs deployments API vs live HTTP probe. Wired into cc-health so 'Production deploy drift' is a first-class row. Writes structured alerts to ~/.claude/state/deploy-alerts.log on detected drift.
+- **After:** Caught the live regression cleanly: cc-health now emits 'deploy/aurex.bio: CI broken on HEAD · loop pushing into void' in red. The 'autonomous loop is doing fine' delusion can no longer hide. cc-deploy-watch returns exit 2 on stale-prod so future launchd polling can alert via ntfy/push.
+- **Why:** Closes the most important safety gap remaining: production-blast-radius from autonomous-loop blindness. Every other closed loop I shipped today depends on the loops actually REACHING prod. Without this watcher, the brain optimizes the loop while the loop optimizes nothing.
+- **Timestamp:** 2026-05-14T15:44:38Z
+
+## 2026-05-14 · SessionStart hook surfaces cc-health drift as additionalContext
+- **Before:** Every new session started blind. I had to manually discover Kimi-logged-out + image-bridge-keeper-failing + GitHub-Actions-billing-blocked TODAY because there was no surface signal at session start. The 4 closed loops were generating perfect signal, but nothing was injecting it into the next session's context.
+- **Change:** Built ~/dotfiles/claude/hooks/session-health.sh — runs cc-health --instant (1s, cached state only, no network), emits JSON additionalContext to SessionStart only when WARN/FAIL present. Added cc-health --instant mode that skips router-ping (30s subprocess CLI spawns) and bridge pings (playwright spawns), relying instead on bridge-alerts.log + deploy-watch state files + closed-loop signal files. Wired as 5th SessionStart hook in settings.json.
+- **After:** Every fresh session now starts AWARE of: deploy drift, bridge keeper failures, pending reflections, mempalace-stop last fire, autotuner tuning age. Verified end-to-end: hook produces valid JSON additionalContext in 1s including the live failures (image bridge + deploy drift). Quiet when all green — no noise.
+- **Why:** Closes the loop from 'observability catches drift' to 'next session ACTS on drift.' Without this, the closed-loop signals are write-only and rely on me running cc-health by hand. With this, the brain self-briefs at every session start.
+- **Timestamp:** 2026-05-14T17:14:06Z
+
+## 2026-05-14 · Brain self-pause: deploy drift can halt the autonomous evolve loop
+- **Before:** The evolve daemon (com.claude-code.evolve, PID 46573) was shipping cycle after cycle into billing-blocked CI. Each cycle: an LLM call, a commit, a push — all ending in skipped GHA jobs. No mechanism to detect 'I'm shipping into the void' and stop.
+- **Change:** Wired cc-deploy-watch-cron to launchctl stop/start the evolve daemon on drift state transitions. Opt-in via CC_DEPLOY_WATCH_PAUSE_EVOLVE=1 (default off — pure notify behavior). Pause/resume events logged to ~/.claude/state/evolve-paused-by-drift.log.
+- **After:** When enabled: drift→pause→resume happens automatically via the 5-min poll. The autonomous loop can no longer run open-loop against broken infra. Combined with the SessionStart hook surfacing drift to fresh sessions, the entire stack now self-aware-of-drift and self-pausing.
+- **Why:** Closes the final autonomous-safety gap: the loop now respects its own observability. Plus durable in dotfiles + symlinked back into ~/.claude/, so it survives machine rebuilds.
+- **Timestamp:** 2026-05-14T17:30:27Z

@@ -27,6 +27,39 @@ This file is the **central routing layer**. Every session loads it. Keep it dens
 
 ---
 
+## EXECUTION MODE CLASSIFIER
+
+Adapted from PAI v6.3.0 — auto-select operating mode by task class, with explicit effort overrides.
+
+### Modes
+
+- **MINIMAL** — pure acknowledgments, ratings, single-line answers. No tool calls. No preamble. Match the request's energy.
+  - *When*: "ok", "thanks", single-line factual lookups, "rate this 1-10."
+- **NATIVE** — direct response, light tool use (1-3 calls), no orchestration. The default mode.
+  - *When*: explain code, fix one bug, edit one file, run one command, answer a how-do-I.
+- **ALGORITHM** — multi-step disciplined work. Mandatory chain: `brainstorming` → `isa` → `writing-plans` → `nyquist-gate` → `executing-plans` → `verification-before-completion`. Spawns parallel agents when independent. Logs to wiki on completion.
+  - *When*: features touching ≥3 files, redesigns, audits, refactors, autonomous loops, content commissions, cross-repo work, anything payment/auth/compliance.
+
+### Effort tiers (explicit override)
+
+Append "E1"–"E5" inline ("do X, E3") to force a tier. Higher = more depth, more verification, more agents.
+
+- **E1 (Standard, fast-path)** — NATIVE mode, skip mandatory pre-work. Use when user explicitly says "just do it" or for known-trivial scopes.
+- **E2 (Extended)** — NATIVE mode + brainstorm. One round of clarifying thought before action.
+- **E3 (Advanced)** — ALGORITHM mode without parallel agents. Sequential discipline.
+- **E4 (Deep)** — ALGORITHM mode + parallel agent dispatch where independent + full verification.
+- **E5 (Comprehensive)** — ALGORITHM mode + multi-agent + research-scout corroboration + ISA-first + post-cycle reflection log + memory update.
+
+Default tier per mode: MINIMAL→E1, NATIVE→E2, ALGORITHM→E4.
+
+### Composes with
+
+- `/caveman` (output density) and `/pulse` (code density) are orthogonal — on at any tier.
+- ALGORITHM REQUIRES `/brainstorming` first (superpowers hard rule), then `/isa` if the task lacks a crisp done-state.
+- E5 writes to `~/.claude/memory/recent-memory.md` for next-session continuity.
+
+---
+
 ## MULTI-MODEL ROLE SPLIT
 
 This system is multi-model routed. Roles:
@@ -99,6 +132,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Register a new scheduled / recurring task right now" | `schedule-task` | Cross-platform cron registration (macOS/Linux/Windows). The agent can register its own recurring tasks mid-loop. |
 | "Set up the self-improvement loop / autonomous loop" | `autonomous-loop` | 2-min self-improvement loop scaffold — `memory/HUMAN.md` override, counter-action discipline, null-result-as-health, theme detection. Composes with `/loop` (interval) and `/nonstop` (no early termination). |
 | "Brainstorm before I build / explore intent" | `brainstorming` | **MUST** run before any creative work — features, components, behavior changes. From the superpowers bundle. |
+| "Define done before starting / PRD-style WHAT-DONE-LOOKS-LIKE" | `isa` | Generates `.ai/ISA-<slug>.md` — Vision (present tense) + numbered ISCs (atomic, verifiable) + anti-goals + constraints. Run AFTER `/brainstorming`, BEFORE `/writing-plans`. ISCs feed `/nyquist-gate` and `/verification-before-completion`. Adapted from PAI v5.0.0. |
+| "Validate test coverage before execution / one signal per requirement" | `nyquist-gate` | Generates `.ai/NYQUIST.md` mapping requirement→test command. **Mandatory** before `/executing-plans` on plans with ≥3 requirements OR any payment/auth/compliance work. Fails loud if any requirement lacks a sampler. Adapted from GSD's Nyquist Validation primitive. |
 | "Run 2+ independent tasks in parallel agents" | `dispatching-parallel-agents` | When tasks have no shared state or sequential dependencies. From superpowers. |
 | "Execute this written plan in a separate session" | `executing-plans` | Plan-driven implementation with review checkpoints. From superpowers. |
 | "Finish this dev branch / decide merge vs PR" | `finishing-a-development-branch` | Structured options for merge / PR / cleanup once tests pass. From superpowers. |

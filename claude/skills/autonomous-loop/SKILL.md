@@ -60,7 +60,7 @@ Two counter-intuitive metrics define a *healthy* loop:
 
 ## Ambient status surface
 
-On every cycle, also update `~/.claude/state/loop-status.md` (template at that path documents the schema). Replace the "Current phase" section with this cycle's pre-flight outcome + chosen lane; append to "Phase history" on phase exit with timestamp + duration + outcome; append to "Cycle log" on cycle completion. Any observer can `cat ~/.claude/state/loop-status.md` (or watch it) to see what the loop is doing without joining the Claude session. This is the Verdent-style status-pane pattern lifted into the autonomous-loop substrate.
+On every cycle, also update `~/.claude/state/loop-status.md` (template at that path documents the schema). Replace the "Current phase" section with this cycle's pre-flight outcome + chosen lane; append to "Phase history" on phase exit with timestamp + duration + outcome; append to "Cycle log" on cycle completion. Any observer can `cat ~/.claude/state/loop-status.md` (or run `cc-phase` / `cc-phase watch`) to see what the loop is doing without joining the Claude session. This is the Verdent-style status-pane pattern lifted into the autonomous-loop substrate.
 
 ## Self-modification permission (built into the loop)
 

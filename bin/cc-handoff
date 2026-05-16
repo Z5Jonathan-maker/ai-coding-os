@@ -1,0 +1,140 @@
+#!/bin/bash
+# cc-handoff — read the latest session HANDOFF.json at ~/.claude/state/HANDOFF.json
+#
+# Different from cc-resume (which controls the cc-loop pause flag). This reads
+# the structured session-state artifact /checkpoint writes, that session-resume.sh
+# reads at SessionStart to warm-up a new session.
+#
+# Usage:
+#   cc-handoff              # pretty-print current handoff
+#   cc-handoff raw          # raw JSON
+#   cc-handoff <field>      # print one field (next_steps, blockers, task, etc.)
+#   cc-handoff age          # human-readable age of the artifact
+set -u
+
+HANDOFF_FILE="$HOME/.claude/state/HANDOFF.json"
+
+usage() {
+  cat <<EOF
+cc-handoff — inspect the latest session HANDOFF.json
+
+Usage:
+  cc-handoff              Pretty-print current handoff
+  cc-handoff raw          Raw JSON
+  cc-handoff <field>      Print one field — task, phase, blockers, pending_human_actions,
+                          files_in_flight, next_steps, plan_reference, isa_reference,
+                          key_context, timestamp, session_kind
+  cc-handoff age          Print age of the handoff in human-readable form
+  cc-handoff path         Print the underlying file path
+  cc-handoff -h, --help   This help
+
+Writer skill: checkpoint
+Reader hook:  session-resume.sh (SessionStart auto-surfaces this at session boot)
+Different from: cc-resume (cc-loop pause control)
+EOF
+}
+
+require_jq() {
+  command -v jq >/dev/null 2>&1 || {
+    echo "cc-handoff: jq required (brew install jq)" >&2
+    exit 127
+  }
+}
+
+require_file() {
+  [ -f "$HANDOFF_FILE" ] || {
+    echo "cc-handoff: no handoff at $HANDOFF_FILE" >&2
+    echo "(no /checkpoint has been written, or state initialized empty)" >&2
+    exit 1
+  }
+  jq -e . "$HANDOFF_FILE" >/dev/null 2>&1 || {
+    echo "cc-handoff: $HANDOFF_FILE is not valid JSON" >&2
+    exit 1
+  }
+}
+
+pretty() {
+  require_jq
+  require_file
+  jq -r '
+    "═══ HANDOFF \(.timestamp) ═══",
+    "",
+    "Phase:        \(.phase // "(none)")",
+    "Session kind: \(.session_kind // "?")",
+    "",
+    "▸ In-progress task",
+    "  Title:   \(.in_progress_task.title // "(none)")",
+    "  Status:  \(.in_progress_task.status // "?")",
+    "  Started: \(.in_progress_task.started // "?")",
+    "",
+    (if (.blockers | length) > 0 then
+       "▸ Blockers (\(.blockers | length))",
+       (.blockers | to_entries[] | "  \(.key + 1). \(.value)")
+     else "▸ Blockers: none" end),
+    "",
+    (if (.pending_human_actions | length) > 0 then
+       "▸ Pending human actions (\(.pending_human_actions | length))",
+       (.pending_human_actions | to_entries[] | "  \(.key + 1). \(.value)")
+     else "▸ Pending human actions: none" end),
+    "",
+    (if (.files_in_flight | length) > 0 then
+       "▸ Files in flight",
+       (.files_in_flight[] | "  • \(.path)\n      \(.intent)")
+     else "▸ Files in flight: none" end),
+    "",
+    (if (.next_steps | length) > 0 then
+       "▸ Next steps",
+       (.next_steps | to_entries[] | "  \(.key + 1). \(.value)")
+     else "▸ Next steps: none" end),
+    "",
+    "▸ References",
+    "  Plan: \(.plan_reference // "(none)")",
+    "  ISA:  \(.isa_reference // "(none)")",
+    "",
+    (if .key_context != "" and .key_context != null then
+       "▸ Key context\n\(.key_context | gsub("\n"; "\n  ") | "  \(.)")"
+     else empty end)
+  ' "$HANDOFF_FILE"
+}
+
+age_human() {
+  require_file
+  mtime=$(stat -f %m "$HANDOFF_FILE" 2>/dev/null || stat -c %Y "$HANDOFF_FILE" 2>/dev/null)
+  [ -z "$mtime" ] && {
+    echo "?"
+    return
+  }
+  now=$(date +%s)
+  age=$((now - mtime))
+  if [ "$age" -lt 60 ]; then echo "${age}s"
+  elif [ "$age" -lt 3600 ]; then echo "$((age / 60))m"
+  elif [ "$age" -lt 86400 ]; then echo "$((age / 3600))h"
+  else echo "$((age / 86400))d"
+  fi
+}
+
+cmd="${1:-show}"
+case "$cmd" in
+  show | "") pretty ;;
+  raw)
+    require_file
+    cat "$HANDOFF_FILE"
+    ;;
+  path) echo "$HANDOFF_FILE" ;;
+  age) age_human ;;
+  -h | --help | help) usage ;;
+  task | phase | blockers | pending_human_actions | files_in_flight | next_steps | plan_reference | isa_reference | key_context | timestamp | session_kind)
+    require_jq
+    require_file
+    if [ "$cmd" = "task" ]; then
+      jq -r '.in_progress_task' "$HANDOFF_FILE"
+    else
+      jq -r ".${cmd}" "$HANDOFF_FILE"
+    fi
+    ;;
+  *)
+    echo "cc-handoff: unknown field '$cmd'" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

@@ -1,0 +1,69 @@
+#!/bin/bash
+# cc-phase — read the ambient loop-status surface at ~/.claude/state/loop-status.md
+#
+# Different from cc-status (which inspects the cc-loop runtime). This reads the
+# Verdent-style ambient pane that mega-cycle, autonomous-loop, and design-director
+# write to on phase transitions. Observe what an autonomous loop is doing without
+# joining the Claude session.
+#
+# Usage:
+#   cc-phase              # print current phase + history (formatted)
+#   cc-phase watch [N]    # live refresh every N seconds (default 5)
+#   cc-phase raw          # raw markdown without formatting
+#   cc-phase path         # print the underlying file path
+set -u
+
+STATUS_FILE="$HOME/.claude/state/loop-status.md"
+
+usage() {
+  cat <<EOF
+cc-phase — inspect the ambient autonomous-loop status pane
+
+Usage:
+  cc-phase              Print current phase + history (formatted)
+  cc-phase watch [SECS] Live refresh every SECS seconds (default 5)
+  cc-phase raw          Print raw markdown (with HTML schema comments)
+  cc-phase path         Print the underlying file path
+  cc-phase -h, --help   This help
+
+Writer skills: mega-cycle, autonomous-loop, design-director
+Different from: cc-status (cc-loop runtime), cc-handoff (HANDOFF.json reader)
+EOF
+}
+
+print_phase() {
+  if [ ! -f "$STATUS_FILE" ]; then
+    echo "cc-phase: no status file at $STATUS_FILE" >&2
+    echo "(no autonomous loop has written status yet)" >&2
+    return 1
+  fi
+  # Strip HTML schema comments (kept in raw mode); they describe the protocol, not the state
+  sed '/^<!--/,/-->$/d' "$STATUS_FILE"
+}
+
+cmd="${1:-show}"
+case "$cmd" in
+  show | "") print_phase ;;
+  watch)
+    secs="${2:-5}"
+    if command -v watch >/dev/null 2>&1; then
+      watch -n "$secs" "sed '/^<!--/,/-->\$/d' '$STATUS_FILE'"
+    else
+      while true; do
+        clear
+        echo "[cc-phase watch — refresh ${secs}s, Ctrl-C to exit]"
+        echo
+        print_phase
+        sleep "$secs"
+      done
+    fi
+    ;;
+  raw) cat "$STATUS_FILE" ;;
+  path) echo "$STATUS_FILE" ;;
+  -h | --help | help) usage ;;
+  *)
+    echo "cc-phase: unknown command '$cmd'" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

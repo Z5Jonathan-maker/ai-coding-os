@@ -19,6 +19,8 @@ A natural-language design request. Examples:
 
 ## Operating procedure (the 6-phase loop)
 
+**Ambient status surface:** on each phase transition, also update `~/.claude/state/loop-status.md` — replace the "Current phase" block with phase name + scope + start timestamp; append to "Phase history" on exit. Schema documented in the file's header. Any observer can `cat ~/.claude/state/loop-status.md` to see which design phase you're currently in. On cycle completion, append to "Cycle log" with QC% + commit SHA + live URL. This is the Verdent-style status pane pattern, lifted.
+
 ### Phase 1 — INGEST
 1. Read `~/.claude/design/routing.md` and identify the task type from the master router table
 2. Identify the brand. If known: `Read ~/.claude/design/brands/<brand>.md`. If new: create a provisional profile (mark fields TBD).

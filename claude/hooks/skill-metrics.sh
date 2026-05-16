@@ -74,4 +74,56 @@ jq "${JQ_ARGS[@]}" "$JQ_FILTER" "$METRICS_FILE" >"$TMP" 2>/dev/null \
   && mv "$TMP" "$METRICS_FILE" \
   || rm -f "$TMP"
 
+# ---- v2: high-usage-without-optimization-log auto-FIX queue ----
+# Heuristic (since true fallback rate needs harder signal): a skill that's
+# been applied ≥10 times but never appears in the optimization log is a
+# candidate for review — either it's heavily used and undocumented, or it's
+# heavily used and not yielding wins. Either way, queue for /skill-creator
+# inspection. Threshold lifted from OpenSpace's "applied ≥ N before mutate"
+# pattern; the log-mention check is our local proxy for "has been optimized."
+
+FIX_QUEUE="$HOME/.claude/state/skill-fix-queue.jsonl"
+OPT_LOG="$HOME/.claude/wiki/logs/optimization-log.md"
+USAGE_THRESHOLD="${SKILL_FIX_THRESHOLD:-10}"
+
+[ -f "$METRICS_FILE" ] || exit 0
+[ -f "$OPT_LOG" ] || exit 0  # without an optimization log, no signal — bail
+
+# Find skills with applied ≥ threshold
+mapfile -t HIGH_USE < <(
+  jq -r --argjson t "$USAGE_THRESHOLD" \
+    '.skills | to_entries[] | select(.value.applied >= $t) | .key' \
+    "$METRICS_FILE" 2>/dev/null
+)
+
+[ "${#HIGH_USE[@]}" -eq 0 ] && exit 0
+
+mkdir -p "$(dirname "$FIX_QUEUE")"
+touch "$FIX_QUEUE"
+
+for skill in "${HIGH_USE[@]}"; do
+  [ -z "$skill" ] && continue
+
+  # Skip if already queued in last 30 days (de-dupe)
+  if grep -q "\"skill\":\"$skill\"" "$FIX_QUEUE" 2>/dev/null; then
+    last_ts=$(grep "\"skill\":\"$skill\"" "$FIX_QUEUE" | tail -1 \
+      | jq -r .timestamp 2>/dev/null || echo "")
+    if [ -n "$last_ts" ]; then
+      last_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$last_ts" +%s 2>/dev/null \
+        || date -d "$last_ts" +%s 2>/dev/null || echo 0)
+      now_epoch=$(date +%s)
+      [ $((now_epoch - last_epoch)) -lt 2592000 ] && continue  # 30 days
+    fi
+  fi
+
+  # Skip if mentioned in optimization log (already optimized recently)
+  grep -qE "\`${skill}\`|/${skill}[[:space:]]|/${skill}\$" "$OPT_LOG" 2>/dev/null && continue
+
+  # Queue it
+  applied=$(jq -r ".skills[\"$skill\"].applied // 0" "$METRICS_FILE")
+  cat >>"$FIX_QUEUE" <<EOF
+{"timestamp":"$NOW","skill":"$skill","reason":"high-usage-without-optimization-log","applied":$applied,"threshold":$USAGE_THRESHOLD}
+EOF
+done
+
 exit 0

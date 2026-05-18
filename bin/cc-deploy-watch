@@ -101,6 +101,7 @@ case "$HTTP_CODE" in
   *)
     echo -e "  ${R}[FAIL]${Z}  https://${DOMAIN}/ → HTTP ${HTTP_CODE}"
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) ${REPO} domain-down http=${HTTP_CODE}" >>"$LOG"
+    WORST=2
     ;;
 esac
 
@@ -135,4 +136,5 @@ json.dump({
 }, open(path,"w"), indent=2)
 PY
 
-exit "${WORST:-${CI_OK:+1}}"
+# Exit 0 = live + current; 1 = CI-only issues (deploy healthy); 2 = stale deploy or domain down
+exit "${WORST:-0}"

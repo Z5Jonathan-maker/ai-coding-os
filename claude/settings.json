@@ -149,8 +149,8 @@
       }
     }
   },
-  "alwaysThinkingEnabled": true,
-  "showThinkingSummaries": true,
+  "alwaysThinkingEnabled": false,
+  "showThinkingSummaries": false,
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,

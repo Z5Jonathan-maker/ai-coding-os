@@ -66,6 +66,8 @@ This system is multi-model routed. Roles:
 
 - **Claude (you)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work. **PRIMARY for everything except design-first tasks.**
 - **KIMI (K2.6)** = UI/UX + design intelligence. **PRIMARY for layout composition, visual hierarchy, spacing/alignment, modern UI systems (glassmorphism, minimal, premium SaaS, biotech aesthetic), full-page and component-level design thinking.**
+- **KIMI free path** = `cf_kimi` tier — `@cf/moonshotai/kimi-k2.6` via Cloudflare Workers AI, 100K-250K tokens/day free. Slots into `design` fallback chain BEFORE `precision`. Direct invoke: `router-ask purpose=bulk_kimi`.
+- **OpenRouter gateway** = `openrouter` tier. Free-first (DeepSeek-v4-flash:free, Qwen3-coder:free), escalates to `gemini-2.5-flash` ($0.30/$2.50 per M) when prompt > 128k chars. Registered as fallback for `cheap` and `precision`. Direct invoke: `router-ask purpose=long_context_query` or `purpose=openrouter_query`.
 - **Other models** may handle reasoning or local tasks.
 
 ### Design-first triggers
@@ -126,10 +128,11 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with auto-browser MCP. |
 | "Monitor controversial repos / grey-area archive" | `grey-area-arsenal` | GitHub monitor + local archive tooling |
 | "Build me a website / landing page / marketing site / 3D hero" | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
-| "Start the self-paced autonomous loop / mega-cycle" | `mega-cycle` | Self-paced depth-ladder loop. Each cycle ≥ previous (surface→diagnostic→root-cause→refactor→audit→foundation). Anti-pattern memories auto-apply. Pairs with `nonstop` + `wired-up`. From Wassim Younes mega-cycle bundle. |
-| "Check if I'm regressing to surface fixes" | `depth-check` | Meta-audit of recent cycles. Flags depth-drift (agent regressing to 1-line edits). |
-| "Spawn new skill / memory / diagnostic mid-loop" | `evolve` | On-the-fly self-evolution. Creates new capabilities based on patterns the agent notices. |
-| "Register a new scheduled / recurring task right now" | `schedule-task` | Cross-platform cron registration (macOS/Linux/Windows). The agent can register its own recurring tasks mid-loop. |
+| "Start the self-paced autonomous loop / mega-cycle" | `mega-cycle` | Self-paced depth-ladder loop. Each cycle ≥ previous (surface→diagnostic→root-cause→refactor→audit→foundation). Anti-pattern memories auto-apply. Pairs with `nonstop` + `wired-up`. Slash command at `~/.claude/commands/mega-cycle.md`. |
+| "Check if I'm regressing to surface fixes" | `depth-check` | Meta-audit of recent cycles. Flags depth-drift (agent regressing to 1-line edits). Slash command at `~/.claude/commands/depth-check.md`. |
+| "Go nuclear / godmode / max autonomy this session" | `godmode` | Activates max-autonomy mode (terse + pulse + parallel + no clarifying questions). Slash command at `~/.claude/commands/godmode.md`; CLI at `~/.claude/bin/cc-godmode`. Composes with `/caveman` + `/pulse`. |
+| "Spawn new skill / memory / diagnostic mid-loop" | `evolve` | On-the-fly self-evolution. Creates new capabilities based on patterns the agent notices. Slash command at `~/.claude/commands/evolve.md`. |
+| "Register a new scheduled / recurring task right now" | `schedule-task` | Cross-platform cron registration (macOS/Linux/Windows). The agent can register its own recurring tasks mid-loop. Slash command at `~/.claude/commands/schedule-task.md`. |
 | "Set up the self-improvement loop / autonomous loop" | `autonomous-loop` | 2-min self-improvement loop scaffold — `memory/HUMAN.md` override, counter-action discipline, null-result-as-health, theme detection. Composes with `/loop` (interval) and `/nonstop` (no early termination). |
 | "Brainstorm before I build / explore intent" | `brainstorming` | **MUST** run before any creative work — features, components, behavior changes. From the superpowers bundle. |
 | "Define done before starting / PRD-style WHAT-DONE-LOOKS-LIKE" | `isa` | Generates `.ai/ISA-<slug>.md` — Vision (present tense) + numbered ISCs (atomic, verifiable) + anti-goals + constraints. Run AFTER `/brainstorming`, BEFORE `/writing-plans`. ISCs feed `/nyquist-gate` and `/verification-before-completion`. Adapted from PAI v5.0.0. |
@@ -188,16 +191,26 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 
 ## MCP ROUTING TABLE
 
+> **MCP delivery — 3 layers (added 2026-05-18 audit):**
+>
+> 1. **`~/.mcp-hub/`** — local supergateway managing 6 servers as persistent SSE on `localhost:3301–3306` (playwright, chrome-devtools, shadcn, memory, filesystem, github). Config: `~/.mcp-hub/config.json`. VS Code / Antigravity load these via `~/Library/Application Support/Code/User/mcp.json` (HTTP transport).
+> 2. **OAuth-injected by claude.ai** — `claude_ai_Figma`, `claude_ai_Gmail`, `claude_ai_Google_Calendar`, `claude_ai_Google_Drive`, `claude_ai_Gamma`, `claude_ai_Amplitude`, `claude_ai_Vibe_Prospecting`. Session-scoped. No local config. Re-auth in claude.ai UI when one stops surfacing tools.
+> 3. **Project-scoped** — `.mcp.json` per project (e.g. webclaw inside scraping projects, shadcn inside design projects). Only loads inside that project's working tree.
+>
+> Mempalace / context7 / mcp-fetch / mcp-git / mcp-filesystem / mcp-memory / mcp-sequential-thinking / mcp-time / open-design appear via the system as deferred MCPs (claude.ai-injected or via npm `claude` channel) — they may show as "still connecting" at session start.
+>
 > **Naming note:** Rows below labeled "(CLI/REST, not MCP)" are NOT loaded as `mcp__*` tools. They are invoked via Bash/HTTP. Listed here only for routing-table cohesion. Never call `mcp__agent-browser__*` or `mcp__camofox-browser__*` — those handles do not exist.
 
 | Need | MCP | Notes |
 |---|---|---|
 | Library / SDK / API docs | `context7` | Always prefer over web search for docs |
 | GitHub issue/PR/repo ops | `github` | Native `gh` CLI also works |
-| Page inspect / Lighthouse / DevTools | `chrome-devtools` | **Default browser MCP** |
-| Browser automation, clean sites (no anti-bot) | `agent-browser` *(CLI, not MCP)* | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
+| **Browser automation — DEFAULT** (real Chrome, user's logged-in sessions, cookies preserved) | **`kimi-webbridge`** *(local daemon on `:10086` + Chrome extension; invoke via `/kimi-webbridge` skill)* | **NEW DEFAULT 2026-05-18.** Drives the user's real Chrome session so auth-walled pages with active logins work (trial flows, Vercel dashboard, Gmail, etc.). REST API at `127.0.0.1:10086/command`. Status check: `~/.kimi-webbridge/bin/kimi-webbridge status` — both `running:true` AND `extension_connected:true` required before tool calls. Skill: [`~/.claude/skills/kimi-webbridge/SKILL.md`](file:///Users/leonardofibonacci/.claude/skills/kimi-webbridge/SKILL.md). |
+| Page inspect / Lighthouse / DevTools panels | `chrome-devtools` | **Demoted from default 2026-05-18** — keep for performance traces, Lighthouse audits, DevTools-protocol inspection of public pages. Doesn't share user session. |
+| Throwaway / ephemeral browser automation (no user session needed) | `playwright` MCP | Use when the task spins up fresh sessions, scrapes public pages, or runs CI-style smoke tests. Clean slate every run. |
+| Browser automation, clean sites (CLI alt) | `agent-browser` *(CLI, not MCP)* | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
 | Browser automation, anti-bot-protected sites (Cloudflare/Google/etc.) | `camofox-browser` *(REST API on `localhost:9377`, not MCP)* | Camoufox-powered Firefox fork with C++-level fingerprint spoofing (navigator/WebGL/AudioContext/WebRTC). Curl HTTP endpoints; OpenAPI at `/openapi.json`. Source: `~/code/research/camofox-browser/`. Start: `cd ~/code/research/camofox-browser && nohup npm start > ~/Library/Logs/camofox-browser.out.log 2>&1 &`. To autostart at login: `launchctl load -w ~/Library/LaunchAgents/bio.aurex.camofox.plist` (plist available but not auto-installed). |
-| Sensitive supervised browse (auth, payment) | `auto-browser` | Approval gates built-in |
+| Sensitive supervised browse (manual approval gates) | `auto-browser` | Approval gates built-in. Use when each click needs explicit user confirmation. |
 | Read Figma design / get_design_context | `claude_ai_Figma` | URL parsing built-in |
 | Email read/send | `claude_ai_Gmail` | OAuth-gated |
 | Calendar | `claude_ai_Google_Calendar` | OAuth-gated |

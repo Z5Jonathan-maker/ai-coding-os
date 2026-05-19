@@ -123,3 +123,50 @@ alias gwtr='git worktree remove'
 
 # cc-dispatch — fire-and-forget Claude CLI agent dispatch (bypasses harness watchdog)
 export PATH="$HOME/.claude/bin:$PATH"
+
+# === CLAUDE CODE GOD MODE ===
+# Smoother terminal renderer, no flicker
+export CLAUDE_CODE_NO_FLICKER=1
+
+# Default: direct Claude Max. Proxy mode is opt-in because stale local proxy
+# settings break Claude Code inside VS Code.
+unset ANTHROPIC_BASE_URL
+unset ANTHROPIC_AUTH_TOKEN
+
+alias c='claude --permission-mode bypassPermissions --effort max'
+# cpr (NOT cp — /bin/cp must stay reachable) — claude print mode
+alias cpr='claude -p --permission-mode bypassPermissions --effort max'
+alias cb='claude --bare --permission-mode bypassPermissions --effort max'
+
+# Explicit direct mode.
+alias c-max='unset ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN; claude --permission-mode bypassPermissions --effort max'
+alias cpr-max='unset ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN; claude -p --permission-mode bypassPermissions --effort max'
+alias cb-max='unset ANTHROPIC_BASE_URL ANTHROPIC_AUTH_TOKEN; claude --bare --permission-mode bypassPermissions --effort max'
+
+# Explicit local proxy mode.
+alias c-proxy='ANTHROPIC_BASE_URL=http://127.0.0.1:8317 ANTHROPIC_AUTH_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null)}" claude --permission-mode bypassPermissions --effort max'
+alias cpr-proxy='ANTHROPIC_BASE_URL=http://127.0.0.1:8317 ANTHROPIC_AUTH_TOKEN="${GITHUB_TOKEN:-$(gh auth token 2>/dev/null)}" claude -p --permission-mode bypassPermissions --effort max'
+
+# Plan mode — read-only reconnaissance before execution
+alias cplan='claude --permission-mode plan'
+
+# FREE MODE — local inference, zero API cost
+alias cc-free='cc-free'
+
+# Claude mode banner on every new shell
+_claude_mode_banner() {
+  local mode="PAID MAX"
+  local mode_color="\033[31m"
+  if [[ -n "$ANTHROPIC_BASE_URL" ]]; then
+    mode="LOCAL PROXY"
+    mode_color="\033[32m"
+  fi
+  echo ""
+  echo -e "  ${mode_color}▶ Claude Code: ${mode}\033[0m  |  \033[90mc → direct  |  c-proxy → local proxy\033[0m"
+  echo ""
+}
+_claude_mode_banner
+
+# Added by Antigravity
+export PATH="/Users/leonardofibonacci/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/bin:$PATH"

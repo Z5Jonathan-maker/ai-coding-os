@@ -27,7 +27,7 @@ case "$cmd" in
     exec /Users/leonardofibonacci/dotfiles/bin/cc-image "$@"
     ;;
   ping)
-    exec node -e "require('/Users/leonardofibonacci/Claude Code/lib/load-env.cjs').loadEnv(); require('/Users/leonardofibonacci/Claude Code/lib/openai-image-client.cjs').probeHealth().then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message); process.exit(1);})"
+    exec node -e "require('/Users/leonardofibonacci/code/projects/cc-router/lib/load-env.cjs').loadEnv(); require('/Users/leonardofibonacci/code/projects/cc-router/lib/openai-image-client.cjs').probeHealth().then(r=>console.log(JSON.stringify(r,null,2))).catch(e=>{console.error(e.message); process.exit(1);})"
     ;;
   ask)
     shift

@@ -35,7 +35,7 @@ print(json.dumps([a for a in sys.argv[1:] if a]))
 ' "${SEEDS[@]}")"
   node - "$JSON" "$DEPTH" "$CONCURRENCY" "$seeds_json" "$prompt" <<'NODE'
 const [jsonMode, depthRaw, concurrencyRaw, seedsJson, prompt] = process.argv.slice(2);
-const { ask } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+const { ask } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/tiered-ask.cjs');
 
 (async () => {
   const res = await ask({
@@ -103,7 +103,7 @@ done
 
 if [ "$PING" = "1" ]; then
   node - <<'NODE'
-const { ping } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+const { ping } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/tiered-ask.cjs');
 (async () => {
   const res = await ping();
   const ok = !!(res.tier1?.ok && res.tier2?.ok && res.tier3?.ok);

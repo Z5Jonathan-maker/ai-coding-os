@@ -1,19 +1,38 @@
 {
   "permissions": {
     "allow": [
-      "Bash(*:curl *,wget *,git *,npm *,node *,pip *,uv *,pytest *,make *,cargo *,go *)",
+      "Bash(*)",
       "Read(*)",
+      "Read(//**)",
       "Edit(*)",
       "Glob(*)",
       "Grep(*)",
       "Agent(*)",
       "WebSearch(*)",
-      "WebFetch(*)"
+      "WebFetch(*)",
+      "Shell(*)",
+      "SearchWeb(*)",
+      "FetchURL(*)",
+      "AskUserQuestion(*)",
+      "TaskList(*)",
+      "TaskOutput(*)",
+      "TaskStop(*)",
+      "EnterPlanMode(*)",
+      "ExitPlanMode(*)",
+      "SetTodoList(*)"
     ],
-    "deny": [],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/)",
+      "Bash(sudo rm -rf /)",
+      "Bash(sudo rm -rf /*)",
+      "Bash(> /dev/sda)",
+      "Bash(dd if=* of=/dev/sda*)"
+    ],
     "defaultMode": "bypassPermissions"
   },
-  "agentPushNotifEnabled": true,
   "hooks": {
     "SessionStart": [
       {
@@ -34,10 +53,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/tel-health.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/session-health.sh"
           }
         ]
       }
@@ -75,6 +90,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/error-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/isa-nyquist-gate.sh"
           }
         ]
       }
@@ -106,9 +125,35 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/mempalace-stop.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/skill-metrics.sh"
           }
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/leonardofibonacci/.claude/scripts/status-line.sh"
+  },
+  "enabledPlugins": {
+    "claude-video-vision@claude-video-vision": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-video-vision": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/jordanrendric/claude-video-vision.git"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
+  "excludeDynamicSystemPromptSections": true
 }

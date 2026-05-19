@@ -48,7 +48,7 @@ else
   Z=""
 fi
 
-ROUTER_LIB="/Users/leonardofibonacci/Claude Code/lib"
+ROUTER_LIB="${ROUTER_ROOT:-/Users/leonardofibonacci/code/projects/cc-router}/lib"
 OK=0
 WARN=0
 FAIL=0

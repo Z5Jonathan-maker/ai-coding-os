@@ -7,9 +7,9 @@
   <array>
     <string>/bin/bash</string>
     <string>-c</string>
-    <!-- Quiet by default — only emits when alerts present. --notify pops a
+    <!-- Quiet by default. The notify flag pops a
          macOS notification on collapse. Threshold ≥5 collapses in 24h. -->
-    <string>$HOME/local/bin/cc-federation-health --hours 24 --threshold 5 --quiet --notify &gt;&gt; $HOME/Library/Logs/federation-health.log 2&gt;&amp;1</string>
+    <string>mkdir -p "$HOME/.claude/logs" &amp;&amp; "$HOME/local/bin/cc-federation-health" --hours 24 --threshold 5 --quiet --notify &gt;&gt; "$HOME/.claude/logs/federation-health.log" 2&gt;&amp;1</string>
   </array>
   <!-- Daily at 09:13 local (offset minute to avoid the :00/:15/:30/:45 cluster
        that other launchd agents converge on). -->
@@ -18,8 +18,8 @@
     <key>Hour</key><integer>9</integer>
     <key>Minute</key><integer>13</integer>
   </dict>
-  <key>StandardOutPath</key><string>/tmp/federation-health.log</string>
-  <key>StandardErrorPath</key><string>/tmp/federation-health.err</string>
+  <key>StandardOutPath</key><string>/Users/leonardofibonacci/.claude/logs/federation-health.stdout.log</string>
+  <key>StandardErrorPath</key><string>/Users/leonardofibonacci/.claude/logs/federation-health.stderr.log</string>
   <key>EnvironmentVariables</key>
   <dict>
     <key>PATH</key><string>/Users/leonardofibonacci/.local/share/fnm/aliases/default/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>

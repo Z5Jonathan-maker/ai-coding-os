@@ -7,15 +7,15 @@
   <array>
     <string>/bin/bash</string>
     <string>-c</string>
-    <string>$HOME/local/bin/cc-api-find --refresh --force >> /tmp/cc-api-registry.log 2>&amp;1</string>
+    <string>mkdir -p "$HOME/.claude/logs" &amp;&amp; "$HOME/local/bin/cc-api-find" --refresh --force &gt;&gt; "$HOME/.claude/logs/cc-api-registry.log" 2&gt;&amp;1</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict>
     <key>Hour</key><integer>3</integer>
     <key>Minute</key><integer>17</integer>
   </dict>
-  <key>StandardOutPath</key><string>/tmp/cc-api-registry.log</string>
-  <key>StandardErrorPath</key><string>/tmp/cc-api-registry.err</string>
+  <key>StandardOutPath</key><string>/Users/leonardofibonacci/.claude/logs/cc-api-registry.stdout.log</string>
+  <key>StandardErrorPath</key><string>/Users/leonardofibonacci/.claude/logs/cc-api-registry.stderr.log</string>
   <key>EnvironmentVariables</key>
   <dict>
     <!-- fnm node lives under aliases/default/bin; resolve through that symlink

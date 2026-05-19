@@ -30,7 +30,7 @@ run_once() {
   local prompt="$1"
   node - "$MODEL" "$SYSTEM" "$JSON" "$prompt" <<'NODE'
 const [model, system, jsonMode, prompt] = process.argv.slice(2);
-const { callDeepSeek } = require('/Users/leonardofibonacci/Claude Code/lib/deepseek-client.cjs');
+const { callDeepSeek } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/deepseek-client.cjs');
 
 (async () => {
   const res = await callDeepSeek(model || undefined, system || undefined, prompt, {});
@@ -87,7 +87,7 @@ done
 
 if [ "$PING" = "1" ]; then
   node - <<'NODE'
-const { probeHealth } = require('/Users/leonardofibonacci/Claude Code/lib/deepseek-client.cjs');
+const { probeHealth } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/deepseek-client.cjs');
 (async () => {
   const res = await probeHealth();
   process.stdout.write(JSON.stringify(res, null, 2) + '\n');

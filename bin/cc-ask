@@ -99,7 +99,8 @@ print(json.dumps([a for a in sys.argv[1:] if a]))
 
 node - "$PURPOSE" "$SYSTEM" "$JSON" "$VERIFY" "$CONTEXT_LIMIT" "$FLAGS_JSON" "$PROMPT" <<'NODE'
 const [purpose, system, jsonMode, verifyMode, contextLimitRaw, flagsJson, prompt] = process.argv.slice(2);
-const { ask } = require('/Users/leonardofibonacci/Claude Code/lib/tiered-ask.cjs');
+const ROUTER_ROOT = process.env.ROUTER_ROOT || '/Users/leonardofibonacci/code/projects/cc-router';
+const { ask } = require(ROUTER_ROOT + '/lib/tiered-ask.cjs');
 
 (async () => {
   const flags = JSON.parse(flagsJson || '[]');

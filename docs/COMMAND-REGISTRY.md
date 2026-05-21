@@ -15,6 +15,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-permission-matrix` — visible autonomy boundaries for cockpit approvals.
 - `cc-plan` — save a read-only implementation plan artifact in `.ai/plans/`.
 - `cc-product-readiness` — paid-product readiness gate for cockpit, router, sync, and packaging.
+- `cc-release-check` — one-command release gate: first-run, readiness, demo, health, package, media, and clean/synced git.
 - `cc-resume` — resume `cc-loop`.
 - `cc-status` — inspect `cc-loop` state.
 - `deepseek` — DeepSeek CLI wrapper.

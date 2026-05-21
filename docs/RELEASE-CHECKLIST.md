@@ -4,6 +4,14 @@ Use this checklist before tagging a public release candidate.
 
 ## Required Gates
 
+One-command gate:
+
+```sh
+cc-release-check
+```
+
+Equivalent manual gate:
+
 ```sh
 ~/dotfiles/install.sh --dry-run
 cc-product-readiness

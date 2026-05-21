@@ -49,3 +49,10 @@ The final README should use:
 
 Plan exists. Images still need capture from VS Code after the cockpit visual
 states are polished enough to represent the product publicly.
+
+## Attempt Log
+
+- 2026-05-21: CLI/package proof is ready, but unattended GUI capture hit macOS
+  lock-screen state. A raw screen capture was rejected because it did not show
+  VS Code. Public screenshots still require an unlocked desktop or a scripted
+  VS Code render harness.

@@ -64,7 +64,8 @@ required_docs() {
     docs/ARCHITECTURE.md \
     docs/KNOWN-LIMITATIONS.md \
     docs/RELEASE-CHECKLIST.md \
-    docs/RELEASE-NOTES-v0.1.0-rc1.md \
+    docs/RELEASE-NOTES-v0.1.0-rc2.md \
+    docs/RELEASE-MANIFEST-v0.1.0-rc2.md \
     docs/ROADMAP.md; do
     if [ ! -s "$file" ]; then
       printf 'missing %s\n' "$file"

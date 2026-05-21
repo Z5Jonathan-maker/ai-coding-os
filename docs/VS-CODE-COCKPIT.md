@@ -6,6 +6,7 @@ VS Code is the cockpit. The router and lane registry are the engine room.
 
 The native cockpit extension lives at `vscode/ai-cockpit/` and is installed by
 `install.sh` into `~/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0`.
+It can also be packaged with `cc-package-cockpit`.
 
 It adds:
 

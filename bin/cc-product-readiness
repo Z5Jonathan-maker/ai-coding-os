@@ -62,6 +62,7 @@ check 'router smoke routes expected prompts' "$DOTFILES/bin/cc-router-smoke"
 check 'router integrity aligned' "node '$ROUTER/lib/check-integrity.cjs'"
 check 'system demo passes' "$DOTFILES/bin/cc-system-demo"
 check 'VS Code cockpit extension installed' extension_ready
+check 'VS Code cockpit package command present' "command -v cc-package-cockpit"
 check 'VS Code config symlinked' "[ \"\$(readlink \"$HOME/Library/Application Support/Code/User/tasks.json\" 2>/dev/null)\" = \"$DOTFILES/vscode/tasks.json\" ]"
 check 'disk has autonomous headroom' disk_ready
 check 'dotfiles working tree clean' "clean_git '$DOTFILES'"

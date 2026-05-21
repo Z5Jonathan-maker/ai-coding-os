@@ -2,6 +2,7 @@
 *.swp
 *~
 .backup.*
+dist/*.vsix
 claude/skills/prompt-master/
 .venv/
 claude/tel/.venv/

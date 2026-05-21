@@ -33,6 +33,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
+- `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-prune` — manual disk hygiene for `.claude`.
 - `cc-review-diff` — precision-lane review of current git diff.
 - `cc-router-receipt` — latest router decision, fallback, quota, token receipt.

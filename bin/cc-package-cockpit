@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+EXT="$DOTFILES/vscode/ai-cockpit"
+DIST="$DOTFILES/dist"
+
+mkdir -p "$DIST"
+
+node --check "$EXT/extension.js"
+node --check "$EXT/media/main.js"
+node -e "JSON.parse(require('fs').readFileSync('$EXT/package.json','utf8'))"
+
+cd "$EXT"
+npx --yes @vscode/vsce package --no-dependencies --out "$DIST/ai-system-cockpit-0.1.0.vsix"
+
+printf 'Packaged: %s\n' "$DIST/ai-system-cockpit-0.1.0.vsix"

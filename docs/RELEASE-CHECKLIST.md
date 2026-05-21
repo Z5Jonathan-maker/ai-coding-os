@@ -30,6 +30,7 @@ Required result:
 - `docs/KNOWN-LIMITATIONS.md`
 - `docs/LICENSE-SUPPORT.md`
 - `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
+- `docs/FRESH-CLONE-VERIFY.md`
 - `docs/COCKPIT-SCREENSHOT-PLAN.md`
 - `.github/ISSUE_TEMPLATE/`
 
@@ -37,6 +38,7 @@ Required result:
 
 - no secrets in tracked files
 - no unexplained private paths in public docs
+- fresh-clone dry-run verification passes without temp-home writes
 - root license is Apache-2.0
 - cockpit package license matches root Apache-2.0 license
 - browser mode boundary is visible

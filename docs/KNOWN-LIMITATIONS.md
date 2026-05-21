@@ -7,7 +7,7 @@ named directly instead of hidden behind successful-looking demos.
 
 | Area | Limitation | Current Handling |
 |---|---|---|
-| Public install | Optimized for macOS Apple Silicon first | `install.sh --dry-run` reports required, optional, and personal prerequisites |
+| Public install | Optimized for macOS Apple Silicon first | `install.sh --dry-run` reports required, optional, and local-account prerequisites; fresh-clone proof is in `docs/FRESH-CLONE-VERIFY.md` |
 | Browser automation | Official logged-in Chrome extension still requires user approval | `cc-kimi-status` and `cc-browser-proof` report `official-extension`, `shim`, or `not-ready` |
 | Shim mode | Works for proof/demos but does not inherit normal Chrome cookies | Browser truth table documents the boundary |
 | License | Apache-2.0 selected; support/commercial boundary still needs launch copy | `docs/LICENSE-SUPPORT.md` tracks the boundary |

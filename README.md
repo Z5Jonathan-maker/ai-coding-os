@@ -40,6 +40,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - License/support boundary: `docs/LICENSE-SUPPORT.md`
 - Known limitations: `docs/KNOWN-LIMITATIONS.md`
 - Release checklist: `docs/RELEASE-CHECKLIST.md`
+- Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`

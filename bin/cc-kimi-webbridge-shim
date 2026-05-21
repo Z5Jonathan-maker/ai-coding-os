@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+const WebSocket = require('/Applications/Kimi.app/Contents/Resources/resources/gateway/node_modules/ws');
+const { chromium } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/node_modules/playwright');
+
+const ROOT = path.join(process.env.HOME, '.kimi-webbridge');
+const PID = path.join(ROOT, 'shim.pid');
+const LOG = path.join(ROOT, 'shim.log');
+const PROFILE = path.join(ROOT, 'shim-chrome-profile');
+const URL = process.env.KIMI_WEBBRIDGE_WS || 'ws://127.0.0.1:10086/ws';
+const ORIGIN = 'chrome-extension://fldmhceldgbpfpkbgopacenieobmligc';
+const VERSION = 'shim-0.2.0';
+
+const cmd = process.argv[2] || 'status';
+if (cmd === 'start') start();
+else if (cmd === 'stop') stop();
+else if (cmd === 'restart') { stop(); setTimeout(start, 250); }
+else if (cmd === 'run') run();
+else if (cmd === 'logs') tailLog(Number(process.argv[3] || 80));
+else status();
+
+function alive(pid) { try { process.kill(pid, 0); return true; } catch { return false; } }
+function readPid() { try { return Number(fs.readFileSync(PID, 'utf8')); } catch { return 0; } }
+function start() {
+  fs.mkdirSync(ROOT, { recursive: true });
+  const old = readPid();
+  if (old && alive(old)) return console.log(`kimi-webbridge shim already running pid=${old}`);
+  const out = fs.openSync(LOG, 'a');
+  const child = cp.spawn(process.execPath, [__filename, 'run'], { detached: true, stdio: ['ignore', out, out] });
+  child.unref();
+  fs.writeFileSync(PID, String(child.pid));
+  console.log(`kimi-webbridge shim started pid=${child.pid}`);
+}
+function stop() {
+  const pid = readPid();
+  if (pid && alive(pid)) process.kill(pid);
+  try { fs.unlinkSync(PID); } catch {}
+  console.log('kimi-webbridge shim stopped');
+}
+function status() {
+  const pid = readPid();
+  console.log(JSON.stringify({ running: !!(pid && alive(pid)), pid: pid || null, log: LOG }, null, 2));
+}
+function tailLog(n) {
+  if (!fs.existsSync(LOG)) return;
+  const lines = fs.readFileSync(LOG, 'utf8').trimEnd().split('\n');
+  console.log(lines.slice(-n).join('\n'));
+}
+
+let context, current;
+const pages = new Map();
+let nextTabId = 1;
+async function browser() {
+  if (context) return context;
+  const executablePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+  context = await chromium.launchPersistentContext(PROFILE, {
+    executablePath: fs.existsSync(executablePath) ? executablePath : undefined,
+    headless: true,
+    args: ['--no-first-run', '--no-default-browser-check'],
+    viewport: { width: 1440, height: 1000 },
+  });
+  current = context.pages()[0] || await context.newPage();
+  return context;
+}
+async function pageFor(args = {}) {
+  await browser();
+  if (args._tabId && pages.has(args._tabId)) return pages.get(args._tabId);
+  if (args._session && pages.has(args._session)) return pages.get(args._session);
+  if (args._session) pages.set(args._session, current);
+  return current;
+}
+async function tool(name, args = {}) {
+  const p = await pageFor(args);
+  if (name === 'navigate') {
+    current = args.newTab ? await (await browser()).newPage() : p;
+    const tabId = nextTabId++;
+    pages.set(tabId, current);
+    if (args._session) pages.set(args._session, current);
+    await current.goto(args.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    return { success: true, url: current.url(), tabId };
+  }
+  if (name === 'snapshot') return { url: p.url(), title: await p.title(), tree: await p.locator('body').innerText({ timeout: 5000 }).catch(() => '') };
+  if (name === 'evaluate') return { type: 'json', value: await p.evaluate(args.code) };
+  if (name === 'screenshot') return { format: args.format || 'png', data: (await p.screenshot({ type: args.format || 'png', fullPage: !args.selector })).toString('base64') };
+  if (name === 'click') { await p.click(css(args.selector), { timeout: 10000 }); return { success: true }; }
+  if (name === 'fill') { await p.fill(css(args.selector), args.value ?? '', { timeout: 10000 }); return { success: true, mode: 'value' }; }
+  if (name === 'list_tabs') return { success: true, tabs: await Promise.all(context.pages().map(async (x, i) => ({ tabId: i, url: x.url(), title: await x.title().catch(() => ''), active: x === current }))) };
+  if (name === 'close_tab') { await p.close().catch(() => {}); current = context.pages()[0] || await context.newPage(); return { success: true, closed: true }; }
+  if (name === 'close_session') { for (const x of context.pages()) await x.close().catch(() => {}); current = await context.newPage(); pages.clear(); return { success: true, closed: true }; }
+  throw new Error(`Unsupported shim tool: ${name}`);
+}
+function css(selector = '') {
+  if (selector.startsWith('@e')) throw new Error('@e refs require the official extension; use CSS selector with shim');
+  return selector;
+}
+function run() {
+  fs.mkdirSync(ROOT, { recursive: true });
+  console.log(`[${new Date().toISOString()}] starting ${VERSION}`);
+  connect();
+}
+function connect() {
+  const ws = new WebSocket(URL, { headers: { Origin: ORIGIN } });
+  ws.on('open', () => ws.send(JSON.stringify({ type: 'hello', payload: { extensionVersion: VERSION } })));
+  ws.on('message', async d => {
+    let msg;
+    try { msg = JSON.parse(d.toString()); } catch { return; }
+    if (msg.type === 'ping') return ws.send(JSON.stringify({ type: 'pong' }));
+    if (msg.type !== 'tool_call') return;
+    try {
+      const data = await tool(msg.payload?.name, msg.payload?.args || {});
+      ws.send(JSON.stringify({ type: 'tool_result', responseToRequestId: msg.requestId, payload: { data } }));
+    } catch (e) {
+      ws.send(JSON.stringify({ type: 'tool_result', responseToRequestId: msg.requestId, payload: { error: e.message } }));
+    }
+  });
+  ws.on('close', () => setTimeout(connect, 1500));
+  ws.on('error', e => console.error(`[${new Date().toISOString()}] ws error: ${e.message}`));
+}

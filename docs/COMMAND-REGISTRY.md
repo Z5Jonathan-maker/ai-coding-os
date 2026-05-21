@@ -36,6 +36,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
+- `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-native-app-status` — installed native AI app versions and role map.

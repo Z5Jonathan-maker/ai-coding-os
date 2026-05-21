@@ -88,7 +88,7 @@ run_gate "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product
 run_gate "Five-minute demo" '^passed=4 failed=0$' "$DOTFILES/bin/cc-demo-five-minute" --prompt "$prompt" --browser-url "$browser_url" --max-chars "$max_chars"
 run_gate "Weekly health" '^Summary: 15 passed, 0 failed$' "$DOTFILES/bin/cc-health-weekly" --verbose
 run_gate "Cockpit package" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
-run_gate "Cockpit media capture" 'Generated: .*/docs/media/cockpit/' "$DOTFILES/bin/cc-cockpit-capture"
+run_gate "Cockpit media capture" 'Media written to .*/docs/media/cockpit' "$DOTFILES/bin/cc-cockpit-capture"
 run_shell_gate "Cockpit media files" 'PNG image data|GIF image data' "file '$DOTFILES'/docs/media/cockpit/*"
 run_shell_gate "Git tree clean" '^## ' "test -z \"\$(git status --short)\" && git status --short --branch"
 run_shell_gate "Git upstream synced" '^synced$' "git fetch --quiet && test \"\$(git rev-parse HEAD)\" = \"\$(git rev-parse @{u})\" && printf 'synced\n'"

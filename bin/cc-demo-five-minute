@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+prompt="${CC_DEMO_PROMPT:-debug this repo and verify the safest next step}"
+browser_url="${CC_DEMO_BROWSER_URL:-https://example.com}"
+max_chars="${CC_DEMO_BROWSER_MAX_CHARS:-1200}"
+package=1
+pass=0
+fail=0
+
+while (($#)); do
+  case "$1" in
+  --prompt)
+    shift
+    prompt="${1:-$prompt}"
+    ;;
+  --browser-url)
+    shift
+    browser_url="${1:-$browser_url}"
+    ;;
+  --max-chars)
+    shift
+    max_chars="${1:-$max_chars}"
+    ;;
+  --no-package) package=0 ;;
+  -h | --help)
+    printf 'Usage: cc-demo-five-minute [--prompt TEXT] [--browser-url URL] [--max-chars N] [--no-package]\n'
+    exit 0
+    ;;
+  *)
+    prompt="$*"
+    break
+    ;;
+  esac
+  shift
+done
+
+run() {
+  local name="$1"
+  local tmp
+  local ok=0
+  shift
+  tmp="$(mktemp)"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ "$name" = "Product Readiness" ] && ! grep -q '^Status: product-ready$' "$tmp"; then
+    ok=0
+  fi
+  if [ "$name" = "Workflow Proof" ] && grep -q '^Status: not product-ready$' "$tmp"; then
+    ok=0
+  fi
+
+  printf '\n## %s\n\n~~~text\n' "$name"
+  cat "$tmp"
+  printf '~~~\n\n'
+  rm -f "$tmp"
+
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    fail=$((fail + 1))
+  fi
+}
+
+printf '# Five-Minute AI Coding OS Demo\n\n'
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Prompt: %s\n' "$prompt"
+printf 'Browser URL: %s\n' "$browser_url"
+
+run "Product Readiness" "$DOTFILES/bin/cc-product-readiness"
+run "Workflow Proof" "$DOTFILES/bin/cc-workflow-proof" "$prompt"
+run "Browser Proof" "$DOTFILES/bin/cc-browser-proof" --url "$browser_url" --max-chars "$max_chars"
+
+if [ "$package" = 1 ]; then
+  run "Cockpit Package Proof" "$DOTFILES/bin/cc-package-cockpit"
+fi
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+[ "$fail" -eq 0 ]

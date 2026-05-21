@@ -39,6 +39,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 
 ```sh
 cc-product-readiness
+cc-demo-five-minute
 cc-system-demo
 cc-workflow-proof
 cc-browser-proof --url https://example.com --max-chars 1200

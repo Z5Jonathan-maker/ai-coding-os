@@ -152,7 +152,7 @@ install it, run the demo, inspect the architecture, and file useful issues.
 3. Link the plan from README and product packaging docs. Done 2026-05-21.
 4. Rewrite README into public-product shape.
 5. Add browser automation truth table to Kimi/WebBridge docs. Done 2026-05-21.
-6. Create the five-minute demo script.
+6. Create the five-minute demo script. Done 2026-05-21: `cc-demo-five-minute`.
 7. Package cockpit and capture proof. Started 2026-05-21: `cc-package-cockpit` created `dist/ai-system-cockpit-0.1.0.vsix`.
 
 ## Non-Negotiable Quality Bar

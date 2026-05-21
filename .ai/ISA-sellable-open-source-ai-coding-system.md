@@ -16,7 +16,7 @@ The system is a clean, installable, impressive AI coding operating system with a
 | ISC-2 | A fresh-install path exists that reports missing prerequisites without failing opaquely. | Run `~/dotfiles/install.sh --dry-run` or documented equivalent; output lists missing keys/apps/tools. | pending |
 | ISC-3 | Product readiness passes on the development machine. | `cc-product-readiness` returns `13/13` and `Status: product-ready`. | pending |
 | ISC-4 | The VS Code cockpit can be packaged and installed as a distributable VSIX. | `cc-package-cockpit` creates `dist/ai-system-cockpit-*.vsix`. | verified |
-| ISC-5 | The five-minute demo proves route, cockpit, browser proof, repo context, diff review, and verification. | `cc-system-demo` plus `cc-workflow-proof` produce readable proof with no blockers. | pending |
+| ISC-5 | The five-minute demo proves route, cockpit, browser proof, repo context, diff review, and verification. | `cc-demo-five-minute` exits 0 and produces readable proof with no blockers. | in-progress |
 | ISC-6 | The router exposes deterministic receipts for lane, model, fallback, latency, and cost/token status. | `cc-router-receipt` and `cc-router-metrics` show current routed session and no unknown fields. | pending |
 | ISC-7 | Browser automation has an honest primary/fallback story. | `cc-kimi-status` and `cc-browser-proof` distinguish official extension, shim, Playwright fallback, and locked-session limits. | verified |
 | ISC-8 | The repo has no obvious internal-only naming or undocumented personal assumptions in the first-run path. | `rg` audit over README/docs/bin/install surfaces no unexplained Jonathan-only blocker in public path. | pending |

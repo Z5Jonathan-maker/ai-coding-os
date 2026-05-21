@@ -32,6 +32,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
+- `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review.
 - `cc-health-weekly` — weekly health sweep.

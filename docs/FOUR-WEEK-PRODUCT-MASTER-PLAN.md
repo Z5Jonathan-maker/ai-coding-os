@@ -104,8 +104,8 @@ dashboard embedded in a sidebar.
 - Route receipt card with lane, model, fallback, cost/token, latency.
 - Browser status card with official/shim/fallback state.
 - Demo mode in cockpit: one flow, visible proof. Done 2026-05-21: `AI: Five-Minute Demo`.
-- Contribution guide and architecture map.
-- License/support boundary draft.
+- Contribution guide and architecture map. Done 2026-05-21: `CONTRIBUTING.md` and `docs/ARCHITECTURE.md`.
+- License/support boundary draft. Done 2026-05-21: `docs/LICENSE-SUPPORT.md`.
 
 ### Gate
 

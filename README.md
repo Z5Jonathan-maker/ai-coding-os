@@ -33,6 +33,9 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Master plan: `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
+- Architecture map: `docs/ARCHITECTURE.md`
+- Contribution guide: `CONTRIBUTING.md`
+- License/support boundary: `docs/LICENSE-SUPPORT.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`

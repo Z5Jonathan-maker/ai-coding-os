@@ -8,6 +8,7 @@ Commit target: current `main`
 The local release-candidate gate passed.
 
 ```text
+cc-release-check: passed=9 failed=0
 install.sh --dry-run: Status: first-run-ready
 cc-product-readiness: Score: 14/14 checks (100%), Status: product-ready
 cc-demo-five-minute: passed=4 failed=0
@@ -31,6 +32,7 @@ git status: clean and synced
 - security policy
 - known limitations
 - release checklist
+- one-command release gate
 - issue templates
 - fresh-clone dry-run proof
 

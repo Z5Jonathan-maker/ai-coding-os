@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+pass=0
+fail=0
+skip=0
+
+run_required() {
+  local name="$1" tmp
+  shift
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-evaluator.XXXXXX")"
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+  rm -f "$tmp"
+}
+
+run_optional() {
+  local name="$1" tmp
+  shift
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-evaluator.XXXXXX")"
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'skip %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,40p'
+    skip=$((skip + 1))
+  fi
+  rm -f "$tmp"
+}
+
+cd "$DOTFILES" || exit 1
+
+printf '# External Evaluator Check\n\n'
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Platform: %s %s\n' "$(uname -s 2>/dev/null || true)" "$(uname -m 2>/dev/null || true)"
+
+run_required "Portable public gate" "$DOTFILES/bin/cc-public-ci-check"
+
+if [ "$(uname -s 2>/dev/null)" = Darwin ]; then
+  run_optional "macOS first-run doctor" "$DOTFILES/install.sh" --dry-run
+else
+  printf '\n## macOS first-run doctor\n'
+  printf 'skip macOS first-run doctor\n'
+  printf '     install.sh currently targets macOS Apple Silicon.\n'
+  skip=$((skip + 1))
+fi
+
+if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+  run_optional "Cockpit package" "$DOTFILES/bin/cc-package-cockpit"
+else
+  printf '\n## Cockpit package\n'
+  printf 'skip Cockpit package\n'
+  printf '     node/npm unavailable.\n'
+  skip=$((skip + 1))
+fi
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s skipped=%s\n' "$pass" "$fail" "$skip"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: evaluator-ready\n'
+else
+  printf 'Status: evaluator-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

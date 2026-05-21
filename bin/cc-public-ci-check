@@ -62,6 +62,7 @@ required_docs() {
     SECURITY.md \
     LICENSE \
     docs/ARCHITECTURE.md \
+    docs/EVALUATOR-QUICKSTART.md \
     docs/KNOWN-LIMITATIONS.md \
     docs/RELEASE-CHECKLIST.md \
     docs/RELEASE-NOTES-v0.1.0-rc2.md \

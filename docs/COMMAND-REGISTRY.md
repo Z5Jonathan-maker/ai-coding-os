@@ -39,6 +39,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review.
+- `cc-evaluator-check` — external evaluator check for fresh clones and public review.
 - `cc-first-run` — non-mutating public setup doctor for required, optional, and personal prerequisites.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.

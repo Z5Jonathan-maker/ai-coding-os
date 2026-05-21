@@ -7,6 +7,7 @@ Tag: `v0.1.0-rc2`
 
 - Added `cc-release-check` as the one-command local release gate.
 - Added `cc-public-ci-check` as the portable contributor gate.
+- Added `cc-evaluator-check` for fresh-clone external review.
 - Added GitHub PR template and issue-template config links.
 - Added public roadmap and CI status docs.
 - Added release manifest generation with SHA-256 artifact checksums.
@@ -14,6 +15,7 @@ Tag: `v0.1.0-rc2`
 ## Verification
 
 ```text
+cc-evaluator-check: Status: evaluator-ready
 cc-public-ci-check: passed=8 failed=0
 cc-release-check: passed=9 failed=0
 ```
@@ -28,7 +30,7 @@ cc-release-check: passed=9 failed=0
 - Browser-proof path with visible mode boundaries.
 - Deterministic cockpit screenshots and GIF capture.
 - Apache-2.0 license, contribution guide, security policy, issue templates, PR
-  template, and portable CI command.
+  template, portable CI command, and external evaluator check.
 
 ## Known External Constraint
 

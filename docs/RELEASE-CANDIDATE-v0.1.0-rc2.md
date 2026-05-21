@@ -8,6 +8,7 @@ Commit target: current `main`
 The local release-candidate gate passed after the rc1 launch-polish follow-up.
 
 ```text
+cc-evaluator-check: Status: evaluator-ready
 cc-public-ci-check: passed=8 failed=0
 cc-release-check: passed=9 failed=0
 ```
@@ -16,6 +17,7 @@ cc-release-check: passed=9 failed=0
 
 - one-command release gate
 - portable public CI gate
+- external evaluator check
 - GitHub PR template
 - issue-template config links
 - release notes

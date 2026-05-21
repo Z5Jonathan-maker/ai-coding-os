@@ -34,6 +34,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
 - Architecture map: `docs/ARCHITECTURE.md`
+- Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
 - Contribution guide: `CONTRIBUTING.md`
 - Portable CI: `docs/CI.md`
 - Security policy: `SECURITY.md`
@@ -52,6 +53,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 ## Quick Proof
 
 ```sh
+cc-evaluator-check
 cc-release-check
 cc-public-ci-check
 cc-product-readiness

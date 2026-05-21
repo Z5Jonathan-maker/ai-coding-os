@@ -300,3 +300,87 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** When enabled: drift→pause→resume happens automatically via the 5-min poll. The autonomous loop can no longer run open-loop against broken infra. Combined with the SessionStart hook surfacing drift to fresh sessions, the entire stack now self-aware-of-drift and self-pausing.
 - **Why:** Closes the final autonomous-safety gap: the loop now respects its own observability. Plus durable in dotfiles + symlinked back into ~/.claude/, so it survives machine rebuilds.
 - **Timestamp:** 2026-05-14T17:30:27Z
+
+## 2026-05-20 · Global config convergence: Claude + Codex share one maintained brain
+- **Before:** Claude and Codex config paths had drifted: retired wrappers were still routed, Codex advertised missing paths, weekly health expected dead daemons, and generated heartbeat/probe files were tracked as source.
+- **Change:** Retired legacy wrappers and the old prune LaunchAgent, linked Codex globals to dotfile-backed Claude resources, moved health routing to AI-SYSTEM-V2 status, cleaned active routing docs, and marked optional archived lanes as optional instead of installed.
+- **After:** Installer replay is idempotent; active path scan reports zero missing advertised Codex paths; routing drift reports clean; SessionStart health is quiet when AI-SYSTEM-V2 is operational. Weekly health's only red during this work is the expected dirty/ahead dotfiles repo.
+- **Why:** The global brain now has one source of truth instead of parallel Claude/Codex copies and dead command fossils. Future sessions should route by reality, not by old bootstrap assumptions.
+- **Timestamp:** 2026-05-21T01:40:00Z
+
+## 2026-05-20 · Added Crush as durable alternate terminal coding lane
+- **Before:** Crush was spotted as promising, but not installed, routed, or rebuild-safe. npm globals also had no declarative restore path in dotfiles.
+- **Change:** Installed `@charmland/crush` v0.70.0, registered `crush` as a CLI routing target, documented it in the tool registry, added `npm-global-packages.txt`, taught `install.sh` to restore npm globals, and taught weekly health to verify package + command presence.
+- **After:** `crush --version` works, routing drift recognizes it as a CLI rather than a missing skill, Brewfile remains satisfied, and weekly health explicitly checks `@charmland/crush`.
+- **Why:** Crush gives the stack another terminal-native, multi-provider coding lane without coupling it to raw secrets or making it the default. The install is durable without waiting on Homebrew's Xcode Command Line Tools blocker.
+- **Timestamp:** 2026-05-21T01:56:00Z
+
+## 2026-05-20 · VS Code interface moved under dotfile control
+- **Before:** VS Code User settings/tasks/keybindings/MCP config were machine-local and drifted from the global routing layer. The active config allowed force-pushes, smart commits, Claude bypass permissions, stale Perplexity/OpenAI tasks, and dead local mcp-hub endpoints.
+- **Change:** Added `vscode/settings.json`, `keybindings.json`, `tasks.json`, `mcp.json`, and `extensions.txt`; linked them through `install.sh`; installed and declared the missing Biome/Tailwind extensions; removed dead editor tasks; made task prompt passing argument-safe; and added VS Code symlink + extension-manifest checks to health/self-update.
+- **After:** VS Code opens Claude, Codex, Kimi, DeepSeek, Crush, and AI-SYSTEM terminals from stable shortcuts; MCP config contains only a live GitHub remote endpoint; force-push/destructive Explorer actions require confirmation; and `install.sh`/weekly health can detect editor drift.
+- **Why:** The editor is now part of the rebuilt global system instead of a separate hand-tuned surface. A new Mac or a damaged VS Code profile can converge from dotfiles.
+- **Timestamp:** 2026-05-21T02:12:00Z
+
+## 2026-05-20 · PATH noise now has an enforceable registry
+- **Before:** `~/dotfiles/bin` contained dozens of executables, but there was no single classification layer proving which commands were primary interfaces, workflow helpers, maintenance jobs, vendor utilities, or retired fossils.
+- **Change:** Added `docs/COMMAND-REGISTRY.md`, registered every live executable in `bin/`, moved retired command names into an explicit absent list, removed the stale Perplexity runtime claim from TELOS, disabled noisy global Git fsmonitor, and taught weekly health to fail on unregistered commands, broken runtime symlinks, or retired references in active files.
+- **After:** `cc-health-weekly --verbose` now verifies VS Code, npm globals, stale-reference hygiene, command-registry coverage, and runtime symlink integrity. Current live result is 11/12 green; the only red is expected while dotfiles are dirty/ahead of origin.
+- **Why:** This converts cleanup from a one-time purge into a guardrail. New global commands must be intentionally classified, and old lanes cannot quietly return to the active surface.
+- **Timestamp:** 2026-05-21T02:36:00Z
+
+## 2026-05-20 · Attachment doctrine converted into enforceable gates
+- **Before:** The attached system bundle had the right principles — route before reasoning, browser/UI to Kimi, quality-preserving compression, autonomous depth, Keychain-first secrets, silent shell startup — but several were still prose-only in the live stack.
+- **Change:** Added `docs/PROPRIETARY-SYSTEM-DOCTRINE.md`, fixed silent-shell startup failures, patched the router so screenshots/browser prompts route to `design/kimi`, added `cc-router-smoke`, and wired router smoke into weekly health.
+- **After:** The router now proves representative prompt classes: cheap/DeepSeek for transforms, design/Kimi for UI/browser/screenshot, precision/Claude for hard debugging. `zsh -i -c exit` and `TERM=dumb zsh -i -c exit` emit no startup noise.
+- **Why:** Developer-tier means the system cannot rely on remembered intent. The routing doctrine and desktop/interface doctrine now have executable checks.
+- **Timestamp:** 2026-05-21T03:05:00Z
+
+## 2026-05-20 · External router wiring translated into lane registry
+- **Before:** FreeLLMAPI/Crush-style multi-provider routing was useful reference material, but our tool/model routing still lived across prose tables, shell wrappers, and memory. Fallbacks could be named without proving the target lane existed.
+- **Change:** Added `docs/ROUTER-WIRING-STUDY.md`, `docs/LANE-REGISTRY.schema.json`, `ai-lanes.json`, `cc-lane`, and `cc-lane-registry-check`. Registered Kimi, Playwright, Codex, Claude, DeepSeek, ChatGPT image, TEL, and FreeLLMAPI study lanes; wired lane validation into command registry, `/health`, README, VS Code tasks, and weekly health.
+- **After:** Router architecture now has an executable lane contract: each capability has a primary lane, fallbacks resolve to declared lanes, active lanes cannot lack a health surface, study-only lanes stay out of production routing, and operators can inspect a capability route from CLI or VS Code.
+- **Why:** The useful pattern to steal is not “use another free model proxy”; it is provider adapter + health ledger + fallback graph + sticky workflow continuity + unsupported-capability declarations. This makes our multimodal tool router auditable before it becomes more autonomous.
+- **Timestamp:** 2026-05-21T03:34:00Z
+
+## 2026-05-20 · Removed Crush from active stack after value check
+- **Before:** Crush was installed and routed as an alternate coding lane, but it depended on the same underlying model providers already in the system. That made it an interface duplicate, not an independent capability.
+- **Change:** Removed Crush from `ai-lanes.json`, VS Code profiles/tasks/keybindings, npm global restore, CLAUDE/Codex routing tables, routing drift allowlist, and tool registry. Uninstalled `@charmland/crush` globally. Kept reference-study notes only where the pattern is explicitly architectural.
+- **After:** Active coding authority is back to Codex plus Claude for hard-floor review. The router no longer presents Crush as a fallback, and `command -v crush` returns no command.
+- **Why:** A lane must either add independent capability, cost advantage, safety boundary, or workflow leverage. Crush did not clear that bar for this stack once we modeled the dependency honestly.
+- **Timestamp:** 2026-05-21T03:58:00Z
+
+## 2026-05-20 · Video study: free model IDE demos reinforce cockpit/router product shape
+- **Before:** The Kimi/Antigravity/OpenCode and Qwen/OpenCode videos were external hype signals without a local decision record.
+- **Change:** Extracted the first video's full auto-caption transcript, locally transcribed the second video after YouTube caption rate limiting, and added `docs/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
+- **After:** The useful lesson is captured: cheap/free model lanes belong behind the router as `study`/`lab` lanes, not as extra cockpit buttons or second authority layers. Product demos should show visible output, token/receipt visibility, and one familiar IDE surface.
+- **Why:** The market is validating the category: coding cockpit plus model routing is the new IDE. Our edge is simplicity, health checks, safe credentials, and capability ownership rather than chasing every free preview model.
+- **Timestamp:** 2026-05-21T04:06:00Z
+
+## 2026-05-21 · Added sellable-system acceptance demo and disk readiness gate
+- **Before:** Health checks proved core wiring, but there was no single developer-facing demo command showing the product promise end to end. Disk pressure was visible in the dashboard but not enforced by the acceptance layer.
+- **Change:** Added `cc-system-demo`, `docs/PRODUCT-PACKAGING.md`, and `docs/DISK-READINESS-AUDIT-2026-05-21.md`. The demo checks lane registry, capability routes, router smoke, AI-SYSTEM status, VS Code symlinks, core CLIs, and disk headroom.
+- **After:** The system now has a clean acceptance command. Current result is 8/9: everything passes except disk headroom, with 21GB available vs 25GB required.
+- **Why:** 100% functional must mean "ready to operate under load," not only "configs parse." Disk pressure is now a first-class readiness gate instead of a buried dashboard warning.
+- **Timestamp:** 2026-05-21T04:45:00Z
+
+## 2026-05-21 · VS Code cockpit moved from engine-room labels to intent labels
+- **Before:** VS Code tasks exposed internal routing terms like Router Code, Router Design, and Router Research. Useful, but too much engine room for a premium cockpit.
+- **Change:** Renamed tasks to developer intent labels: `AI: Build / Fix`, `AI: Design / Browser`, `AI: Research / Extract`, `AI: Explain Route`, `AI: Browser Check`, and `AI: System Demo`. Added `docs/VS-CODE-COCKPIT.md`, updated keybindings, replayed `install.sh`, and verified task/keybinding references.
+- **After:** Live VS Code now exposes the system as a small set of clear actions instead of a provider menu. Health remains clean except dirty dotfiles sync; acceptance remains 8/9 due disk headroom.
+- **Why:** Product polish is not more tools. It is hiding internal complexity behind the right verbs while keeping direct escape hatches for Claude/Codex.
+- **Timestamp:** 2026-05-21T05:03:00Z
+
+## 2026-05-21 · Cursor study converted into cockpit actions
+- **Before:** Cursor's advantage was unmodeled: native-feeling context, inline/planning modes, review flow, and background agents.
+- **Change:** Added `docs/CURSOR-REFERENCE-STUDY-2026-05-21.md`, `cc-context-snapshot`, `cc-review-diff`, and VS Code tasks for `AI: Ask / Plan`, `AI: Review Diff`, `AI: Context Snapshot`, and `AI: Jobs`. Replayed `install.sh` and verified shell/JSON/keybinding health.
+- **After:** Our VS Code cockpit now captures Cursor's useful product shape without adopting Cursor: intent modes, context visibility, diff review, and background job visibility. The remaining Cursor gap is a real sidebar/status UI and inline-edit parity through our router.
+- **Why:** Cursor proves the UX bar. Our advantage is keeping that clarity while preserving our stronger routing, hard-floor review, TEL credential boundary, and rebuildable dotfiles.
+- **Timestamp:** 2026-05-21T05:13:00Z
+
+## 2026-05-21 · Cockpit status snapshot created as sidebar precursor
+- **Before:** Status existed in several commands (`ai status`, router usage, lane registry, jobs), but the VS Code cockpit had no compact status surface comparable to an IDE sidebar.
+- **Change:** Added `cc-cockpit-status` and made `AI: Status` use it, while preserving `AI: Full System Status` for the verbose dashboard. The snapshot shows readiness, disk gate, capability routes, VS Code link state, jobs, router usage, and core command presence.
+- **After:** The cockpit has a fast readable status panel in task form. It currently reports the true blocker: disk headroom at 21GB free vs 25GB required.
+- **Why:** This is the data surface a future VS Code sidebar would render. It gets most of Cursor's status/context clarity without building an extension yet.
+- **Timestamp:** 2026-05-21T05:29:00Z

@@ -1,0 +1,98 @@
+{
+  "name": "ai-system-cockpit",
+  "displayName": "AI System Cockpit",
+  "description": "Native VS Code cockpit for AI-SYSTEM-V2 routing, readiness, checkpoints, permissions, and lane execution.",
+  "version": "0.1.0",
+  "publisher": "z5jonathan",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:aiSystemCockpit.dashboard"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "aiSystemCockpit.open", "title": "AI Cockpit: Open" },
+      { "command": "aiSystemCockpit.refresh", "title": "AI Cockpit: Refresh" },
+      { "command": "aiSystemCockpit.status", "title": "AI Cockpit: Status" },
+      { "command": "aiSystemCockpit.systemDemo", "title": "AI Cockpit: System Demo" },
+      { "command": "aiSystemCockpit.explainRoute", "title": "AI Cockpit: Explain Route" },
+      { "command": "aiSystemCockpit.buildFix", "title": "AI Cockpit: Build / Fix" },
+      { "command": "aiSystemCockpit.designBrowser", "title": "AI Cockpit: Design / Browser" },
+      { "command": "aiSystemCockpit.researchExtract", "title": "AI Cockpit: Research / Extract" },
+      { "command": "aiSystemCockpit.savePlan", "title": "AI Cockpit: Save Plan" },
+      { "command": "aiSystemCockpit.reviewDiff", "title": "AI Cockpit: Review Diff" },
+      { "command": "aiSystemCockpit.routeReceipt", "title": "AI Cockpit: Route Receipt" },
+      { "command": "aiSystemCockpit.routerMetrics", "title": "AI Cockpit: Router Metrics" },
+      { "command": "aiSystemCockpit.permissionMatrix", "title": "AI Cockpit: Permission Matrix" },
+      { "command": "aiSystemCockpit.checkpoints", "title": "AI Cockpit: Checkpoints" },
+      { "command": "aiSystemCockpit.diskReadiness", "title": "AI Cockpit: Disk Readiness" },
+      { "command": "aiSystemCockpit.productReadiness", "title": "AI Cockpit: Product Readiness" },
+      { "command": "aiSystemCockpit.jobs", "title": "AI Cockpit: Jobs" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiSystemCockpit",
+          "title": "AI Cockpit",
+          "icon": "media/cockpit.svg"
+        }
+      ]
+    },
+    "views": {
+      "aiSystemCockpit": [
+        {
+          "type": "webview",
+          "id": "aiSystemCockpit.dashboard",
+          "name": "Cockpit"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "aiSystemCockpit.refresh",
+          "when": "view == aiSystemCockpit.dashboard",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        { "command": "aiSystemCockpit.open" },
+        { "command": "aiSystemCockpit.refresh" },
+        { "command": "aiSystemCockpit.status" },
+        { "command": "aiSystemCockpit.systemDemo" },
+        { "command": "aiSystemCockpit.explainRoute" },
+        { "command": "aiSystemCockpit.buildFix" },
+        { "command": "aiSystemCockpit.designBrowser" },
+        { "command": "aiSystemCockpit.researchExtract" },
+        { "command": "aiSystemCockpit.savePlan" },
+        { "command": "aiSystemCockpit.reviewDiff" },
+        { "command": "aiSystemCockpit.routeReceipt" },
+        { "command": "aiSystemCockpit.routerMetrics" },
+        { "command": "aiSystemCockpit.permissionMatrix" },
+        { "command": "aiSystemCockpit.checkpoints" },
+        { "command": "aiSystemCockpit.diskReadiness" },
+        { "command": "aiSystemCockpit.productReadiness" },
+        { "command": "aiSystemCockpit.jobs" }
+      ]
+    },
+    "configuration": {
+      "title": "AI System Cockpit",
+      "properties": {
+        "aiSystemCockpit.openOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the AI cockpit view on VS Code startup."
+        },
+        "aiSystemCockpit.showStatusBarButton": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show AI cockpit readiness in the status bar."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# cc-checkpoints — read-only checkpoint timeline for the AI cockpit.
+set -u
+
+limit="${CC_CHECKPOINT_LIMIT:-8}"
+
+section() {
+  printf '\n## %s\n\n' "$1"
+}
+
+git_shadow_count() {
+  git for-each-ref --format='%(refname)' refs/cc-shadow/ 2>/dev/null | wc -l | tr -d ' '
+}
+
+git_shadow_ref() {
+  git for-each-ref --sort=-committerdate --format='%(refname)' refs/cc-shadow/ 2>/dev/null | head -1
+}
+
+print_git_shadow() {
+  git rev-parse --git-dir >/dev/null 2>&1 || {
+    printf 'Not in a git repository.\n'
+    return
+  }
+
+  count="$(git_shadow_count)"
+  [ "$count" -gt 0 ] || {
+    printf 'No shadow checkpoints in this repo.\n'
+    return
+  }
+
+  ref="$(git_shadow_ref)"
+  printf 'Shadow refs: %s\n' "$count"
+  printf 'Current shadow ref: %s\n\n' "$ref"
+  git log "$ref" --pretty=format:'%h  %ad  %s' --date=format:'%Y-%m-%d %H:%M:%S' "-$limit"
+  printf '\n\n'
+  printf 'Inspect: cc-rollback show <N>\n'
+  printf 'Restore: cc-rollback restore <N>  # asks before overwriting files\n'
+}
+
+print_session_checkpoints() {
+  found=0
+  for dir in "$HOME/.Codex/checkpoints" "$HOME/.claude/checkpoints"; do
+    [ -d "$dir" ] || continue
+    found=1
+    printf '%s\n' "$dir"
+    find "$dir" -maxdepth 1 -type f \( -name '*.md' -o -name 'HANDOFF-*.json' \) -print 2>/dev/null \
+      | while IFS= read -r file; do
+          stat -f '%m %N' "$file" 2>/dev/null
+        done \
+      | sort -rn \
+      | head "-$limit" \
+      | while read -r _ file; do
+          [ -n "$file" ] || continue
+          size="$(stat -f '%z' "$file" 2>/dev/null || printf '0')"
+          printf -- '- %s (%s)\n' "$file" "$(format_bytes "$size")"
+        done
+    printf '\n'
+  done
+
+  [ "$found" -eq 1 ] || printf 'No session checkpoint directories found.\n'
+}
+
+format_bytes() {
+  awk -v bytes="${1:-0}" 'BEGIN {
+    split("B KB MB GB", unit, " ");
+    size = bytes + 0;
+    idx = 1;
+    while (size >= 1024 && idx < 4) { size = size / 1024; idx++ }
+    if (idx == 1) printf "%d%s", size, unit[idx];
+    else printf "%.1f%s", size, unit[idx];
+  }'
+}
+
+print_summary() {
+  shadow="n/a"
+  if git rev-parse --git-dir >/dev/null 2>&1; then
+    shadow="$(git_shadow_count)"
+  fi
+  codex_count="$(find "$HOME/.Codex/checkpoints" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
+  claude_count="$(find "$HOME/.claude/checkpoints" -maxdepth 1 -type f 2>/dev/null | wc -l | tr -d ' ')"
+  printf 'Shadow checkpoints: %s | Codex session checkpoints: %s | Claude session checkpoints: %s\n' "$shadow" "$codex_count" "$claude_count"
+}
+
+case "${1:-list}" in
+  summary)
+    print_summary
+    ;;
+  list | "")
+    printf '# AI Checkpoints\n'
+    section "Shadow Git"
+    print_git_shadow
+    section "Session Handoffs"
+    print_session_checkpoints
+    ;;
+  -h | --help)
+    printf 'Usage: cc-checkpoints [list|summary]\n'
+    ;;
+  *)
+    printf 'cc-checkpoints: unknown subcommand: %s\n' "$1" >&2
+    exit 2
+    ;;
+esac

@@ -4,6 +4,7 @@
 # ~/.claude/skills/ and ~/.claude/agents/. Run weekly via launchd
 # (bio.claude.routing-drift, Mondays 09:05).
 # Writes ~/.claude/audits/drift-<date>.md and pings ntfy on drift.
+# shellcheck disable=SC2016
 set -euo pipefail
 
 CLAUDE_MD="${HOME}/.claude/CLAUDE.md"
@@ -93,7 +94,6 @@ cli_allowlist() {
   # rather than skills/commands. Living in ~/dotfiles/bin/ or ~/local/bin/.
   cat <<'CLIS'
 cc-reflect
-cc-health
 cc-deploy-watch
 cc-skill-register
 cc-push-gate

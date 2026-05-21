@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# cc-disk-readiness — read-only disk gate and cleanup candidate report.
+set -u
+
+min_gb="${CC_DEMO_MIN_FREE_GB:-25}"
+preferred_gb="${CC_PREFERRED_FREE_GB:-50}"
+avail_gb="$(df -g "$HOME" | awk 'NR==2 {print $4}')"
+used_pct="$(df -h "$HOME" | awk 'NR==2 {print $5}')"
+
+section() {
+  printf '\n## %s\n\n' "$1"
+}
+
+printf '# Disk Readiness\n\n'
+printf 'Home volume used: %s\n' "$used_pct"
+printf 'Free: %sGB\n' "$avail_gb"
+printf 'Minimum gate: %sGB\n' "$min_gb"
+printf 'Preferred: %sGB\n' "$preferred_gb"
+
+if [ "$avail_gb" -ge "$min_gb" ]; then
+  printf 'Status: PASS\n'
+else
+  printf 'Status: FAIL\n'
+  printf 'Needed for minimum: %sGB\n' "$((min_gb - avail_gb))"
+fi
+
+section "Approval-Gated Candidates"
+for path in \
+  "$HOME/.claude/gh-archive" \
+  "$HOME/AI-SYSTEM-V2-ARCHIVE/projects" \
+  "$HOME/AI-SYSTEM-V2-MIGRATION/01-backups-compressed.tar.gz" \
+  "$HOME/.cache/huggingface" \
+  "$HOME/AI-SYSTEM-V2-ARCHIVE/research" \
+  "$HOME/AI-SYSTEM-V2-MIGRATION" \
+  "$HOME/AI-SYSTEM-V2-ARCHIVE"; do
+  [ -e "$path" ] || continue
+  du -sh "$path" 2>/dev/null | awk '{print "- " $1 "\t" $2}'
+done
+
+section "Safe Dry Run"
+if command -v cc-prune >/dev/null 2>&1; then
+  CC_PRUNE_DRY_RUN=1 cc-prune 2>&1 | grep -v '^tee:' | sed 's/^/- /'
+else
+  printf 'cc-prune unavailable\n'
+fi
+
+section "Rule"
+cat <<'EOF'
+This command does not delete anything.
+Archive/cache deletion requires explicit approval because it can remove recovery context.
+EOF

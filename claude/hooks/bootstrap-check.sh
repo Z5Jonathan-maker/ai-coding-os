@@ -5,7 +5,6 @@
 # Checks:
 #   - mempalace palace initialized
 #   - sudoers drop-in installed
-#   - cc-prune LaunchAgent loaded
 #   - tailscale authed
 #   - cc-backup LaunchAgent loaded (only if restic exists)
 #   - NTFY_TOPIC set
@@ -30,9 +29,6 @@ pending=()
 
 [ -f /etc/sudoers.d/00-askpass ] \
   || pending+=("sudoers drop-in missing → cc-bootstrap sudoers")
-
-launchctl list 2>/dev/null | grep -q com.user.cc-prune \
-  || pending+=("cc-prune daily LaunchAgent not loaded → cc-bootstrap launchd")
 
 /opt/homebrew/bin/tailscale status 2>&1 | grep -q '^100\.' \
   || pending+=("tailscale not authed → tailscale up --hostname=imac --ssh --accept-routes")

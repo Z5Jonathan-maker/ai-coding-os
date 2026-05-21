@@ -21,7 +21,7 @@ GPL-3.0. Trending #2 on GitHub Trending (May 2026). Clone preserved at
 | Model routing — picks reasoning/fast/vision per task | 14-tier router (`lib/tiered-ask.cjs`) with classifier + verifier + circuit breaker + cost fast-path + tier-registry refactor. Strictly more sophisticated. |
 | 118 OAuth integrations | TEL (`~/.claude/tel/`) — Gmail / Calendar / Notion / GitHub / Vercel / Linear / Gamma / Glif. Different model: strict whitelist + audit + undo tokens + credential isolation. Fewer integrations, much stronger discipline. |
 | SQLite memory tree + Obsidian wiki sync | Task-queue SQLite (`memory/tasks.db`) + vector store (`memory/vectors.db`) + MemPalace MCP + 8 mentor brains + `wiki/learnings/` as markdown corpus. The user already does the Karpathy obsidian-wiki workflow at scale. |
-| Local AI via Ollama | Already the chat tier (`tier1` in TIER_DEFS) with Ollama llama3.2:3b. |
+| Local AI via Ollama | Retired from AI-SYSTEM-V2. Reintroduce only if the user explicitly wants a local model tier again. |
 | Coder toolset (filesystem, git, lint, test, grep) | Claude Code native. |
 | Token compression (TokenJuice) | `/pulse` (60-70% code-token reduction) + `/caveman` (75% conversational reduction). |
 | Background research / context fetching | `research-scout` (3x nightly) + `consolidate-memory` (Roman Knox 3-tier pattern). |

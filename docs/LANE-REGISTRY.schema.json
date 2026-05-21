@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://z5jonathan-maker.local/lane-registry.schema.json",
+  "title": "AI System Lane Registry",
+  "type": "object",
+  "required": ["version", "lanes", "capabilities"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "lanes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lane" }
+    },
+    "capabilities": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/capabilityRoute" }
+    }
+  },
+  "$defs": {
+    "lane": {
+      "type": "object",
+      "required": ["id", "role", "status", "capabilities", "health"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+        "role": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "optional", "study", "retired"]
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_:-]*$" },
+          "uniqueItems": true
+        },
+        "health": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "type": "string", "enum": ["command", "external", "manual", "none"] },
+            "command": { "type": "string" },
+            "expect": { "type": "string" },
+            "reason": { "type": "string" }
+          }
+        },
+        "fallbacks": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+          "uniqueItems": true
+        },
+        "unsupported": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "hardFloor": { "type": "boolean" },
+        "credential": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "capabilityRoute": {
+      "type": "object",
+      "required": ["primary"],
+      "additionalProperties": false,
+      "properties": {
+        "primary": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+        "fallbacks": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+          "uniqueItems": true
+        },
+        "noFallbackReason": { "type": "string" }
+      }
+    }
+  }
+}

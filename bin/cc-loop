@@ -41,7 +41,7 @@
 #
 # Files:
 #   ~/.cc-paused                  touch-flag killswitch
-#   ~/.claude/cc-loop.log         rolling log (truncated by cc-prune)
+#   ~/.claude/cc-loop.log         rolling log
 #   ~/.claude/cc-loop.state       KV state (last_exit, consecutive_errors,
 #                                 noop_cycles, last_run, last_event, started)
 set -u

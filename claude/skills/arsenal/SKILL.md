@@ -5,32 +5,25 @@ The complete capability index for this system. Invoke with `/arsenal` or referen
 ## Quick Status
 
 ```bash
-router-ping              # Health check all 9 tiers + bridges + MCP
-node lib/shadow-router.cjs status        # Shadow tier status
-node lib/shadow-router.cjs keys          # Key acquisition guide
-cc-swarm-status          # Swarm system status
-node lib/chatgpt-image-bridge.cjs ping   # Image bridge health
-node lib/kimi-bridge.cjs ping            # Design bridge health
+~/AI-SYSTEM-V2/scripts/ai-control.sh status   # System dashboard
+router-ask --health                           # Router health
+cc-swarm-status                               # Swarm system status
 cc-ghmon --archive       # Run grey-area scan now
 ```
 
-## 9-Tier Router
+## Router
 
-Main entry: `lib/tiered-ask.cjs` — `ask(prompt, purpose?, opts?)`
+Main entry: `router-ask` and `~/AI-SYSTEM-V2/scripts/ai-control.sh`.
 
-| Tier | Trigger | Backend | Fallback Chain |
-|------|---------|---------|----------------|
-| chat | greetings, light chat | Ollama llama3.2:3b | → shadow → cheap → precision |
-| shadow | zero-cost inference | Free APIs (chatanywhere) | → cheap → precision → chat |
-| cheap | summarize, refactor, bulk | DeepSeek v4-pro | → shadow → tier2fb → precision → chat |
-| precision | architecture, audit, hard-floor | Claude Opus 4 | → cheap → chat |
-| codex | implementation, tests, scaffolds | Codex CLI gpt-5.5 | → cheap → precision → chat |
-| design | UI/UX, branding, mockups | Kimi Bridge (camoufox) | → precision → cheap → chat |
-| image | logos, banners, illustrations | ChatGPT Bridge (gpt-image-2.0) | → precision → design |
-| swarm | research, scrape, deep-dive | Swarm → precision | → precision |
-| octagents | intel, recon, competitive | 8-agent platform → precision | → precision → swarm |
+| Class | Trigger | Backend |
+|------|---------|---------|
+| cheap | summarize, extract, transform, bulk | DeepSeek |
+| design | UI/UX, screenshots, browser work | Kimi |
+| precision | architecture, security, hard debugging, final QA | Codex/Claude |
+| image | mockups, hero assets, ads, branding | ChatGPT |
 
-**Shadow tier** (`lib/shadow-router.cjs`): Routes chat/cheap tasks through legitimate free API providers (Groq, Together AI, Cerebras, SambaNova). Auto-rotates keys across providers, tracks per-key quotas, cools exhausted keys. Falls back to paid tiers when all free keys exhausted. Cost: $0.
+Ollama/local-model routing is retired in AI-SYSTEM-V2. Do not revive it
+unless the user explicitly reintroduces a local model tier.
 
 **Auto-trigger swarm augmentation** when prompt contains: `research`, `scrape`, `crawl`, `deep_dive`, `competitive_analysis`, `extract`.
 

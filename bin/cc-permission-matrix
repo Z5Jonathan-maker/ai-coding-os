@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# cc-permission-matrix — visible autonomy boundaries for the AI cockpit.
+set -u
+
+ROOT="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+POLICY="${AI_PERMISSION_POLICY:-$ROOT/configs/permission-policy.json}"
+MODE_FILE="${AI_PERMISSION_MODE_FILE:-$ROOT/configs/permission-mode.json}"
+
+section() {
+  printf '\n## %s\n\n' "$1"
+}
+
+policy_value() {
+  node -e "
+const fs=require('fs');
+try {
+  const p=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+  const path=process.argv[2].split('.');
+  let v=p;
+  for (const k of path) v=v && v[k];
+  if (Array.isArray(v)) console.log(v.length);
+  else if (v !== undefined) console.log(v);
+} catch (_) {}
+" "$POLICY" "$1"
+}
+
+mode_json="$(node -e "
+const fs=require('fs');
+try { console.log(JSON.stringify(JSON.parse(fs.readFileSync(process.argv[1],'utf8')))); }
+catch (_) { console.log(JSON.stringify({mode:'strict',source:'default'})); }
+" "$MODE_FILE")"
+
+mode="$(printf '%s' "$mode_json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const m=JSON.parse(s);console.log(m.mode||'strict')})")"
+updated="$(printf '%s' "$mode_json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const m=JSON.parse(s);console.log(m.updated_at||'default')})")"
+policy_version="$(policy_value version)"
+deny_count="$(policy_value deny)"
+review_count="$(policy_value review)"
+checker="$ROOT/scripts/permission-check.cjs"
+
+probe_decision() {
+  AI_PERMISSION_LOG="${AI_PERMISSION_LOG:-/private/tmp/cc-permission-decisions.jsonl}" "$checker" --json "$1" 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{try{console.log(JSON.parse(s).decision.toUpperCase())}catch(_){console.log('UNKNOWN')}})"
+}
+
+if [ "${1:-}" = "--summary" ]; then
+  printf 'Mode: %s | Policy: %s | Rules: %s deny, %s review\n' "$mode" "${policy_version:-missing}" "${deny_count:-0}" "${review_count:-0}"
+  if [ -x "$checker" ]; then
+    printf 'Probe: read=%s install=%s secret=%s deploy=%s\n' \
+      "$(probe_decision "read files and summarize the project")" \
+      "$(probe_decision "brew install a new global dependency")" \
+      "$(probe_decision "print my api key")" \
+      "$(probe_decision "deploy this to production")"
+  else
+    printf 'Probe: permission checker unavailable\n'
+  fi
+  exit 0
+fi
+
+printf '# AI Permission Matrix\n\n'
+printf 'Mode: %s\n' "$mode"
+printf 'Mode updated: %s\n' "$updated"
+printf 'Policy: %s\n' "${policy_version:-missing}"
+printf 'Policy rules: %s deny, %s review\n' "${deny_count:-0}" "${review_count:-0}"
+
+section "Allowed By Default"
+cat <<'EOF'
+- Read files in the current workspace and configured readable roots.
+- Inspect git status, diffs, logs, command registries, lane registries, and health reports.
+- Run deterministic local checks: lint, typecheck, tests, smoke checks, dry-runs, status commands.
+- Edit existing project or dotfile configuration when the user has requested that system work.
+- Generate local docs, snapshots, audits, plans, and route receipts.
+- Use normal router lanes for their scoped purpose: Codex/code, Kimi/browser-design, DeepSeek/bulk, ChatGPT/images.
+EOF
+
+section "Review Required"
+cat <<'EOF'
+- Install packages, change executable permissions, create/modify launch agents, or run privileged system commands.
+- Publish, deploy, release, change DNS, or push changes to production.
+- Commit or push to git remotes unless the user explicitly asks for it.
+- Move, delete, or prune archives/caches, including disk cleanup candidates.
+- Use TEL or any credentialed third-party action on the user's behalf.
+- Send email, Slack messages, comments, PR reviews, mentions, or any cross-user communication.
+- Start any paid subscription, paid API usage, billing change, or new SaaS dependency.
+- Run schema migrations or shared database changes.
+EOF
+
+section "Denied / Hard Stop"
+cat <<'EOF'
+- Reveal, print, dump, or expose API keys, tokens, passwords, credentials, or private key material.
+- Edit, overwrite, delete, or rotate credentials without explicit supervised handling.
+- Root-level destructive operations, force-pushes to main, dropping databases, or wiping projects.
+- Let free/lab/reference lanes handle secrets, payments, final review, deploy approval, or authoritative architecture.
+- Continue autonomous loops after two same-task iterations with zero progress.
+EOF
+
+section "Policy Rules"
+if [ -f "$POLICY" ]; then
+  node -e "
+const fs=require('fs');
+const p=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+for (const group of ['deny','review']) {
+  console.log(group.toUpperCase());
+  for (const r of p[group] || []) console.log('- ' + r.id + ': ' + r.reason);
+}
+" "$POLICY"
+else
+  printf 'Policy file missing: %s\n' "$POLICY"
+fi
+
+section "Decision Probe"
+if [ -x "$checker" ]; then
+  for task in \
+    "read files and summarize the project" \
+    "brew install a new global dependency" \
+    "print my api key" \
+    "deploy this to production"; do
+    printf -- '- %s: ' "$task"
+    probe_decision "$task"
+  done
+else
+  printf 'Permission checker unavailable: %s\n' "$checker"
+fi

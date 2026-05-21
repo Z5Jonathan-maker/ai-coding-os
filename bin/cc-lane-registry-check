@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+/**
+ * cc-lane-registry-check — structural validation for ai-lanes.json.
+ */
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+const registryPath = process.argv[2] || path.join(os.homedir(), 'dotfiles', 'ai-lanes.json');
+const raw = fs.readFileSync(registryPath, 'utf8');
+const registry = JSON.parse(raw);
+const errors = [];
+
+function err(msg) {
+  errors.push(msg);
+}
+
+if (registry.version !== 1) err('version must be 1');
+if (!Array.isArray(registry.lanes) || registry.lanes.length === 0) err('lanes must be a non-empty array');
+if (!registry.capabilities || typeof registry.capabilities !== 'object') err('capabilities must be an object');
+
+const laneIds = new Set();
+for (const lane of registry.lanes || []) {
+  if (!lane.id) {
+    err('lane missing id');
+    continue;
+  }
+  if (laneIds.has(lane.id)) err(`duplicate lane id: ${lane.id}`);
+  laneIds.add(lane.id);
+  if (!['active', 'optional', 'study', 'retired'].includes(lane.status)) err(`${lane.id}: invalid status`);
+  if (!Array.isArray(lane.capabilities) || lane.capabilities.length === 0) err(`${lane.id}: capabilities required`);
+  if (!lane.health || !lane.health.kind) err(`${lane.id}: health.kind required`);
+  if (lane.health?.kind === 'command' && !lane.health.command) err(`${lane.id}: command health requires command`);
+  if (lane.health?.kind === 'none' && lane.status === 'active') err(`${lane.id}: active lane cannot have health kind none`);
+  for (const fb of lane.fallbacks || []) {
+    if (!laneIds.has(fb) && !(registry.lanes || []).some((candidate) => candidate.id === fb)) {
+      err(`${lane.id}: fallback references missing lane ${fb}`);
+    }
+  }
+}
+
+for (const [capability, route] of Object.entries(registry.capabilities || {})) {
+  if (!route.primary) {
+    err(`${capability}: missing primary lane`);
+    continue;
+  }
+  if (!laneIds.has(route.primary)) err(`${capability}: primary lane missing: ${route.primary}`);
+  for (const fb of route.fallbacks || []) {
+    if (!laneIds.has(fb)) err(`${capability}: fallback lane missing: ${fb}`);
+  }
+  if ((!route.fallbacks || route.fallbacks.length === 0) && !route.noFallbackReason) {
+    err(`${capability}: fallback or noFallbackReason required`);
+  }
+}
+
+if (errors.length) {
+  for (const e of errors) console.error(`fail ${e}`);
+  process.exit(1);
+}
+
+console.log(`ok   lane registry: ${laneIds.size} lanes, ${Object.keys(registry.capabilities || {}).length} capabilities`);

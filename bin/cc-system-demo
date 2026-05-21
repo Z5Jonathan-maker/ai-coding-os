@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# cc-system-demo — quick acceptance demo for the AI coding operating system.
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+CC_DEMO_MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
+
+pass=0
+fail=0
+
+run() {
+  local name="$1"
+  shift
+  printf '\n== %s ==\n' "$name"
+  if "$@"; then
+    pass=$((pass + 1))
+    printf 'ok   %s\n' "$name"
+  else
+    fail=$((fail + 1))
+    printf 'fail %s\n' "$name"
+  fi
+}
+
+show_routes() {
+  "$DOTFILES/bin/cc-lane" route browser_control
+  "$DOTFILES/bin/cc-lane" route code_edit
+  "$DOTFILES/bin/cc-lane" route architecture
+  "$DOTFILES/bin/cc-lane" route summarize
+  "$DOTFILES/bin/cc-lane" route image_generation
+  "$DOTFILES/bin/cc-lane" route credentialed_action
+}
+
+check_vscode_links() {
+  local user_dir="$HOME/Library/Application Support/Code/User"
+  local f
+  for f in settings keybindings tasks mcp; do
+    [ "$(readlink "$user_dir/$f.json" 2>/dev/null)" = "$DOTFILES/vscode/$f.json" ] || return 1
+  done
+}
+
+check_cli() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+check_disk_headroom() {
+  local avail_gb
+  avail_gb=$(df -g "$HOME" | awk 'NR==2 {print $4}')
+  printf 'available: %sGB, required: %sGB\n' "$avail_gb" "$CC_DEMO_MIN_FREE_GB"
+  [ "$avail_gb" -ge "$CC_DEMO_MIN_FREE_GB" ]
+}
+
+printf 'AI coding operating system acceptance demo\n'
+printf 'dotfiles: %s\n' "$DOTFILES"
+
+run "lane registry" "$DOTFILES/bin/cc-lane-registry-check"
+run "capability routes" show_routes
+run "router smoke" "$DOTFILES/bin/cc-router-smoke"
+run "ai-system status" "$HOME/AI-SYSTEM-V2/scripts/ai-control.sh" status
+run "VS Code config symlinks" check_vscode_links
+run "Codex CLI present" check_cli codex
+run "Claude CLI present" check_cli claude
+run "DeepSeek CLI present" check_cli deepseek
+run "disk headroom" check_disk_headroom
+
+printf '\nsummary: %s passed, %s failed\n' "$pass" "$fail"
+[ "$fail" -eq 0 ]

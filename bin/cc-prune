@@ -14,7 +14,7 @@
 #   CC_PRUNE_LOG_MAX_MB=50         truncate cc-loop.log if > N MB
 #   CC_PRUNE_DRY_RUN=0             1 = print what would be removed
 #
-# Run via launchd (com.user.cc-prune.plist, daily) or manually.
+# Run manually when disk hygiene is needed.
 set -u
 
 CC_PRUNE_DEBUG_DAYS="${CC_PRUNE_DEBUG_DAYS:-14}"

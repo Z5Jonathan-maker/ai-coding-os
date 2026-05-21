@@ -1,0 +1,77 @@
+[
+  {
+    "key": "cmd+alt+1",
+    "command": "workbench.action.terminal.newWithProfile",
+    "args": { "profileName": "Claude CLI" }
+  },
+  {
+    "key": "cmd+alt+2",
+    "command": "workbench.action.terminal.newWithProfile",
+    "args": { "profileName": "Codex CLI" }
+  },
+  {
+    "key": "cmd+alt+3",
+    "command": "workbench.action.terminal.newWithProfile",
+    "args": { "profileName": "Kimi CLI" }
+  },
+  {
+    "key": "cmd+alt+4",
+    "command": "workbench.action.terminal.newWithProfile",
+    "args": { "profileName": "DeepSeek CLI" }
+  },
+  {
+    "key": "cmd+alt+5",
+    "command": "workbench.action.terminal.newWithProfile",
+    "args": { "profileName": "AI System" }
+  },
+  {
+    "key": "cmd+alt+r",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Research / Extract"
+  },
+  {
+    "key": "cmd+alt+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Design / Browser"
+  },
+  {
+    "key": "cmd+alt+c",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Build / Fix"
+  },
+  {
+    "key": "cmd+alt+h",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Status"
+  },
+  {
+    "key": "cmd+alt+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: System Demo"
+  },
+  {
+    "key": "cmd+alt+p",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Ask / Plan"
+  },
+  {
+    "key": "cmd+alt+shift+p",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Save Plan"
+  },
+  {
+    "key": "cmd+alt+v",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Review Diff"
+  },
+  {
+    "key": "cmd+alt+m",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Permission Matrix"
+  },
+  {
+    "key": "cmd+alt+k",
+    "command": "workbench.action.tasks.runTask",
+    "args": "AI: Checkpoints"
+  }
+]

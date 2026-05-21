@@ -20,7 +20,15 @@ Personal macOS dotfiles, symlinked into `$HOME` via `install.sh`.
 | `hammerspoon/init.lua`        | `~/.hammerspoon/init.lua`     |
 | `claude/CLAUDE.md`            | `~/.claude/CLAUDE.md`         |
 | `claude/settings.json`        | `~/.claude/settings.json`     |
+| `codex/AGENTS.md`             | `~/.Codex/AGENTS.md`          |
+| `vscode/settings.json`        | `~/Library/Application Support/Code/User/settings.json` |
+| `vscode/keybindings.json`     | `~/Library/Application Support/Code/User/keybindings.json` |
+| `vscode/tasks.json`           | `~/Library/Application Support/Code/User/tasks.json` |
+| `vscode/mcp.json`             | `~/Library/Application Support/Code/User/mcp.json` |
+| `vscode/ai-cockpit/`          | `~/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0` |
 | `Brewfile`                    | (run `brew bundle install` against it) |
+| `npm-global-packages.txt`     | Small set of npm-only global CLIs restored by `install.sh` |
+| `vscode/extensions.txt`       | VS Code extensions restored by `install.sh` |
 
 ## Usage
 
@@ -29,9 +37,32 @@ Personal macOS dotfiles, symlinked into `$HOME` via `install.sh`.
 git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
 ~/dotfiles/install.sh
 brew bundle install --file=~/dotfiles/Brewfile   # restore brew packages
+~/dotfiles/install.sh                            # restore links + npm globals
 ```
 
 `install.sh` is idempotent — re-running won't clobber existing symlinks, and backs up unrelated files before replacing them.
+
+VS Code is dotfile-managed too: User settings, keybindings, tasks, MCP
+config, native AI cockpit extension, and the extension manifest all live under `vscode/`. Run
+`~/dotfiles/install.sh` after changing that directory so the live editor
+matches the repo.
+
+The global operating doctrine lives at
+`docs/PROPRIETARY-SYSTEM-DOCTRINE.md`. It is the compact source for router,
+interface, autonomy, token, memory, and credential rules.
+
+The routing architecture study lives at `docs/ROUTER-WIRING-STUDY.md`.
+The executable lane contract lives in `ai-lanes.json` and is checked by
+`cc-lane-registry-check`.
+Video-derived reference notes live at
+`docs/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
+The product packaging contract lives at `docs/PRODUCT-PACKAGING.md`.
+Disk readiness notes live at `docs/DISK-READINESS-AUDIT-2026-05-21.md`.
+VS Code cockpit notes live at `docs/VS-CODE-COCKPIT.md`.
+Cursor reference notes live at `docs/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
+Cline reference notes live at `docs/CLINE-REFERENCE-STUDY-2026-05-21.md`.
+The cockpit now exposes Cline/Cursor-inspired control surfaces through
+`cc-permission-matrix`, `cc-checkpoints`, and `cc-router-receipt`.
 
 ## Helper scripts (`bin/`)
 

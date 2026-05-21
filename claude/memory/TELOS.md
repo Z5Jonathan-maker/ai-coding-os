@@ -33,7 +33,7 @@ Where I want the brain to be more capable, expressed as states.
 - **Pre-task definition-of-done is the default** — ISA precedes /writing-plans precedes /executing-plans on any non-trivial task (NEW 2026-05-15)
 - **Skill performance is observable** — every skill has applied/completion/fallback metrics; underperformers auto-queued for FIX cycles (NEW 2026-05-15)
 - **Autonomous loops produce visible artifacts** — ambient status pane shows current phase + cycle depth (NEW 2026-05-15)
-- **Cross-runtime federation is real** — Codex/Kimi/Perplexity invoked natively, not flattened to APIs (per AI-OS manifesto)
+- **Cross-runtime federation is real** — Codex, Kimi, DeepSeek, and TEL are invoked natively for their strongest lanes, not flattened to one generic API
 - **Production deploys have a closed loop** — `cc-deploy-watch` catches stale prod within 15 min, never 24 hr
 
 ## Anti-goals

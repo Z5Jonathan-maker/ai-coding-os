@@ -7,11 +7,11 @@ or work through this list manually.
 ## TL;DR — one block, copy/paste
 
 ```bash
-# Always-safe (no creds, idempotent)
-~/dotfiles/bin/cc-bootstrap launchd
-
-# Everything else, interactive (one prompt per step)
+# Interactive walkthrough (one prompt per step)
 ~/dotfiles/bin/cc-bootstrap all
+
+# Restore global shell, Claude/Codex brain, VS Code UI, npm globals, and editor extensions
+~/dotfiles/install.sh
 
 # Read-only sanity check (no changes)
 ~/dotfiles/bin/cc-bootstrap doctor
@@ -19,10 +19,12 @@ or work through this list manually.
 
 ## What `cc-bootstrap all` does, in order
 
-### 1. cc-prune LaunchAgent — `cc-bootstrap launchd`
-Daily 04:30 prune of `~/.claude/{debug,projects,file-history,checkpoints}`.
-No credentials needed. Closes the silent-killer disk-fill gap that takes
-down 24/7 boxes.
+### 1. Retired prune LaunchAgent — `cc-bootstrap launchd`
+The old daily `cc-prune` LaunchAgent is retired. This subcommand is now
+a compatibility no-op so old setup muscle memory stays harmless.
+
+Run `cc-prune` manually only when weekly health reports real disk
+pressure.
 
 ### 2. mempalace — `cc-bootstrap mempalace`
 - Init palace at `~/mempalace`

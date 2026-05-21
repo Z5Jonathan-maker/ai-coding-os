@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# cc-review-diff — send the current git diff to the precision lane for review.
+set -euo pipefail
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "cc-review-diff: not inside a git repository" >&2
+  exit 2
+fi
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if git diff --quiet -- . && git diff --cached --quiet -- .; then
+  echo "cc-review-diff: no working-tree or staged diff to review"
+  exit 0
+fi
+
+diff_file="$(mktemp)"
+trap 'rm -f "$diff_file"' EXIT
+
+{
+  printf '# Diff Review Packet\n\n'
+  printf 'Repo: %s\n' "$root"
+  printf 'Branch: %s\n\n' "$(git branch --show-current 2>/dev/null || printf unknown)"
+  printf '## Status\n\n```text\n'
+  git status --short
+  printf '```\n\n'
+  printf '## Diff Stat\n\n```text\n'
+  git diff --stat -- .
+  git diff --cached --stat -- .
+  printf '```\n\n'
+  printf '## Diff\n\n```diff\n'
+  git diff -- .
+  git diff --cached -- .
+  printf '```\n'
+} >"$diff_file"
+
+packet="$(head -c 60000 "$diff_file")"
+
+prompt="Review this git diff like a senior code reviewer. Lead with concrete bugs, regressions, safety issues, missing verification, and file-specific findings. Keep it concise. If no major issues, say so clearly.
+
+$packet"
+
+if command -v router-ask >/dev/null 2>&1; then
+  router-ask --purpose precision "$prompt"
+elif command -v claude >/dev/null 2>&1; then
+  claude --print "$prompt"
+else
+  cat "$diff_file"
+fi

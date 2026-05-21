@@ -1,0 +1,188 @@
+{
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "aiPrompt",
+      "type": "promptString",
+      "description": "Work request"
+    },
+    {
+      "id": "aiCapability",
+      "type": "promptString",
+      "description": "Lane capability, for example browser_control, code_edit, or image_generation"
+    },
+    {
+      "id": "aiUrl",
+      "type": "promptString",
+      "description": "URL or local app target for browser/UI check"
+    },
+    {
+      "id": "checkpointStep",
+      "type": "promptString",
+      "description": "Shadow checkpoint step number, 0 is latest"
+    }
+  ],
+  "tasks": [
+    {
+      "label": "AI: Status",
+      "type": "shell",
+      "command": "cc-cockpit-status",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Full System Status",
+      "type": "shell",
+      "command": "ai status",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Doctor",
+      "type": "shell",
+      "command": "ai doctor",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Explain Route",
+      "type": "shell",
+      "command": "~/AI-SYSTEM-V2/scripts/intent-route.sh",
+      "args": ["--dry-run", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Lane Route",
+      "type": "shell",
+      "command": "cc-lane",
+      "args": ["route", "${input:aiCapability}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Build / Fix",
+      "type": "shell",
+      "command": "router-ask",
+      "args": ["--purpose", "precision", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Design / Browser",
+      "type": "shell",
+      "command": "router-ask",
+      "args": ["--purpose", "design", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Research / Extract",
+      "type": "shell",
+      "command": "router-ask",
+      "args": ["--purpose", "cheap", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Router Health",
+      "type": "shell",
+      "command": "router-ask --health",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Route Receipt",
+      "type": "shell",
+      "command": "cc-router-receipt",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Router Metrics",
+      "type": "shell",
+      "command": "cc-router-metrics",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Permission Matrix",
+      "type": "shell",
+      "command": "cc-permission-matrix",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Browser Check",
+      "type": "shell",
+      "command": "~/AI-SYSTEM-V2/scripts/intent-route.sh",
+      "args": ["--dry-run", "browser check ${input:aiUrl} with screenshot and UI validation"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Ask / Plan",
+      "type": "shell",
+      "command": "router-ask",
+      "args": ["--purpose", "precision", "answer read-only; do not edit files: ${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Save Plan",
+      "type": "shell",
+      "command": "cc-plan",
+      "args": ["${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Review Diff",
+      "type": "shell",
+      "command": "cc-review-diff",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Context Snapshot",
+      "type": "shell",
+      "command": "cc-context-snapshot",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Checkpoints",
+      "type": "shell",
+      "command": "cc-checkpoints",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Checkpoint Diff",
+      "type": "shell",
+      "command": "cc-rollback",
+      "args": ["show", "${input:checkpointStep}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Jobs",
+      "type": "shell",
+      "command": "cc-jobs",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: System Demo",
+      "type": "shell",
+      "command": "cc-system-demo",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Product Readiness",
+      "type": "shell",
+      "command": "cc-product-readiness",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Disk Readiness",
+      "type": "shell",
+      "command": "cc-disk-readiness",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Claude Direct",
+      "type": "shell",
+      "command": "claude",
+      "args": ["--print", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Codex Direct",
+      "type": "shell",
+      "command": "codex",
+      "args": ["exec", "${input:aiPrompt}"],
+      "problemMatcher": []
+    }
+  ]
+}

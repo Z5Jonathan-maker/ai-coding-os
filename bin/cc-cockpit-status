@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# cc-cockpit-status — concise cockpit snapshot for VS Code and terminal.
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
+
+section() {
+  printf '\n## %s\n\n' "$1"
+}
+
+printf '# AI Cockpit Status\n\n'
+printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'Dotfiles: %s\n' "$DOTFILES"
+
+section "Readiness"
+if "$DOTFILES/bin/cc-lane-registry-check" >/tmp/cc-cockpit-lanes.out 2>&1; then
+  printf -- '- Lane registry: OK (%s)\n' "$(cat /tmp/cc-cockpit-lanes.out)"
+else
+  printf -- '- Lane registry: FAIL\n'
+  sed 's/^/  /' /tmp/cc-cockpit-lanes.out
+fi
+
+if "$DOTFILES/bin/cc-router-smoke" >/tmp/cc-cockpit-router.out 2>&1; then
+  printf -- '- Router smoke: OK\n'
+else
+  printf -- '- Router smoke: FAIL\n'
+  sed 's/^/  /' /tmp/cc-cockpit-router.out
+fi
+
+avail_gb="$(df -g "$HOME" | awk 'NR==2 {print $4}')"
+if [ "$avail_gb" -ge "$MIN_FREE_GB" ]; then
+  printf -- '- Disk headroom: OK (%sGB free)\n' "$avail_gb"
+else
+  printf -- '- Disk headroom: FAIL (%sGB free, need %sGB; run cc-disk-readiness)\n' "$avail_gb" "$MIN_FREE_GB"
+fi
+
+section "Capability Routes"
+"$DOTFILES/bin/cc-lane" capabilities | sed 's/^/- /'
+
+section "VS Code"
+user_dir="$HOME/Library/Application Support/Code/User"
+for f in settings keybindings tasks mcp; do
+  target="$(readlink "$user_dir/$f.json" 2>/dev/null || true)"
+  if [ "$target" = "$DOTFILES/vscode/$f.json" ]; then
+    printf -- '- %s.json: linked\n' "$f"
+  else
+    printf -- '- %s.json: NOT LINKED (%s)\n' "$f" "${target:-missing}"
+  fi
+done
+
+section "Permission"
+if command -v cc-permission-matrix >/dev/null 2>&1; then
+  cc-permission-matrix --summary
+else
+  printf 'cc-permission-matrix unavailable\n'
+fi
+
+section "Checkpoints"
+if command -v cc-checkpoints >/dev/null 2>&1; then
+  cc-checkpoints summary
+else
+  printf 'cc-checkpoints unavailable\n'
+fi
+
+section "Route Receipt"
+if command -v cc-router-receipt >/dev/null 2>&1; then
+  cc-router-receipt --summary
+else
+  printf 'cc-router-receipt unavailable\n'
+fi
+
+section "Jobs"
+if command -v cc-jobs >/dev/null 2>&1; then
+  cc-jobs | sed -n '1,12p'
+else
+  printf 'cc-jobs unavailable\n'
+fi
+
+section "Router Usage"
+router_usage="$HOME/code/projects/cc-router/bin/router-usage"
+if [ -x "$router_usage" ]; then
+  "$router_usage" 25 | sed -n '1,45p'
+elif command -v router-usage >/dev/null 2>&1; then
+  router-usage 25 | sed -n '1,45p'
+else
+  printf 'router-usage unavailable\n'
+fi
+
+section "Core Commands"
+for cmd in codex claude kimi deepseek router-ask cc-system-demo; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    printf -- '- %s: present\n' "$cmd"
+  else
+    printf -- '- %s: missing\n' "$cmd"
+  fi
+done
+
+rm -f /tmp/cc-cockpit-lanes.out /tmp/cc-cockpit-router.out

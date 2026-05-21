@@ -14,3 +14,6 @@ claude/wiki/learnings/dosecraft-research/[0-9]*.md
 
 # Cloned external repo — corpus content stays local-only (same as mentor-* / dosecraft-research)
 claude/wiki/learnings/jailbreak-corpus/
+claude/wiki/logs/.session-heartbeat
+claude/audits/drift-*.md
+claude/audits/mcp-probe-*.md

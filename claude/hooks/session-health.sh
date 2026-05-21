@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# SessionStart hook: surface drift/failures from cc-health at session start so
+# SessionStart hook: surface AI-SYSTEM-V2 drift/failures at session start so
 # the new model context starts AWARE of what's broken.
 #
-# This is the bridge between the closed-loop observability (cc-health, cc-
+# This is the bridge between the closed-loop observability (AI-SYSTEM-V2 status,
 # deploy-watch, mempalace auto-write) and the agent that actually acts on it.
 # Pre-2026-05-14 sessions started blind to drift and had to discover it via
 # bug reports. Now: every fresh session knows what's broken before it speaks.
@@ -11,15 +11,15 @@
 # produces no context (don't pollute the session with "all green").
 set -u
 
-# Don't run if cc-health is missing (fresh install, broken PATH, etc.)
-command -v cc-health >/dev/null 2>&1 || exit 0
+STATUS_CMD="$HOME/AI-SYSTEM-V2/scripts/ai-control.sh"
+[ -x "$STATUS_CMD" ] || exit 0
 
 # Read stdin (session metadata) so the hook is a well-formed Claude Code hook
 _input=$(cat 2>/dev/null || true)
 
-# Run cc-health in quiet mode (only non-OK rows). 8s hard timeout — session
-# start shouldn't be delayed.
-(cc-health --instant 2>&1) >/tmp/session-health-$$.out &
+# Run the local status dashboard. 8s hard timeout — session start shouldn't be
+# delayed.
+("$STATUS_CMD" status 2>&1) >/tmp/session-health-$$.out &
 hpid=$!
 elapsed=0
 while [ $elapsed -lt 8 ]; do
@@ -37,14 +37,13 @@ if kill -0 $hpid 2>/dev/null; then
   exit 0
 fi
 
-# Exit 0 from cc-health = all green. Skip entirely.
-if [ "${rc:-0}" = "0" ]; then
+# A clean operational dashboard produces no additional context.
+if [ "${rc:-0}" = "0" ] && grep -q '\*\*Status:\*\* OPERATIONAL' /tmp/session-health-$$.out; then
   rm -f /tmp/session-health-$$.out
   exit 0
 fi
 
-# Strip ANSI escapes (cc-health colors stdout when TTY but here it's piped —
-# should be plain already, this is defense)
+# Strip ANSI escapes.
 body=$(sed -E $'s/\033\\[[0-9;]*m//g' /tmp/session-health-$$.out)
 rm -f /tmp/session-health-$$.out
 
@@ -60,7 +59,7 @@ if not body:
     raise SystemExit(0)
 ctx = (
     "[session-health] Stack state at session start. The closed-loop "
-    "observability (cc-health) is reporting non-green components. "
+    "observability (AI-SYSTEM-V2 status) is reporting non-green components. "
     "Surface to the user only if relevant to their current request — "
     "don't volunteer it for trivial questions.\n\n"
     + body

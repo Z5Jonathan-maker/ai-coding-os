@@ -104,6 +104,16 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Banner / social ad / hero asset" | `banner-design` | — |
 | "Slide deck / presentation" | `slides` | HTML + Chart.js |
 | "What can you do / show capabilities / arsenal" | `arsenal` | Full capability index + status commands |
+| "Open cockpit / AI-HQ workspace" | `00-open-cockpit` | Slash command: opens the AI-HQ control workspace |
+| "System status / AI-SYSTEM-V2 dashboard" | `01-system-status` | Slash command: live status dashboard |
+| "Route this task through AI-SYSTEM-V2" | `02-route-task` | Slash command: route via the control plane |
+| "Load Aurex workflow" | `10-wf-aurex` | Slash command: project workflow context |
+| "Load browser workflow" | `10-wf-browser` | Slash command: browser automation workflow |
+| "Load claims workflow" | `10-wf-claims` | Slash command: claims project workflow |
+| "Load coding workflow" | `10-wf-coding` | Slash command: coding workflow |
+| "Load creative workflow" | `10-wf-creative` | Slash command: creative workflow |
+| "Load DoseCraft workflow" | `10-wf-dosecraft` | Slash command: DoseCraft workflow |
+| "Load website workflow" | `10-wf-website` | Slash command: website workflow |
 | "What did we do in past sessions" | `recall` | MemPalace semantic search |
 | "Save state / checkpoint" | `checkpoint` | `~/.claude/checkpoints/` |
 | "Morning standup / what's on my plate" | `morning` | Open PRs + brew + commits |
@@ -119,12 +129,13 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Apply Karpathy rules" | `karpathy-guidelines` | Surgical, simplicity-first |
 | "Consolidate memory / distill recent sessions" | `consolidate-memory` | Updates 3-tier memory layer (Roman Knox pattern) |
 | "Log what worked / left a learning behind / reflect on this cycle" | `cc-reflect` (CLI, not a skill) | `cc-reflect optimization\|cycle\|failure --flags…` — queues to `~/.claude/state/reflection-queue.jsonl`; Stop hook drains to `wiki/logs/optimization-log.md` (or `failure-log.md`). Use after non-trivial work so the wiki accumulates structured history instead of hand-curated entries. |
-| "Is everything actually working / single truth across stack" | `cc-health` (CLI, not a skill) | One-call probe of router tiers, bridges, MCP daemons, task queue, vec store, mempalace, closed-loop signals + 15-min alert window. Returns exit 0 (green) / 1 (warn) / 2 (fail). Cross-references layers so "ok=true while keeper says down" can't hide. |
-| "Is my prod actually getting my pushes / autonomous loop reaching prod" | `cc-deploy-watch` (CLI, not a skill) | `cc-deploy-watch <owner/repo> <domain>` — cross-references GitHub HEAD vs check-runs vs Vercel deploy vs live HTTP. Writes alerts to `~/.claude/state/deploy-alerts.log`; surfaced in `cc-health`. Caught the 2026-05-14 "autonomous loop pushing into void" pattern: 20+ cycles failing GHA billing → stale prod. |
+| "Is everything actually working / single truth across stack" | (no skill — run `~/AI-SYSTEM-V2/scripts/ai-control.sh status`) | Live dashboard for router tiers, bridges, MCP daemons, memory, browser lane, TEL, launch agents, projects, and drift signals. `cc-health` was retired in the 2026-05-19 cleanup. |
+| "Is my prod actually getting my pushes / autonomous loop reaching prod" | `cc-deploy-watch` (CLI, not a skill) | `cc-deploy-watch <owner/repo> <domain>` — cross-references GitHub HEAD vs check-runs vs Vercel deploy vs live HTTP. Writes alerts to `~/.claude/state/deploy-alerts.log`; surfaced by AI-SYSTEM-V2 status. Caught the 2026-05-14 "autonomous loop pushing into void" pattern: 20+ cycles failing GHA billing → stale prod. |
 | "Create or modify a skill" | `skill-creator` | New skill scaffold or upgrade existing one |
 | "Find what's new / scout for X / challenge existing knowledge" | `research-scout` *(skill — quick, in-session)* | Stages findings in long-term-memory.md `new_learnings`. For long-form delegated research, use the `research-scout` agent (see Agent Routing Table). |
 | "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action gateway — credentials stay out of the transcript. **Status:** daemon live; Keychain-first auth works now, with 1Password only as optional fallback for unmigrated services. |
 | "Show me brain state / system snapshot" | (no skill — run `~/.claude/scripts/snapshot.sh`) | Single-command full state report |
+| "Use my logged-in browser / open a page / screenshot / click around" | `kimi-webbridge` | Default real Chrome bridge with user session/cookies preserved |
 | "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with auto-browser MCP. |
 | "Monitor controversial repos / grey-area archive" | `grey-area-arsenal` | GitHub monitor + local archive tooling |
 | "Build me a website / landing page / marketing site / 3D hero" | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
@@ -193,7 +204,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 
 > **MCP delivery — 3 layers (added 2026-05-18 audit):**
 >
-> 1. **`~/.mcp-hub/`** — local supergateway managing 6 servers as persistent SSE on `localhost:3301–3306` (playwright, chrome-devtools, shadcn, memory, filesystem, github). Config: `~/.mcp-hub/config.json`. VS Code / Antigravity load these via `~/Library/Application Support/Code/User/mcp.json` (HTTP transport).
+> 1. **Deferred MCPs** — Codex/Claude session injection exposes MCPs as needed; do not assume a local mcp-hub checkout exists on this machine.
 > 2. **OAuth-injected by claude.ai** — `claude_ai_Figma`, `claude_ai_Gmail`, `claude_ai_Google_Calendar`, `claude_ai_Google_Drive`, `claude_ai_Gamma`, `claude_ai_Amplitude`, `claude_ai_Vibe_Prospecting`. Session-scoped. No local config. Re-auth in claude.ai UI when one stops surfacing tools.
 > 3. **Project-scoped** — `.mcp.json` per project (e.g. webclaw inside scraping projects, shadcn inside design projects). Only loads inside that project's working tree.
 >
@@ -209,7 +220,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Page inspect / Lighthouse / DevTools panels | `chrome-devtools` | **Demoted from default 2026-05-18** — keep for performance traces, Lighthouse audits, DevTools-protocol inspection of public pages. Doesn't share user session. |
 | Throwaway / ephemeral browser automation (no user session needed) | `playwright` MCP | Use when the task spins up fresh sessions, scrapes public pages, or runs CI-style smoke tests. Clean slate every run. |
 | Browser automation, clean sites (CLI alt) | `agent-browser` *(CLI, not MCP)* | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
-| Browser automation, anti-bot-protected sites (Cloudflare/Google/etc.) | `camofox-browser` *(REST API on `localhost:9377`, not MCP)* | Camoufox-powered Firefox fork with C++-level fingerprint spoofing (navigator/WebGL/AudioContext/WebRTC). Curl HTTP endpoints; OpenAPI at `/openapi.json`. Source: `~/code/research/camofox-browser/`. Start: `cd ~/code/research/camofox-browser && nohup npm start > ~/Library/Logs/camofox-browser.out.log 2>&1 &`. To autostart at login: `launchctl load -w ~/Library/LaunchAgents/bio.aurex.camofox.plist` (plist available but not auto-installed). |
+| Browser automation, anti-bot-protected sites (Cloudflare/Google/etc.) | `camofox-browser` *(optional REST API on `localhost:9377`, not MCP)* | Optional archived lane; not installed by default on this machine. Prefer Kimi WebBridge first, then restore camofox from archive only if a task truly needs Firefox fingerprint spoofing. |
 | Sensitive supervised browse (manual approval gates) | `auto-browser` | Approval gates built-in. Use when each click needs explicit user confirmation. |
 | Read Figma design / get_design_context | `claude_ai_Figma` | URL parsing built-in |
 | Email read/send | `claude_ai_Gmail` | OAuth-gated |
@@ -280,13 +291,13 @@ Sibling layers compose: auto-memory (per-fact files) + 3-tier memory (auto-disti
 
 - **In-session parallel** — Brain's Agent tool — multiple agents within one session, single coordinator. **CAVEAT:** 600s stream watchdog kills agents doing long chrome-devtools sequences (navigate + screenshot + evaluate_script without text emission). Use ONLY for tasks that emit text every ~5min. For heavy chrome/file work, route through **cc-dispatch** below.
 - **Watchdog-free fire-and-forget** — `cc-dispatch` (`~/.claude/scripts/dispatch-agent.sh`, see `~/.claude/scripts/CC-DISPATCH-README.md`) — spawns `claude -p` as detached Unix subprocess. State at `~/.claude/jobs/<id>/`. Inspect via `cc-jobs`, `cc-job-status <id>`, `cc-job-output <id> [--tail N|--error]`. **Use for swarms of 5+ agents OR chrome-devtools-heavy work.** Survives session close.
-- **Cross-session, CLI/scripted** — `octogent` (`~/code/projects/octogent`, `pnpm dev`) — durable per-tentacle CONTEXT.md/todo.md
+- **Cross-session, CLI/scripted** — `octogent` is archived/not installed by default. Restore it only for multi-day tentacle orchestration; otherwise use `cc-dispatch`.
 - **Cross-session, GUI** — Conductor.app (Mac, `brew install --cask conductor`)
 
 **Dispatch decision rule:**
 - 1–3 agents, short task, lots of text streaming → Agent tool (cheapest, in-session memory)
 - 4+ agents OR chrome-devtools-heavy OR >5min runtime → `cc-dispatch` (watchdog-free)
-- Multi-day cross-session orchestration → `octogent`
+- Multi-day cross-session orchestration → restore `octogent` or use Conductor.app
 
 ## MEGA-BRAIN LEARNINGS LAYER
 
@@ -313,3 +324,34 @@ Langfuse traces every session at `http://127.0.0.1:3000`. Don't disable.
 ## IMPORTED SKILLS
 
 @~/code/research/browser-harness/SKILL.md
+
+---
+
+## PLATFORM ROUTING (AI-SYSTEM-V2)
+
+When given a task, you MUST classify it and route appropriately.
+
+| Task Type | Platform | Why |
+|-----------|----------|-----|
+| Browser, UI/UX, screenshots, web crawling, implementation | **Kimi** | Primary operator, WebBridge, browser automation |
+| Architecture, security review, hard debugging, final QA | **Claude** | Strategic brain, high-context reasoning |
+| Summaries, extraction, JSON transforms, compression, bulk | **DeepSeek** | Worker layer, cheap, fast |
+| Images, mockups, hero sections, ads, branding | **ChatGPT** | Creative engine, Image 2.0 |
+
+### Routing Rules
+1. BEFORE acting on any task, run `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run "<task>"` to confirm routing.
+2. If the task involves browser interaction (screenshots, page audit, UI testing), use Kimi WebBridge — NOT your built-in web tools.
+3. If the task involves image generation, defer to ChatGPT (user has ChatGPT Desktop / OpenAI API) — do NOT generate images yourself.
+4. If the task is mechanical (summarize, extract, transform JSON), use DeepSeek via the API — do NOT waste tokens doing it yourself.
+5. For architecture or hard bugs, you (Claude) are the correct platform — proceed directly.
+
+### When to defer
+- Browser screenshots → Kimi (`~/.kimi-webbridge/bin/kimi-webbridge`)
+- Image generation → ChatGPT (`/Applications/ChatGPT.app`)
+- Bulk summaries → DeepSeek API
+- Everything else → You (Claude) or route via `intent-route.sh`
+
+### Commands
+- `~/AI-SYSTEM-V2/scripts/ai-control.sh dry-run "task"` — preview routing
+- `~/AI-SYSTEM-V2/scripts/ai-control.sh ask "task"` — execute via router
+- `~/AI-SYSTEM-V2/scripts/ai-control.sh status` — system status

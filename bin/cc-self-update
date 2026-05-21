@@ -9,6 +9,8 @@
 #   - Docker images for langfuse + auto-browser (compose pull + up -d)
 #   - npx-cached MCP servers (clear cache, re-resolve on next call)
 #   - uv tool upgrade (mempalace, browser-use, gdown, etc.)
+#   - npm globals listed in ~/dotfiles/npm-global-packages.txt
+#   - VS Code extensions listed in ~/dotfiles/vscode/extensions.txt
 #
 # Manual invocation: cc-self-update [--dry-run]
 set -u
@@ -27,6 +29,16 @@ log "=== $ts cc-self-update start (dry_run=$DRY_RUN) ==="
 
 updated=()
 failed=()
+
+npm_cmd() {
+  if command -v npm >/dev/null 2>&1; then
+    command -v npm
+  elif [ -x "$HOME/local/opt/node/bin/npm" ]; then
+    echo "$HOME/local/opt/node/bin/npm"
+  elif [ -x "$HOME/.local/share/fnm/node-versions/v22.22.2/installation/bin/npm" ]; then
+    echo "$HOME/.local/share/fnm/node-versions/v22.22.2/installation/bin/npm"
+  fi
+}
 
 # 1. brew
 log ""
@@ -89,11 +101,66 @@ if [ -x /opt/homebrew/bin/uv ]; then
   fi
 fi
 
-# 5. npx cache clear (forces re-resolve of MCP servers on next call)
+# 5. npm globals
+log ""
+log "── npm global packages ──"
+npm_bin="$(npm_cmd || true)"
+if [ -n "${npm_bin:-}" ] && [ -f "$HOME/dotfiles/npm-global-packages.txt" ]; then
+  while read -r pkg cmd _rest; do
+    case "$pkg" in
+      ""|\#*) continue ;;
+    esac
+    if [ "$DRY_RUN" = "0" ]; then
+      if "$npm_bin" list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+        updated+=("npm:$pkg")
+      elif "$npm_bin" install -g "$pkg" >>"$LOG" 2>&1; then
+        updated+=("npm:$pkg")
+      else
+        failed+=("npm:$pkg")
+        continue
+      fi
+      [ -z "${cmd:-}" ] || command -v "$cmd" >/dev/null 2>&1 || failed+=("npm-cmd:$cmd")
+    else
+      log "[DRY-RUN] npm install -g $pkg"
+    fi
+  done <"$HOME/dotfiles/npm-global-packages.txt"
+elif [ -f "$HOME/dotfiles/npm-global-packages.txt" ]; then
+  failed+=("npm unavailable")
+fi
+
+# 6. VS Code extensions
+log ""
+log "── VS Code extensions ──"
+if command -v code >/dev/null 2>&1 && [ -f "$HOME/dotfiles/vscode/extensions.txt" ]; then
+  vscode_ext_list=$(mktemp)
+  code --list-extensions >"$vscode_ext_list"
+  while IFS= read -r ext; do
+    case "$ext" in
+      ""|\#*) continue ;;
+    esac
+    if grep -Fxqi "$ext" "$vscode_ext_list"; then
+      updated+=("vscode:$ext")
+    elif [ "$DRY_RUN" = "0" ]; then
+      if code --install-extension "$ext" >>"$LOG" 2>&1; then
+        updated+=("vscode:$ext")
+        code --list-extensions >"$vscode_ext_list"
+      else
+        failed+=("vscode:$ext")
+      fi
+    else
+      log "[DRY-RUN] code --install-extension $ext"
+    fi
+  done <"$HOME/dotfiles/vscode/extensions.txt"
+  rm -f "$vscode_ext_list"
+elif [ -f "$HOME/dotfiles/vscode/extensions.txt" ]; then
+  failed+=("vscode cli unavailable")
+fi
+
+# 7. npx cache clear (forces re-resolve of MCP servers on next call)
 log ""
 log "── npm cache verify ──"
-if command -v npm >/dev/null; then
-  [ "$DRY_RUN" = "0" ] && npm cache verify >>"$LOG" 2>&1 || true
+if [ -n "${npm_bin:-}" ]; then
+  [ "$DRY_RUN" = "0" ] && "$npm_bin" cache verify >>"$LOG" 2>&1 || true
   updated+=("npm cache")
 fi
 

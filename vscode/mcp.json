@@ -1,0 +1,10 @@
+{
+  "_comment": "VS Code MCP config. Keep only real endpoints here; local mcp-hub ports were retired.",
+  "servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  },
+  "inputs": []
+}

@@ -8,28 +8,37 @@ your phone gets an ntfy push. Otherwise silent.
 
 | When | What runs | Output |
 |---|---|---|
-| **Daily 04:30** | `cc-prune` — disk hygiene for ~/.claude/ | silent log; alerts if can't prune |
 | **Daily 03:30** | `cc-backup` (restic → B2) | silent; alerts on failure |
-| **Sunday 09:00** | `cc-health-weekly` — 11-point health sweep | ntfy ONLY if issues |
-| **1st of month 06:00** | `cc-self-update` — brew + repos + docker + uv | ntfy summary always |
+| **Sunday 09:00** | `cc-health-weekly` — weekly health sweep | ntfy ONLY if issues |
+| **1st of month 06:00** | `cc-self-update` — brew + repos + docker + uv + npm globals | ntfy summary always |
 | **1st of Jan/Apr/Jul/Oct 03:00** | `cc-backup-verify` — restic check + restore-test | ntfy summary; HIGH PRIORITY on failure |
 | **Continuous** | `cc-loop` watchdog (when running) | ntfy on Stop, mercury daemon auto-restart |
 
-## What `cc-health-weekly` checks (11 points)
+`cc-prune` is now manual disk hygiene only. It is not loaded as a
+daily LaunchAgent.
 
-1. cc-prune LaunchAgent loaded
-2. mempalace initialized at ~/mempalace
-3. cc-loop runner installed
-4. mercury daemon running
-5. langfuse-web container alive
-6. auto-browser containers alive
+## What `cc-health-weekly` checks
+
+1. mempalace initialized at ~/mempalace
+2. cc-loop runner installed
+3. zsh startup is silent in automation and `TERM=dumb`
+4. AI-SYSTEM-V2 dashboard operational
+5. Router smoke tests return expected platforms
+6. Lane registry structure is valid
 7. Tailscale authed + on tailnet
-8. 1P CLI signed in
-9. dotfiles in sync with origin/main
-10. Disk usage < 85%
-11. ~/.claude size < 5GB (cc-prune sanity check)
+8. dotfiles in sync with origin/main
+9. npm-only global CLIs from `npm-global-packages.txt`
+10. VS Code User config symlinked + `vscode/extensions.txt` installed
+11. Active docs/scripts contain no retired global-system references
+12. Every executable in `bin/` is classified in `docs/COMMAND-REGISTRY.md`
+13. Runtime mirror symlinks under `~/dotfiles`, `~/.claude`, and `~/.Codex` resolve
+14. No retired user LaunchAgents are loaded
+15. Disk usage < 85%
 
-Silent if all 11 green. Phone push if any red, with detail.
+It also warns if operational `~/.claude` size exceeds 5GB after
+excluding the intentional `~/.claude/gh-archive` cache.
+
+Silent if all green. Phone push if any red, with detail.
 
 ## What `cc-self-update` updates
 
@@ -37,6 +46,8 @@ Silent if all 11 green. Phone push if any red, with detail.
 - `git pull --ff-only` for: `huashu-design`, `browser-harness`, `mercury-agent`, `ui-ux-pro-max-skill`, `langfuse`, `andrej-karpathy-skills`, `auto-browser`
 - `docker compose pull && docker compose up -d` for: langfuse stack + auto-browser stack
 - `uv tool upgrade --all` (mempalace, browser-use, gdown, etc.)
+- `npm-global-packages.txt` via `install.sh` for npm-only global CLIs
+- `vscode/extensions.txt` via `install.sh` for editor extensions
 - `npm cache verify` (forces npx-cached MCP servers to re-resolve next call)
 
 Each step is safe-fail; one failure doesn't abort the rest. Failures
@@ -53,8 +64,8 @@ Quarterly is the right cadence — restic checks are cheap, restore-tests catch 
 
 ## Install (one-shot)
 
-After `cc-bootstrap all` finishes the platform setup, install all
-3 maintenance LaunchAgents:
+After `cc-bootstrap all` finishes the platform setup, install the
+maintenance LaunchAgents:
 
 ```bash
 for plist in cc-health-weekly cc-self-update cc-backup-verify; do
@@ -69,7 +80,7 @@ After install, **the platform maintains itself.** You only act when ntfy pushes 
 ## Verify each manually
 
 ```bash
-cc-health-weekly --verbose       # immediate run, prints all 11 checks
+cc-health-weekly --verbose       # immediate run, prints current checks
 cc-self-update --dry-run          # show what would update without doing it
 cc-backup-verify --full           # full restic check (100% data) + restore-test
 ```
@@ -88,7 +99,7 @@ cc-backup-verify --full           # full restic check (100% data) + restore-test
 ## What rots if you ignore everything for 6 months
 
 With these maintenance LaunchAgents loaded, **almost nothing**:
-- ✓ Disk stays pruned (cc-prune daily)
+- ✓ Disk pressure is watched weekly; run `cc-prune` manually when needed
 - ✓ Backups continue (cc-backup daily) + verified quarterly
 - ✓ Brew + cloned repos + docker images + uv tools all updated monthly
 - ✓ Health checked weekly — phone gets pushed if anything red
@@ -118,5 +129,5 @@ This file lives in `~/dotfiles/docs/MAINTENANCE.md`. Update when the
 platform gains new components that need lifecycle management (e.g.
 when you add a new MCP server worth tracking, or a new docker stack).
 
-Last updated: 2026-04-30. 3 LaunchAgents (weekly health, monthly
+Last updated: 2026-05-20. 3 LaunchAgents (weekly health, monthly
 update, quarterly backup verify) cover the platform end-to-end.

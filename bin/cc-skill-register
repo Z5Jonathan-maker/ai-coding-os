@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # cc-skill-register — register a new skill/CLI/agent into the routing tables.
-# Closes the drift loop that bit us 4× during the 2026-05-14 audit (cc-reflect,
-# cc-health, cc-deploy-watch, swarm-bundle removals all required manual
-# routing-table edits that the drift checker then flagged).
+# Closes the drift loop that bit us during the 2026-05-14 audit, when CLI
+# additions/removals required manual routing-table edits that the drift checker
+# then flagged.
 #
 # Modes:
 #   cc-skill-register skill <name>     — read ~/.claude/skills/<name>/SKILL.md

@@ -37,10 +37,6 @@ check() {
 }
 
 # 1. Platform doctor
-check "doctor: cc-prune loaded" \
-  "launchctl list 2>/dev/null | grep com.user.cc-prune" \
-  "com.user.cc-prune"
-
 check "doctor: mempalace initialized" \
   "[ -f $HOME/mempalace/mempalace.yaml ] && echo ok" \
   "ok"
@@ -49,34 +45,151 @@ check "doctor: cc-loop runner installed" \
   "[ -x $HOME/dotfiles/bin/cc-loop ] && echo ok" \
   "ok"
 
-# 2. Daemons
-check "daemon: mercury running" \
-  "pgrep -f 'mercury.*start' || echo no" \
-  "[0-9]"
+# 2. Shell startup must be silent for automation.
+check "shell: zsh startup silent" \
+  "out=\$(zsh -i -c exit </dev/null 2>&1); [ -z \"\$out\" ] && TERM=dumb zsh -i -c exit </dev/null >/tmp/cc-health-zsh.out 2>&1 && [ ! -s /tmp/cc-health-zsh.out ] && echo ok" \
+  "ok"
 
-check "daemon: langfuse-web container" \
-  "docker ps --format '{{.Names}}' 2>/dev/null | grep langfuse-web || echo no" \
-  "langfuse-web"
+# 3. AI-SYSTEM-V2 dashboard
+check "ai-system: operational" \
+  "$HOME/AI-SYSTEM-V2/scripts/ai-control.sh status 2>/dev/null | grep '^\\*\\*Status:\\*\\* OPERATIONAL'" \
+  "OPERATIONAL"
 
-check "daemon: auto-browser containers" \
-  "docker ps --format '{{.Names}}' 2>/dev/null | grep auto-browser || echo no" \
-  "auto-browser"
+check "router: expected routing decisions" \
+  "$HOME/dotfiles/bin/cc-router-smoke >/dev/null && echo ok" \
+  "ok"
 
-# 3. Connectivity
+check "router: lane registry valid" \
+  "$HOME/dotfiles/bin/cc-lane-registry-check >/dev/null && $HOME/dotfiles/bin/cc-lane route browser_control | grep -q '^browser_control: kimi-webbridge -> playwright -> codex' && echo ok" \
+  "ok"
+
+# 5. Connectivity
 check "tailscale: authed + on tailnet" \
   "/opt/homebrew/bin/tailscale status 2>&1 | head -1" \
   "^100\\."
 
-check "1P CLI: signed in" \
-  "test \"${CC_ALLOW_1PASSWORD_FALLBACK:-0}\" = 1 && /opt/homebrew/bin/op whoami 2>&1 || echo 'op check skipped (Keychain-first mode)'" \
-  "@"
-
-# 4. Dotfiles in sync
+# 6. Dotfiles in sync
 check "dotfiles: in sync with origin" \
   "cd $HOME/dotfiles && git fetch -q && [ \$(git rev-list --count HEAD..origin/main) -eq 0 ] && [ \$(git rev-list --count origin/main..HEAD) -eq 0 ] && echo ok" \
   "ok"
 
-# 5. Disk space
+# 7. npm globals with explicit commands
+if [ -f "$HOME/dotfiles/npm-global-packages.txt" ]; then
+  while read -r pkg cmd _rest; do
+    case "$pkg" in
+      ""|\#*) continue ;;
+    esac
+    check "npm global: $pkg" \
+      "npm list -g --depth=0 '$pkg' >/dev/null 2>&1 && command -v '$cmd' >/dev/null 2>&1 && echo ok" \
+      "ok"
+  done <"$HOME/dotfiles/npm-global-packages.txt"
+fi
+
+# 8. VS Code user config and extension manifest
+check "vscode: user config symlinked" \
+  "for f in settings keybindings tasks mcp; do [ \"\$(readlink \"$HOME/Library/Application Support/Code/User/\$f.json\" 2>/dev/null)\" = \"$HOME/dotfiles/vscode/\$f.json\" ] || exit 1; done; echo ok" \
+  "ok"
+
+if command -v code >/dev/null 2>&1 && [ -f "$HOME/dotfiles/vscode/extensions.txt" ]; then
+  want_exts=$(mktemp)
+  have_exts=$(mktemp)
+  awk 'NF && $1 !~ /^#/ {print tolower($1)}' "$HOME/dotfiles/vscode/extensions.txt" | LC_ALL=C sort >"$want_exts"
+  code --list-extensions >"$have_exts.raw"
+  awk '{print tolower($1)}' "$have_exts.raw" | LC_ALL=C sort >"$have_exts"
+  missing_exts=$(comm -23 "$want_exts" "$have_exts")
+  rm -f "$want_exts" "$have_exts" "$have_exts.raw"
+  if [ -n "$missing_exts" ]; then
+    issues+=("vscode: missing extensions $(echo "$missing_exts" | tr '\n' ' ')")
+    echo "  ✗ vscode: extension manifest drift" >>"$LOG"
+  else
+    checks_passed=$((checks_passed + 1))
+    [ "$VERBOSE" -eq 1 ] && echo "  ✓ vscode: extension manifest satisfied"
+    echo "  ✓ vscode: extension manifest satisfied" >>"$LOG"
+  fi
+fi
+
+# 9. Retired global-system references should not reappear in active files.
+noise_hits=$(
+  rg -n 'perplexity|cc-loop-v2|cc-loop-v3|com\.user\.cc-prune|openai ask|openai ping|localhost:330[1-6]' "$HOME/dotfiles" \
+    --glob '!**/bin/cc-health-weekly' \
+    --glob '!claude/audits/**' \
+    --glob '!**/docs/COMMAND-REGISTRY.md' \
+    --glob '!**/claude/skills/health/SKILL.md' \
+    --glob '!claude/wiki/learnings/**' \
+    --glob '!claude/wiki/logs/**' \
+    --glob '!**/claude/wiki/logs/**' \
+    --glob '!*.backup.*' \
+    2>/dev/null || true
+)
+if [ -z "$noise_hits" ]; then
+  checks_passed=$((checks_passed + 1))
+  [ "$VERBOSE" -eq 1 ] && echo "  ✓ active files: no retired references"
+  echo "  ✓ active files: no retired references" >>"$LOG"
+else
+  issues+=("active files: retired references found")
+  if [ "$VERBOSE" -eq 1 ]; then
+    printf '  ✗ retired references:\n%s\n' "$noise_hits" | head -12
+  fi
+  echo "  ✗ active files: retired references found" >>"$LOG"
+fi
+
+# 10. Every PATH command in dotfiles/bin must be classified.
+if [ -f "$HOME/dotfiles/docs/COMMAND-REGISTRY.md" ]; then
+  bin_cmds=$(mktemp)
+  registered_cmds=$(mktemp)
+  find -L "$HOME/dotfiles/bin" -maxdepth 1 -type f -perm -111 -print \
+    | sed 's#.*/##' \
+    | LC_ALL=C sort >"$bin_cmds"
+  # shellcheck disable=SC2016
+  sed -n 's/^- `\([^`]*\)`.*/\1/p' "$HOME/dotfiles/docs/COMMAND-REGISTRY.md" \
+    | LC_ALL=C sort -u >"$registered_cmds"
+  unregistered_cmds=$(comm -23 "$bin_cmds" "$registered_cmds")
+  rm -f "$bin_cmds" "$registered_cmds"
+
+  if [ -z "$unregistered_cmds" ]; then
+    checks_passed=$((checks_passed + 1))
+    [ "$VERBOSE" -eq 1 ] && echo "  ✓ bin: command registry complete"
+    echo "  ✓ bin: command registry complete" >>"$LOG"
+  else
+    issues+=("bin: unregistered commands $(echo "$unregistered_cmds" | tr '\n' ' ')")
+    [ "$VERBOSE" -eq 1 ] && printf '  ✗ unregistered commands:\n%s\n' "$unregistered_cmds"
+    echo "  ✗ bin: command registry incomplete" >>"$LOG"
+  fi
+fi
+
+# 11. Runtime mirror symlinks should resolve.
+broken_links=$(
+  find -L "$HOME/dotfiles" "$HOME/.claude" "$HOME/.Codex" -maxdepth 2 -type l -print 2>/dev/null || true
+)
+if [ -z "$broken_links" ]; then
+  checks_passed=$((checks_passed + 1))
+  [ "$VERBOSE" -eq 1 ] && echo "  ✓ symlinks: runtime mirrors resolve"
+  echo "  ✓ symlinks: runtime mirrors resolve" >>"$LOG"
+else
+  issues+=("symlinks: broken links found")
+  if [ "$VERBOSE" -eq 1 ]; then
+    printf '  ✗ broken symlinks:\n%s\n' "$broken_links" | head -12
+  fi
+  echo "  ✗ symlinks: broken links found" >>"$LOG"
+fi
+
+# 12. Retired LaunchAgents should not be loaded.
+retired_jobs=$(
+  launchctl list 2>/dev/null | rg 'com\.user\.cc-prune|cc-loop-v2|cc-loop-v3|cc-mercury|perplexity' || true
+)
+if [ -z "$retired_jobs" ]; then
+  checks_passed=$((checks_passed + 1))
+  [ "$VERBOSE" -eq 1 ] && echo "  ✓ launchd: no retired jobs loaded"
+  echo "  ✓ launchd: no retired jobs loaded" >>"$LOG"
+else
+  issues+=("launchd: retired jobs loaded")
+  if [ "$VERBOSE" -eq 1 ]; then
+    printf '  ✗ retired launchd jobs:\n%s\n' "$retired_jobs"
+  fi
+  echo "  ✗ launchd: retired jobs loaded" >>"$LOG"
+fi
+
+# 13. Disk space
 disk_pct=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
 if [ "${disk_pct:-100}" -gt 85 ]; then
   issues+=("disk: ${disk_pct}% full")
@@ -86,10 +199,14 @@ else
   echo "  ✓ disk: ${disk_pct}% full" >>"$LOG"
 fi
 
-# 6. ~/.claude size (cc-prune should keep this in check)
-claude_size_mb=$(du -sm "$HOME/.claude" 2>/dev/null | awk '{print $1}')
+# 14. ~/.claude operational size. gh-archive is intentionally large research
+# cache, so exclude it from the runtime-churn threshold.
+claude_size_mb=$(
+  du -sm "$HOME/.claude"/* 2>/dev/null \
+    | awk 'index($2, "/.claude/gh-archive") == 0 {sum += $1} END {print sum + 0}'
+)
 if [ "${claude_size_mb:-0}" -gt 5000 ]; then
-  issues+=("\$HOME/.claude: ${claude_size_mb}MB (cc-prune may be misconfigured)")
+  issues+=("\$HOME/.claude operational files: ${claude_size_mb}MB")
 fi
 
 # Summary
@@ -97,10 +214,10 @@ total=$((checks_passed + ${#issues[@]}))
 echo "=== $ts result: ${checks_passed}/${total} green ===" >>"$LOG"
 
 if [ ${#issues[@]} -eq 0 ]; then
-  msg="✓ cc-health: all ${total} green"
+  msg="✓ weekly health: all ${total} green"
   [ "$VERBOSE" -eq 1 ] && echo "$msg"
 else
-  msg="⚠ cc-health: $(echo ${#issues[@]}) of ${total} need attention"
+  msg="⚠ weekly health: ${#issues[@]} of ${total} need attention"
   detail=$(printf '\n  • %s' "${issues[@]}")
   msg="${msg}${detail}"
   [ "$VERBOSE" -eq 1 ] && echo -e "$msg"
@@ -109,7 +226,7 @@ fi
 # ntfy push if topic configured
 if [ -n "${NTFY_TOPIC:-}" ] && [ ${#issues[@]} -gt 0 ]; then
   curl -fsSL --max-time 5 \
-    -H "Title: cc-health-weekly" \
+    -H "Title: weekly health" \
     -H "Priority: 3" \
     -H "Tags: stethoscope" \
     -d "$msg" \

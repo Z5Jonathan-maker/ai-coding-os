@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
+checks=0
+passed=0
+blockers=()
+
+check() {
+  local name="$1" cmd="$2" required="${3:-yes}"
+  checks=$((checks + 1))
+  if eval "$cmd" >/tmp/cc-product-readiness.out 2>&1; then
+    passed=$((passed + 1))
+    printf 'ok   %s\n' "$name"
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' /tmp/cc-product-readiness.out | sed -n '1,4p'
+    [ "$required" = "yes" ] && blockers+=("$name")
+  fi
+}
+
+clean_git() {
+  local repo="$1"
+  git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 1
+  [ -z "$(git -C "$repo" status --porcelain)" ] || return 1
+}
+
+synced_git() {
+  local repo="$1" upstream
+  upstream="$(git -C "$repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)" || return 1
+  git -C "$repo" fetch --quiet >/dev/null 2>&1 || return 1
+  [ "$(git -C "$repo" rev-parse HEAD)" = "$(git -C "$repo" rev-parse "$upstream")" ]
+}
+
+synced_if_configured() {
+  local repo="$1"
+  git -C "$repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1 || return 0
+  synced_git "$repo"
+}
+
+disk_ready() {
+  local free_gb
+  free_gb="$(df -g "$HOME" | awk 'NR==2 {print $4}')"
+  [ "$free_gb" -ge "$MIN_FREE_GB" ]
+}
+
+extension_ready() {
+  local link="$HOME/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0"
+  [ "$(readlink "$link" 2>/dev/null)" = "$DOTFILES/vscode/ai-cockpit" ] || return 1
+  code --list-extensions --show-versions 2>/dev/null | grep -Fxq 'z5jonathan.ai-system-cockpit@0.1.0'
+}
+
+printf '# Product Readiness\n\n'
+printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Router: %s\n\n' "$ROUTER"
+
+check 'lane registry valid' "$DOTFILES/bin/cc-lane-registry-check"
+check 'router smoke routes expected prompts' "$DOTFILES/bin/cc-router-smoke"
+check 'router integrity aligned' "node '$ROUTER/lib/check-integrity.cjs'"
+check 'system demo passes' "$DOTFILES/bin/cc-system-demo"
+check 'VS Code cockpit extension installed' extension_ready
+check 'VS Code config symlinked' "[ \"\$(readlink \"$HOME/Library/Application Support/Code/User/tasks.json\" 2>/dev/null)\" = \"$DOTFILES/vscode/tasks.json\" ]"
+check 'disk has autonomous headroom' disk_ready
+check 'dotfiles working tree clean' "clean_git '$DOTFILES'"
+check 'router working tree clean' "clean_git '$ROUTER'"
+check 'dotfiles synced to upstream' "synced_git '$DOTFILES'"
+check 'router synced if upstream configured' "synced_if_configured '$ROUTER'"
+check 'product docs present' "[ -f '$DOTFILES/docs/PRODUCT-PACKAGING.md' ] && [ -f '$DOTFILES/docs/VS-CODE-COCKPIT.md' ]"
+
+score=$((passed * 100 / checks))
+printf '\nScore: %s/%s checks (%s%%)\n' "$passed" "$checks" "$score"
+
+if [ "${#blockers[@]}" -eq 0 ]; then
+  printf 'Status: product-ready\n'
+else
+  printf 'Status: not product-ready\n'
+  printf 'Blockers:\n'
+  for blocker in "${blockers[@]}"; do
+    printf -- '- %s\n' "$blocker"
+  done
+fi
+
+rm -f /tmp/cc-product-readiness.out

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# cc-context-snapshot — show the current repo context packet used for routing.
+set -euo pipefail
+
+target="${1:-$PWD}"
+exec "$HOME/AI-SYSTEM-V2/scripts/project-context.sh" "$target"

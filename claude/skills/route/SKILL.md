@@ -74,7 +74,7 @@ echo "Refactor lib/brand.ts to ..." > ~/.claude/cc-loop-prompt.md
 launchctl load -w ~/Library/LaunchAgents/com.user.cc-loop.plist  # if not loaded
 
 # mercury (Telegram + CLI agent, daemonized)
-cc-mercury up
+mercury up
 # then DM the bot from your phone
 
 # cc-swarm (parallel fan-out, 4 agents on 4 worktrees)

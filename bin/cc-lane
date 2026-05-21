@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+/**
+ * cc-lane — inspect the AI lane registry.
+ */
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+
+const registryPath = process.env.CC_LANE_REGISTRY || path.join(os.homedir(), 'dotfiles', 'ai-lanes.json');
+const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+const lanes = new Map((registry.lanes || []).map((lane) => [lane.id, lane]));
+
+function usage() {
+  console.log('usage: cc-lane list | route <capability> | show <lane-id> | capabilities');
+}
+
+function printLane(lane) {
+  const fallbackText = lane.fallbacks?.length ? lane.fallbacks.join(', ') : 'none';
+  console.log(`${lane.id} [${lane.status}]`);
+  console.log(`  role: ${lane.role}`);
+  console.log(`  capabilities: ${(lane.capabilities || []).join(', ')}`);
+  console.log(`  fallbacks: ${fallbackText}`);
+  console.log(`  health: ${lane.health?.kind || 'unknown'}`);
+}
+
+const [cmd, arg] = process.argv.slice(2);
+
+if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') {
+  usage();
+  process.exit(cmd ? 0 : 1);
+}
+
+if (cmd === 'list') {
+  for (const lane of registry.lanes || []) {
+    console.log(`${lane.id}\t${lane.status}\t${lane.role}`);
+  }
+  process.exit(0);
+}
+
+if (cmd === 'capabilities') {
+  for (const name of Object.keys(registry.capabilities || {}).sort()) {
+    const route = registry.capabilities[name];
+    const fallbackText = route.fallbacks?.length ? ` -> ${route.fallbacks.join(' -> ')}` : '';
+    console.log(`${name}\t${route.primary}${fallbackText}`);
+  }
+  process.exit(0);
+}
+
+if (cmd === 'show') {
+  const lane = lanes.get(arg);
+  if (!lane) {
+    console.error(`unknown lane: ${arg || ''}`);
+    process.exit(1);
+  }
+  printLane(lane);
+  process.exit(0);
+}
+
+if (cmd === 'route') {
+  const route = registry.capabilities?.[arg];
+  if (!route) {
+    console.error(`unknown capability: ${arg || ''}`);
+    process.exit(1);
+  }
+  const fallbackText = route.fallbacks?.length ? ` -> ${route.fallbacks.join(' -> ')}` : '';
+  console.log(`${arg}: ${route.primary}${fallbackText}`);
+  if (route.noFallbackReason) console.log(`no fallback: ${route.noFallbackReason}`);
+  process.exit(0);
+}
+
+usage();
+process.exit(1);

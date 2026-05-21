@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# cc-plan — save a read-only planning artifact for Plan/Act handoff.
+set -euo pipefail
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
+  printf 'Usage: cc-plan "work request"\n'
+  printf 'Writes .ai/plans/<timestamp>-<slug>.md in the current workspace.\n'
+  exit 0
+fi
+
+prompt="$*"
+root="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+plans_dir="${CC_PLAN_DIR:-.ai/plans}"
+ts="$(date -u '+%Y%m%dT%H%M%SZ')"
+slug="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//; s/-$//' | cut -c1-64)"
+[ -n "$slug" ] || slug="plan"
+file="$plans_dir/$ts-$slug.md"
+
+mkdir -p "$plans_dir"
+
+{
+  printf '# Plan Artifact\n\n'
+  printf 'Created: %s\n' "$ts"
+  printf 'Workspace: %s\n' "$PWD"
+  printf 'Request: %s\n\n' "$prompt"
+  printf '## Route Preview\n\n'
+  if [ -x "$root/scripts/intent-route.sh" ]; then
+    "$root/scripts/intent-route.sh" --dry-run "$prompt" || true
+  else
+    printf 'intent-route unavailable: %s/scripts/intent-route.sh\n' "$root"
+  fi
+  printf '\n## Plan\n\n'
+} >"$file"
+
+plan_prompt="Create a concise implementation plan for this request. Do not edit files. Include scope, ordered steps, verification commands, and stop conditions. Request: $prompt"
+
+if command -v router-ask >/dev/null 2>&1; then
+  router-ask --purpose precision "$plan_prompt" | tee -a "$file"
+else
+  printf 'router-ask unavailable; fill plan manually.\n' | tee -a "$file"
+fi
+
+printf '\nSaved plan: %s\n' "$file"

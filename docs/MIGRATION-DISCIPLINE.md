@@ -5,7 +5,7 @@ for systematically rehabbing each Tier-1 project to a known standard,
 without infecting the platform with patterns we explicitly rejected.
 
 This doc is the yardstick. /onboard, /audit, /design, /huashu-design,
-/ui-ux-pro-max, cc-new-editorial, cc-mercury, cc-loop — all of them
+/ui-ux-pro-max, cc-new-editorial, mercury, cc-loop — all of them
 defer to this.
 
 ## The bright lines (what the new config requires)
@@ -139,7 +139,7 @@ Specifically for **dosecraft** (Expo + EAS App Store submission):
 - Native iOS Simulator (Xcode required)
 - EAS Build local mode (vs cloud) — faster iteration, free
 - TestFlight upload via Transporter or `eas submit -p ios`
-- App Store Connect API key (.p8) — store in 1Password, read at runtime per `cc-mercury` pattern
+- App Store Connect API key (.p8) — store in 1Password or TEL, read at runtime rather than committing secrets
 - Apple Developer cert + provisioning profile (managed via EAS or fastlane match)
 - Push notification certs (APNs) if dosecraft uses push
 

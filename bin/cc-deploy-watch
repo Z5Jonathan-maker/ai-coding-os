@@ -125,7 +125,7 @@ print(f'{diff:.1f}')")
   fi
 fi
 
-# Persist state for cc-health to read
+# Persist state for AI-SYSTEM-V2 status to read
 python3 - "$STATE" "$REPO" "$HEAD_SHA" "$DEPLOY_SHA" "$DEPLOY_TS" "$HTTP_CODE" "${DRIFT_HOURS:-unknown}" "$CI_OK" <<'PY' 2>/dev/null
 import json, sys
 path, repo, head, deploy, deploy_ts, http, drift_hours, ci = sys.argv[1:9]

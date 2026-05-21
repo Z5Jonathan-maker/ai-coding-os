@@ -1,0 +1,145 @@
+{
+  "$schema": "docs/LANE-REGISTRY.schema.json",
+  "version": 1,
+  "lanes": [
+    {
+      "id": "kimi-webbridge",
+      "role": "Primary browser, screenshot, web, UI/UX, and visual-operator lane.",
+      "status": "active",
+      "capabilities": ["browser_control", "screenshots", "web_crawling", "ui_analysis", "responsive_check", "design_review"],
+      "health": {
+        "kind": "command",
+        "command": "~/.kimi-webbridge/bin/kimi-webbridge status",
+        "expect": "running"
+      },
+      "fallbacks": ["playwright", "codex"],
+      "unsupported": ["final_security_review", "payment_compliance", "hard_architecture"],
+      "hardFloor": false,
+      "credential": "chrome-session",
+      "notes": "Matches the Kimi/WebBridge default for browser and design-first work."
+    },
+    {
+      "id": "playwright",
+      "role": "Clean-session browser automation and local smoke-test fallback.",
+      "status": "optional",
+      "capabilities": ["browser_control", "screenshots", "local_browser_smoke", "public_web_smoke"],
+      "health": {
+        "kind": "command",
+        "command": "command -v npx",
+        "expect": "npx"
+      },
+      "fallbacks": ["codex"],
+      "unsupported": ["browser_auth_session", "credentialed_action", "payment_compliance"],
+      "hardFloor": false,
+      "credential": "none",
+      "notes": "Use when Kimi/WebBridge is unavailable and a clean browser session is acceptable."
+    },
+    {
+      "id": "codex",
+      "role": "Local engineering execution, code edits, verification, and system integration.",
+      "status": "active",
+      "capabilities": ["code_edit", "local_verification", "system_integration", "repo_cleanup"],
+      "health": {
+        "kind": "command",
+        "command": "command -v codex",
+        "expect": "codex"
+      },
+      "fallbacks": ["claude"],
+      "unsupported": ["browser_auth_session", "image_generation"],
+      "hardFloor": false,
+      "credential": "chatgpt-session",
+      "notes": "Primary local execution lane for this Codex runtime."
+    },
+    {
+      "id": "claude",
+      "role": "Precision reasoning, architecture, high-stakes review, and final QA.",
+      "status": "active",
+      "capabilities": ["architecture", "security_review", "compliance_review", "hard_debugging", "final_qa"],
+      "health": {
+        "kind": "command",
+        "command": "command -v claude",
+        "expect": "claude"
+      },
+      "fallbacks": ["codex"],
+      "unsupported": ["browser_control", "image_generation"],
+      "hardFloor": true,
+      "credential": "claude-max-oauth",
+      "notes": "Hard-floor lane for irreversible or high-stakes decisions."
+    },
+    {
+      "id": "deepseek",
+      "role": "Cheap bulk transform, extraction, summarization, JSON cleanup, and first-pass analysis.",
+      "status": "active",
+      "capabilities": ["summarize", "extract", "classify", "dedupe", "json_transform", "bulk_analysis"],
+      "health": {
+        "kind": "command",
+        "command": "command -v deepseek",
+        "expect": "deepseek"
+      },
+      "fallbacks": ["claude", "codex"],
+      "unsupported": ["browser_control", "final_security_review", "credentialed_action"],
+      "hardFloor": false,
+      "credential": "keychain:cc.deepseek.api_key",
+      "notes": "Cheap lane; never final authority for high-stakes work."
+    },
+    {
+      "id": "chatgpt-image",
+      "role": "Image generation/editing and visual asset creation.",
+      "status": "active",
+      "capabilities": ["image_generation", "image_editing", "hero_asset", "product_mockup"],
+      "health": {
+        "kind": "external",
+        "reason": "Provided by Codex image tool or ChatGPT Desktop session."
+      },
+      "fallbacks": [],
+      "unsupported": ["code_edit", "browser_control", "final_qa"],
+      "hardFloor": false,
+      "credential": "chatgpt-session",
+      "notes": "Needs receipt parity when invoked outside this runtime."
+    },
+    {
+      "id": "tel",
+      "role": "Trusted credentialed action gateway.",
+      "status": "active",
+      "capabilities": ["credentialed_action", "github_action", "vercel_action", "notion_action"],
+      "health": {
+        "kind": "command",
+        "command": "test -x ~/.Codex/tel/client/tel-call.sh && echo tel-call",
+        "expect": "tel-call"
+      },
+      "fallbacks": [],
+      "unsupported": ["unapproved_send", "destructive_action_without_policy"],
+      "hardFloor": true,
+      "credential": "keychain-or-policy-bound",
+      "notes": "Use when credentials must stay out of transcript."
+    },
+    {
+      "id": "freellmapi",
+      "role": "Research candidate for cheap OpenAI-compatible free-tier aggregation.",
+      "status": "study",
+      "capabilities": ["experimental_free_text_gateway"],
+      "health": {
+        "kind": "none",
+        "reason": "Not installed or security-reviewed."
+      },
+      "fallbacks": [],
+      "unsupported": ["hard_floor", "browser_control", "image_generation", "production_autonomy"],
+      "hardFloor": false,
+      "credential": "not-configured",
+      "notes": "Study only. Requires isolated ToS/security review before integration."
+    }
+  ],
+  "capabilities": {
+    "browser_control": { "primary": "kimi-webbridge", "fallbacks": ["playwright", "codex"] },
+    "screenshots": { "primary": "kimi-webbridge", "fallbacks": ["playwright", "codex"] },
+    "ui_analysis": { "primary": "kimi-webbridge", "fallbacks": ["claude"] },
+    "architecture": { "primary": "claude", "fallbacks": ["codex"] },
+    "hard_debugging": { "primary": "claude", "fallbacks": ["codex"] },
+    "code_edit": { "primary": "codex", "fallbacks": ["claude"] },
+    "summarize": { "primary": "deepseek", "fallbacks": ["claude"] },
+    "extract": { "primary": "deepseek", "fallbacks": ["codex"] },
+    "json_transform": { "primary": "deepseek", "fallbacks": ["codex"] },
+    "image_generation": { "primary": "chatgpt-image", "noFallbackReason": "No equivalent local image lane is configured." },
+    "credentialed_action": { "primary": "tel", "noFallbackReason": "Credentials require TEL policy and audit controls." }
+  }
+}

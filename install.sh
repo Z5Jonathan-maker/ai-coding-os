@@ -35,6 +35,36 @@ link() {
   echo "link $2 -> $src"
 }
 
+link_to() {
+  local src="$1"
+  local dst="$HOME/$2"
+
+  [ -e "$src" ] || {
+    echo "skip $2 (source missing: $src)"
+    return
+  }
+
+  mkdir -p "$(dirname "$dst")"
+
+  if [ -L "$dst" ]; then
+    local current
+    current=$(readlink "$dst")
+    if [ "$current" = "$src" ]; then
+      echo "ok   $2"
+      return
+    fi
+    rm "$dst"
+  elif [ -e "$dst" ]; then
+    local backup
+    backup="$dst.backup.$(date +%Y%m%d%H%M%S)"
+    echo "back $2 -> $backup"
+    mv "$dst" "$backup"
+  fi
+
+  ln -s "$src" "$dst"
+  echo "link $2 -> $src"
+}
+
 link zshrc .zshrc
 link zprofile .zprofile
 link gitconfig .gitconfig
@@ -60,8 +90,27 @@ link claude/hooks/ntfy-notify.sh .claude/hooks/ntfy-notify.sh
 link claude/hooks/bootstrap-check.sh .claude/hooks/bootstrap-check.sh
 link claude/hooks/git-shadow-checkpoint.sh .claude/hooks/git-shadow-checkpoint.sh
 link claude/hooks/environment-details.sh .claude/hooks/environment-details.sh
-# bin/cc-mercury is on PATH via ~/local/bin; symlink it there:
-# (handled by users symlinking ~/dotfiles/bin into PATH; no install.sh entry needed)
+
+link codex/AGENTS.md .Codex/AGENTS.md
+
+# Codex reads ~/.Codex/AGENTS.md, but most durable brain resources are shared
+# with Claude Code through dotfiles. Keep the paths that AGENTS.md advertises
+# real instead of maintaining a second copy of the same wiki/design/TEL stack.
+link claude/wiki .Codex/wiki
+link claude/design .Codex/design
+link claude/tel .Codex/tel
+link claude/memory .Codex/memory
+link claude/skills/kimi-webbridge .Codex/skills/kimi-webbridge
+link_to "$HOME/.claude/scripts" .Codex/scripts
+link_to "$HOME/.claude/commands" .Codex/commands
+link_to "$HOME/.claude/bin" .Codex/bin
+link_to "$HOME/.claude/checkpoints" .Codex/checkpoints
+link_to "$HOME/.claude/projects" .Codex/projects
+link_to "$HOME/.claude/state" .Codex/state
+link_to "$HOME/.claude/jobs" .Codex/jobs
+
+# Retired legacy wrappers from the 2026-05-19 cleanup intentionally stay out
+# of PATH.
 # Note: individual skills are already covered by `link claude/skills .claude/skills`
 # above (it links the entire directory). Adding sub-symlinks for each skill creates
 # self-loops because ~/.claude/skills resolves through the parent symlink to the
@@ -76,6 +125,11 @@ link .aider.conf.yml .aider.conf.yml
 link repomix.config.json .repomixrc
 link .zellij.kdl .config/zellij/config.kdl
 link zellij-layout.kdl .config/zellij/layouts/dev.kdl
+link vscode/settings.json "Library/Application Support/Code/User/settings.json"
+link vscode/keybindings.json "Library/Application Support/Code/User/keybindings.json"
+link vscode/tasks.json "Library/Application Support/Code/User/tasks.json"
+link vscode/mcp.json "Library/Application Support/Code/User/mcp.json"
+link vscode/ai-cockpit .vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0
 
 # Ensure zellij layout dir exists
 mkdir -p "$HOME/.config/zellij/layouts"
@@ -107,6 +161,47 @@ if command -v brew >/dev/null 2>&1; then
   brew bundle check --file="$DOTFILES_DIR/Brewfile" --no-upgrade 2>/dev/null || {
     echo "Some Brewfile packages are missing. Run: brew bundle --file=$DOTFILES_DIR/Brewfile"
   }
+fi
+
+# npm globals that are intentionally outside Brewfile. Keep this tiny; prefer
+# Homebrew or uv unless npm is the stable upstream install path.
+if command -v npm >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/npm-global-packages.txt" ]; then
+  echo
+  echo "Checking npm global packages..."
+  while read -r pkg cmd _rest; do
+    case "$pkg" in
+      ""|\#*) continue ;;
+    esac
+    if npm list -g --depth=0 "$pkg" >/dev/null 2>&1; then
+      echo "ok   npm global: $pkg"
+    else
+      echo "install npm global: $pkg"
+      npm install -g "$pkg"
+    fi
+    if [ -n "${cmd:-}" ] && ! command -v "$cmd" >/dev/null 2>&1; then
+      echo "warn npm global command not on PATH: $cmd"
+    fi
+  done <"$DOTFILES_DIR/npm-global-packages.txt"
+fi
+
+if command -v code >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/vscode/extensions.txt" ]; then
+  echo
+  echo "Checking VS Code extensions..."
+  vscode_ext_list=$(mktemp)
+  trap 'rm -f "$vscode_ext_list"' EXIT
+  code --list-extensions >"$vscode_ext_list"
+  while IFS= read -r ext; do
+    case "$ext" in
+      ""|\#*) continue ;;
+    esac
+    if grep -Fxqi "$ext" "$vscode_ext_list"; then
+      echo "ok   vscode extension: $ext"
+    else
+      echo "install vscode extension: $ext"
+      code --install-extension "$ext" >/dev/null
+      code --list-extensions >"$vscode_ext_list"
+    fi
+  done <"$DOTFILES_DIR/vscode/extensions.txt"
 fi
 
 echo

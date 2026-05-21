@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+usage="$ROUTER/bin/router-usage"
+failures="$ROUTER/bin/router-failures"
+sessions="$ROUTER/bin/router-sessions"
+window="${1:-25}"
+
+printf '# Router Metrics\n\n'
+
+if [ -x "$usage" ]; then
+  "$usage" "$window" | sed -n '1,44p'
+else
+  printf 'router-usage unavailable at %s\n' "$usage"
+fi
+
+printf '\n## Recent Failures\n\n'
+if [ -x "$failures" ]; then
+  "$failures" 10 | sed -n '1,28p'
+else
+  printf 'router-failures unavailable at %s\n' "$failures"
+fi
+
+printf '\n## Recent Sessions\n\n'
+if [ -x "$sessions" ]; then
+  "$sessions" | sed -n '1,24p'
+else
+  printf 'router-sessions unavailable at %s\n' "$sessions"
+fi

@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const routerRoot = process.env.CC_ROUTER_ROOT || path.join(process.env.HOME, 'code/projects/cc-router');
+const logPath = process.env.CC_ROUTER_USAGE_LOG || path.join(routerRoot, 'memory/tier-usage.jsonl');
+const windowSize = Number.parseInt(process.env.CC_ROUTER_RECEIPT_WINDOW || '25', 10);
+const mode = process.argv[2] || 'latest';
+const targets = { chat: 0.30, cheap: 0.40, precision: 0.30 };
+
+function readRows() {
+  if (!fs.existsSync(logPath)) return [];
+  return fs.readFileSync(logPath, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map(line => {
+      try { return JSON.parse(line); } catch (_) { return null; }
+    })
+    .filter(Boolean);
+}
+
+function pct(value) {
+  return `${(value * 100).toFixed(0)}%`;
+}
+
+function summarize(rows) {
+  const recent = rows.slice(-windowSize);
+  const byClass = {};
+  let fallbacks = 0;
+  let flagged = 0;
+  let tokens = 0;
+  for (const row of recent) {
+    const cls = row.class || row.route_receipt?.served_class || 'unknown';
+    byClass[cls] = (byClass[cls] || 0) + 1;
+    if (row.fallback || row.route_receipt?.fallback_used) fallbacks++;
+    if (Array.isArray(row.verification_flags) && row.verification_flags.length) flagged++;
+    tokens += row.usage?.total_tokens || 0;
+  }
+  const quotaTotal = ['chat', 'cheap', 'precision'].reduce((sum, cls) => sum + (byClass[cls] || 0), 0);
+  const quota = ['chat', 'cheap', 'precision'].map(cls => {
+    const ratio = quotaTotal ? (byClass[cls] || 0) / quotaTotal : 0;
+    const drift = targets[cls] == null ? 0 : ratio - targets[cls];
+    const sign = drift >= 0 ? '+' : '';
+    return `${cls} ${byClass[cls] || 0}/${quotaTotal} (${pct(ratio)}, ${sign}${pct(drift)} drift)`;
+  });
+  return { recent, byClass, fallbacks, flagged, tokens, quota, quotaTotal };
+}
+
+function printLatest(row) {
+  const receipt = row.route_receipt || {};
+  console.log('# Router Receipt');
+  console.log('');
+  console.log(`Time: ${row.ts || 'unknown'}`);
+  console.log(`Prompt: ${row.prompt_sample || '(not logged)'}`);
+  console.log(`Classified: ${receipt.classifier_output || row.classified || 'unknown'} -> ${receipt.classified_after_overrides || receipt.final_class || row.class || 'unknown'}`);
+  console.log(`Served: ${receipt.served_class || row.class || 'unknown'} / ${receipt.served_platform || receipt.platform || row.tier || 'unknown'} / ${receipt.served_model || row.model || 'unknown'}`);
+  console.log(`Fallback used: ${Boolean(row.fallback || receipt.fallback_used)}`);
+  console.log(`Fallback attempts: ${receipt.fallback_attempts || 0}`);
+  console.log(`Latency: ${row.latency_ms || 0}ms`);
+  console.log(`Prompt chars: ${row.prompt_chars || receipt.prompt_chars || 0}`);
+  console.log(`Tokens logged: ${row.usage?.total_tokens || 0}`);
+  console.log(`Cost logged: ${row.usage?.cost_usd == null ? 'not logged' : `$${row.usage.cost_usd}`}`);
+  if (Array.isArray(receipt.fallback_chain) && receipt.fallback_chain.length) {
+    console.log(`Fallback chain: ${receipt.fallback_chain.map(item => `${item.class}/${item.platform}`).join(' -> ')}`);
+  }
+}
+
+const rows = readRows();
+if (rows.length === 0) {
+  console.log('Router receipt: no tier usage log found.');
+  process.exit(0);
+}
+
+const summary = summarize(rows);
+
+if (mode === '--summary' || mode === 'summary') {
+  const latest = rows[rows.length - 1];
+  const receipt = latest.route_receipt || {};
+  console.log(`Latest: ${receipt.served_class || latest.class || 'unknown'} / ${receipt.served_platform || latest.tier || 'unknown'} / ${receipt.served_model || latest.model || 'unknown'} | fallback=${Boolean(latest.fallback || receipt.fallback_used)} | latency=${latest.latency_ms || 0}ms`);
+  console.log(`Window: last ${summary.recent.length} | fallbacks=${summary.fallbacks} | flags=${summary.flagged} | tokens=${summary.tokens || 'not logged'}`);
+  console.log(`Quota classes: ${summary.quotaTotal}/${summary.recent.length} calls | ${summary.quota.join(' | ')}`);
+  process.exit(0);
+}
+
+printLatest(rows[rows.length - 1]);
+console.log('');
+console.log('## Window Summary');
+console.log('');
+console.log(`Last calls: ${summary.recent.length}`);
+console.log(`Fallbacks: ${summary.fallbacks}`);
+console.log(`Verification flags: ${summary.flagged}`);
+console.log(`Tokens logged: ${summary.tokens || 'not logged'}`);
+console.log(`Quota classes: ${summary.quotaTotal}/${summary.recent.length} calls | ${summary.quota.join(' | ')}`);

@@ -11,7 +11,7 @@
 #   cc-bootstrap mempalace     # init + mine + register MCP
 #   cc-bootstrap sudoers       # install /etc/sudoers.d/00-askpass
 #   cc-bootstrap restic        # install + init + LaunchAgent (needs B2 creds in 1P)
-#   cc-bootstrap launchd       # install cc-prune (always-safe)
+#   cc-bootstrap launchd       # retired no-op; cc-prune was removed 2026-05-19
 #   cc-bootstrap ntfy-prompt   # interactively pick + persist NTFY_TOPIC
 #   cc-bootstrap doctor        # check every pending item without changing state
 #
@@ -123,28 +123,11 @@ do_sudoers() {
 }
 
 # ─────────────────────────────────────────────────────────────────
-# launchd cc-prune (safe, daily, no creds needed)
+# launchd cc-prune retired 2026-05-19
 # ─────────────────────────────────────────────────────────────────
 do_launchd() {
-  hdr "cc-prune LaunchAgent"
-  local src="$HOME/dotfiles/launchd/com.user.cc-prune.plist"
-  local dst="$HOME/Library/LaunchAgents/com.user.cc-prune.plist"
-
-  if launchctl list 2>/dev/null | grep -q com.user.cc-prune; then
-    ok "cc-prune already loaded in launchd"
-    return 0
-  fi
-  [ -f "$src" ] || {
-    fail "$src not found"
-    return 1
-  }
-
-  cp "$src" "$dst"
-  launchctl load -w "$dst" || {
-    fail "launchctl load failed"
-    return 1
-  }
-  ok "cc-prune loaded; runs daily 04:30"
+  hdr "retired prune setup"
+  ok "cc-prune launchd setup retired; no install needed"
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -217,8 +200,8 @@ do_mercury() {
   fi
   ok "apiKey is populated"
 
-  if confirm "verify with: cc-mercury start --foreground (Ctrl-C to exit)?"; then
-    "$HOME/dotfiles/bin/cc-mercury" start --foreground
+  if confirm "verify with: mercury start --foreground (Ctrl-C to exit)?"; then
+    "$mbin" start --foreground
   fi
 }
 
@@ -297,12 +280,7 @@ do_doctor() {
     warn "sudoers: 00-askpass NOT installed (run cc-bootstrap sudoers)"
   fi
 
-  # launchd cc-prune
-  if launchctl list 2>/dev/null | grep -q com.user.cc-prune; then
-    ok "launchd: cc-prune loaded"
-  else
-    warn "launchd: cc-prune not loaded (run cc-bootstrap launchd)"
-  fi
+  ok "launchd: cc-prune retired"
 
   # restic
   if command -v restic >/dev/null || [ -x /opt/homebrew/bin/restic ]; then
@@ -343,13 +321,8 @@ do_doctor() {
     warn "cc-loop: runner not built (needs explicit named-scope auth from user)"
   fi
 
-  # mercury (wrap with cc-mercury for runtime DEEPSEEK_API_KEY injection)
   if [ -x "$HOME/local/bin/mercury" ]; then
-    if [ -x "$HOME/dotfiles/bin/cc-mercury" ]; then
-      ok "mercury: installed; use 'cc-mercury start' for runtime apiKey injection"
-    else
-      warn "mercury: installed; cc-mercury wrapper missing"
-    fi
+    ok "mercury: vendor CLI installed (cc-mercury wrapper retired)"
   else
     warn "mercury: not installed (run cc-bootstrap mercury for hints)"
   fi

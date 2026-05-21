@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app_path() {
+  local name="$1"
+  local direct="/Applications/$name.app"
+  if [[ -d "$direct" ]]; then
+    printf '%s\n' "$direct"
+    return
+  fi
+  find /Applications -maxdepth 1 -iname "*$name*.app" -print -quit 2>/dev/null
+}
+
+plist_value() {
+  local app="$1"
+  local key="$2"
+  /usr/libexec/PlistBuddy -c "Print :$key" "$app/Contents/Info.plist" 2>/dev/null || printf 'unknown'
+}
+
+print_app() {
+  local label="$1"
+  local match="$2"
+  local role="$3"
+  local app
+  app="$(app_path "$match")"
+
+  printf '## %s\n\n' "$label"
+  if [[ -z "$app" ]]; then
+    printf 'Status: missing\n'
+    printf 'Role: %s\n\n' "$role"
+    return
+  fi
+
+  printf 'Status: installed\n'
+  printf 'Path: %s\n' "$app"
+  printf 'Version: %s\n' "$(plist_value "$app" CFBundleShortVersionString)"
+  printf 'Build: %s\n' "$(plist_value "$app" CFBundleVersion)"
+  printf 'Bundle: %s\n' "$(plist_value "$app" CFBundleIdentifier)"
+  printf 'Role: %s\n\n' "$role"
+}
+
+printf '# Native AI App Status\n\n'
+print_app 'ChatGPT Desktop' 'ChatGPT' 'creative lane, image generation, screen/file chat, IDE edit bridge'
+print_app 'Codex Desktop' 'Codex' 'agent command center reference, multi-task coding, worktrees, skills'
+print_app 'Claude Desktop' 'Claude' 'architecture/review reference, desktop extensions, MCP/Cowork style controls'
+print_app 'Kimi Desktop' 'Kimi' 'design/browser/operator lane, WebBridge, Kimi Code membership path'
+print_app 'Perplexity Desktop' 'Perplexity' 'reference only unless installed; research/search/native app-control patterns'
+
+printf '## Kimi WebBridge\n\n'
+if command -v cc-kimi-status >/dev/null 2>&1; then
+  cc-kimi-status | sed -n '1,18p'
+else
+  printf 'cc-kimi-status: missing\n'
+fi
+
+printf '\n## Fit\n\n'
+printf 'Native apps are dependency/status surfaces, not extra cockpit lanes. The cockpit should expose what is installed, what is connected, and which external app owns each role.\n'

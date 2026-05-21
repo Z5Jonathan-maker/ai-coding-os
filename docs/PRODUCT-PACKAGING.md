@@ -28,6 +28,8 @@ trust tier, and safety boundary.
 - **Executable routing:** `ai-lanes.json`, `cc-lane`, and router smoke tests.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
+- **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
+- **Code-density discipline:** Pulse is present as a generation/cleanup protocol, not another lane.
 - **Safe credentials:** TEL handles credentialed actions; free/lab lanes do not.
 - **Rebuildable config:** dotfiles own the editor, shell, commands, docs, and checks.
 - **Reference-aware:** external systems inform the architecture but do not become noise.
@@ -75,6 +77,8 @@ Primary VS Code tasks:
 - `AI: System Demo`
 - `AI: Disk Readiness`
 - `AI: Product Readiness`
+- `AI: Pulse Status`
+- `AI: Native App Status`
 
 Native extension:
 
@@ -85,7 +89,8 @@ Native extension:
 - includes a selected-mode prompt composer with current file/selection context,
   file/diff context chips, streaming output, route preview, router metrics,
   semantic index, diff hunks, Kimi status, jobs, lanes, permissions,
-  checkpoints, loop quality, route receipts, readiness, and disk gate
+  checkpoints, loop quality, Pulse status, native app status, route receipts,
+  readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks
   inside the sidebar instead of terminal scrollback
 
@@ -107,6 +112,11 @@ Reference systems studied:
 - Cline: human-in-the-loop agent approvals, checkpoints, Plan/Act, MCP/tools, cost visibility
 - Kimi Desktop/Kimi Code: outcome modes, session/context UX, WebBridge status,
   file-heavy workflows, reusable skills/presets, and desktop app packaging
+- Pulse: code-density protocol for compact generated code without compressing
+  tests, errors, or user-facing clarity
+- Codex/ChatGPT/Claude/Perplexity native apps: command center, screen/file
+  context, extension/security boundaries, native app control, and dependency
+  status patterns
 - Autonomous Loop / Mega Cycle: counter-action discipline, null-result health,
   depth ladder, repeated-theme escalation, and anti-pattern memories
 - FreeLLMAPI: provider registry and fallback architecture
@@ -150,6 +160,7 @@ Sellable system is 100% when:
 8. `cc-product-readiness` is clean on a fresh install target
 9. the cockpit extension can be distributed as a VSIX
 10. route, repo context, diff review, and readiness can run inside the cockpit
+11. native app status and Pulse status are visible without terminal spelunking
 
 ## Packaging Rule
 

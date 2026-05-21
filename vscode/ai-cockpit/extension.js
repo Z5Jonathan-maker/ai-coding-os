@@ -15,6 +15,8 @@ const COMMANDS = {
   loopQuality: 'cc-loop-quality',
   diskReadiness: 'cc-disk-readiness',
   productReadiness: 'cc-product-readiness',
+  pulseStatus: 'cc-pulse-status',
+  nativeAppStatus: 'cc-native-app-status',
   kimiStatus: 'cc-kimi-status',
   repoIndex: 'cc-repo-index',
   semanticIndex: 'cc-semantic-index',
@@ -52,6 +54,8 @@ function activate(context) {
     command('aiSystemCockpit.loopQuality', () => showOutput(output, 'Loop Quality', COMMANDS.loopQuality)),
     command('aiSystemCockpit.diskReadiness', () => showOutput(output, 'Disk Readiness', COMMANDS.diskReadiness)),
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
+    command('aiSystemCockpit.pulseStatus', () => showOutput(output, 'Pulse Status', COMMANDS.pulseStatus)),
+    command('aiSystemCockpit.nativeAppStatus', () => showOutput(output, 'Native App Status', COMMANDS.nativeAppStatus)),
     command('aiSystemCockpit.kimiStatus', () => showOutput(output, 'Kimi Status', COMMANDS.kimiStatus)),
     command('aiSystemCockpit.repoIndex', () => showOutput(output, 'Repo Index', COMMANDS.repoIndex)),
     command('aiSystemCockpit.semanticIndex', () => showOutput(output, 'Semantic Index', COMMANDS.semanticIndex)),
@@ -194,7 +198,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, kimi, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -202,6 +206,8 @@ class CockpitProvider {
       shellExec('cc-checkpoints summary', { timeout: 12000 }),
       shellExec('cc-disk-readiness | sed -n "1,11p"', { timeout: 20000 }),
       shellExec('cc-product-readiness | sed -n "1,36p"', { timeout: 120000 }),
+      shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
+      shellExec('cc-native-app-status | sed -n "1,42p"', { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
       shellExec('cc-jobs | sed -n "1,10p"', { timeout: 12000 }),
       shellExec('cc-lane capabilities | sed -n "1,14p"', { timeout: 12000 }),
@@ -218,6 +224,8 @@ class CockpitProvider {
         checkpoints: checkpoints.text,
         disk: disk.text,
         product: product.text,
+        pulse: pulse.text,
+        nativeApps: nativeApps.text,
         kimi: kimi.text,
         jobs: jobs.text,
         lanes: lanes.text,
@@ -248,6 +256,8 @@ class CockpitProvider {
       loopQuality: () => vscode.commands.executeCommand('aiSystemCockpit.loopQuality'),
       diskReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.diskReadiness'),
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
+      pulseStatus: () => vscode.commands.executeCommand('aiSystemCockpit.pulseStatus'),
+      nativeAppStatus: () => vscode.commands.executeCommand('aiSystemCockpit.nativeAppStatus'),
       kimiStatus: () => vscode.commands.executeCommand('aiSystemCockpit.kimiStatus'),
       repoIndex: () => vscode.commands.executeCommand('aiSystemCockpit.repoIndex'),
       semanticIndex: () => vscode.commands.executeCommand('aiSystemCockpit.semanticIndex'),
@@ -455,6 +465,8 @@ class CockpitProvider {
     <button data-command="diffHunks">Diff Hunks</button>
     <button data-command="workflowProof">Workflow Proof</button>
     <button data-command="loopQuality">Loop Quality</button>
+    <button data-command="pulseStatus">Pulse Status</button>
+    <button data-command="nativeAppStatus">Native Apps</button>
   </section>
 
   <section class="cards">
@@ -465,6 +477,8 @@ class CockpitProvider {
     <article><h2>Loop Quality</h2><pre>Depth ladder, loop status, and anti-pattern memory readiness.</pre><button data-inline-name="Loop Quality" data-inline-command="cc-loop-quality">View Loop Quality</button></article>
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+    <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
+    <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>
     <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
     <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
     <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>

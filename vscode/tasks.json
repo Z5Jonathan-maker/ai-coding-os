@@ -189,6 +189,18 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Pulse Status",
+      "type": "shell",
+      "command": "cc-pulse-status",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Native App Status",
+      "type": "shell",
+      "command": "cc-native-app-status",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Workflow Proof",
       "type": "shell",
       "command": "cc-workflow-proof",

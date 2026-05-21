@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+src="$HOME/code/research/wassim-drive/PULSE-TOKEN-EFFICIENCY-COMPACTOR.md"
+skill="$HOME/dotfiles/claude/skills/pulse/SKILL.md"
+agents_skill="$HOME/.agents/skills/pulse/SKILL.md"
+
+printf '# Pulse Status\n\n'
+printf 'Source: %s\n' "$([ -f "$src" ] && printf present || printf missing)"
+printf 'Dotfiles skill: %s\n' "$([ -f "$skill" ] && printf present || printf missing)"
+printf 'Agents skill: %s\n\n' "$([ -f "$agents_skill" ] && printf present || printf missing)"
+
+printf '## Applied Rules\n\n'
+printf -- '- Generated code: dense, not bloated.\n'
+printf -- '- Comments: why-only, never obvious what-comments.\n'
+printf -- '- File reads: grep/sed targeted sections before whole-file reads.\n'
+printf -- '- Context budget: preserve working context for actual implementation.\n'
+printf -- '- Tests/error text/user copy: clarity beats compression.\n\n'
+
+printf '## Fit\n\n'
+printf 'Pulse is a code-density protocol, not a routing lane. It belongs in code-generation/edit workflows and package-hardening passes, not as another model/tool button.\n'

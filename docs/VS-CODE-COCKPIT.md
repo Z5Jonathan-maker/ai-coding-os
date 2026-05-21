@@ -17,7 +17,8 @@ It adds:
   results, attached file/diff context, current file/selection context, and
   `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
-  matrix, checkpoints, jobs, lanes, Kimi status, product readiness, and disk readiness
+  matrix, checkpoints, jobs, lanes, Pulse status, native app status, Kimi status,
+  product readiness, and disk readiness
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
 
@@ -64,6 +65,8 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: System Demo` | Acceptance demo for this machine |
 | `AI: Disk Readiness` | Read-only disk gate and cleanup candidate report |
 | `AI: Product Readiness` | Paid-product gate across cockpit, router, sync, packaging, and disk |
+| `AI: Pulse Status` | Pulse code-density source, skill, and fit status |
+| `AI: Native App Status` | Installed native AI app versions and role map |
 | `AI: Kimi Status` | Kimi Desktop, CLI, WebBridge, and extension health |
 | `AI: Workflow Proof` | One-command readiness, route preview, repo index, and diff surface |
 | `AI: Claude Direct` | Direct Claude escape hatch |
@@ -90,6 +93,11 @@ Autonomous-loop reference study lives at
 `docs/AUTONOMOUS-LOOP-REFERENCE-STUDY-2026-05-21.md`. It keeps the useful loop
 discipline while avoiding duplicate scheduler/runtime noise.
 
+Pulse/native-app reference study lives at
+`docs/PULSE-NATIVE-APP-REFERENCE-STUDY-2026-05-21.md`. It keeps Pulse as a
+code-density discipline and treats native AI apps as dependency/status surfaces,
+not duplicate lanes.
+
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows
 the current permission mode, policy version, review/deny rules, and live
 decision probes without adding Cline as an active lane.
@@ -109,6 +117,12 @@ artifact, not terminal scrollback.
 `AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
 smoke, router integrity, system demo, cockpit install, VS Code symlinks, disk
 headroom, repo cleanliness, upstream sync, and product docs.
+
+`AI: Pulse Status` confirms the Pulse source and installed skills are present.
+It exists to keep generated code dense without adding another model lane.
+
+`AI: Native App Status` reports ChatGPT, Codex, Claude, Kimi, and Perplexity app
+installation/version state plus each app's role in the system.
 
 The sidebar composer is the native daily-driver path. It keeps the current
 file or selected code visible as context, attaches extra files or git diff as

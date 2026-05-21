@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-${DOTFILES_DIR:-$HOME/dotfiles}}"
+ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+required_missing=0
+optional_missing=0
+personal_missing=0
+
+mark() {
+  local status="$1" scope="$2" name="$3" detail="${4:-}"
+  printf '%-5s %-13s %s' "$status" "[$scope]" "$name"
+  [ -n "$detail" ] && printf ' — %s' "$detail"
+  printf '\n'
+  case "$status:$scope" in
+  miss:required) required_missing=$((required_missing + 1)) ;;
+  miss:optional) optional_missing=$((optional_missing + 1)) ;;
+  miss:personal) personal_missing=$((personal_missing + 1)) ;;
+  esac
+}
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+check_cmd() {
+  local scope="$1" cmd="$2" detail="${3:-}"
+  if have_cmd "$cmd"; then
+    mark ok "$scope" "$cmd" "$(command -v "$cmd")"
+  else
+    mark miss "$scope" "$cmd" "$detail"
+  fi
+}
+
+check_path() {
+  local scope="$1" path="$2" detail="${3:-}"
+  if [ -e "$path" ]; then
+    mark ok "$scope" "$path"
+  else
+    mark miss "$scope" "$path" "$detail"
+  fi
+}
+
+check_symlink() {
+  local label="$1" target="$2" link="$3"
+  local current
+  current="$(readlink "$link" 2>/dev/null || true)"
+  if [ "$current" = "$target" ]; then
+    mark ok planned "$label" "$link -> $target"
+  elif [ -L "$link" ]; then
+    mark warn planned "$label" "$link points to $current; install.sh would replace the link"
+  elif [ -e "$link" ]; then
+    mark warn planned "$label" "$link exists; install.sh would back it up"
+  else
+    mark warn planned "$label" "install.sh would create $link -> $target"
+  fi
+}
+
+printf '# AI Coding OS First-Run Doctor\n\n'
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Router: %s\n\n' "$ROUTER"
+
+printf '## Platform\n\n'
+if [ "$(uname -s 2>/dev/null)" = Darwin ]; then
+  mark ok required macOS "$(sw_vers -productVersion 2>/dev/null || true)"
+else
+  mark miss required macOS "public installer currently targets macOS"
+fi
+
+arch="$(uname -m 2>/dev/null || true)"
+if [ "$arch" = arm64 ]; then
+  mark ok required "Apple Silicon" "$arch"
+else
+  mark warn optional "Apple Silicon" "detected ${arch:-unknown}; non-arm64 is not the primary support path"
+fi
+
+printf '\n## Required Tools\n\n'
+check_cmd required git "install Xcode Command Line Tools"
+check_cmd required zsh "install zsh"
+check_cmd required brew "install Homebrew"
+check_cmd required node "install Node via Brewfile or nvm"
+check_cmd required npm "install Node/npm"
+check_cmd required code "install VS Code and enable shell command"
+check_cmd required rg "install ripgrep"
+
+printf '\n## AI Lane Tools\n\n'
+check_cmd optional codex "install Codex CLI for the Codex engineering lane"
+check_cmd optional claude "install Claude CLI for architecture/debugging lane"
+check_cmd optional kimi "install Kimi CLI/Desktop for browser/UI lane"
+check_cmd optional deepseek "install DeepSeek CLI for cheap worker lane"
+check_cmd optional op "install 1Password CLI for secret lookup helpers"
+
+printf '\n## Local Repositories\n\n'
+check_path required "$DOTFILES" "clone dotfiles into ~/dotfiles or set DOTFILES"
+check_path optional "$ROUTER" "clone cc-router or set CC_ROUTER_ROOT"
+
+printf '\n## Planned Symlinks\n\n'
+check_symlink "zshrc" "$DOTFILES/zshrc" "$HOME/.zshrc"
+check_symlink "gitconfig" "$DOTFILES/gitconfig" "$HOME/.gitconfig"
+check_symlink "Codex AGENTS.md" "$DOTFILES/codex/AGENTS.md" "$HOME/.Codex/AGENTS.md"
+check_symlink "VS Code settings" "$DOTFILES/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+check_symlink "VS Code cockpit" "$DOTFILES/vscode/ai-cockpit" "$HOME/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0"
+
+printf '\n## Package Drift\n\n'
+if have_cmd brew && [ -f "$DOTFILES/Brewfile" ]; then
+  formulas="$(mktemp)"
+  casks="$(mktemp)"
+  HOMEBREW_NO_AUTO_UPDATE=1 brew list --formula -1 >"$formulas" 2>/dev/null || true
+  HOMEBREW_NO_AUTO_UPDATE=1 brew list --cask -1 >"$casks" 2>/dev/null || true
+  missing_brew="$(
+    while read -r kind name; do
+      case "$kind" in
+      brew) grep -Fxq "$name" "$formulas" || printf 'brew %s\n' "$name" ;;
+      cask) grep -Fxq "$name" "$casks" || printf 'cask %s\n' "$name" ;;
+      esac
+    done < <(sed -nE 's/^(brew|cask) "([^"]+)".*/\1 \2/p' "$DOTFILES/Brewfile") | sed -n '1,8p'
+  )"
+  rm -f "$formulas" "$casks"
+  if [ -z "$missing_brew" ]; then
+    mark ok optional Brewfile "all listed brew/cask packages installed"
+  else
+    mark warn optional Brewfile "missing packages; run: brew bundle --file=$DOTFILES/Brewfile"
+    printf '%s\n' "$missing_brew" | sed 's/^/      /'
+  fi
+else
+  mark miss optional Brewfile "brew or Brewfile unavailable"
+fi
+
+if [ -f "$DOTFILES/vscode/extensions.txt" ]; then
+  ext_root="$HOME/.vscode/extensions"
+  missing_exts="$(while IFS= read -r ext; do
+    case "$ext" in
+    "" | \#*) continue ;;
+    esac
+    find "$ext_root" -maxdepth 1 -iname "$ext-*" -print -quit 2>/dev/null | grep -q . || printf '%s\n' "$ext"
+  done <"$DOTFILES/vscode/extensions.txt" | sed -n '1,8p')"
+  if [ -z "$missing_exts" ]; then
+    mark ok optional "VS Code extensions" "all listed extensions installed"
+  else
+    mark warn optional "VS Code extensions" "missing extensions; install.sh can install them"
+    printf '%s\n' "$missing_exts" | sed 's/^/      /'
+  fi
+else
+  mark miss optional "VS Code extensions" "vscode/extensions.txt unavailable"
+fi
+
+printf '\n## Credentials And Personal Services\n\n'
+mark warn personal "API keys" "never checked by this doctor; configure through 1Password/TEL/local env"
+check_path personal "$HOME/.kimi-webbridge/bin/kimi-webbridge" "optional browser bridge"
+check_path personal "/Applications/Kimi.app" "optional native Kimi app"
+check_path personal "/Applications/ChatGPT.app" "optional native ChatGPT app"
+
+printf '\n## Summary\n\n'
+printf 'required_missing=%s optional_missing=%s personal_missing=%s\n' "$required_missing" "$optional_missing" "$personal_missing"
+if [ "$required_missing" -eq 0 ]; then
+  printf 'Status: first-run-ready\n'
+else
+  printf 'Status: first-run-blocked\n'
+fi
+
+[ "$required_missing" -eq 0 ]

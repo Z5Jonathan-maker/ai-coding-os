@@ -13,7 +13,7 @@ The system is a clean, installable, impressive AI coding operating system with a
 | ID | Criterion | Verification | Status |
 |---|---|---|---|
 | ISC-1 | The public README explains the product promise, target user, architecture, install path, demo, and support boundaries. | Read `README.md`; all six sections are present and specific. | in-progress |
-| ISC-2 | A fresh-install path exists that reports missing prerequisites without failing opaquely. | Run `~/dotfiles/install.sh --dry-run` or documented equivalent; output lists missing keys/apps/tools. | pending |
+| ISC-2 | A fresh-install path exists that reports missing prerequisites without failing opaquely. | Run `~/dotfiles/install.sh --dry-run` or documented equivalent; output lists missing keys/apps/tools. | verified |
 | ISC-3 | Product readiness passes on the development machine. | `cc-product-readiness` returns `13/13` and `Status: product-ready`. | verified |
 | ISC-4 | The VS Code cockpit can be packaged and installed as a distributable VSIX. | `cc-package-cockpit` creates `dist/ai-system-cockpit-*.vsix`. | verified |
 | ISC-5 | The five-minute demo proves route, cockpit, browser proof, repo context, diff review, and verification. | `cc-demo-five-minute` exits 0 and produces readable proof with no blockers. | verified |

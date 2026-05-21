@@ -56,12 +56,15 @@ packaging is being hardened.
 
 ```sh
 git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
+~/dotfiles/install.sh --dry-run
 ~/dotfiles/install.sh
 brew bundle install --file=~/dotfiles/Brewfile
 ~/dotfiles/install.sh
 ```
 
-Public first-run/dry-run mode is a Week 2 deliverable in the master plan.
+`install.sh --dry-run` is non-mutating. It reports required tools, optional AI
+lanes, personal-machine services, planned symlinks, Brewfile drift, and VS Code
+extension drift.
 
 ## Repository Contents
 

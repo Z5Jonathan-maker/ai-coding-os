@@ -5,6 +5,16 @@ set -euo pipefail
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 
+case "${1:-}" in
+--dry-run | --doctor | doctor)
+  DOTFILES="$DOTFILES_DIR" exec "$DOTFILES_DIR/bin/cc-first-run"
+  ;;
+-h | --help)
+  printf 'Usage: install.sh [--dry-run|--doctor]\n'
+  exit 0
+  ;;
+esac
+
 link() {
   local src="$DOTFILES_DIR/$1"
   local dst="$HOME/$2"
@@ -170,7 +180,7 @@ if command -v npm >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/npm-global-packages.txt
   echo "Checking npm global packages..."
   while read -r pkg cmd _rest; do
     case "$pkg" in
-      ""|\#*) continue ;;
+    "" | \#*) continue ;;
     esac
     if npm list -g --depth=0 "$pkg" >/dev/null 2>&1; then
       echo "ok   npm global: $pkg"
@@ -192,7 +202,7 @@ if command -v code >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/vscode/extensions.txt"
   code --list-extensions >"$vscode_ext_list"
   while IFS= read -r ext; do
     case "$ext" in
-      ""|\#*) continue ;;
+    "" | \#*) continue ;;
     esac
     if grep -Fxqi "$ext" "$vscode_ext_list"; then
       echo "ok   vscode extension: $ext"

@@ -61,6 +61,7 @@ check 'lane registry valid' "$DOTFILES/bin/cc-lane-registry-check"
 check 'router smoke routes expected prompts' "$DOTFILES/bin/cc-router-smoke"
 check 'router integrity aligned' "node '$ROUTER/lib/check-integrity.cjs'"
 check 'system demo passes' "$DOTFILES/bin/cc-system-demo"
+check 'first-run doctor passes' "$DOTFILES/install.sh --dry-run"
 check 'VS Code cockpit extension installed' extension_ready
 check 'VS Code cockpit package command present' "command -v cc-package-cockpit"
 check 'VS Code config symlinked' "[ \"\$(readlink \"$HOME/Library/Application Support/Code/User/tasks.json\" 2>/dev/null)\" = \"$DOTFILES/vscode/tasks.json\" ]"

@@ -73,8 +73,8 @@ new developer, and browser limitations are documented without spin.
 
 ### Ship Artifacts
 
-- `install.sh` dry-run / doctor mode if not already complete.
-- `cc-first-run` or equivalent guided setup report.
+- `install.sh` dry-run / doctor mode. Done 2026-05-21: delegates to `cc-first-run`.
+- `cc-first-run` or equivalent guided setup report. Done 2026-05-21.
 - `cc-demo-five-minute` scripted demo wrapper.
 - Demo output transcript checked into docs.
 - Cockpit screenshot/GIF capture plan.

@@ -5,12 +5,13 @@ DOTFILES="${DOTFILES:-$HOME/dotfiles}"
 prompt="${CC_RELEASE_PROMPT:-debug this repo and verify the safest next step}"
 browser_url="${CC_RELEASE_BROWSER_URL:-data:text/html,<title>Release Check</title><body>release check proof</body>}"
 max_chars="${CC_RELEASE_BROWSER_MAX_CHARS:-800}"
+version="${CC_RELEASE_VERSION:-v0.1.0-rc4}"
 log_dir="${CC_RELEASE_LOG_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/cc-release-check.XXXXXX")}"
 pass=0
 fail=0
 
 usage() {
-  printf 'Usage: cc-release-check [--prompt TEXT] [--browser-url URL] [--max-chars N]\n'
+  printf 'Usage: cc-release-check [--version TAG] [--prompt TEXT] [--browser-url URL] [--max-chars N]\n'
 }
 
 while (($#)); do
@@ -26,6 +27,10 @@ while (($#)); do
   --max-chars)
     shift
     max_chars="${1:-$max_chars}"
+    ;;
+  --version)
+    shift
+    version="${1:-$version}"
     ;;
   -h | --help)
     usage
@@ -80,6 +85,7 @@ printf 'Dotfiles: %s\n' "$DOTFILES"
 printf 'Logs: %s\n' "$log_dir"
 printf 'Prompt: %s\n' "$prompt"
 printf 'Browser URL: %s\n' "$browser_url"
+printf 'Version: %s\n' "$version"
 
 cd "$DOTFILES" || exit 1
 
@@ -88,6 +94,7 @@ run_gate "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product
 run_gate "Five-minute demo" '^passed=4 failed=0$' "$DOTFILES/bin/cc-demo-five-minute" --prompt "$prompt" --browser-url "$browser_url" --max-chars "$max_chars"
 run_gate "Weekly health" 'weekly health: all 15 green' "$DOTFILES/bin/cc-health-weekly" --verbose
 run_gate "Cockpit package" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
+run_gate "Release bundle" 'Bundle: .*/dist/ai-coding-os-.*\.tar\.gz' "$DOTFILES/bin/cc-release-bundle" "$version"
 run_gate "Cockpit media capture" 'Media written to .*/docs/media/cockpit' "$DOTFILES/bin/cc-cockpit-capture"
 run_shell_gate "Cockpit media files" 'PNG image data|GIF image data' "file '$DOTFILES'/docs/media/cockpit/*"
 run_shell_gate "Git tree clean" '^## ' "test -z \"\$(git status --short)\" && git status --short --branch"

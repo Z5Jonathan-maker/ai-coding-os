@@ -11,7 +11,7 @@ surface, not a terminal command list.
 | 01-readiness | `AI: Product Readiness` showing all gates green | `cc-product-readiness` |
 | 02-first-run | `AI: Doctor` or terminal doctor showing required/optional/personal sections | `install.sh --dry-run` |
 | 03-route-receipt | `AI: Explain Route` / `AI: Route Receipt` showing selected lane and fallback chain | `cc-workflow-proof "debug this repo and verify the safest next step"` |
-| 04-browser-proof | `AI: Browser Proof` showing WebBridge health and bounded page content | `cc-browser-proof --url https://example.com --max-chars 1200` |
+| 04-browser-proof | `AI: Browser Proof` showing browser mode, WebBridge health, and bounded page content | `cc-browser-proof --url https://example.com --max-chars 1200` |
 | 05-composer | Sidebar composer with mode selector, context chips, prompt, and streamed result | `AI: Ask / Plan` from the cockpit |
 | 06-package | VSIX package proof for the extension | `cc-package-cockpit` |
 

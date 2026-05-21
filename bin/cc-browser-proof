@@ -7,12 +7,24 @@ json=0
 max_chars="${CC_BROWSER_PROOF_MAX_CHARS:-8000}"
 while (($#)); do
   case "$1" in
-    --url) shift; url="${1:-}" ;;
-    --session) shift; session="${1:-$session}" ;;
-    --json) json=1 ;;
-    --max-chars) shift; max_chars="${1:-$max_chars}" ;;
-    -h|--help) printf 'Usage: cc-browser-proof [--json] [--url URL] [--session NAME] [--max-chars N]\n'; exit 0 ;;
-    *) url="$1" ;;
+  --url)
+    shift
+    url="${1:-}"
+    ;;
+  --session)
+    shift
+    session="${1:-$session}"
+    ;;
+  --json) json=1 ;;
+  --max-chars)
+    shift
+    max_chars="${1:-$max_chars}"
+    ;;
+  -h | --help)
+    printf 'Usage: cc-browser-proof [--json] [--url URL] [--session NAME] [--max-chars N]\n'
+    exit 0
+    ;;
+  *) url="$1" ;;
   esac
   shift
 done
@@ -42,14 +54,21 @@ if [ "$json" = 1 ]; then
   node - "$status" "$nav" "$snap" "$healthy" "$url" "$session" <<'NODE'
 const [status, nav, snap, healthy, url, session] = process.argv.slice(2);
 const parse = s => { try { return JSON.parse(s || '{}'); } catch { return {}; } };
-console.log(JSON.stringify({ healthy: healthy === '1', url: url || null, session, status: parse(status), navigate: parse(nav), snapshot: parse(snap) }, null, 2));
+const parsedStatus = parse(status);
+const extensionVersion = parsedStatus.extension_version || "";
+const mode = !parsedStatus.running ? "not-ready"
+  : !parsedStatus.extension_connected ? "not-ready"
+  : extensionVersion.startsWith("shim-") ? "shim"
+  : extensionVersion ? "official-extension"
+  : "unknown";
+console.log(JSON.stringify({ healthy: healthy === '1', mode, url: url || null, session, status: parsedStatus, navigate: parse(nav), snapshot: parse(snap) }, null, 2));
 NODE
   exit 0
 fi
 
 printf '# Browser Proof\n\n'
 # shellcheck disable=SC2016
-node -e 'try{const s=JSON.parse(process.argv[1]); console.log(`WebBridge: running=${!!s.running} extension_connected=${!!s.extension_connected} port=${s.port||"unknown"} version=${s.version||"unknown"}`)}catch{console.log("WebBridge: unavailable")}' "$status"
+node -e 'try{const s=JSON.parse(process.argv[1]); const ev=s.extension_version||""; const mode=!s.running?"not-ready":!s.extension_connected?"not-ready":ev.startsWith("shim-")?"shim":ev?"official-extension":"unknown"; console.log(`Browser mode: ${mode}`); console.log(`WebBridge: running=${!!s.running} extension_connected=${!!s.extension_connected} port=${s.port||"unknown"} version=${s.version||"unknown"} extension_version=${ev||"unknown"}`)}catch{console.log("Browser mode: not-ready"); console.log("WebBridge: unavailable")}' "$status"
 printf 'Session: %s\n' "$session"
 if [ -z "$url" ]; then
   printf '\nNo URL supplied. Readiness proof only.\n'

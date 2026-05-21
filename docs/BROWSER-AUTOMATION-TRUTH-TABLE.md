@@ -16,7 +16,8 @@ This system has multiple browser lanes, but they do not mean the same thing.
 ## Product Rule
 
 Never say "browser automation is working" without naming which browser lane is
-active. The cockpit and CLI should report one of:
+active. `cc-kimi-status`, `cc-browser-proof`, and the cockpit should report one
+of:
 
 - `official-extension`
 - `shim`

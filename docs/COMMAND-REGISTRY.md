@@ -35,6 +35,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
+- `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-prune` — manual disk hygiene for `.claude`.
 - `cc-review-diff` — precision-lane review of current git diff.

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+state="${CLAUDE_STATE_DIR:-$HOME/.claude/state}"
+project_mem="${CLAUDE_PROJECT_MEMORY:-$HOME/.claude/projects/-Users-leonardofibonacci-Claude-Code/memory}"
+loop_status="$state/loop-status.md"
+
+printf '# Loop Quality\n\n'
+
+printf '## Loop Status\n\n'
+if [ -f "$loop_status" ]; then
+  sed -n '1,80p' "$loop_status"
+else
+  printf 'No loop-status.md found at %s\n' "$loop_status"
+fi
+
+printf '\n## Anti-Pattern Memories\n\n```text\n'
+for memory in \
+  feedback_wakeup_cadence.md \
+  feedback_silent_skip_pattern.md \
+  feedback_incremental_save.md \
+  feedback_speculative_write.md \
+  feedback_diagnostic_first.md \
+  feedback_self_evolve_every_cycle.md
+do
+  if [ -f "$project_mem/$memory" ]; then
+    printf 'ok   %s\n' "$memory"
+  else
+    printf 'miss %s\n' "$memory"
+  fi
+done
+printf '```\n\n'
+
+printf '## Depth Signal\n\n'
+if grep -q '_(empty' "$loop_status" 2>/dev/null; then
+  printf 'No active cycle history yet. Use this as a readiness surface before long autonomous runs.\n'
+else
+  printf 'Recent cycle history exists. Run /depth-check for qualitative audit.\n'
+fi
+
+printf '\n## Harvested Rules\n\n'
+printf -- '- Counter-action: name how the last claim could still be wrong before shipping.\n'
+printf -- '- Null result is healthy when the investigation genuinely found no safe change.\n'
+printf -- '- Repeated theme means escalate to root cause, not another surface cycle.\n'
+printf -- '- Finding and fix should be one action whenever scope is safe.\n'
+printf -- '- State mutations should persist incrementally, not only at batch end.\n'

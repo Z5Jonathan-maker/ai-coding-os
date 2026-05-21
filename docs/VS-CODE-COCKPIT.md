@@ -57,6 +57,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
 | `AI: Diff Hunks` | Show changed files, hunk headers, and patch preview |
 | `AI: Checkpoints` | Show shadow Git and session checkpoint timeline |
+| `AI: Loop Quality` | Show autonomous loop depth, memory, and anti-pattern readiness |
 | `AI: Checkpoint Diff` | Diff current worktree against a shadow checkpoint step |
 | `AI: Jobs` | List background/dispatched jobs |
 | `AI: Router Health` | Router provider/tier health |
@@ -84,6 +85,10 @@ modes need to be visible product state.
 Reference component harvest lives at
 `docs/REFERENCE-COMPONENT-HARVEST-2026-05-21.md`. It maps remaining product
 gaps to prebuilt patterns and records which pieces we harvested locally.
+
+Autonomous-loop reference study lives at
+`docs/AUTONOMOUS-LOOP-REFERENCE-STUDY-2026-05-21.md`. It keeps the useful loop
+discipline while avoiding duplicate scheduler/runtime noise.
 
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows
 the current permission mode, policy version, review/deny rules, and live

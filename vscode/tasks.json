@@ -158,6 +158,12 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Loop Quality",
+      "type": "shell",
+      "command": "cc-loop-quality",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Checkpoint Diff",
       "type": "shell",
       "command": "cc-rollback",

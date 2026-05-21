@@ -12,6 +12,7 @@ const COMMANDS = {
   routerMetrics: 'cc-router-metrics',
   permissionMatrix: 'cc-permission-matrix',
   checkpoints: 'cc-checkpoints',
+  loopQuality: 'cc-loop-quality',
   diskReadiness: 'cc-disk-readiness',
   productReadiness: 'cc-product-readiness',
   kimiStatus: 'cc-kimi-status',
@@ -48,6 +49,7 @@ function activate(context) {
     command('aiSystemCockpit.routerMetrics', () => showOutput(output, 'Router Metrics', COMMANDS.routerMetrics)),
     command('aiSystemCockpit.permissionMatrix', () => showOutput(output, 'Permission Matrix', COMMANDS.permissionMatrix)),
     command('aiSystemCockpit.checkpoints', () => showOutput(output, 'Checkpoints', COMMANDS.checkpoints)),
+    command('aiSystemCockpit.loopQuality', () => showOutput(output, 'Loop Quality', COMMANDS.loopQuality)),
     command('aiSystemCockpit.diskReadiness', () => showOutput(output, 'Disk Readiness', COMMANDS.diskReadiness)),
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
     command('aiSystemCockpit.kimiStatus', () => showOutput(output, 'Kimi Status', COMMANDS.kimiStatus)),
@@ -243,6 +245,7 @@ class CockpitProvider {
       routerMetrics: () => vscode.commands.executeCommand('aiSystemCockpit.routerMetrics'),
       permissionMatrix: () => vscode.commands.executeCommand('aiSystemCockpit.permissionMatrix'),
       checkpoints: () => vscode.commands.executeCommand('aiSystemCockpit.checkpoints'),
+      loopQuality: () => vscode.commands.executeCommand('aiSystemCockpit.loopQuality'),
       diskReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.diskReadiness'),
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
       kimiStatus: () => vscode.commands.executeCommand('aiSystemCockpit.kimiStatus'),
@@ -451,6 +454,7 @@ class CockpitProvider {
     <button data-command="semanticIndex">Semantic Index</button>
     <button data-command="diffHunks">Diff Hunks</button>
     <button data-command="workflowProof">Workflow Proof</button>
+    <button data-command="loopQuality">Loop Quality</button>
   </section>
 
   <section class="cards">
@@ -458,6 +462,7 @@ class CockpitProvider {
     <article><h2>Metrics</h2><pre id="metrics">Loading...</pre><button data-inline-name="Router Metrics" data-inline-command="cc-router-metrics">View Metrics</button></article>
     <article><h2>Permissions</h2><pre id="permissions">Loading...</pre><button data-inline-name="Permission Matrix" data-inline-command="cc-permission-matrix">View Matrix</button></article>
     <article><h2>Checkpoints</h2><pre id="checkpoints">Loading...</pre><button data-inline-name="Checkpoints" data-inline-command="cc-checkpoints">View Timeline</button></article>
+    <article><h2>Loop Quality</h2><pre>Depth ladder, loop status, and anti-pattern memory readiness.</pre><button data-inline-name="Loop Quality" data-inline-command="cc-loop-quality">View Loop Quality</button></article>
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
     <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>

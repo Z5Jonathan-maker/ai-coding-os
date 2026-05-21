@@ -85,7 +85,7 @@ Native extension:
 - includes a selected-mode prompt composer with current file/selection context,
   file/diff context chips, streaming output, route preview, router metrics,
   semantic index, diff hunks, Kimi status, jobs, lanes, permissions,
-  checkpoints, route receipts, readiness, and disk gate
+  checkpoints, loop quality, route receipts, readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks
   inside the sidebar instead of terminal scrollback
 
@@ -107,6 +107,8 @@ Reference systems studied:
 - Cline: human-in-the-loop agent approvals, checkpoints, Plan/Act, MCP/tools, cost visibility
 - Kimi Desktop/Kimi Code: outcome modes, session/context UX, WebBridge status,
   file-heavy workflows, reusable skills/presets, and desktop app packaging
+- Autonomous Loop / Mega Cycle: counter-action discipline, null-result health,
+  depth ladder, repeated-theme escalation, and anti-pattern memories
 - FreeLLMAPI: provider registry and fallback architecture
 - OpenCode/Antigravity videos: cheap/free model lanes behind an IDE-like cockpit
 

@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+set -u
+
+ROOT="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+pass=0
+fail=0
+
+run() {
+  local name="$1" tmp ok
+  shift
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-public-ci.XXXXXX")"
+  ok=0
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+  rm -f "$tmp"
+}
+
+bash_syntax() {
+  local bad=0 first
+  while IFS= read -r file; do
+    first="$(head -n1 "$file")"
+    case "$first" in
+    *bash*) bash -n "$file" || bad=1 ;;
+    esac
+  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  return "$bad"
+}
+
+node_syntax() {
+  local bad=0 first
+  while IFS= read -r file; do
+    first="$(head -n1 "$file")"
+    case "$first" in
+    *node*) node --check "$file" || bad=1 ;;
+    esac
+  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  node --check vscode/ai-cockpit/extension.js || bad=1
+  node --check vscode/ai-cockpit/media/main.js || bad=1
+  node -e 'JSON.parse(require("fs").readFileSync("vscode/ai-cockpit/package.json", "utf8"))' || bad=1
+  return "$bad"
+}
+
+issue_template_yaml() {
+  ruby -e 'require "yaml"; Dir[".github/ISSUE_TEMPLATE/*.{yml,yaml}"].each { |f| YAML.load_file(f); puts "ok #{f}" }'
+}
+
+required_docs() {
+  local missing=0
+  for file in \
+    README.md \
+    CONTRIBUTING.md \
+    SECURITY.md \
+    LICENSE \
+    docs/ARCHITECTURE.md \
+    docs/KNOWN-LIMITATIONS.md \
+    docs/RELEASE-CHECKLIST.md \
+    docs/RELEASE-NOTES-v0.1.0-rc1.md \
+    docs/ROADMAP.md; do
+    if [ ! -s "$file" ]; then
+      printf 'missing %s\n' "$file"
+      missing=1
+    fi
+  done
+  return "$missing"
+}
+
+command_registry_complete() {
+  local missing=0 name
+  while IFS= read -r file; do
+    name="$(basename "$file")"
+    if ! grep -Fq "\`$name\`" docs/COMMAND-REGISTRY.md; then
+      printf 'missing registry entry: %s\n' "$name"
+      missing=1
+    fi
+  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  return "$missing"
+}
+
+license_alignment() {
+  grep -Fq 'Apache License' LICENSE &&
+    grep -Fq '"license": "Apache-2.0"' vscode/ai-cockpit/package.json &&
+    grep -Fq 'Apache License' vscode/ai-cockpit/LICENSE.md
+}
+
+media_artifacts() {
+  local missing=0
+  for file in \
+    docs/media/cockpit/01-readiness.png \
+    docs/media/cockpit/02-first-run.png \
+    docs/media/cockpit/03-route-receipt.png \
+    docs/media/cockpit/04-browser-proof.png \
+    docs/media/cockpit/05-composer.png \
+    docs/media/cockpit/05-composer.gif \
+    docs/media/cockpit/06-package.png; do
+    if [ ! -s "$file" ]; then
+      printf 'missing media artifact: %s\n' "$file"
+      missing=1
+    fi
+  done
+  return "$missing"
+}
+
+cd "$ROOT" || exit 1
+
+printf '# Public CI Check\n\n'
+printf 'Root: %s\n' "$ROOT"
+
+run "Git whitespace" git diff --check
+run "Bash syntax" bash_syntax
+run "Node syntax and JSON" node_syntax
+run "Issue template YAML" issue_template_yaml
+run "Required public docs" required_docs
+run "Command registry complete" command_registry_complete
+run "License alignment" license_alignment
+run "Launch media present" media_artifacts
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+
+[ "$fail" -eq 0 ]

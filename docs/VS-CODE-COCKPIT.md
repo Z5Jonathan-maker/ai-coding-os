@@ -17,8 +17,8 @@ It adds:
   results, attached file/diff context, current file/selection context, and
   `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
-  matrix, checkpoints, jobs, lanes, Pulse status, native app status, Kimi status,
-  product readiness, and disk readiness
+  matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
+  status, Kimi status, product readiness, and disk readiness
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
 
@@ -53,7 +53,9 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Permission Matrix` | Show allowed, review-required, and denied autonomy boundaries |
 | `AI: Save Plan` | Write a read-only plan artifact to `.ai/plans/` |
 | `AI: Review Diff` | Review current git diff through the precision lane |
+| `AI: Context Meter` | Show estimated context-window pressure and output reserve |
 | `AI: Context Snapshot` | Show current repo context packet |
+| `AI: Session Ledger` | Show recent routed sessions and sticky/fallback state |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
 | `AI: Diff Hunks` | Show changed files, hunk headers, and patch preview |
@@ -69,6 +71,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Native App Status` | Installed native AI app versions and role map |
 | `AI: Kimi Status` | Kimi Desktop, CLI, WebBridge, and extension health |
 | `AI: Workflow Proof` | One-command readiness, route preview, repo index, and diff surface |
+| `AI: Browser Proof` | Kimi WebBridge readiness plus bounded page proof output |
 | `AI: Claude Direct` | Direct Claude escape hatch |
 | `AI: Codex Direct` | Direct Codex escape hatch |
 
@@ -121,6 +124,15 @@ artifact, not terminal scrollback.
 `AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
 smoke, router integrity, system demo, cockpit install, VS Code symlinks, disk
 headroom, repo cleanliness, upstream sync, and product docs.
+
+`AI: Context Meter` is the Roo-inspired pressure gauge. It estimates input
+tokens, reserves output room, and shows remaining context before a route runs.
+
+`AI: Session Ledger` is the Langfuse-inspired session surface. It shows routed
+turns, models, fallbacks, and sticky routing without exposing full transcripts.
+
+`AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
+WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.
 
 `AI: Pulse Status` confirms the Pulse source and installed skills are present.
 It exists to keep generated code dense without adding another model lane.

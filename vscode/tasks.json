@@ -189,6 +189,19 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Context Meter",
+      "type": "shell",
+      "command": "cc-context-meter",
+      "args": ["--include-diff"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Session Ledger",
+      "type": "shell",
+      "command": "cc-session-ledger",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Pulse Status",
       "type": "shell",
       "command": "cc-pulse-status",
@@ -205,6 +218,13 @@
       "type": "shell",
       "command": "cc-workflow-proof",
       "args": ["${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Browser Proof",
+      "type": "shell",
+      "command": "cc-browser-proof",
+      "args": ["${input:aiUrl}"],
       "problemMatcher": []
     },
     {

@@ -110,7 +110,7 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, pulse, nativeApps, kimi } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, contextMeter, sessions, pulse, nativeApps, kimi } = message.payload;
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = readiness.title;
     $('readinessBody').textContent = readiness.body;
@@ -122,6 +122,8 @@
     $('checkpoints').textContent = checkpoints || 'No checkpoints available.';
     $('disk').textContent = disk || 'No disk readiness report available.';
     $('product').textContent = product || 'No product readiness report available.';
+    $('contextMeter').textContent = contextMeter || 'No context meter available.';
+    $('sessions').textContent = sessions || 'No session ledger available.';
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
     $('kimi').textContent = kimi || 'No Kimi status available.';

@@ -25,13 +25,15 @@ useful, delete it or move it out of `bin/`.
 - `cc-backup` — restic backup of operational state.
 - `cc-backup-verify` — quarterly restore verification.
 - `cc-bootstrap` — one-shot platform bootstrapper.
+- `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
+- `cc-context-meter` — context-window pressure, output reserve, available-token estimate.
 - `cc-context-snapshot` — current repo context packet for routing/debugging.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
-- `cc-diff-hunks` — changed-file hunk list and patch preview for cockpit review.
+- `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
@@ -47,6 +49,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-router-smoke` — deterministic dry-run checks for expected model/platform routing.
 - `cc-self-update` — monthly platform update sweep.
 - `cc-semantic-index` — dependency-free repo symbol map using `ctags` and `rg`.
+- `cc-session-ledger` — recent routed sessions, lanes, models, fallbacks, and sticky state.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-workflow-proof` — one-command route/readiness/repo/diff proof packet.

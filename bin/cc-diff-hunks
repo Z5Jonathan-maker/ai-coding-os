@@ -23,6 +23,23 @@ git diff --stat -- .
 git diff --cached --stat -- .
 printf '```\n\n'
 
+printf '## Files\n\n```text\n'
+{ git diff --numstat -- . | awk '{print "worktree\t"$0}'; git diff --cached --numstat -- . | awk '{print "staged\t"$0}'; } \
+  | awk -F '\t' '
+      NF >= 4 {
+        key=$1 "\t" $4
+        add[key]+=$2 == "-" ? 0 : $2
+        del[key]+=$3 == "-" ? 0 : $3
+      }
+      END {
+        printf "%-10s %7s %7s  %s\n", "scope", "added", "removed", "file"
+        for (key in add) {
+          split(key, parts, "\t")
+          printf "%-10s %7d %7d  %s\n", parts[1], add[key], del[key], parts[2]
+        }
+      }'
+printf '```\n\n'
+
 printf '## Hunks\n\n```text\n'
 git diff --no-ext-diff --unified=0 -- . \
   | awk '

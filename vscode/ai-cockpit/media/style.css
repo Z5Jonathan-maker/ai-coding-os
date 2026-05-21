@@ -90,6 +90,10 @@ button:hover {
   background: var(--vscode-testing-iconFailed);
 }
 
+.status-dot.degraded {
+  background: var(--vscode-testing-iconQueued);
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

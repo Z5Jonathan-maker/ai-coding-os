@@ -15,6 +15,7 @@ const COMMANDS = {
   loopQuality: 'cc-loop-quality',
   diskReadiness: 'cc-disk-readiness',
   productReadiness: 'cc-product-readiness',
+  firstRun: 'cc-first-run',
   contextMeter: 'cc-context-meter --include-diff',
   sessionLedger: 'cc-session-ledger list 10',
   pulseStatus: 'cc-pulse-status',
@@ -57,6 +58,7 @@ function activate(context) {
     command('aiSystemCockpit.loopQuality', () => showOutput(output, 'Loop Quality', COMMANDS.loopQuality)),
     command('aiSystemCockpit.diskReadiness', () => showOutput(output, 'Disk Readiness', COMMANDS.diskReadiness)),
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
+    command('aiSystemCockpit.firstRun', () => showOutput(output, 'First Run Doctor', COMMANDS.firstRun)),
     command('aiSystemCockpit.contextMeter', () => showOutput(output, 'Context Meter', COMMANDS.contextMeter)),
     command('aiSystemCockpit.sessionLedger', () => showOutput(output, 'Session Ledger', COMMANDS.sessionLedger)),
     command('aiSystemCockpit.pulseStatus', () => showOutput(output, 'Pulse Status', COMMANDS.pulseStatus)),
@@ -204,7 +206,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, contextMeter, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -212,6 +214,7 @@ class CockpitProvider {
       shellExec('cc-checkpoints summary', { timeout: 12000 }),
       shellExec('cc-disk-readiness | sed -n "1,11p"', { timeout: 20000 }),
       shellExec('cc-product-readiness | sed -n "1,36p"', { timeout: 120000 }),
+      shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
       shellExec('cc-context-meter --include-diff | sed -n "1,16p"', { timeout: 12000 }),
       shellExec('cc-session-ledger list 10 | sed -n "1,20p"', { timeout: 12000 }),
       shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
@@ -232,6 +235,7 @@ class CockpitProvider {
         checkpoints: checkpoints.text,
         disk: disk.text,
         product: product.text,
+        firstRun: firstRun.text,
         contextMeter: contextMeter.text,
         sessions: sessions.text,
         pulse: pulse.text,
@@ -266,6 +270,7 @@ class CockpitProvider {
       loopQuality: () => vscode.commands.executeCommand('aiSystemCockpit.loopQuality'),
       diskReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.diskReadiness'),
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
+      firstRun: () => vscode.commands.executeCommand('aiSystemCockpit.firstRun'),
       contextMeter: () => vscode.commands.executeCommand('aiSystemCockpit.contextMeter'),
       sessionLedger: () => vscode.commands.executeCommand('aiSystemCockpit.sessionLedger'),
       pulseStatus: () => vscode.commands.executeCommand('aiSystemCockpit.pulseStatus'),
@@ -478,6 +483,7 @@ class CockpitProvider {
     <button data-command="diffHunks">Diff Hunks</button>
     <button data-command="workflowProof">Workflow Proof</button>
     <button data-command="browserProof">Browser Proof</button>
+    <button data-command="firstRun">First Run</button>
     <button data-command="contextMeter">Context Meter</button>
     <button data-command="sessionLedger">Sessions</button>
     <button data-command="loopQuality">Loop Quality</button>
@@ -493,6 +499,7 @@ class CockpitProvider {
     <article><h2>Loop Quality</h2><pre>Depth ladder, loop status, and anti-pattern memory readiness.</pre><button data-inline-name="Loop Quality" data-inline-command="cc-loop-quality">View Loop Quality</button></article>
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+    <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>
     <article><h2>Context Meter</h2><pre id="contextMeter">Loading...</pre><button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button></article>
     <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
     <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>

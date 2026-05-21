@@ -110,18 +110,21 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, contextMeter, sessions, pulse, nativeApps, kimi } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, sessions, pulse, nativeApps, kimi } = message.payload;
+    const health = deriveHealth(readiness, product, firstRun, kimi);
     contextBlock = context && context.block ? context.block : '';
-    $('readinessTitle').textContent = readiness.title;
-    $('readinessBody').textContent = readiness.body;
+    $('readinessTitle').textContent = health.title;
+    $('readinessBody').textContent = health.body;
     $('context').textContent = context && context.label ? context.label : 'No active editor';
-    $('statusDot').classList.toggle('warn', !readiness.ok);
+    $('statusDot').classList.toggle('warn', health.level === 'blocked');
+    $('statusDot').classList.toggle('degraded', health.level === 'degraded');
     $('route').textContent = route || 'No route receipt available.';
     $('metrics').textContent = metrics || 'No router metrics available.';
     $('permissions').textContent = permissions || 'No permission matrix available.';
     $('checkpoints').textContent = checkpoints || 'No checkpoints available.';
     $('disk').textContent = disk || 'No disk readiness report available.';
     $('product').textContent = product || 'No product readiness report available.';
+    $('firstRun').textContent = firstRun || 'No first-run doctor available.';
     $('contextMeter').textContent = contextMeter || 'No context meter available.';
     $('sessions').textContent = sessions || 'No session ledger available.';
     $('pulse').textContent = pulse || 'No Pulse status available.';
@@ -137,4 +140,39 @@
     $('resultTitle').textContent = message.payload.title || 'Last Result';
     $('result').textContent = message.payload.body || '(no output)';
   });
+
+  function deriveHealth(readiness, product, firstRun, kimi) {
+    const productReady = /Status:\s*product-ready/.test(product || '');
+    const firstRunReady = /Status:\s*first-run-ready/.test(firstRun || '');
+    const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || 'unknown';
+    if (!productReady) {
+      const blocker = (product || '').match(/Blockers:\n([\s\S]+)/)?.[1]?.split('\n').find(Boolean);
+      return {
+        level: 'blocked',
+        title: 'Product gate blocked',
+        body: blocker ? `Fix first: ${blocker.replace(/^- /, '')}` : (readiness.body || 'Run Product Readiness for details.'),
+      };
+    }
+    if (!firstRunReady) {
+      return {
+        level: 'blocked',
+        title: 'First-run setup blocked',
+        body: 'Run First Run to see missing required tools before installing.',
+      };
+    }
+    if (browserMode === 'shim') {
+      return {
+        level: 'degraded',
+        title: 'Ready with browser shim',
+        body: 'Product gate is green. Browser automation is using the shim profile, not the official logged-in Chrome extension.',
+      };
+    }
+    return {
+      level: 'ready',
+      title: browserMode === 'official-extension' ? 'System ready' : readiness.title,
+      body: browserMode === 'official-extension'
+        ? 'Product gate, first-run doctor, and official browser bridge are ready.'
+        : readiness.body,
+    };
+  }
 }());

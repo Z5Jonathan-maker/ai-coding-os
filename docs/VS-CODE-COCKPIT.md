@@ -67,6 +67,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: System Demo` | Acceptance demo for this machine |
 | `AI: Disk Readiness` | Read-only disk gate and cleanup candidate report |
 | `AI: Product Readiness` | Paid-product gate across cockpit, router, sync, packaging, and disk |
+| `AI: First Run Doctor` | Non-mutating setup report for required, optional, and personal prerequisites |
 | `AI: Pulse Status` | Pulse code-density source, skill, and fit status |
 | `AI: Native App Status` | Installed native AI app versions and role map |
 | `AI: Kimi Status` | Kimi Desktop, CLI, WebBridge, and extension health |
@@ -122,8 +123,12 @@ read-only implementation plan to `.ai/plans/` so execution starts from an
 artifact, not terminal scrollback.
 
 `AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
-smoke, router integrity, system demo, cockpit install, VS Code symlinks, disk
-headroom, repo cleanliness, upstream sync, and product docs.
+smoke, router integrity, system demo, first-run doctor, cockpit install, VS
+Code symlinks, disk headroom, repo cleanliness, upstream sync, and product docs.
+
+`AI: First Run Doctor` is the public setup surface. It names required tools,
+optional AI lanes, personal services, planned symlinks, package drift, and
+credential boundaries without mutating the user's home directory.
 
 `AI: Context Meter` is the Roo-inspired pressure gauge. It estimates input
 tokens, reserves output room, and shows remaining context before a route runs.

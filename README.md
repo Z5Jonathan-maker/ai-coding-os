@@ -39,7 +39,9 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - License: `LICENSE`
 - License/support boundary: `docs/LICENSE-SUPPORT.md`
 - Known limitations: `docs/KNOWN-LIMITATIONS.md`
+- Roadmap: `docs/ROADMAP.md`
 - Release checklist: `docs/RELEASE-CHECKLIST.md`
+- Release notes: `docs/RELEASE-NOTES-v0.1.0-rc1.md`
 - Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
@@ -48,6 +50,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 ## Quick Proof
 
 ```sh
+cc-release-check
 cc-product-readiness
 cc-demo-five-minute
 cc-system-demo

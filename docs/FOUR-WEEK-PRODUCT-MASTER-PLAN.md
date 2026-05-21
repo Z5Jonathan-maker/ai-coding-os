@@ -1,0 +1,165 @@
+# FOUR-WEEK-PRODUCT-MASTER-PLAN.md
+
+This is the execution plan to turn the current AI coding operating system from
+a powerful personal stack into a credible open-source product developers would
+study, install, and recommend.
+
+## Product North Star
+
+**Promise:** one clean VS Code cockpit that routes coding work to the right AI
+lane, proves what happened, and keeps power understandable.
+
+**Target user:** serious individual developers and small technical teams who
+already use AI coding tools, but want better routing, lower waste, stronger
+verification, and less agent/tool sprawl.
+
+**Positioning:** not a Cursor clone, not another chat wrapper, not a random
+agent zoo. This is a local AI coding operating system: cockpit, router, lanes,
+proof, permissions, and rebuildable config.
+
+## Current Honest Baseline
+
+| Surface | Rating | Reason |
+|---|---:|---|
+| Core idea | 9/10 | Clear differentiated value: multi-model routing plus visible control. |
+| Router/lane architecture | 8/10 | Strong local implementation; public abstraction still needs cleanup. |
+| Cockpit utility | 7/10 | Real surfaces exist; needs launch-grade polish and screenshots. |
+| Browser automation | 7/10 | Works through shim and proof path; official extension approval needs honest setup. |
+| Install/rebuild story | 5/10 | Idempotent dotfiles exist; public first-run needs fewer assumptions. |
+| Public product docs | 5/10 | Good internal docs exist; README does not yet sell/teach the system. |
+| Demo/launch readiness | 4/10 | Acceptance commands exist; no polished five-minute narrative yet. |
+
+## Four-Week Outcome
+
+By the end of Week 4, a developer can:
+
+1. Read the README and understand the product in under three minutes.
+2. Install or dry-run install without hidden personal-machine assumptions.
+3. Open the VS Code cockpit and see system health, routes, receipts, context,
+   permissions, browser state, and product readiness.
+4. Run a five-minute demo that produces visible proof.
+5. Understand the model roles and cost/control boundaries.
+6. Package the cockpit as a VSIX.
+7. Trust that unsupported states are named honestly instead of hidden.
+
+## Week 1 — Foundation And Public Shape
+
+**Goal:** make the project understandable, verifiable, and clean enough that a
+developer can evaluate it without personal context.
+
+### Ship Artifacts
+
+- Public-facing README rewrite: promise, architecture, install, demo, FAQ.
+- First-run prerequisite matrix: required, optional, personal-only.
+- Product readiness green on this machine.
+- Browser automation truth table: official extension vs shim vs Playwright.
+- Demo script draft with exact commands.
+
+### Gate
+
+```sh
+cc-product-readiness
+cc-system-demo
+cc-browser-proof --url https://example.com --max-chars 1200
+cc-package-cockpit
+```
+
+Week 1 is complete when product readiness is green, the README is coherent to a
+new developer, and browser limitations are documented without spin.
+
+## Week 2 — Install And Demo Quality
+
+**Goal:** make the system easy to try and hard to misunderstand.
+
+### Ship Artifacts
+
+- `install.sh` dry-run / doctor mode if not already complete.
+- `cc-first-run` or equivalent guided setup report.
+- `cc-demo-five-minute` scripted demo wrapper.
+- Demo output transcript checked into docs.
+- Cockpit screenshot/GIF capture plan.
+- Better error messages for missing keys, missing apps, locked browser, and
+  unavailable provider lanes.
+
+### Gate
+
+```sh
+~/dotfiles/install.sh --dry-run
+cc-system-demo
+cc-workflow-proof
+cc-demo-five-minute
+```
+
+Week 2 is complete when a fresh evaluator can run one command and know exactly
+what is missing, optional, or ready.
+
+## Week 3 — Cockpit Polish And Developer Trust
+
+**Goal:** make the VS Code cockpit feel like a serious product, not a terminal
+dashboard embedded in a sidebar.
+
+### Ship Artifacts
+
+- Polished cockpit states: ready, degraded, missing setup, locked browser.
+- Route receipt card with lane, model, fallback, cost/token, latency.
+- Browser status card with official/shim/fallback state.
+- Demo mode in cockpit: one flow, visible proof.
+- Contribution guide and architecture map.
+- License/support boundary draft.
+
+### Gate
+
+```sh
+cc-package-cockpit
+code --install-extension vscode/ai-cockpit/dist/*.vsix --force
+cc-product-readiness
+```
+
+Week 3 is complete when the cockpit can sit in front of a developer and explain
+itself without terminal narration.
+
+## Week 4 — Launch Package
+
+**Goal:** prepare the project for a credible public release.
+
+### Ship Artifacts
+
+- Launch README with screenshots/GIF links.
+- Release checklist.
+- Tagged local release candidate.
+- Public demo transcript.
+- Known limitations page.
+- Contribution guide.
+- Security/credentials policy.
+- GitHub issue templates for install bug, provider bug, cockpit bug.
+
+### Gate
+
+```sh
+cc-product-readiness
+cc-health-weekly --verbose
+cc-package-cockpit
+git status --short
+```
+
+Week 4 is complete when a public repo visitor can understand the project,
+install it, run the demo, inspect the architecture, and file useful issues.
+
+## Work Queue Starting Now
+
+1. Make product readiness green again by restoring disk headroom. Started 2026-05-21: restored from 22GB free to 26GB free by clearing generated caches.
+2. Add this master plan and ISA to the repo. Done 2026-05-21.
+3. Link the plan from README and product packaging docs. Done 2026-05-21.
+4. Rewrite README into public-product shape.
+5. Add browser automation truth table to Kimi/WebBridge docs. Done 2026-05-21.
+6. Create the five-minute demo script.
+7. Package cockpit and capture proof. Started 2026-05-21: `cc-package-cockpit` created `dist/ai-system-cockpit-0.1.0.vsix`.
+
+## Non-Negotiable Quality Bar
+
+- A feature is not real until it is visible in a command, cockpit surface, or
+  documented first-run behavior.
+- A claim is not real until a verification command proves it.
+- A fallback is not real until the user can tell which fallback is active.
+- A public install is not real until missing prerequisites produce clear output.
+- A launch is not real until a stranger can run the demo.

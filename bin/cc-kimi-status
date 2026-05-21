@@ -26,7 +26,13 @@ if [ -x "$bridge" ]; then
     # shellcheck disable=SC2016
     node -e '
       const s = JSON.parse(process.argv[1]);
-      console.log(`WebBridge: running=${Boolean(s.running)} extension_connected=${Boolean(s.extension_connected)} port=${s.port || "unknown"} version=${s.version || "unknown"}`);
+      const extensionVersion = s.extension_version || "";
+      const mode = !s.running ? "not-ready"
+        : !s.extension_connected ? "not-ready"
+        : extensionVersion.startsWith("shim-") ? "shim"
+        : extensionVersion ? "official-extension"
+        : "unknown";
+      console.log(`WebBridge: running=${Boolean(s.running)} extension_connected=${Boolean(s.extension_connected)} mode=${mode} port=${s.port || "unknown"} version=${s.version || "unknown"} extension_version=${extensionVersion || "unknown"}`);
     ' "$status"
   else
     printf 'WebBridge: status unavailable\n'

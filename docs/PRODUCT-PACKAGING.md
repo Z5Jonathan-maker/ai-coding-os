@@ -2,6 +2,12 @@
 
 This system is a premium AI coding operating system, not a bag of tools.
 
+The current four-week plan to make it sellable open-source quality lives at
+`docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`. The done-state is tracked in
+`.ai/ISA-sellable-open-source-ai-coding-system.md`.
+Browser automation mode boundaries live at
+`docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
+
 ## Product Promise
 
 One clean developer cockpit that routes work to the right AI lane:

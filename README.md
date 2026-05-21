@@ -1,6 +1,71 @@
-# dotfiles
+# AI Coding Operating System
 
-Personal macOS dotfiles, symlinked into `$HOME` via `install.sh`.
+This repo is the local control plane for a multi-model AI coding system: a VS
+Code cockpit, deterministic router, model/tool lanes, health gates, permission
+surfaces, browser proof, and rebuildable macOS dotfiles.
+
+The product promise is simple: developers should not need to decide which AI
+tool to use first. They work from one cockpit; the system routes by capability,
+cost, trust boundary, and verification needs.
+
+## Why This Exists
+
+Single-model IDE assistants are useful, but they collapse too many jobs into
+one lane. This system separates responsibilities:
+
+| Lane | Role |
+|---|---|
+| Codex | Engineering execution, code edits, local verification |
+| Claude | Architecture, hard debugging, security/compliance review |
+| Kimi | Browser, UI, screenshots, visual/operator work |
+| DeepSeek | Cheap extraction, transforms, summaries, bulk passes |
+| ChatGPT image | Image generation/editing |
+| TEL | Credentialed actions with audit boundaries |
+| Playwright | Clean browser fallback and smoke tests |
+
+The result is not another chat wrapper. It is an AI coding operating system:
+cockpit, router, receipts, permissions, memory, browser proof, and packaging.
+
+## Current Product Status
+
+- Internal system: strong and actively usable.
+- Public product: in a four-week hardening cycle.
+- Master plan: `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`
+- Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
+- Product contract: `docs/PRODUCT-PACKAGING.md`
+- Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
+
+## Quick Proof
+
+```sh
+cc-product-readiness
+cc-system-demo
+cc-workflow-proof
+cc-browser-proof --url https://example.com --max-chars 1200
+```
+
+Expected mature state: readiness is green, system demo passes, workflow proof
+shows route/readiness/repo/diff context, and browser proof returns bounded page
+content.
+
+## Local Install
+
+Current install is optimized for Jonathan's macOS workstation while the public
+packaging is being hardened.
+
+```sh
+git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
+~/dotfiles/install.sh
+brew bundle install --file=~/dotfiles/Brewfile
+~/dotfiles/install.sh
+```
+
+Public first-run/dry-run mode is a Week 2 deliverable in the master plan.
+
+## Repository Contents
+
+Personal macOS dotfiles and AI-system config are symlinked into `$HOME` via
+`install.sh`.
 
 ## What's tracked
 
@@ -57,6 +122,10 @@ The executable lane contract lives in `ai-lanes.json` and is checked by
 Video-derived reference notes live at
 `docs/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
 The product packaging contract lives at `docs/PRODUCT-PACKAGING.md`.
+The four-week open-source/product launch plan lives at
+`docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`.
+Browser automation boundaries live at
+`docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
 Disk readiness notes live at `docs/DISK-READINESS-AUDIT-2026-05-21.md`.
 VS Code cockpit notes live at `docs/VS-CODE-COCKPIT.md`.
 Cursor reference notes live at `docs/CURSOR-REFERENCE-STUDY-2026-05-21.md`.

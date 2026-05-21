@@ -134,6 +134,11 @@ Sources:
 Reference apps can teach product patterns, but they do not become active lanes
 unless they add an independent capability, safety boundary, or cost advantage.
 
+Prebuilt code from reference projects is allowed when it fills a named gap in
+this cockpit/router/lane system and can be integrated cleanly. The goal is not
+to cut our puzzle around someone else's parts. The goal is to identify the exact
+missing piece, then use proven code only when it fits that piece.
+
 The cockpit should expose:
 
 - intent modes

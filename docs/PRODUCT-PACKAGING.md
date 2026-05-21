@@ -173,3 +173,21 @@ Every feature must pass one of these tests:
 - makes it easier to rebuild
 
 If not, it stays out.
+
+## Reference Harvest Rule
+
+Reference projects are gap detectors first. We study tools loved by developers
+to name missing capability classes in this system, not to collect shiny parts.
+
+Prebuilt code can be harvested only when all of these are true:
+
+1. it fills a named gap in the existing cockpit/router/lane architecture
+2. it is one of the best available implementations of that specific capability
+3. it can be wired into our current direction without adding a duplicate IDE,
+   duplicate assistant shell, or unowned model/tool lane
+4. its license and maintenance profile are acceptable
+5. the result makes the system more capable, safer, cheaper, clearer, or easier
+   to rebuild
+
+If a reference project has a strong idea but the code would distort the system,
+we rebuild the capability natively instead of importing the project.

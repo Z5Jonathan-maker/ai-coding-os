@@ -76,8 +76,8 @@ new developer, and browser limitations are documented without spin.
 - `install.sh` dry-run / doctor mode. Done 2026-05-21: delegates to `cc-first-run`.
 - `cc-first-run` or equivalent guided setup report. Done 2026-05-21.
 - `cc-demo-five-minute` scripted demo wrapper.
-- Demo output transcript checked into docs.
-- Cockpit screenshot/GIF capture plan.
+- Demo output transcript checked into docs. Done 2026-05-21: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`.
+- Cockpit screenshot/GIF capture plan. Done 2026-05-21: `docs/COCKPIT-SCREENSHOT-PLAN.md`.
 - Better error messages for missing keys, missing apps, locked browser, and
   unavailable provider lanes.
 

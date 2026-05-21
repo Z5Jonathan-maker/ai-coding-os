@@ -34,6 +34,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
+- Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
+- Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`
 
 ## Quick Proof
 

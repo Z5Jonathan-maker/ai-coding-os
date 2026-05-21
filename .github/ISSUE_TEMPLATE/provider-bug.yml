@@ -1,0 +1,34 @@
+name: Provider or lane bug
+description: Report routing, provider, fallback, token, or browser-lane issues.
+title: "[provider] "
+labels: ["provider", "routing"]
+body:
+  - type: textarea
+    id: route
+    attributes:
+      label: Route or proof output
+      description: Paste `cc-workflow-proof`, `cc-router-receipt`, or `cc-browser-proof --json` output.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: lane
+    attributes:
+      label: Affected lane
+      options:
+        - Codex
+        - Claude
+        - Kimi/WebBridge
+        - DeepSeek
+        - ChatGPT image
+        - TEL
+        - Playwright
+        - Unknown
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What failed?
+    validations:
+      required: true

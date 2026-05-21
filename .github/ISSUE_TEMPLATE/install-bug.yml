@@ -1,0 +1,32 @@
+name: Install bug
+description: Report first-run, install, or local setup problems.
+title: "[install] "
+labels: ["install", "bug"]
+body:
+  - type: textarea
+    id: doctor
+    attributes:
+      label: First-run doctor output
+      description: Paste the output of `~/dotfiles/install.sh --dry-run`.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: macOS and architecture
+      placeholder: "macOS 15.x, arm64"
+    validations:
+      required: true

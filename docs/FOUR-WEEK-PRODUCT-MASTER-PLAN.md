@@ -128,10 +128,10 @@ itself without terminal narration.
 - Release checklist.
 - Tagged local release candidate.
 - Public demo transcript.
-- Known limitations page.
-- Contribution guide.
-- Security/credentials policy.
-- GitHub issue templates for install bug, provider bug, cockpit bug.
+- Known limitations page. Done 2026-05-21: `docs/KNOWN-LIMITATIONS.md`.
+- Contribution guide. Done 2026-05-21: `CONTRIBUTING.md`.
+- Security/credentials policy. Done 2026-05-21: `SECURITY.md`.
+- GitHub issue templates for install bug, provider bug, cockpit bug. Done 2026-05-21.
 
 ### Gate
 

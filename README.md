@@ -35,7 +35,10 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Product contract: `docs/PRODUCT-PACKAGING.md`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Contribution guide: `CONTRIBUTING.md`
+- Security policy: `SECURITY.md`
 - License/support boundary: `docs/LICENSE-SUPPORT.md`
+- Known limitations: `docs/KNOWN-LIMITATIONS.md`
+- Release checklist: `docs/RELEASE-CHECKLIST.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`

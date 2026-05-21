@@ -35,6 +35,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Product contract: `docs/PRODUCT-PACKAGING.md`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Contribution guide: `CONTRIBUTING.md`
+- Portable CI: `docs/CI.md`
 - Security policy: `SECURITY.md`
 - License: `LICENSE`
 - License/support boundary: `docs/LICENSE-SUPPORT.md`
@@ -51,6 +52,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 
 ```sh
 cc-release-check
+cc-public-ci-check
 cc-product-readiness
 cc-demo-five-minute
 cc-system-demo

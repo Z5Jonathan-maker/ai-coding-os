@@ -13,6 +13,8 @@ developer-grade public launch.
 - Publish GitHub release notes from `docs/RELEASE-NOTES-v0.1.0-rc1.md`.
 - Keep `cc-public-ci-check` green in GitHub Actions for portable contributor
   validation.
+- Re-enable `.github/workflows/public-ci.yml` after the GitHub Actions billing
+  block is cleared.
 
 ## v0.2.0
 

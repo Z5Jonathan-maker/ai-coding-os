@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-version="${1:-v0.1.0-rc2}"
+version="${1:-v0.1.0-rc3}"
 out="${CC_RELEASE_MANIFEST_OUT:-$DOTFILES/docs/RELEASE-MANIFEST-${version}.md}"
 package="$DOTFILES/dist/ai-system-cockpit-0.1.0.vsix"
 

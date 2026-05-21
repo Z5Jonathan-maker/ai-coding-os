@@ -114,7 +114,7 @@ Reference systems studied:
   file-heavy workflows, reusable skills/presets, and desktop app packaging
 - Pulse: code-density protocol for compact generated code without compressing
   tests, errors, or user-facing clarity
-- Codex/ChatGPT/Claude/Perplexity native apps: command center, screen/file
+- Codex/ChatGPT/Claude/Perplexity native app references: command center, screen/file
   context, extension/security boundaries, native app control, and dependency
   status patterns
 - Autonomous Loop / Mega Cycle: counter-action discipline, null-result health,

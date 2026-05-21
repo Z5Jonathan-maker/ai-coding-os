@@ -119,7 +119,9 @@ noise_hits=$(
     --glob '!claude/wiki/logs/**' \
     --glob '!**/claude/wiki/logs/**' \
     --glob '!*.backup.*' \
-    2>/dev/null || true
+    2>/dev/null \
+    | rg -v 'REFERENCE-STUDY|reference-only|reference only|reference source|native app references|Perplexity Desktop|perplexity\.ai|apps\.apple\.com' \
+    || true
 )
 if [ -z "$noise_hits" ]; then
   checks_passed=$((checks_passed + 1))

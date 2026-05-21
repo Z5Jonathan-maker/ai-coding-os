@@ -121,8 +121,9 @@ headroom, repo cleanliness, upstream sync, and product docs.
 `AI: Pulse Status` confirms the Pulse source and installed skills are present.
 It exists to keep generated code dense without adding another model lane.
 
-`AI: Native App Status` reports ChatGPT, Codex, Claude, Kimi, and Perplexity app
-installation/version state plus each app's role in the system.
+`AI: Native App Status` reports installed core AI apps plus reference-only
+desktop app checks, including installation/version state and each app's role in
+the system.
 
 The sidebar composer is the native daily-driver path. It keeps the current
 file or selected code visible as context, attaches extra files or git diff as

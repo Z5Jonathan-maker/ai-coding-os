@@ -34,6 +34,7 @@ Required result:
 - `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - `docs/FRESH-CLONE-VERIFY.md`
 - `docs/COCKPIT-SCREENSHOT-PLAN.md`
+- `docs/RELEASE-CANDIDATE-v0.1.0-rc1.md`
 - `.github/ISSUE_TEMPLATE/`
 
 ## Manual Review

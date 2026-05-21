@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+prompt="${*:-debug this repo and verify the safest next step}"
+
+printf '# Workflow Proof\n\n'
+
+printf '## Product Readiness\n\n```text\n'
+cc-product-readiness | sed -n '1,28p'
+printf '```\n\n'
+
+printf '## Route Preview\n\n```text\n'
+"$HOME/AI-SYSTEM-V2/scripts/intent-route.sh" --dry-run "$prompt" | sed -n '1,34p'
+printf '```\n\n'
+
+printf '## Repo Index\n\n'
+cc-repo-index | sed -n '1,54p'
+
+printf '\n## Diff Review Surface\n\n```text\n'
+if git rev-parse --show-toplevel >/dev/null 2>&1; then
+  git diff --stat -- . | sed -n '1,40p'
+else
+  printf 'not inside a git repository\n'
+fi
+printf '```\n'

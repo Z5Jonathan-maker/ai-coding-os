@@ -13,8 +13,9 @@ It adds:
 - an Activity Bar container named `AI Cockpit`
 - a sidebar dashboard for readiness, route receipt, permissions, checkpoints,
   jobs, lanes, and disk gate
-- an in-sidebar prompt composer with selected modes, route preview, current
-  file/selection context, and `cmd+enter` execution
+- an in-sidebar prompt composer with selected modes, route preview, streaming
+  results, attached file/diff context, current file/selection context, and
+  `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, product readiness, and disk readiness
 - a status bar readiness button
@@ -52,6 +53,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Save Plan` | Write a read-only plan artifact to `.ai/plans/` |
 | `AI: Review Diff` | Review current git diff through the precision lane |
 | `AI: Context Snapshot` | Show current repo context packet |
+| `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Checkpoints` | Show shadow Git and session checkpoint timeline |
 | `AI: Checkpoint Diff` | Diff current worktree against a shadow checkpoint step |
 | `AI: Jobs` | List background/dispatched jobs |
@@ -59,6 +61,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: System Demo` | Acceptance demo for this machine |
 | `AI: Disk Readiness` | Read-only disk gate and cleanup candidate report |
 | `AI: Product Readiness` | Paid-product gate across cockpit, router, sync, packaging, and disk |
+| `AI: Workflow Proof` | One-command readiness, route preview, repo index, and diff surface |
 | `AI: Claude Direct` | Direct Claude escape hatch |
 | `AI: Codex Direct` | Direct Codex escape hatch |
 
@@ -91,9 +94,9 @@ smoke, router integrity, system demo, cockpit install, VS Code symlinks, disk
 headroom, repo cleanliness, upstream sync, and product docs.
 
 The sidebar composer is the native daily-driver path. It keeps the current
-file or selected code visible as a context chip, lets the user switch between
-Build, Design, Research, Route, and Plan without opening a terminal, and shows
-route-preview output inline before execution.
+file or selected code visible as context, attaches extra files or git diff as
+chips, lets the user switch between Build, Design, Research, Route, and Plan
+without opening a terminal, and streams route/output back into the sidebar.
 
 ## Keyboard Map
 

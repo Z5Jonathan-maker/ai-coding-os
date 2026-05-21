@@ -36,12 +36,14 @@ useful, delete it or move it out of `bin/`.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-prune` — manual disk hygiene for `.claude`.
 - `cc-review-diff` — precision-lane review of current git diff.
+- `cc-repo-index` — compact workspace index for cockpit context and repo inspection.
 - `cc-router-receipt` — latest router decision, fallback, quota, token receipt.
 - `cc-router-metrics` — router usage, fallback, failure, token, and session metrics.
 - `cc-router-smoke` — deterministic dry-run checks for expected model/platform routing.
 - `cc-self-update` — monthly platform update sweep.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
+- `cc-workflow-proof` — one-command route/readiness/repo/diff proof packet.
 
 ## Claude/Codex workflow helpers
 

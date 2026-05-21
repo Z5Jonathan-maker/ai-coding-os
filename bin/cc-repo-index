@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "cc-repo-index: not inside a git repository" >&2
+  exit 2
+fi
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+printf '# Repo Index\n\n'
+printf 'Repo: %s\n' "$root"
+printf 'Branch: %s\n\n' "$(git branch --show-current 2>/dev/null || printf unknown)"
+
+printf '## Status\n\n```text\n'
+git status --short
+printf '```\n\n'
+
+printf '## File Shape\n\n```text\n'
+rg --files -g '!node_modules' -g '!dist' -g '!build' -g '!.next' -g '!coverage' \
+  | awk '
+      { total++; n=$0; sub(/^.*\./, ".", n); if (n == $0) n="[no-ext]"; ext[n]++ }
+      END {
+        printf "files\t%s\n", total + 0
+        for (e in ext) print ext[e] "\t" e
+      }' \
+  | sort -nr | sed -n '1,24p'
+printf '```\n\n'
+
+printf '## Recent Files\n\n```text\n'
+git ls-files -m -o --exclude-standard | sed -n '1,60p'
+printf '```\n\n'
+
+printf '## Hot Symbols\n\n```text\n'
+rg -n "^(export |function |class |const |let |var |def |async function )" \
+  -g '!node_modules' -g '!dist' -g '!build' -g '!.next' -g '!coverage' \
+  | sed -n '1,80p' || true
+printf '```\n'

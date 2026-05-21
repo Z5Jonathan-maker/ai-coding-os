@@ -14,6 +14,8 @@ const COMMANDS = {
   checkpoints: 'cc-checkpoints',
   diskReadiness: 'cc-disk-readiness',
   productReadiness: 'cc-product-readiness',
+  repoIndex: 'cc-repo-index',
+  workflowProof: 'cc-workflow-proof',
   reviewDiff: 'cc-review-diff',
   jobs: 'cc-jobs',
 };
@@ -45,8 +47,11 @@ function activate(context) {
     command('aiSystemCockpit.checkpoints', () => showOutput(output, 'Checkpoints', COMMANDS.checkpoints)),
     command('aiSystemCockpit.diskReadiness', () => showOutput(output, 'Disk Readiness', COMMANDS.diskReadiness)),
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
+    command('aiSystemCockpit.repoIndex', () => showOutput(output, 'Repo Index', COMMANDS.repoIndex)),
+    command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
-    command('aiSystemCockpit.reviewDiff', () => runTerminal('AI Review Diff', COMMANDS.reviewDiff)),
+    command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
+    command('aiSystemCockpit.openSettings', () => vscode.commands.executeCommand('workbench.action.openSettings', 'aiSystemCockpit')),
     command('aiSystemCockpit.explainRoute', explainRoute),
     command('aiSystemCockpit.savePlan', savePlan),
     ...ACTIONS.map(([id, label, purpose]) => command(`aiSystemCockpit.${id}`, () => routerAsk(label, purpose))),
@@ -232,7 +237,10 @@ class CockpitProvider {
       checkpoints: () => vscode.commands.executeCommand('aiSystemCockpit.checkpoints'),
       diskReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.diskReadiness'),
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
+      repoIndex: () => vscode.commands.executeCommand('aiSystemCockpit.repoIndex'),
+      workflowProof: () => vscode.commands.executeCommand('aiSystemCockpit.workflowProof'),
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
+      openSettings: () => vscode.commands.executeCommand('aiSystemCockpit.openSettings'),
       explainRoute: () => vscode.commands.executeCommand('aiSystemCockpit.explainRoute'),
       buildFix: () => vscode.commands.executeCommand('aiSystemCockpit.buildFix'),
       designBrowser: () => vscode.commands.executeCommand('aiSystemCockpit.designBrowser'),
@@ -245,7 +253,15 @@ class CockpitProvider {
       return;
     }
     if (message.command === 'inline') {
-      this.runInline(message.name, message.commandLine);
+      this.runInlineStream(message.name, message.commandLine);
+      return;
+    }
+    if (message.command === 'pickFile') {
+      this.pickFileContext();
+      return;
+    }
+    if (message.command === 'attachDiff') {
+      this.attachDiffContext();
       return;
     }
     commands[message.command]?.();
@@ -267,6 +283,68 @@ class CockpitProvider {
     });
   }
 
+  runInlineStream(name, commandLine) {
+    if (!this.view) return;
+    let body = '';
+    this.view.webview.postMessage({
+      type: 'result',
+      payload: { title: name || 'Running', body: 'Running...' },
+    });
+    const child = cp.spawn('/bin/zsh', ['-lc', commandLine], {
+      cwd: cwd(),
+      env: process.env,
+    });
+    const push = (chunk) => {
+      body = `${body}${chunk}`.slice(-60000);
+      this.view.webview.postMessage({
+        type: 'result',
+        payload: { title: name || 'Running', body: body || 'Running...' },
+      });
+    };
+    child.stdout.on('data', data => push(data.toString()));
+    child.stderr.on('data', data => push(data.toString()));
+    child.on('error', error => push(`\n${error.message}`));
+    child.on('close', code => {
+      this.view.webview.postMessage({
+        type: 'result',
+        payload: {
+          title: `${name || 'Result'}${code === 0 ? '' : ` (exit ${code})`}`,
+          body: body || '(no output)',
+        },
+      });
+    });
+  }
+
+  async pickFileContext() {
+    const files = await vscode.workspace.findFiles('**/*', '**/{node_modules,.git,dist,.next,build,coverage}/**', 600);
+    const picked = await vscode.window.showQuickPick(
+      files.map(uri => ({ label: vscode.workspace.asRelativePath(uri), uri })),
+      { placeHolder: 'Attach a file as cockpit context' }
+    );
+    if (!picked || !this.view) return;
+    const doc = await vscode.workspace.openTextDocument(picked.uri);
+    const text = doc.getText().slice(0, 12000);
+    this.view.webview.postMessage({
+      type: 'appendContext',
+      payload: {
+        label: picked.label,
+        block: `\n\nAttached file ${picked.label}:\n\`\`\`\n${text}\n\`\`\``,
+      },
+    });
+  }
+
+  async attachDiffContext() {
+    if (!this.view) return;
+    const result = await shellExec('git diff -- . | head -c 12000', { timeout: 20000 });
+    this.view.webview.postMessage({
+      type: 'appendContext',
+      payload: {
+        label: 'git diff',
+        block: `\n\nAttached git diff:\n\`\`\`diff\n${result.text || '(no diff)'}\n\`\`\``,
+      },
+    });
+  }
+
   runPrompt(mode, prompt, includeContext = false, contextBlock = '') {
     const clean = String(prompt || '').trim();
     if (!clean) {
@@ -275,7 +353,7 @@ class CockpitProvider {
     }
     const enriched = includeContext && contextBlock ? `${clean}${contextBlock}` : clean;
     if (mode === 'explainRoute') {
-      this.runInline('Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(enriched)}`);
+      this.runInlineStream('Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(enriched)}`);
       return;
     }
     if (mode === 'savePlan') {
@@ -288,7 +366,8 @@ class CockpitProvider {
       researchExtract: ['Research / Extract', 'cheap'],
     };
     const [label, purpose] = modes[mode] || modes.buildFix;
-    runRouterPrompt(label, purpose, enriched);
+    const force = purpose ? `--purpose ${quote(purpose)} ` : '';
+    this.runInlineStream(label, `router-ask ${force}${quote(enriched)}`);
   }
 
   html(webview) {
@@ -334,6 +413,7 @@ class CockpitProvider {
       <button class="mode" data-mode="savePlan">Plan</button>
     </div>
     <textarea id="prompt" rows="4" placeholder="Describe the task. The cockpit routes it to the right lane."></textarea>
+    <div class="chips" id="chips"></div>
     <label class="check">
       <input id="includeContext" type="checkbox" checked>
       Include current file / selection
@@ -341,6 +421,11 @@ class CockpitProvider {
     <div class="runrow">
       <button class="primary" data-run-selected="true">Run Mode</button>
       <button data-run="explainRoute">Preview Route</button>
+    </div>
+    <div class="toolrow">
+      <button data-command="pickFile">Attach File</button>
+      <button data-command="attachDiff">Attach Diff</button>
+      <button data-command="reviewDiff">Review Diff</button>
     </div>
   </section>
 
@@ -351,6 +436,8 @@ class CockpitProvider {
     <button data-command="explainRoute">Explain Route</button>
     <button data-command="savePlan">Save Plan</button>
     <button data-command="reviewDiff">Review Diff</button>
+    <button data-command="repoIndex">Repo Index</button>
+    <button data-command="workflowProof">Workflow Proof</button>
   </section>
 
   <section class="cards">
@@ -360,6 +447,7 @@ class CockpitProvider {
     <article><h2>Checkpoints</h2><pre id="checkpoints">Loading...</pre><button data-inline-name="Checkpoints" data-inline-command="cc-checkpoints">View Timeline</button></article>
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+    <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
     <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
     <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>
     <article class="result"><h2 id="resultTitle">Last Result</h2><pre id="result">Run Explain Route from the prompt composer to see output here.</pre></article>
@@ -367,7 +455,7 @@ class CockpitProvider {
 
   <footer>
     <button data-command="status">Full Status</button>
-    <button data-command="systemDemo">System Demo</button>
+    <button data-command="openSettings">Settings</button>
   </footer>
 
   <script nonce="${nonce}" src="${jsUri}"></script>

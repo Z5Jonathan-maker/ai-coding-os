@@ -83,8 +83,8 @@ Native extension:
 - packaged by `cc-package-cockpit`
 - exposes the same intent modes as a sidebar product surface
 - includes a selected-mode prompt composer with current file/selection context,
-  route preview, router metrics, jobs, lanes, permissions, checkpoints, route
-  receipts, readiness, and disk gate
+  file/diff context chips, streaming output, route preview, router metrics,
+  jobs, lanes, permissions, checkpoints, route receipts, readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks
   inside the sidebar instead of terminal scrollback
 
@@ -128,6 +128,7 @@ Personal system is 100% when:
 4. `cc-package-cockpit` produces a VSIX
 5. active configs are committed and pushed
 6. one real workflow has run end-to-end: route -> edit -> verify -> browser/UI check -> final review
+7. `cc-workflow-proof` produces a readable proof packet
 
 Current known blocker: product readiness. Run `cc-product-readiness` for the
 exact list; dirty/synced repo state is expected while active work is in flight.
@@ -143,6 +144,7 @@ Sellable system is 100% when:
 7. no secrets, paid actions, or destructive commands can run without the right boundary
 8. `cc-product-readiness` is clean on a fresh install target
 9. the cockpit extension can be distributed as a VSIX
+10. route, repo context, diff review, and readiness can run inside the cockpit
 
 ## Packaging Rule
 

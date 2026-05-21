@@ -134,6 +134,12 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Repo Index",
+      "type": "shell",
+      "command": "cc-repo-index",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Checkpoints",
       "type": "shell",
       "command": "cc-checkpoints",
@@ -162,6 +168,13 @@
       "label": "AI: Product Readiness",
       "type": "shell",
       "command": "cc-product-readiness",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Workflow Proof",
+      "type": "shell",
+      "command": "cc-workflow-proof",
+      "args": ["${input:aiPrompt}"],
       "problemMatcher": []
     },
     {

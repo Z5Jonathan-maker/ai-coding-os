@@ -3,6 +3,26 @@
   const $ = (id) => document.getElementById(id);
   let selectedMode = 'buildFix';
   let contextBlock = '';
+  let attached = [];
+
+  function renderChips() {
+    $('chips').innerHTML = '';
+    attached.forEach((item, index) => {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.type = 'button';
+      chip.textContent = `${item.label} ×`;
+      chip.addEventListener('click', () => {
+        attached.splice(index, 1);
+        renderChips();
+      });
+      $('chips').appendChild(chip);
+    });
+  }
+
+  function fullContext() {
+    return [contextBlock].concat(attached.map(item => item.block)).filter(Boolean).join('');
+  }
 
   document.addEventListener('click', (event) => {
     const modeButton = event.target.closest('button[data-mode]');
@@ -27,7 +47,7 @@
         mode: runButton.dataset.run,
         prompt: $('prompt').value,
         includeContext: $('includeContext').checked,
-        contextBlock,
+        contextBlock: fullContext(),
       });
       return;
     }
@@ -39,7 +59,7 @@
         mode: selectedMode,
         prompt: $('prompt').value,
         includeContext: $('includeContext').checked,
-        contextBlock,
+        contextBlock: fullContext(),
       });
       return;
     }
@@ -61,7 +81,7 @@
         mode: selectedMode,
         prompt: $('prompt').value,
         includeContext: $('includeContext').checked,
-        contextBlock,
+        contextBlock: fullContext(),
       });
     }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'l') {
@@ -81,6 +101,11 @@
     if (message.type === 'context') {
       contextBlock = message.payload && message.payload.block ? message.payload.block : '';
       $('context').textContent = message.payload && message.payload.label ? message.payload.label : 'No active editor';
+      return;
+    }
+    if (message.type === 'appendContext') {
+      attached.push(message.payload);
+      renderChips();
       return;
     }
     if (message.type !== 'state') return;

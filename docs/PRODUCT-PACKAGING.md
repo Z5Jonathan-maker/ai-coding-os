@@ -144,7 +144,7 @@ Removed from active stack:
 
 ## Definition Of 100% Functional
 
-Personal system is 100% when:
+Installed system is 100% when:
 
 1. `cc-health-weekly --verbose` is green except intentional dirty-repo state
 2. `cc-system-demo` passes

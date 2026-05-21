@@ -144,7 +144,7 @@ else
   mark miss optional "VS Code extensions" "vscode/extensions.txt unavailable"
 fi
 
-printf '\n## Credentials And Personal Services\n\n'
+printf '\n## Credentials And Local Account Services\n\n'
 mark warn personal "API keys" "never checked by this doctor; configure through 1Password/TEL/local env"
 check_path personal "$HOME/.kimi-webbridge/bin/kimi-webbridge" "optional browser bridge"
 check_path personal "/Applications/Kimi.app" "optional native Kimi app"

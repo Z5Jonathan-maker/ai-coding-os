@@ -13,7 +13,7 @@ cc-demo-five-minute \
 ```text
 # Five-Minute AI Coding OS Demo
 
-Dotfiles: /Users/leonardofibonacci/dotfiles
+Dotfiles: ~/dotfiles
 Prompt: debug this repo and verify the safest next step
 Browser URL: data:text/html,<title>AI OS Demo</title><body>checked in transcript proof</body>
 
@@ -50,7 +50,7 @@ ok   Workflow Proof
 ## Repo Proof
 
 ```text
-Repo: /Users/leonardofibonacci/dotfiles
+Repo: ~/dotfiles
 Branch: main
 Status: clean
 Diff Review Surface: clean
@@ -69,8 +69,8 @@ ok   Browser Proof
 ## Cockpit Package Proof
 
 ```text
-DONE  Packaged: /Users/leonardofibonacci/dotfiles/dist/ai-system-cockpit-0.1.0.vsix
-Packaged: /Users/leonardofibonacci/dotfiles/dist/ai-system-cockpit-0.1.0.vsix
+DONE  Packaged: ~/dotfiles/dist/ai-system-cockpit-0.1.0.vsix
+Packaged: ~/dotfiles/dist/ai-system-cockpit-0.1.0.vsix
 
 ok   Cockpit Package Proof
 ```

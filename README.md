@@ -60,8 +60,8 @@ content.
 
 ## Local Install
 
-Current install is optimized for Jonathan's macOS workstation while the public
-packaging is being hardened.
+Current install is optimized for macOS Apple Silicon while the public packaging
+is being hardened.
 
 ```sh
 git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
@@ -77,7 +77,7 @@ extension drift.
 
 ## Repository Contents
 
-Personal macOS dotfiles and AI-system config are symlinked into `$HOME` via
+macOS dotfiles and AI-system config are symlinked into `$HOME` via
 `install.sh`.
 
 ## What's tracked

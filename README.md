@@ -59,6 +59,13 @@ Expected mature state: readiness is green, system demo passes, workflow proof
 shows route/readiness/repo/diff context, and browser proof returns bounded page
 content.
 
+## Cockpit Preview
+
+![AI Cockpit readiness preview](docs/media/cockpit/01-readiness.png)
+
+More launch media lives in `docs/media/cockpit/` and is regenerated with
+`cc-cockpit-capture`.
+
 ## Local Install
 
 Current install is optimized for macOS Apple Silicon while the public packaging

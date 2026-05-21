@@ -10,6 +10,7 @@ cc-product-readiness
 cc-demo-five-minute
 cc-health-weekly --verbose
 cc-package-cockpit
+cc-cockpit-capture
 git status --short
 ```
 
@@ -19,6 +20,7 @@ Required result:
 - product readiness exits `Status: product-ready`
 - five-minute demo exits with `passed=4 failed=0`
 - cockpit package command produces `dist/ai-system-cockpit-0.1.0.vsix`
+- cockpit capture writes the expected files in `docs/media/cockpit/`
 - git tree is clean and synced
 
 ## Launch Artifacts

@@ -28,6 +28,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
+- `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.
 - `cc-context-meter` — context-window pressure, output reserve, available-token estimate.
 - `cc-context-snapshot` — current repo context packet for routing/debugging.
 - `cc-deploy-watch` — production drift checker.

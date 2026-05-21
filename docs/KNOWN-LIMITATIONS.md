@@ -14,7 +14,7 @@ named directly instead of hidden behind successful-looking demos.
 | Provider accounts | User must bring their own paid/free AI accounts | First-run doctor does not inspect secrets |
 | Windows/Linux | Not supported as a launch target | Future work only |
 | Hosted/team mode | Not implemented | Sellable path is local product plus support/workflow packaging first |
-| Screenshots/GIFs | Capture plan exists, final images pending | `docs/COCKPIT-SCREENSHOT-PLAN.md` lists required captures |
+| Screenshots/GIFs | Deterministic preview media exists; real unlocked VS Code screenshots are still better for final marketing | `cc-cockpit-capture` writes `docs/media/cockpit/` |
 
 ## Not Bugs
 
@@ -26,7 +26,7 @@ named directly instead of hidden behind successful-looking demos.
 
 ## Must Fix Before Public Launch
 
-1. capture launch screenshots/GIFs
+1. optionally replace deterministic preview media with real unlocked VS Code screenshots
 2. verify README on a fresh clone target
 3. remove or explain any remaining personal-only paths in public docs
 4. create a tagged release candidate

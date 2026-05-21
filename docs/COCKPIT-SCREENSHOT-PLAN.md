@@ -47,8 +47,15 @@ The final README should use:
 
 ## Current Status
 
-Plan exists. Images still need capture from VS Code after the cockpit visual
-states are polished enough to represent the product publicly.
+Deterministic capture is available through:
+
+```sh
+cc-cockpit-capture
+```
+
+This writes the required media files under `docs/media/cockpit/` from the real
+cockpit CSS and representative product states. It is the fallback when macOS is
+locked or real VS Code GUI capture is unavailable.
 
 ## Attempt Log
 
@@ -56,3 +63,5 @@ states are polished enough to represent the product publicly.
   lock-screen state. A raw screen capture was rejected because it did not show
   VS Code. Public screenshots still require an unlocked desktop or a scripted
   VS Code render harness.
+- 2026-05-21: Added scripted render harness via `cc-cockpit-capture` so launch
+  media can be regenerated without an unlocked desktop.

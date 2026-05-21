@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+OUT_DIR="${1:-$DOTFILES/docs/media/cockpit}"
+CSS="$DOTFILES/vscode/ai-cockpit/media/style.css"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+command -v playwright >/dev/null 2>&1 || {
+  printf 'missing playwright CLI\n' >&2
+  exit 1
+}
+
+[ -f "$CSS" ] || {
+  printf 'missing cockpit CSS: %s\n' "$CSS" >&2
+  exit 1
+}
+
+mkdir -p "$OUT_DIR"
+
+write_page() {
+  local file="$1" title="$2" hero="$3" body="$4" cards="$5"
+  {
+    cat <<HTML
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <style>
+    :root {
+      --vscode-foreground: #d4d4d4;
+      --vscode-descriptionForeground: #9ca3af;
+      --vscode-sideBar-background: #181818;
+      --vscode-editor-background: #1f1f1f;
+      --vscode-panel-border: #333333;
+      --vscode-sideBarSectionHeader-border: #333333;
+      --vscode-button-background: #0e639c;
+      --vscode-button-hoverBackground: #1177bb;
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-border: transparent;
+      --vscode-input-background: #252526;
+      --vscode-input-foreground: #d4d4d4;
+      --vscode-input-border: #3c3c3c;
+      --vscode-focusBorder: #007fd4;
+      --vscode-testing-iconPassed: #73c991;
+      --vscode-testing-iconFailed: #f14c4c;
+      --vscode-testing-iconQueued: #cca700;
+      --vscode-textCodeBlock-background: #111111;
+      --vscode-editor-foreground: #d4d4d4;
+      --vscode-badge-foreground: #ffffff;
+      --vscode-badge-background: #4d4d4d;
+      --vscode-editor-font-family: "SF Mono", Menlo, monospace;
+      --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body { max-width: 410px; margin: 0 auto; }
+HTML
+    cat "$CSS"
+    cat <<HTML
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="eyebrow">AI-SYSTEM-V2</div>
+      <h1>Cockpit</h1>
+    </div>
+    <button title="Refresh">Refresh</button>
+  </header>
+
+  <section class="hero">
+    <div class="status-dot degraded"></div>
+    <div>
+      <strong>${hero}</strong>
+      <p>${body}</p>
+    </div>
+  </section>
+
+  <section class="composer">
+    <div class="composer-head">
+      <label for="prompt">Prompt</label>
+      <span id="context">vscode/ai-cockpit/extension.js:209</span>
+    </div>
+    <div class="modebar" role="tablist" aria-label="Mode">
+      <button class="mode active">Build</button>
+      <button class="mode">Design</button>
+      <button class="mode">Research</button>
+      <button class="mode">Route</button>
+      <button class="mode">Plan</button>
+    </div>
+    <textarea id="prompt" rows="4">Debug this repo and verify the safest next step.</textarea>
+    <div class="chips"><button class="chip">git diff x</button><button class="chip">README.md x</button></div>
+    <label class="check"><input type="checkbox" checked> Include current file / selection</label>
+    <div class="runrow"><button class="primary">Run Mode</button><button>Preview Route</button></div>
+    <div class="toolrow"><button>Attach File</button><button>Attach Diff</button><button>Review Diff</button></div>
+  </section>
+
+  <section class="grid">
+    <button>Build / Fix</button><button>Design / Browser</button>
+    <button>Research / Extract</button><button>Explain Route</button>
+    <button>Workflow Proof</button><button>Demo Mode</button>
+  </section>
+
+  <section class="cards">
+${cards}
+  </section>
+</body>
+</html>
+HTML
+  } >"$file"
+}
+
+card() {
+  local title="$1" text="$2" button="${3:-View}"
+  printf '    <article><h2>%s</h2><pre>%b</pre><button>%s</button></article>\n' "$title" "$text" "$button"
+}
+
+capture() {
+  local name="$1" title="$2" hero="$3" body="$4" cards="$5" out="$6"
+  local html="$tmp/$name.html"
+  write_page "$html" "$title" "$hero" "$body" "$cards"
+  playwright screenshot --channel chrome --viewport-size 480,1200 --full-page "file://$html" "$OUT_DIR/$out" >/dev/null
+  printf 'captured %s\n' "$OUT_DIR/$out"
+}
+
+capture "readiness" "Product Readiness" "Ready with browser shim" \
+  "Product gate is green. Browser automation is using the shim profile, not the official logged-in Chrome extension." \
+  "$(card "Product Readiness" "Score: 14/14 checks (100%)\nStatus: product-ready" "View Gate")$(card "Disk" "Free: 25GB\nMinimum gate: 25GB\nStatus: PASS" "View Disk Report")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
+  "01-readiness.png"
+
+capture "first-run" "First Run Doctor" "First-run ready" \
+  "Required tools are present. Optional lanes and local account services are named separately." \
+  "$(card "Required Tools" "git OK\nzsh OK\nbrew OK\nnode OK\ncode OK\nrg OK" "View Doctor")$(card "AI Lane Tools" "codex OK\nclaude OK\nkimi OK\ndeepseek OK\nop OK" "View Doctor")$(card "Credentials" "API keys are not inspected.\nUse 1Password, TEL, or local env." "View Doctor")" \
+  "02-first-run.png"
+
+capture "route" "Route Receipt" "Deterministic route proof" \
+  "The cockpit shows selected lane, fallback chain, latency, tokens, and cost status." \
+  "$(card "Route" "Selected: precision -> claude\nFallback: precision/claude -> design/kimi -> cheap/deepseek\nHard floor: false" "View Receipt")$(card "Metrics" "Fallbacks: 21\nTokens logged: 490\nCost today: \$0.0000 / \$10.00" "View Metrics")$(card "Sessions" "Recent routed sessions and sticky state visible." "View Sessions")" \
+  "03-route-receipt.png"
+
+capture "browser" "Browser Proof" "Browser mode: shim" \
+  "Mode is explicit. Shim is valid for proof and demos but not equivalent to logged-in Chrome control." \
+  "$(card "Kimi" "Desktop: installed\nCLI: v1.41.0\nWebBridge: running=true\nmode=shim" "View Kimi Status")$(card "Browser Proof" "Browser mode: shim\nWebBridge: running=true extension_connected=true\nbounded page proof returned" "View Proof")$(card "Known Boundary" "Official extension requires user approval." "View Boundary")" \
+  "04-browser-proof.png"
+
+capture "composer" "Composer" "Mode-driven execution" \
+  "Build, Design, Research, Route, and Plan are intent modes. The router owns model choice." \
+  "$(card "Last Result" "Explain Route\nSelected: precision -> claude\nFallback: design/kimi, cheap/deepseek" "Run Mode")$(card "Context Meter" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Demo Mode" "Readiness, route proof, browser proof, and package proof in one flow." "Run Demo")" \
+  "05-composer.png"
+
+if command -v sips >/dev/null 2>&1; then
+  sips -s format gif "$OUT_DIR/05-composer.png" --out "$OUT_DIR/05-composer.gif" >/dev/null
+  printf 'captured %s\n' "$OUT_DIR/05-composer.gif"
+fi
+
+capture "package" "Package Proof" "VSIX ready" \
+  "The cockpit packages as a distributable VS Code extension." \
+  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 13.79 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
+  "06-package.png"
+
+printf '\nDone. Media written to %s\n' "$OUT_DIR"

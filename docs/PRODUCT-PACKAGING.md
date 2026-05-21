@@ -191,3 +191,7 @@ Prebuilt code can be harvested only when all of these are true:
 
 If a reference project has a strong idea but the code would distort the system,
 we rebuild the capability natively instead of importing the project.
+
+Code-level harvesting follows `docs/CODE-HARVEST-WORKFLOW.md`: named gap first,
+license/maintenance/fit gate second, import or adaptation third, cockpit-visible
+verification last.

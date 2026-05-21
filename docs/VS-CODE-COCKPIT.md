@@ -98,6 +98,10 @@ Pulse/native-app reference study lives at
 code-density discipline and treats native AI apps as dependency/status surfaces,
 not duplicate lanes.
 
+Code-level reference harvesting is governed by
+`docs/CODE-HARVEST-WORKFLOW.md`: named gap, best-in-class source, license gate,
+clean fit, small surface, and cockpit-visible verification.
+
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows
 the current permission mode, policy version, review/deny rules, and live
 decision probes without adding Cline as an active lane.

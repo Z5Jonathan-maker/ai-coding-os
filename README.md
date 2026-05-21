@@ -36,6 +36,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Architecture map: `docs/ARCHITECTURE.md`
 - Contribution guide: `CONTRIBUTING.md`
 - Security policy: `SECURITY.md`
+- License: `LICENSE`
 - License/support boundary: `docs/LICENSE-SUPPORT.md`
 - Known limitations: `docs/KNOWN-LIMITATIONS.md`
 - Release checklist: `docs/RELEASE-CHECKLIST.md`

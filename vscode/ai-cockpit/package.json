@@ -4,7 +4,7 @@
   "description": "Native VS Code cockpit for AI-SYSTEM-V2 routing, readiness, checkpoints, permissions, and lane execution.",
   "version": "0.1.0",
   "publisher": "z5jonathan",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Z5Jonathan-maker/dotfiles.git",

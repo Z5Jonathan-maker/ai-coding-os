@@ -1,7 +1,4 @@
-Copyright (c) 2026 Jonathan Cimadevilla.
+Copyright 2026 Jonathan Cimadevilla
 
-All rights reserved.
-
-This extension is part of a private AI-SYSTEM-V2 configuration package. It is
-not licensed for redistribution, resale, or public reuse without written
-permission.
+Licensed under the Apache License, Version 2.0. See the repository root
+`LICENSE` file for the full license text.

@@ -84,7 +84,8 @@ Native extension:
 - exposes the same intent modes as a sidebar product surface
 - includes a selected-mode prompt composer with current file/selection context,
   file/diff context chips, streaming output, route preview, router metrics,
-  jobs, lanes, permissions, checkpoints, route receipts, readiness, and disk gate
+  Kimi status, jobs, lanes, permissions, checkpoints, route receipts,
+  readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks
   inside the sidebar instead of terminal scrollback
 
@@ -104,6 +105,8 @@ Reference systems studied:
 
 - Cursor: native AI IDE UX, context indexing, rules, background agents, PR review
 - Cline: human-in-the-loop agent approvals, checkpoints, Plan/Act, MCP/tools, cost visibility
+- Kimi Desktop/Kimi Code: outcome modes, session/context UX, WebBridge status,
+  file-heavy workflows, reusable skills/presets, and desktop app packaging
 - FreeLLMAPI: provider registry and fallback architecture
 - OpenCode/Antigravity videos: cheap/free model lanes behind an IDE-like cockpit
 

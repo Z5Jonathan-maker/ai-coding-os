@@ -32,6 +32,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-health-weekly` — weekly health sweep.
+- `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-prune` — manual disk hygiene for `.claude`.

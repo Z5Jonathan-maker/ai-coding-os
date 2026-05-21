@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+app="/Applications/Kimi.app"
+bridge="$HOME/.kimi-webbridge/bin/kimi-webbridge"
+[ -x "$bridge" ] || bridge="$app/Contents/Resources/resources/kimi-webbridge"
+
+printf '# Kimi Status\n\n'
+
+if [ -d "$app" ]; then
+  version="$(plutil -extract CFBundleShortVersionString raw "$app/Contents/Info.plist" 2>/dev/null || printf unknown)"
+  printf 'Desktop: installed (%s)\n' "$version"
+else
+  printf 'Desktop: missing\n'
+fi
+
+if command -v kimi >/dev/null 2>&1; then
+  printf 'CLI: %s\n' "$(kimi --version 2>&1 | head -n 1)"
+else
+  printf 'CLI: missing\n'
+fi
+
+if [ -x "$bridge" ]; then
+  status="$("$bridge" status 2>/dev/null || true)"
+  if [ -n "$status" ]; then
+    # shellcheck disable=SC2016
+    node -e '
+      const s = JSON.parse(process.argv[1]);
+      console.log(`WebBridge: running=${Boolean(s.running)} extension_connected=${Boolean(s.extension_connected)} port=${s.port || "unknown"} version=${s.version || "unknown"}`);
+    ' "$status"
+  else
+    printf 'WebBridge: status unavailable\n'
+  fi
+else
+  printf 'WebBridge: missing\n'
+fi
+
+printf '\n## VS Code Extensions\n\n'
+if command -v code >/dev/null 2>&1; then
+  code --list-extensions --show-versions | grep -Ei 'kimi|moonshot' || printf 'No Kimi VS Code extensions installed\n'
+else
+  printf 'code command missing\n'
+fi
+
+printf '\n## Local Paths\n\n'
+printf '%s\n' "$app"
+printf '%s\n' "$HOME/Library/Application Support/kimi-desktop"

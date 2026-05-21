@@ -14,6 +14,7 @@ const COMMANDS = {
   checkpoints: 'cc-checkpoints',
   diskReadiness: 'cc-disk-readiness',
   productReadiness: 'cc-product-readiness',
+  kimiStatus: 'cc-kimi-status',
   repoIndex: 'cc-repo-index',
   workflowProof: 'cc-workflow-proof',
   reviewDiff: 'cc-review-diff',
@@ -47,6 +48,7 @@ function activate(context) {
     command('aiSystemCockpit.checkpoints', () => showOutput(output, 'Checkpoints', COMMANDS.checkpoints)),
     command('aiSystemCockpit.diskReadiness', () => showOutput(output, 'Disk Readiness', COMMANDS.diskReadiness)),
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
+    command('aiSystemCockpit.kimiStatus', () => showOutput(output, 'Kimi Status', COMMANDS.kimiStatus)),
     command('aiSystemCockpit.repoIndex', () => showOutput(output, 'Repo Index', COMMANDS.repoIndex)),
     command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
@@ -186,7 +188,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, kimi, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -194,6 +196,7 @@ class CockpitProvider {
       shellExec('cc-checkpoints summary', { timeout: 12000 }),
       shellExec('cc-disk-readiness | sed -n "1,11p"', { timeout: 20000 }),
       shellExec('cc-product-readiness | sed -n "1,36p"', { timeout: 120000 }),
+      shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
       shellExec('cc-jobs | sed -n "1,10p"', { timeout: 12000 }),
       shellExec('cc-lane capabilities | sed -n "1,14p"', { timeout: 12000 }),
     ]);
@@ -209,6 +212,7 @@ class CockpitProvider {
         checkpoints: checkpoints.text,
         disk: disk.text,
         product: product.text,
+        kimi: kimi.text,
         jobs: jobs.text,
         lanes: lanes.text,
       },
@@ -237,6 +241,7 @@ class CockpitProvider {
       checkpoints: () => vscode.commands.executeCommand('aiSystemCockpit.checkpoints'),
       diskReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.diskReadiness'),
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
+      kimiStatus: () => vscode.commands.executeCommand('aiSystemCockpit.kimiStatus'),
       repoIndex: () => vscode.commands.executeCommand('aiSystemCockpit.repoIndex'),
       workflowProof: () => vscode.commands.executeCommand('aiSystemCockpit.workflowProof'),
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
@@ -447,6 +452,7 @@ class CockpitProvider {
     <article><h2>Checkpoints</h2><pre id="checkpoints">Loading...</pre><button data-inline-name="Checkpoints" data-inline-command="cc-checkpoints">View Timeline</button></article>
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+    <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
     <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
     <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
     <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>

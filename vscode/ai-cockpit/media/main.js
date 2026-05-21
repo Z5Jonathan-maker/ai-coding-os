@@ -110,7 +110,7 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, kimi } = message.payload;
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = readiness.title;
     $('readinessBody').textContent = readiness.body;
@@ -122,6 +122,7 @@
     $('checkpoints').textContent = checkpoints || 'No checkpoints available.';
     $('disk').textContent = disk || 'No disk readiness report available.';
     $('product').textContent = product || 'No product readiness report available.';
+    $('kimi').textContent = kimi || 'No Kimi status available.';
     $('jobs').textContent = message.payload.jobs || 'No jobs available.';
     $('lanes').textContent = message.payload.lanes || 'No lane registry available.';
   });

@@ -17,7 +17,7 @@ It adds:
   results, attached file/diff context, current file/selection context, and
   `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
-  matrix, checkpoints, jobs, lanes, product readiness, and disk readiness
+  matrix, checkpoints, jobs, lanes, Kimi status, product readiness, and disk readiness
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
 
@@ -61,6 +61,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: System Demo` | Acceptance demo for this machine |
 | `AI: Disk Readiness` | Read-only disk gate and cleanup candidate report |
 | `AI: Product Readiness` | Paid-product gate across cockpit, router, sync, packaging, and disk |
+| `AI: Kimi Status` | Kimi Desktop, CLI, WebBridge, and extension health |
 | `AI: Workflow Proof` | One-command readiness, route preview, repo index, and diff surface |
 | `AI: Claude Direct` | Direct Claude escape hatch |
 | `AI: Codex Direct` | Direct Codex escape hatch |
@@ -72,6 +73,11 @@ background job status inside the cockpit without adopting Cursor as the IDE.
 Cline reference study lives at `docs/CLINE-REFERENCE-STUDY-2026-05-21.md`.
 The main lesson is visible control: approval matrix, checkpoints, cost, and
 rollback need to be obvious before autonomy feels safe.
+
+Kimi Desktop reference study lives at
+`docs/KIMI-DESKTOP-REFERENCE-STUDY-2026-05-21.md`. The main lesson is that
+tool connectivity, sessions, context pressure, file attachments, and outcome
+modes need to be visible product state.
 
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows
 the current permission mode, policy version, review/deny rules, and live

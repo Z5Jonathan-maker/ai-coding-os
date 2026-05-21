@@ -15,6 +15,8 @@ developer-grade public launch.
   validation.
 - Re-enable `.github/workflows/public-ci.yml` after the GitHub Actions billing
   block is cleared.
+- Attach the `cc-release-bundle` tarball and checksum to the public GitHub
+  release.
 
 ## v0.2.0
 

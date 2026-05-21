@@ -3,6 +3,8 @@
 *~
 .backup.*
 dist/*.vsix
+dist/*.tar.gz
+dist/*.tar.gz.sha256
 claude/skills/prompt-master/
 .venv/
 claude/tel/.venv/

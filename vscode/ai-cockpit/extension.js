@@ -26,6 +26,7 @@ const COMMANDS = {
   diffHunks: 'cc-diff-hunks',
   workflowProof: 'cc-workflow-proof',
   browserProof: 'cc-browser-proof',
+  fiveMinuteDemo: 'cc-demo-five-minute --browser-url "data:text/html,%3Ctitle%3EAI%20Cockpit%20Demo%3C/title%3E%3Cbody%3Ecockpit%20demo%20mode%20proof%3C/body%3E" --max-chars 1200',
   reviewDiff: 'cc-review-diff',
   jobs: 'cc-jobs',
 };
@@ -69,6 +70,7 @@ function activate(context) {
     command('aiSystemCockpit.diffHunks', () => showOutput(output, 'Diff Hunks', COMMANDS.diffHunks)),
     command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.browserProof', () => showOutput(output, 'Browser Proof', COMMANDS.browserProof)),
+    command('aiSystemCockpit.fiveMinuteDemo', () => provider.runInlineStream('Five-Minute Demo', COMMANDS.fiveMinuteDemo)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
     command('aiSystemCockpit.openSettings', () => vscode.commands.executeCommand('workbench.action.openSettings', 'aiSystemCockpit')),
@@ -281,6 +283,7 @@ class CockpitProvider {
       diffHunks: () => vscode.commands.executeCommand('aiSystemCockpit.diffHunks'),
       workflowProof: () => vscode.commands.executeCommand('aiSystemCockpit.workflowProof'),
       browserProof: () => vscode.commands.executeCommand('aiSystemCockpit.browserProof'),
+      fiveMinuteDemo: () => vscode.commands.executeCommand('aiSystemCockpit.fiveMinuteDemo'),
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
       openSettings: () => vscode.commands.executeCommand('aiSystemCockpit.openSettings'),
       explainRoute: () => vscode.commands.executeCommand('aiSystemCockpit.explainRoute'),
@@ -483,6 +486,7 @@ class CockpitProvider {
     <button data-command="diffHunks">Diff Hunks</button>
     <button data-command="workflowProof">Workflow Proof</button>
     <button data-command="browserProof">Browser Proof</button>
+    <button data-command="fiveMinuteDemo">Demo Mode</button>
     <button data-command="firstRun">First Run</button>
     <button data-command="contextMeter">Context Meter</button>
     <button data-command="sessionLedger">Sessions</button>
@@ -509,6 +513,7 @@ class CockpitProvider {
     <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
     <article><h2>Diff Hunks</h2><pre>Changed files, hunk headers, and patch preview.</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Hunks</button></article>
     <article><h2>Browser Proof</h2><pre>WebBridge readiness and bounded page proof output.</pre><button data-inline-name="Browser Proof" data-inline-command="cc-browser-proof">View Proof</button></article>
+    <article><h2>Demo Mode</h2><pre>Readiness, route proof, browser proof, and cockpit packaging in one flow.</pre><button data-command="fiveMinuteDemo">Run Demo</button></article>
     <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
     <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>
     <article class="result"><h2 id="resultTitle">Last Result</h2><pre id="result">Run Explain Route from the prompt composer to see output here.</pre></article>

@@ -50,6 +50,7 @@
       { "command": "aiSystemCockpit.diffHunks", "title": "AI Cockpit: Diff Hunks" },
       { "command": "aiSystemCockpit.workflowProof", "title": "AI Cockpit: Workflow Proof" },
       { "command": "aiSystemCockpit.browserProof", "title": "AI Cockpit: Browser Proof" },
+      { "command": "aiSystemCockpit.fiveMinuteDemo", "title": "AI Cockpit: Five-Minute Demo" },
       { "command": "aiSystemCockpit.openSettings", "title": "AI Cockpit: Open Settings" },
       { "command": "aiSystemCockpit.jobs", "title": "AI Cockpit: Jobs" }
     ],
@@ -108,6 +109,7 @@
         { "command": "aiSystemCockpit.diffHunks" },
         { "command": "aiSystemCockpit.workflowProof" },
         { "command": "aiSystemCockpit.browserProof" },
+        { "command": "aiSystemCockpit.fiveMinuteDemo" },
         { "command": "aiSystemCockpit.openSettings" },
         { "command": "aiSystemCockpit.jobs" }
       ]

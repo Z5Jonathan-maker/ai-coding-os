@@ -103,7 +103,7 @@ dashboard embedded in a sidebar.
 - Polished cockpit states: ready, degraded, missing setup, locked browser.
 - Route receipt card with lane, model, fallback, cost/token, latency.
 - Browser status card with official/shim/fallback state.
-- Demo mode in cockpit: one flow, visible proof.
+- Demo mode in cockpit: one flow, visible proof. Done 2026-05-21: `AI: Five-Minute Demo`.
 - Contribution guide and architecture map.
 - License/support boundary draft.
 

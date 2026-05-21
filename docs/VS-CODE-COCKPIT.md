@@ -73,6 +73,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Kimi Status` | Kimi Desktop, CLI, WebBridge, and extension health |
 | `AI: Workflow Proof` | One-command readiness, route preview, repo index, and diff surface |
 | `AI: Browser Proof` | Kimi WebBridge readiness plus bounded page proof output |
+| `AI: Five-Minute Demo` | Readiness, workflow proof, browser proof, and package proof in one flow |
 | `AI: Claude Direct` | Direct Claude escape hatch |
 | `AI: Codex Direct` | Direct Codex escape hatch |
 
@@ -138,6 +139,10 @@ turns, models, fallbacks, and sticky routing without exposing full transcripts.
 
 `AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
 WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.
+
+`AI: Five-Minute Demo` is the launch demo mode. It runs the same command a
+public evaluator can run from the terminal and streams the proof into the
+cockpit result panel.
 
 `AI: Pulse Status` confirms the Pulse source and installed skills are present.
 It exists to keep generated code dense without adding another model lane.

@@ -84,8 +84,8 @@ Native extension:
 - exposes the same intent modes as a sidebar product surface
 - includes a selected-mode prompt composer with current file/selection context,
   file/diff context chips, streaming output, route preview, router metrics,
-  Kimi status, jobs, lanes, permissions, checkpoints, route receipts,
-  readiness, and disk gate
+  semantic index, diff hunks, Kimi status, jobs, lanes, permissions,
+  checkpoints, route receipts, readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks
   inside the sidebar instead of terminal scrollback
 

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "cc-semantic-index: not inside a git repository" >&2
+  exit 2
+fi
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+tmp_files="$(mktemp)"
+tmp_tags="$(mktemp)"
+trap 'rm -f "$tmp_files" "$tmp_tags"' EXIT
+
+rg --files \
+  -g '!node_modules' -g '!dist' -g '!build' -g '!.next' -g '!coverage' -g '!*.min.*' \
+  -g '*.js' -g '*.jsx' -g '*.ts' -g '*.tsx' -g '*.mjs' -g '*.cjs' \
+  -g '*.py' -g '*.go' -g '*.rs' -g '*.java' -g '*.rb' -g '*.php' \
+  -g '*.sh' -g '*.zsh' -g '*.css' -g '*.scss' \
+  >"$tmp_files"
+
+printf '# Semantic Index\n\n'
+printf 'Repo: %s\n' "$root"
+printf 'Files scanned: %s\n\n' "$(wc -l <"$tmp_files" | tr -d ' ')"
+
+printf '## Symbol Map\n\n```text\n'
+if [ -s "$tmp_files" ]; then
+  # BSD ctags is available on macOS by default. It is less rich than
+  # tree-sitter/universal-ctags, but gives a dependency-free first-pass map.
+  xargs /usr/bin/ctags -x <"$tmp_files" >"$tmp_tags" 2>/dev/null || true
+  sed -n '1,120p' "$tmp_tags"
+else
+  printf 'No supported source files found.\n'
+fi
+printf '```\n\n'
+
+printf '## High-Signal Definitions\n\n```text\n'
+rg -n "^(export |async function |function |class |const |let |var |def |interface |type |enum |public |private |protected )" \
+  -g '!node_modules' -g '!dist' -g '!build' -g '!.next' -g '!coverage' \
+  | sed -n '1,120p' || true
+printf '```\n'

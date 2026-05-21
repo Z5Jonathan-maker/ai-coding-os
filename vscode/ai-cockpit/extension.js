@@ -16,6 +16,8 @@ const COMMANDS = {
   productReadiness: 'cc-product-readiness',
   kimiStatus: 'cc-kimi-status',
   repoIndex: 'cc-repo-index',
+  semanticIndex: 'cc-semantic-index',
+  diffHunks: 'cc-diff-hunks',
   workflowProof: 'cc-workflow-proof',
   reviewDiff: 'cc-review-diff',
   jobs: 'cc-jobs',
@@ -50,6 +52,8 @@ function activate(context) {
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
     command('aiSystemCockpit.kimiStatus', () => showOutput(output, 'Kimi Status', COMMANDS.kimiStatus)),
     command('aiSystemCockpit.repoIndex', () => showOutput(output, 'Repo Index', COMMANDS.repoIndex)),
+    command('aiSystemCockpit.semanticIndex', () => showOutput(output, 'Semantic Index', COMMANDS.semanticIndex)),
+    command('aiSystemCockpit.diffHunks', () => showOutput(output, 'Diff Hunks', COMMANDS.diffHunks)),
     command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
@@ -243,6 +247,8 @@ class CockpitProvider {
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
       kimiStatus: () => vscode.commands.executeCommand('aiSystemCockpit.kimiStatus'),
       repoIndex: () => vscode.commands.executeCommand('aiSystemCockpit.repoIndex'),
+      semanticIndex: () => vscode.commands.executeCommand('aiSystemCockpit.semanticIndex'),
+      diffHunks: () => vscode.commands.executeCommand('aiSystemCockpit.diffHunks'),
       workflowProof: () => vscode.commands.executeCommand('aiSystemCockpit.workflowProof'),
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
       openSettings: () => vscode.commands.executeCommand('aiSystemCockpit.openSettings'),
@@ -442,6 +448,8 @@ class CockpitProvider {
     <button data-command="savePlan">Save Plan</button>
     <button data-command="reviewDiff">Review Diff</button>
     <button data-command="repoIndex">Repo Index</button>
+    <button data-command="semanticIndex">Semantic Index</button>
+    <button data-command="diffHunks">Diff Hunks</button>
     <button data-command="workflowProof">Workflow Proof</button>
   </section>
 
@@ -454,6 +462,8 @@ class CockpitProvider {
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
     <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
     <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
+    <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
+    <article><h2>Diff Hunks</h2><pre>Changed files, hunk headers, and patch preview.</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Hunks</button></article>
     <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
     <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>
     <article class="result"><h2 id="resultTitle">Last Result</h2><pre id="result">Run Explain Route from the prompt composer to see output here.</pre></article>

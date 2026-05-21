@@ -140,6 +140,18 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Semantic Index",
+      "type": "shell",
+      "command": "cc-semantic-index",
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Diff Hunks",
+      "type": "shell",
+      "command": "cc-diff-hunks",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Checkpoints",
       "type": "shell",
       "command": "cc-checkpoints",

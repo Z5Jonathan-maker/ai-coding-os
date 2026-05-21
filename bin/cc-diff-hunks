@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "cc-diff-hunks: not inside a git repository" >&2
+  exit 2
+fi
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+printf '# Diff Hunks\n\n'
+printf 'Repo: %s\n' "$root"
+printf 'Branch: %s\n\n' "$(git branch --show-current 2>/dev/null || printf unknown)"
+
+if git diff --quiet -- . && git diff --cached --quiet -- .; then
+  printf 'No working-tree or staged diff.\n'
+  exit 0
+fi
+
+printf '## Stat\n\n```text\n'
+git diff --stat -- .
+git diff --cached --stat -- .
+printf '```\n\n'
+
+printf '## Hunks\n\n```text\n'
+git diff --no-ext-diff --unified=0 -- . \
+  | awk '
+      /^diff --git / {
+        file=$4
+        sub(/^b\//, "", file)
+      }
+      /^@@ / {
+        print file "\t" $0
+      }'
+git diff --cached --no-ext-diff --unified=0 -- . \
+  | awk '
+      /^diff --git / {
+        file=$4
+        sub(/^b\//, "", file)
+      }
+      /^@@ / {
+        print "[staged] " file "\t" $0
+      }'
+printf '```\n\n'
+
+printf '## Patch Preview\n\n```diff\n'
+git diff --no-ext-diff -- . | sed -n '1,220p'
+git diff --cached --no-ext-diff -- . | sed -n '1,220p'
+printf '```\n'

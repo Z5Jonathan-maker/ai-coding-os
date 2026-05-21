@@ -54,6 +54,8 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Review Diff` | Review current git diff through the precision lane |
 | `AI: Context Snapshot` | Show current repo context packet |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
+| `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
+| `AI: Diff Hunks` | Show changed files, hunk headers, and patch preview |
 | `AI: Checkpoints` | Show shadow Git and session checkpoint timeline |
 | `AI: Checkpoint Diff` | Diff current worktree against a shadow checkpoint step |
 | `AI: Jobs` | List background/dispatched jobs |
@@ -78,6 +80,10 @@ Kimi Desktop reference study lives at
 `docs/KIMI-DESKTOP-REFERENCE-STUDY-2026-05-21.md`. The main lesson is that
 tool connectivity, sessions, context pressure, file attachments, and outcome
 modes need to be visible product state.
+
+Reference component harvest lives at
+`docs/REFERENCE-COMPONENT-HARVEST-2026-05-21.md`. It maps remaining product
+gaps to prebuilt patterns and records which pieces we harvested locally.
 
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows
 the current permission mode, policy version, review/deny rules, and live

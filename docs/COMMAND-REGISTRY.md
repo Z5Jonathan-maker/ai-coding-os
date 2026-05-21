@@ -31,6 +31,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
+- `cc-diff-hunks` — changed-file hunk list and patch preview for cockpit review.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
@@ -42,6 +43,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-router-metrics` — router usage, fallback, failure, token, and session metrics.
 - `cc-router-smoke` — deterministic dry-run checks for expected model/platform routing.
 - `cc-self-update` — monthly platform update sweep.
+- `cc-semantic-index` — dependency-free repo symbol map using `ctags` and `rg`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-workflow-proof` — one-command route/readiness/repo/diff proof packet.

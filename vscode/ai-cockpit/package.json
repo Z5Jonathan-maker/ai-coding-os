@@ -40,6 +40,8 @@
       { "command": "aiSystemCockpit.productReadiness", "title": "AI Cockpit: Product Readiness" },
       { "command": "aiSystemCockpit.kimiStatus", "title": "AI Cockpit: Kimi Status" },
       { "command": "aiSystemCockpit.repoIndex", "title": "AI Cockpit: Repo Index" },
+      { "command": "aiSystemCockpit.semanticIndex", "title": "AI Cockpit: Semantic Index" },
+      { "command": "aiSystemCockpit.diffHunks", "title": "AI Cockpit: Diff Hunks" },
       { "command": "aiSystemCockpit.workflowProof", "title": "AI Cockpit: Workflow Proof" },
       { "command": "aiSystemCockpit.openSettings", "title": "AI Cockpit: Open Settings" },
       { "command": "aiSystemCockpit.jobs", "title": "AI Cockpit: Jobs" }
@@ -89,6 +91,8 @@
         { "command": "aiSystemCockpit.productReadiness" },
         { "command": "aiSystemCockpit.kimiStatus" },
         { "command": "aiSystemCockpit.repoIndex" },
+        { "command": "aiSystemCockpit.semanticIndex" },
+        { "command": "aiSystemCockpit.diffHunks" },
         { "command": "aiSystemCockpit.workflowProof" },
         { "command": "aiSystemCockpit.openSettings" },
         { "command": "aiSystemCockpit.jobs" }

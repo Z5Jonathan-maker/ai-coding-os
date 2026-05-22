@@ -752,17 +752,17 @@ body.panel-mode {
   height: 100vh;
   display: grid;
   grid-template-columns: 220px minmax(560px, 1fr) 350px;
-  grid-template-rows: 72px auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   grid-template-areas:
-    "rail top top"
     "rail main detail"
     "rail composer detail"
     "rail streams detail";
-  gap: 24px;
+  column-gap: 24px;
+  row-gap: 20px;
   overflow: hidden;
   padding: 0 26px 0 0;
   color: #17141f;
-  background: #f7f5fb;
+  background: #faf9fd;
 }
 
 .panel-mode header {
@@ -784,18 +784,21 @@ body.panel-mode {
 }
 
 .panel-mode .topbar {
-  grid-area: top;
-  display: flex;
+  position: absolute;
+  top: 22px;
+  left: 244px;
+  right: 26px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   padding-top: 16px;
 }
 
 .askbar {
-  width: min(360px, 48vw);
-  min-height: 40px;
-  margin-left: auto;
+  width: min(350px, 46vw);
+  min-height: 38px;
+  grid-column: 2;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -805,7 +808,7 @@ body.panel-mode {
   padding: 0 12px;
   color: #7a728e;
   background: rgba(255, 255, 255, .82);
-  box-shadow: 0 10px 24px rgba(30, 20, 80, .05);
+  box-shadow: 0 8px 20px rgba(30, 20, 80, .045);
 }
 
 .askbar span {
@@ -824,6 +827,8 @@ body.panel-mode {
 }
 
 .top-actions {
+  grid-column: 3;
+  justify-self: end;
   gap: 10px;
 }
 
@@ -941,14 +946,14 @@ body.panel-mode {
   display: flex;
   justify-content: space-between;
   gap: 18px;
-  padding-top: 0;
+  padding-top: 30px;
 }
 
 .panel-mode .home-intro h2 {
   margin: 0;
   color: #111827;
   font-family: ui-serif, Georgia, serif;
-  font-size: 32px;
+  font-size: 28px;
   letter-spacing: 0;
 }
 
@@ -972,12 +977,16 @@ body.panel-mode {
 .panel-mode .composer {
   grid-area: composer;
   align-self: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  row-gap: 12px;
+  column-gap: 18px;
   margin-bottom: 0;
-  padding: 22px;
-  border: 1px solid #d9d2fb;
+  padding: 16px 22px;
+  border: 1px solid #ded7fb;
   border-radius: 16px;
-  background: rgba(255, 255, 255, .88);
-  box-shadow: 0 18px 50px rgba(89, 70, 180, .16);
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 16px 42px rgba(89, 70, 180, .12);
 }
 
 .panel-mode .composer-head,
@@ -995,14 +1004,21 @@ body.panel-mode {
 }
 
 .panel-mode textarea {
-  min-height: 52px;
-  max-height: 90px;
+  grid-column: 1 / -1;
+  height: 38px;
+  min-height: 38px;
+  max-height: 38px;
   border: 0;
   padding: 0;
   color: #111827;
   background: transparent;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.35;
+  resize: none;
+}
+
+.panel-mode textarea::placeholder {
+  color: #8a819e;
 }
 
 .panel-mode textarea:focus {
@@ -1010,17 +1026,30 @@ body.panel-mode {
 }
 
 .panel-mode .runrow {
-  grid-template-columns: minmax(180px, 1fr) 180px;
+  grid-column: 2;
+  width: 184px;
+  justify-self: end;
+  grid-template-columns: 1fr;
   align-items: center;
 }
 
+.panel-mode .runrow .secondary {
+  display: none;
+}
+
+.panel-mode .runrow .primary {
+  min-height: 42px;
+  border-radius: 11px;
+}
+
 .panel-mode .composer-pills {
+  grid-column: 1;
   gap: 8px;
 }
 
 .panel-mode .pill {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 36px;
   align-items: center;
   gap: 6px;
   border: 1px solid #ebe7f5;
@@ -1028,6 +1057,10 @@ body.panel-mode {
   padding: 0 13px;
   color: #343044;
   background: #ffffff;
+}
+
+.panel-mode .chips:empty {
+  display: none;
 }
 
 .panel-mode .pill span,
@@ -1057,7 +1090,7 @@ body.panel-mode {
 .panel-mode .modebar,
 .panel-mode .permissionbar {
   border-color: #e5e1f3;
-  background: #f7f5fb;
+  background: #faf9fd;
 }
 
 .panel-mode .mode,
@@ -1076,17 +1109,17 @@ body.panel-mode {
 .panel-mode .primary {
   color: #ffffff;
   border-color: transparent;
-  background: linear-gradient(135deg, #6d5df6, #8f5cf6);
-  box-shadow: 0 10px 24px rgba(109, 93, 246, .28);
+  background: linear-gradient(135deg, #6b59ee, #8759f2);
+  box-shadow: 0 9px 22px rgba(91, 75, 219, .24);
 }
 
 .panel-mode .workstreams-panel {
   grid-area: streams;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
   min-height: 0;
-  margin-top: 22px;
+  margin-top: 14px;
   padding-bottom: 26px;
   overflow: auto;
 }
@@ -1101,14 +1134,14 @@ body.panel-mode {
 .panel-mode .workstream {
   display: grid;
   grid-template-columns: 36px minmax(240px, 1fr) 90px 74px 82px 76px 108px 86px;
-  gap: 13px;
+  gap: 12px;
   align-items: center;
   margin: 0;
-  padding: 15px 16px;
+  padding: 13px 16px;
   border: 1px solid #ebe7f5;
-  border-radius: 12px;
+  border-radius: 11px;
   color: #17141f;
-  background: rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, .88);
   box-shadow: 0 1px 0 rgba(20, 20, 40, .03);
 }
 
@@ -1160,7 +1193,7 @@ body.panel-mode {
 
 .panel-mode .workstream.active {
   border-color: #d8d0ff;
-  box-shadow: 0 10px 28px rgba(68, 50, 160, .08);
+  box-shadow: 0 8px 24px rgba(68, 50, 160, .065);
 }
 
 .stream-icon {
@@ -1194,7 +1227,7 @@ body.panel-mode {
 }
 
 .stream-main p {
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 .stream-meta strong {
@@ -1231,11 +1264,11 @@ body.panel-mode {
 }
 
 .detail-card {
-  padding: 18px;
+  padding: 17px 18px;
   border: 1px solid #ebe7f5;
   border-radius: 16px;
-  background: rgba(255, 255, 255, .82);
-  box-shadow: 0 14px 36px rgba(30, 20, 80, .06);
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 12px 30px rgba(30, 20, 80, .05);
 }
 
 .detail-card h2,
@@ -1291,6 +1324,8 @@ body.panel-mode {
   padding: 12px;
   color: #ffffff;
   background:
+    linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(90deg, transparent 0 12%, rgba(255, 255, 255, .12) 12% 13%, transparent 13% 36%, rgba(255, 255, 255, .1) 36% 37%, transparent 37% 100%),
     linear-gradient(135deg, rgba(17, 24, 39, .96), rgba(48, 37, 96, .96)),
     #17141f;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
@@ -1366,7 +1401,7 @@ body.panel-mode {
 
 @media (min-width: 1100px) {
   .panel-mode .composer {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) 190px;
   }
 
   .panel-mode .runrow,
@@ -1375,7 +1410,7 @@ body.panel-mode {
   }
 
   .panel-mode .runrow {
-    min-width: 330px;
+    min-width: 0;
   }
 
   .panel-mode .toolrow {

@@ -669,6 +669,19 @@ class CockpitProvider {
       <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
     </article>
     <article class="workstream">
+      <div class="stream-icon">DC</div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 12m ago</span></div>
+        <p>Next up: implement responsive pricing section and connect to CMS.</p>
+      </div>
+      <div class="stream-status in-progress">In progress</div>
+      <div class="avatar-stack"><span>J</span><span>K</span><span>I</span></div>
+      <div class="stream-meta"><span>Changes</span><strong>8 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue DoseCraft landing page. Implement the responsive pricing section and connect it to CMS.">Continue</button>
+    </article>
+    <article class="workstream">
       <div class="stream-icon">RT</div>
       <div class="stream-main">
         <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>

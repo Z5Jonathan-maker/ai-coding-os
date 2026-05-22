@@ -25,10 +25,26 @@ else status();
 
 function alive(pid) { try { process.kill(pid, 0); return true; } catch { return false; } }
 function readPid() { try { return Number(fs.readFileSync(PID, 'utf8')); } catch { return 0; } }
+function shimPids() {
+  try {
+    return cp.execFileSync('pgrep', ['-f', `${__filename} run`], { encoding: 'utf8' })
+      .trim()
+      .split('\n')
+      .map(Number)
+      .filter(pid => pid && pid !== process.pid && alive(pid));
+  } catch {
+    return [];
+  }
+}
 function start() {
   fs.mkdirSync(ROOT, { recursive: true });
   const old = readPid();
   if (old && alive(old)) return console.log(`kimi-webbridge shim already running pid=${old}`);
+  const orphan = shimPids()[0];
+  if (orphan) {
+    fs.writeFileSync(PID, String(orphan));
+    return console.log(`kimi-webbridge shim already running pid=${orphan}`);
+  }
   const out = fs.openSync(LOG, 'a');
   const child = cp.spawn(process.execPath, [__filename, 'run'], { detached: true, stdio: ['ignore', out, out] });
   child.unref();
@@ -36,14 +52,16 @@ function start() {
   console.log(`kimi-webbridge shim started pid=${child.pid}`);
 }
 function stop() {
-  const pid = readPid();
-  if (pid && alive(pid)) process.kill(pid);
+  const pids = Array.from(new Set([readPid(), ...shimPids()].filter(Boolean)));
+  for (const pid of pids) {
+    if (alive(pid)) process.kill(pid);
+  }
   try { fs.unlinkSync(PID); } catch {}
   console.log('kimi-webbridge shim stopped');
 }
 function status() {
-  const pid = readPid();
-  console.log(JSON.stringify({ running: !!(pid && alive(pid)), pid: pid || null, log: LOG }, null, 2));
+  const pids = Array.from(new Set([readPid(), ...shimPids()].filter(Boolean))).filter(alive);
+  console.log(JSON.stringify({ running: pids.length > 0, pid: pids[0] || null, pids, log: LOG }, null, 2));
 }
 function tailLog(n) {
   if (!fs.existsSync(LOG)) return;
@@ -99,6 +117,7 @@ function css(selector = '') {
 }
 function run() {
   fs.mkdirSync(ROOT, { recursive: true });
+  fs.writeFileSync(PID, String(process.pid));
   console.log(`[${new Date().toISOString()}] starting ${VERSION}`);
   connect();
 }

@@ -140,6 +140,20 @@ button:disabled {
   background: var(--vscode-editor-background);
 }
 
+.open-panel-button {
+  width: 100%;
+  min-height: 40px;
+  margin: 0 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-button-foreground) 14%, transparent), transparent),
+    var(--vscode-button-background);
+}
+
 .status-dot {
   width: 10px;
   height: 10px;
@@ -649,6 +663,10 @@ body.panel-mode {
   order: 1;
   margin-bottom: 0;
   padding: 11px 13px;
+}
+
+.panel-mode .open-panel-button {
+  display: none;
 }
 
 .panel-mode .composer {

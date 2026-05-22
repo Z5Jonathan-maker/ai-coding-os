@@ -89,6 +89,11 @@ HTML
     </div>
   </section>
 
+  <button class="open-panel-button">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M9 5v14"/><path d="M15 11l3 3-3 3"/></svg>
+    <span>Open Full Cockpit</span>
+  </button>
+
   <section class="composer">
     <div class="composer-head">
       <label for="prompt">Command</label>

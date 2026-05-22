@@ -35,7 +35,8 @@ It adds:
   the task first, then sends the selected authority as execution policy so the
   policy text does not skew routing
 - a sidebar dashboard kept as a launcher/status surface for readiness, route
-  receipt, permissions, checkpoints, jobs, lanes, and disk gate
+  receipt, permissions, checkpoints, jobs, lanes, and disk gate, with a clear
+  `Open Full Cockpit` handoff into the full editor panel
 - a composer with one primary Run path, Auto as the default mode, optional
   Code/Browser/Extract/Route modes, streaming results, attached file/diff
   context, current file/selection context, and `cmd+enter` execution

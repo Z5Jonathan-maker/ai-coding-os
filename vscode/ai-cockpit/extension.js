@@ -314,6 +314,7 @@ class CockpitProvider {
       fiveMinuteDemo: () => vscode.commands.executeCommand('aiSystemCockpit.fiveMinuteDemo'),
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
       openSettings: () => vscode.commands.executeCommand('aiSystemCockpit.openSettings'),
+      openPanel: () => vscode.commands.executeCommand('aiSystemCockpit.open'),
       explainRoute: () => vscode.commands.executeCommand('aiSystemCockpit.explainRoute'),
       autoRun: () => vscode.commands.executeCommand('aiSystemCockpit.autoRun'),
       buildFix: () => vscode.commands.executeCommand('aiSystemCockpit.buildFix'),
@@ -521,6 +522,11 @@ class CockpitProvider {
       <p id="readinessBody">Loading routes, setup, provider circuits, and disk gate.</p>
     </div>
   </section>
+
+  <button class="open-panel-button" data-command="openPanel">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M9 5v14"/><path d="M15 11l3 3-3 3"/></svg>
+    <span>Open Full Cockpit</span>
+  </button>
 
   <section class="composer">
     <div class="composer-head">

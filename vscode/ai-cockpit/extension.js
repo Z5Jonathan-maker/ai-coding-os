@@ -106,7 +106,13 @@ function activate(context) {
   }
 
   if (vscode.workspace.getConfiguration('aiSystemCockpit').get('openOnStartup', false)) {
-    [1200, 4500].forEach((delay) => setTimeout(() => panel.open(), delay));
+    setTimeout(() => {
+      try {
+        panel.open();
+      } catch (error) {
+        output.appendLine(`startup open failed: ${error?.message || error}`);
+      }
+    }, 1800);
   }
 }
 

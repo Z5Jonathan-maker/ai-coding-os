@@ -97,6 +97,7 @@ Examples:
 - `summarize:deepseek:api-keychain`
 - `architecture:claude:oauth-max`
 - `image:chatgpt:desktop-session`
+- `creative_direction:chatgpt-image:canonical-reference-set`
 
 This is more useful than raw model quota because tool availability is often
 binary: logged in, daemon running, extension connected, CLI configured.
@@ -141,7 +142,10 @@ Our examples:
 - code refactor started in Codex stays in Codex unless hard architecture
   review is requested
 - bulk extraction started in DeepSeek stays cheap for follow-up transforms
-- image generation stays in ChatGPT/image lane with prompt/style continuity
+- image generation and creative direction stay in ChatGPT/image lane with
+  prompt/style continuity
+- UI implementation from an approved image reference stays in Kimi until the
+  design loop ends
 
 Current gap: `router-ask` has session flags, but the system-level workflow
 does not yet expose a clear "lane session ledger" to VS Code/health.
@@ -297,7 +301,7 @@ Receipt + Telemetry + Health Update
 | DeepSeek | cheap transform/summarize/extract lane | active |
 | Codex | engineering execution and local code changes | active |
 | Claude | precision/hard-floor reasoning and global architecture | active |
-| ChatGPT image | creative/image lane | active by policy, needs receipt parity |
+| ChatGPT image | creative/image/reference lane | active by policy, needs receipt parity |
 
 ## Next Concrete Patch
 

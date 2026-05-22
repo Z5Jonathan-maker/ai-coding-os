@@ -13,25 +13,44 @@ global-config audits, and credential migration notes.
 2. **Routing before reasoning.** Classify first. Use the smallest competent
    lane. Escalate on failure. Do not fan out to multiple models unless the
    task is explicitly parallel and each output has a use.
-3. **Browser/UI routes to Kimi.** Screenshots, click flows, website audits,
-   responsive checks, and visual inspection are `design/kimi` by default.
-4. **Architecture/high-stakes routes to Codex/Claude.** System design,
+3. **Creative direction routes to Image 2.0.** Static visual concepts, hero
+   backgrounds, brand/product reference assets, product listing images, and
+   "show me what this should look like" prompts belong to ChatGPT/Image 2.0.
+4. **Browser/UI execution routes to Kimi.** Screenshots, click flows, website
+   audits, responsive checks, visual inspection, and implementation from an
+   approved Image 2.0 reference are `design/kimi` by default.
+5. **Architecture/high-stakes routes to Codex/Claude.** System design,
    security, payment, compliance, irreversible refactors, and final QA stay
    on the precision lane.
-5. **Bulk transforms route cheap.** Summaries, extraction, JSON cleanup,
+6. **Bulk transforms route cheap.** Summaries, extraction, JSON cleanup,
    classification, dedupe, and compression belong to DeepSeek/cheap unless
    they become high-stakes.
-6. **Long-term memory is sacred.** Do not delete or compress durable memory
+7. **Long-term memory is sacred.** Do not delete or compress durable memory
    without a backup, rationale, index update, and rollback path.
-7. **Every self-modification has proof.** Any change to router rules,
+8. **Every self-modification has proof.** Any change to router rules,
    operating docs, memory, or global config needs a metric or smoke test.
-8. **No silent skips.** Every filter/drop/ignore path in stateful scripts
+9. **No silent skips.** Every filter/drop/ignore path in stateful scripts
    should have a named reason counter or explicit log.
-9. **Persist incrementally.** Scripts that mutate queues, trackers, state
+10. **Persist incrementally.** Scripts that mutate queues, trackers, state
    files, or external resources save after each successful mutation.
-10. **Verify before writing truth fields.** Do not write a URL, file path,
+11. **Verify before writing truth fields.** Do not write a URL, file path,
     deploy SHA, credential status, or generated asset reference until the
     resource exists.
+
+## Image 2.0 Creative Direction Standard
+
+Image 2.0 is not only an asset generator. It is the creative-reference lane.
+
+- Use it first when the needed output is a static visual direction, hero
+  background, product listing, brand asset, ad creative, page divider,
+  button/style motif, or canonical product/label reference.
+- Feed canonical reference images when identity continuity matters.
+- Save prompts/manifests so the next generation can preserve palette,
+  lighting, label hierarchy, proportions, and material vocabulary.
+- Once a direction is approved, Kimi implements it as real UI: background
+  assets, native text, accessible buttons, responsive layout, and browser proof.
+- Do not ask text-only coding/design lanes to invent the visual direction when
+  Image 2.0 can produce the reference directly.
 
 ## Interface Standard
 
@@ -106,6 +125,7 @@ they pass a security and ToS review.
 - `zsh` startup is now silent in automation contexts.
 - `fnm` startup failures degrade silently.
 - power-mode no longer conflicts with zsh aliases or prints function bodies.
+- Creative-direction prompts now route to Image 2.0.
 - Browser/screenshot prompts now route to `design/kimi`.
 - `cc-router-smoke` verifies expected platform decisions.
 - Weekly health checks router smoke, VS Code, command registry, retired

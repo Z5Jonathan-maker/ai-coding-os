@@ -4,7 +4,7 @@
   "lanes": [
     {
       "id": "kimi-webbridge",
-      "role": "Primary browser, screenshot, web, UI/UX, and visual-operator lane.",
+      "role": "Primary browser, screenshot, web, UI/UX implementation, and visual-operator lane.",
       "status": "active",
       "capabilities": ["browser_control", "screenshots", "web_crawling", "ui_analysis", "responsive_check", "design_review"],
       "health": {
@@ -16,7 +16,7 @@
       "unsupported": ["final_security_review", "payment_compliance", "hard_architecture"],
       "hardFloor": false,
       "credential": "chrome-session",
-      "notes": "Matches the Kimi/WebBridge default for browser and design-first work."
+      "notes": "Matches the Kimi/WebBridge default for browser and design execution. For net-new creative direction, consume the approved ChatGPT image reference instead of inventing from scratch."
     },
     {
       "id": "playwright",
@@ -84,9 +84,9 @@
     },
     {
       "id": "chatgpt-image",
-      "role": "Image generation/editing and visual asset creation.",
+      "role": "Image generation/editing, canonical brand assets, and creative direction.",
       "status": "active",
-      "capabilities": ["image_generation", "image_editing", "hero_asset", "product_mockup"],
+      "capabilities": ["image_generation", "image_editing", "creative_direction", "visual_concept", "style_reference", "canonical_brand_asset", "hero_asset", "product_mockup"],
       "health": {
         "kind": "external",
         "reason": "Provided by Codex image tool or ChatGPT Desktop session."
@@ -95,7 +95,7 @@
       "unsupported": ["code_edit", "browser_control", "final_qa"],
       "hardFloor": false,
       "credential": "chatgpt-session",
-      "notes": "Needs receipt parity when invoked outside this runtime."
+      "notes": "Use Image 2.0 for static visual direction, canonical product/brand assets, hero/background concepts, and reference mockups. Kimi turns approved references into functional UI."
     },
     {
       "id": "tel",
@@ -133,6 +133,8 @@
     "browser_control": { "primary": "kimi-webbridge", "fallbacks": ["playwright", "codex"] },
     "screenshots": { "primary": "kimi-webbridge", "fallbacks": ["playwright", "codex"] },
     "ui_analysis": { "primary": "kimi-webbridge", "fallbacks": ["claude"] },
+    "creative_direction": { "primary": "chatgpt-image", "noFallbackReason": "Image 2.0 is the creative reference lane; text-only lanes may critique but should not replace it." },
+    "style_reference": { "primary": "chatgpt-image", "noFallbackReason": "Style continuity depends on canonical generated/reference images." },
     "architecture": { "primary": "claude", "fallbacks": ["codex"] },
     "hard_debugging": { "primary": "claude", "fallbacks": ["codex"] },
     "code_edit": { "primary": "codex", "fallbacks": ["claude"] },

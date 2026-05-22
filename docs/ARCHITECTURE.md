@@ -16,9 +16,9 @@ Developer
   -> AI lanes
       -> Codex: code edits, local verification, integration
       -> Claude: architecture, hard debugging, security/final QA
-      -> Kimi/WebBridge: browser, UI, screenshots, visual operator work
+      -> Kimi/WebBridge: browser, UI implementation, screenshots, visual operator work
       -> DeepSeek: cheap extraction, transforms, summaries
-      -> ChatGPT image: image generation/editing
+      -> ChatGPT image: image generation/editing, creative direction, canonical visual references
       -> TEL: credentialed actions with audit boundaries
       -> Playwright: clean browser fallback
 ```
@@ -46,6 +46,7 @@ Developer
 5. Every launch claim needs a command that proves it.
 6. Credentials stay out of transcripts and git.
 7. Reference projects are harvested only for named gaps.
+8. Static visual direction comes from Image 2.0; functional UI execution comes from Kimi.
 
 ## Active Control Plane
 

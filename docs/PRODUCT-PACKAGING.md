@@ -16,9 +16,9 @@ One clean developer cockpit that routes work to the right AI lane:
 VS Code cockpit
   -> Codex for code edits and local verification
   -> Claude for architecture, security, compliance, final review
-  -> Kimi for browser, UI, screenshots, visual/operator work
+  -> Kimi for browser, UI implementation, screenshots, visual/operator work
   -> DeepSeek for cheap extraction, transforms, summaries, bulk passes
-  -> ChatGPT image for image generation/editing
+  -> ChatGPT image for image generation/editing and creative direction
   -> TEL for credentialed actions with audit boundaries
 ```
 
@@ -31,6 +31,8 @@ trust tier, and safety boundary.
 - **One cockpit:** VS Code is the surface. No duplicate IDEs.
 - **Native cockpit UI:** Activity Bar, sidebar dashboard, status bar, and command palette actions.
 - **Opinionated lanes:** each AI has a specific job.
+- **Creative-reference loop:** Image 2.0 creates approved visual direction;
+  Kimi converts that reference into functional UI.
 - **Executable routing:** `ai-lanes.json`, `cc-lane`, and router smoke tests.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
@@ -113,7 +115,7 @@ Core lanes:
 - Claude
 - Kimi
 - DeepSeek
-- ChatGPT image
+- ChatGPT image / Image 2.0
 - TEL
 - Playwright as clean browser fallback only
 

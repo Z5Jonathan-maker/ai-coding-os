@@ -65,7 +65,8 @@ Default tier per mode: MINIMAL→E1, NATIVE→E2, ALGORITHM→E4.
 This system is multi-model routed. Roles:
 
 - **Codex (you)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work. **PRIMARY for everything except design-first tasks.**
-- **KIMI (K2.6)** = UI/UX + design intelligence. **PRIMARY for layout composition, visual hierarchy, spacing/alignment, modern UI systems (glassmorphism, minimal, premium SaaS, biotech aesthetic), full-page and component-level design thinking.**
+- **KIMI (K2.6)** = UI/UX implementation + browser/design operator. **PRIMARY for turning approved visual direction into real layouts, components, spacing, alignment, responsive UI, and browser-verified code.**
+- **ChatGPT / Image 2.0** = creative direction + canonical brand/image engine. **PRIMARY for static visual concepts, hero/background direction, canonical product/brand assets, product listing images, ad creatives, and style-reference mockups.**
 - **KIMI free path** = `cf_kimi` tier — `@cf/moonshotai/kimi-k2.6` via Cloudflare Workers AI, 100K-250K tokens/day free. Slots into `design` fallback chain BEFORE `precision`. Direct invoke: `router-ask purpose=bulk_kimi`.
 - **OpenRouter gateway** = `openrouter` tier. Free-first (DeepSeek-v4-flash:free, Qwen3-coder:free), escalates to `gemini-2.5-flash` ($0.30/$2.50 per M) when prompt > 128k chars. Registered as fallback for `cheap` and `precision`. Direct invoke: `router-ask purpose=long_context_query` or `purpose=openrouter_query`.
 - **Other models** may handle reasoning or local tasks.
@@ -74,17 +75,21 @@ This system is multi-model routed. Roles:
 
 Any of: "design a UI / mockup / landing page / dashboard", layout composition, visual hierarchy, spacing-alignment, branding structure, "make it look more premium/glassmorphism/biotech", net-new component design, "redesign X".
 
+If the request asks for **creative direction**, a **static visual example**, a **hero/background concept**, a **canonical brand/product asset**, or "show me what this should look like", route to ChatGPT/Image 2.0 first. Then route the approved reference to Kimi for functional UI implementation.
+
 ### What you do on a design-first task
 
-1. **Don't generate the design yourself.** Route via `router-ask` to the design tier — KIMI owns both the design audit AND the code (per `feedback_kimi_leads_design_and_code`). Use `purpose: 'ui_design'` or relevant DESIGN_P purpose; falls back to local `design` skill if KIMI is offline.
-2. **Codex orchestrates + reviews + ships.** Validate KIMI's output against brand memory ([design/brands/](file:///Users/leonardofibonacci/.Codex/design/brands/)), apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.Codex/design/checks/quality-control.md), 95% threshold / 98% print), commit to the production stack.
-3. **Multi-step design loop?** Spawn the `design-director` agent — it runs Phase 1-6 (ingest → strategy → execute → QC → log) end-to-end without per-step coordination.
+1. **Choose the design phase.** Static creative direction/reference asset → ChatGPT/Image 2.0 (`purpose: 'creative_direction'`, `style_reference`, `hero_image`, `product_photography`, etc.). Functional UI/code/browser execution → KIMI (`purpose: 'ui_design'` or relevant DESIGN_P purpose).
+2. **For Image 2.0 work, preserve continuity.** Use canonical reference images when available, save the prompt/manifest, and treat the generated reference as the source of truth for Kimi's implementation pass.
+3. **For Kimi work, execute the approved reference.** Kimi owns layout/code/browser verification from the Image 2.0 reference or existing brand memory; it should not reinvent the visual direction unless explicitly asked.
+4. **Codex orchestrates + reviews + ships.** Validate KIMI's output against brand memory ([design/brands/](file:///Users/leonardofibonacci/.Codex/design/brands/)), apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.Codex/design/checks/quality-control.md), 95% threshold / 98% print), commit to the production stack.
+5. **Multi-step design loop?** Spawn the `design-director` agent — it runs Phase 1-6 (ingest → strategy → execute → QC → log) end-to-end without per-step coordination.
 
 ### What stays Codex-primary, no deferral
 
 Backend logic / APIs / schemas / migrations, system architecture, infra, CI/CD, deploy pipelines, data pipelines + scraping (mega-brain-ingest), automation/scripts/hooks/agents, bug fixes inside existing UI code, audit-driven copy fixes, brand-fidelity execution (rasterizing canonical SVG, swapping wrong refs).
 
-**Routing rule (one-line):** Design-first → KIMI via router (`purpose: 'ui_design'`); fallback `design` skill. Backend/system/data → Codex. Multi-step design → `design-director` agent.
+**Routing rule (one-line):** Creative direction/static visual reference → ChatGPT/Image 2.0. Functional UI/browser execution → KIMI. Backend/system/data → Codex. Multi-step design → `design-director` agent.
 
 ## SKILL ROUTING TABLE (read this before invoking anything)
 
@@ -95,7 +100,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Write me a prompt for X tool" | `prompt-master` | Single-shot, never loop |
 | "Audit this project / what's broken" | `audit` | Outputs to `./audits/<date>.md` |
 | "Onboard / clean up this messy repo" | `onboard` | Generates AGENTS.md/AGENTS.md/DESIGN.md |
-| **DESIGN-FIRST** (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | KIMI via `router-ask purpose=ui_design`; fallback `design` skill | KIMI owns audit + code (per `feedback_kimi_leads_design_and_code`). Multi-step → spawn `design-director`. See "Design-family skill picker" below for the 5-way disambiguator. |
+| **CREATIVE-DIRECTION** (static visual direction, "show me an example", hero/background concepts, canonical brand/product assets, style references, product listing images) | ChatGPT/Image 2.0 via `router-ask purpose=creative_direction`; fallback `cc-image` only when API billing is acceptable | Use canonical references. Save prompt/manifest. Kimi implements approved references into functional UI. |
+| **DESIGN-FIRST / IMPLEMENTATION** (UI/UX code, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | KIMI via `router-ask purpose=ui_design`; fallback `design` skill | KIMI owns execution/code/browser verification from approved direction. Multi-step → spawn `design-director`. |
 | "Chinese 高保真 hi-fi prototype style" | `huashu-design` | Only when explicitly asked |
 | "Build design tokens / design system" | `design-system` (Codex executes) | primitive→semantic→component. NOT routed to KIMI — token systems are systematic execution. |
 | "Build this in shadcn/Tailwind/React" | `ui-styling` | Implementation, not mockup |
@@ -336,18 +342,18 @@ When given a task, you MUST classify it and route appropriately.
 | Browser, UI/UX, screenshots, web crawling, implementation | **Kimi** | Primary operator, WebBridge, browser automation |
 | Architecture, security review, hard debugging, final QA | **Codex** | Strategic brain, high-context reasoning |
 | Summaries, extraction, JSON transforms, compression, bulk | **DeepSeek** | Worker layer, cheap, fast |
-| Images, mockups, hero sections, ads, branding | **ChatGPT** | Creative engine, Image 2.0 |
+| Images, visual concepts, hero/background direction, ads, branding, canonical product assets | **ChatGPT** | Creative engine, Image 2.0 |
 
 ### Routing Rules
 1. BEFORE acting on any task, run `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run "<task>"` to confirm routing.
 2. If the task involves browser interaction (screenshots, page audit, UI testing), use Kimi WebBridge — NOT your built-in web tools.
-3. If the task involves image generation, defer to ChatGPT (user has ChatGPT Desktop / OpenAI API) — do NOT generate images yourself.
+3. If the task involves image generation, static visual direction, canonical brand/product images, or style references, defer to ChatGPT/Image 2.0 — do NOT approximate it with text-only design.
 4. If the task is mechanical (summarize, extract, transform JSON), use DeepSeek via the API — do NOT waste tokens doing it yourself.
 5. For architecture or hard bugs, you (Codex) are the correct platform — proceed directly.
 
 ### When to defer
 - Browser screenshots → Kimi (`~/.kimi-webbridge/bin/kimi-webbridge`)
-- Image generation → ChatGPT (`/Applications/ChatGPT.app`)
+- Image generation / visual direction → ChatGPT (`/Applications/ChatGPT.app`) or `cc-image` when API billing is explicitly acceptable
 - Bulk summaries → DeepSeek API
 - Everything else → You (Codex) or route via `intent-route.sh`
 

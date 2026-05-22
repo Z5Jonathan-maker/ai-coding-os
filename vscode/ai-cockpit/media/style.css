@@ -428,7 +428,7 @@ textarea:focus {
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
   border-radius: 8px;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--vscode-foreground) 3%, transparent), transparent 24%),
+    linear-gradient(180deg, color-mix(in srgb, var(--vscode-focusBorder) 6%, transparent), transparent 28%),
     var(--vscode-editor-background);
 }
 
@@ -545,6 +545,78 @@ article button {
   width: 100%;
 }
 
+.transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 180px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
+  border-radius: 8px;
+  color: var(--vscode-editor-foreground);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--vscode-editor-background) 92%, black), var(--vscode-editor-background)),
+    var(--vscode-editor-background);
+}
+
+.message {
+  width: min(860px, 100%);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.message.user {
+  align-self: flex-end;
+  max-width: min(720px, 92%);
+}
+
+.message.assistant {
+  align-self: flex-start;
+}
+
+.message-role {
+  margin-bottom: 5px;
+  color: var(--vscode-descriptionForeground);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.message-body {
+  padding: 11px 13px;
+  border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
+  border-radius: 8px;
+  background: var(--vscode-sideBar-background);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.message.user .message-body {
+  border-color: color-mix(in srgb, var(--vscode-focusBorder) 52%, var(--vscode-input-border, transparent));
+  color: var(--vscode-button-foreground);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-focusBorder) 22%, transparent), transparent),
+    var(--vscode-button-background);
+}
+
+.message.assistant .message-body {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--vscode-foreground) 4%, transparent), transparent),
+    var(--vscode-sideBar-background);
+}
+
+.empty-state {
+  margin: auto;
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+}
+
 pre {
   min-height: 24px;
   max-height: 150px;
@@ -657,12 +729,12 @@ body.panel-mode {
 .panel-mode header {
   order: 0;
   margin-bottom: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--vscode-panel-border);
 }
 
 .panel-mode .hero {
-  order: 1;
-  margin-bottom: 0;
-  padding: 11px 13px;
+  display: none;
 }
 
 .panel-mode .open-panel-button {
@@ -674,7 +746,8 @@ body.panel-mode {
   margin-bottom: 0;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  padding: 14px;
+  gap: 8px;
+  padding: 12px;
   box-shadow: 0 -10px 28px color-mix(in srgb, var(--vscode-editor-background) 70%, transparent);
 }
 
@@ -688,8 +761,8 @@ body.panel-mode {
 }
 
 .panel-mode textarea {
-  min-height: 74px;
-  max-height: 150px;
+  min-height: 50px;
+  max-height: 92px;
   font-size: 13px;
 }
 
@@ -708,13 +781,13 @@ body.panel-mode {
 }
 
 .panel-mode .result-panel {
-  order: 2;
+  order: 1;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
-  padding: 14px;
+  padding: 12px;
 }
 
 .panel-mode .panel-head {
@@ -725,9 +798,20 @@ body.panel-mode {
   flex: 1 1 auto;
   max-height: none;
   min-height: 0;
-  padding: 18px 20px;
+  padding: 18px;
+}
+
+.panel-mode .message-body {
   font-size: 13px;
-  line-height: 1.55;
+}
+
+.panel-mode .permission {
+  min-height: 40px;
+  padding: 6px 8px;
+}
+
+.panel-mode .mode {
+  min-height: 30px;
 }
 
 .panel-mode details,

@@ -610,7 +610,9 @@ class CockpitProvider {
         <button class="mini-button text-mini" data-command="fiveMinuteDemo">Demo</button>
       </div>
     </div>
-    <pre id="result">Ready.</pre>
+    <div id="result" class="transcript" aria-live="polite">
+      <div class="empty-state">Ready.</div>
+    </div>
   </section>
 
   <details open>

@@ -59,7 +59,7 @@
         activePrompt = '';
         setRunning(false);
         $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Work Stream' : 'Result';
-        $('result').textContent = 'Ready.';
+        renderTranscript('Ready', '');
       } else if (action === 'stop') {
         vscode.postMessage({ command: 'stopRun' });
       }
@@ -188,7 +188,7 @@
     const message = event.data;
     if (message.type !== 'result') return;
     $('resultTitle').textContent = message.payload.title || 'Last Result';
-    $('result').textContent = formatTranscript(message.payload.title, message.payload.body);
+    renderTranscript(message.payload.title, message.payload.body);
     setRunning(Boolean(message.payload.running));
   });
 
@@ -197,7 +197,7 @@
     if (!activePrompt) return;
     setRunning(true);
     $('resultTitle').textContent = 'Working';
-    $('result').textContent = formatTranscript(modeLabel(mode), 'Running...');
+    renderTranscript(modeLabel(mode), 'Running...');
   }
 
   function setRunning(running) {
@@ -210,9 +210,41 @@
     activePrompt = '';
   }
 
-  function formatTranscript(title, body) {
-    const prompt = activePrompt ? `You\n${activePrompt}\n\n` : '';
-    return `${prompt}${title || 'AI'}\n${cleanOutput(title, body)}`;
+  function renderTranscript(title, body) {
+    const result = $('result');
+    result.innerHTML = '';
+
+    if (!activePrompt && !String(body || '').trim()) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = 'Ready.';
+      result.appendChild(empty);
+      return;
+    }
+
+    if (activePrompt) {
+      result.appendChild(messageNode('You', activePrompt, 'user'));
+    }
+
+    const cleaned = cleanOutput(title, body);
+    result.appendChild(messageNode(title || 'AI', cleaned, 'assistant'));
+    result.scrollTop = result.scrollHeight;
+  }
+
+  function messageNode(role, body, kind) {
+    const node = document.createElement('article');
+    node.className = `message ${kind || 'assistant'}`;
+
+    const roleEl = document.createElement('div');
+    roleEl.className = 'message-role';
+    roleEl.textContent = role || 'AI';
+
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'message-body';
+    bodyEl.textContent = String(body || '').trim() || '(no output)';
+
+    node.append(roleEl, bodyEl);
+    return node;
   }
 
   function modeLabel(mode) {

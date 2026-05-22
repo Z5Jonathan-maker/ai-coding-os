@@ -151,17 +151,22 @@ HTML
         <button class="mini-button text-mini">Demo</button>
       </div>
     </div>
-    <pre>You
-Debug this repo and verify the safest next step.
-
-Auto
-Route selected: precision -> claude
+    <div class="transcript" aria-live="polite">
+      <article class="message user">
+        <div class="message-role">You</div>
+        <div class="message-body">Debug this repo and verify the safest next step.</div>
+      </article>
+      <article class="message assistant">
+        <div class="message-role">Auto</div>
+        <div class="message-body">Route selected: precision -> claude
 Fallback: codex/codex -> design/kimi -> cheap/deepseek
 
 Working tree clean.
 Product readiness: 15/15.
 Provider capacity: 3/4, degraded until Claude quota reset.
-Next step: keep changes scoped, verify release gate, then ship.</pre>
+Next step: keep changes scoped, verify release gate, then ship.</div>
+      </article>
+    </div>
   </section>
 
   <details open>

@@ -3,7 +3,7 @@
   "workbench.startupEditor": "none",
   "workbench.editor.enablePreview": false,
   "workbench.panel.defaultLocation": "bottom",
-  "workbench.activityBar.location": "left",
+  "workbench.activityBar.location": "default",
   "workbench.sideBar.location": "left",
   "workbench.statusBar.visible": true,
   "workbench.commandPalette.history": 50,
@@ -162,7 +162,7 @@
   "claudeCode.preferredLocation": "panel",
   "claudeCode.allowDangerouslySkipPermissions": false,
   "claudeCode.initialPermissionMode": "default",
-  "aiSystemCockpit.openOnStartup": false,
+  "aiSystemCockpit.openOnStartup": true,
   "aiSystemCockpit.showStatusBarButton": true,
   "json.schemaDownload.trustedDomains": {
     "https://schemastore.azurewebsites.net/": true,

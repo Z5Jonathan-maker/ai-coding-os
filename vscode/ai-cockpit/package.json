@@ -16,6 +16,7 @@
   },
   "categories": ["Other"],
   "activationEvents": [
+    "onStartupFinished",
     "onCommand:aiSystemCockpit.open",
     "onCommand:aiSystemCockpit.status",
     "onView:aiSystemCockpit.dashboard"
@@ -126,8 +127,8 @@
       "properties": {
         "aiSystemCockpit.openOnStartup": {
           "type": "boolean",
-          "default": false,
-          "description": "Open the AI cockpit view on VS Code startup. Keep disabled for maximum VS Code startup stability."
+          "default": true,
+          "description": "Open the AI cockpit view on VS Code startup after the fail-safe daily-health refresh is registered."
         },
         "aiSystemCockpit.showStatusBarButton": {
           "type": "boolean",

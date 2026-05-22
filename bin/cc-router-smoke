@@ -34,6 +34,8 @@ check_route() {
 check_route cheap deepseek "summarize this JSON into three fields"
 check_route design kimi "design a premium dashboard layout"
 check_route precision claude "debug this distributed auth race"
+check_route precision claude "audit and improve the entire AI cockpit/router system for routing correctness, capability coverage, capacity, and interface quality"
+check_route precision claude "review the router policy and MCP memory policy"
 check_route design kimi "take a screenshot of localhost"
 check_route design kimi "open https://example.com and click login"
 

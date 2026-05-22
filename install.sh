@@ -141,6 +141,7 @@ link vscode/argv.json "Library/Application Support/Code/User/argv.json"
 link vscode/keybindings.json "Library/Application Support/Code/User/keybindings.json"
 link vscode/tasks.json "Library/Application Support/Code/User/tasks.json"
 link vscode/mcp.json "Library/Application Support/Code/User/mcp.json"
+link vscode/AI-HQ.code-workspace AI-HQ.code-workspace
 link vscode/ai-cockpit .vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0
 
 # Ensure zellij layout dir exists

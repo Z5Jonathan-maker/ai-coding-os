@@ -1,0 +1,153 @@
+{
+  "folders": [
+    {
+      "name": "AI-HQ",
+      "path": "/Users/leonardofibonacci/AI-HQ"
+    },
+    {
+      "name": "AI-SYSTEM-V2",
+      "path": "/Users/leonardofibonacci/AI-SYSTEM-V2"
+    },
+    {
+      "name": "ROUTER",
+      "path": "/Users/leonardofibonacci/code/projects/cc-router"
+    },
+    {
+      "name": "DOTFILES",
+      "path": "/Users/leonardofibonacci/dotfiles"
+    },
+    {
+      "name": "AUREX",
+      "path": "/Users/leonardofibonacci/code/projects/aurex-bio"
+    },
+    {
+      "name": "DOSECRAFT",
+      "path": "/Users/leonardofibonacci/code/projects/dosecraft"
+    },
+    {
+      "name": "DOSECRAFT-COMPANION",
+      "path": "/Users/leonardofibonacci/code/projects/dosecraft-companion"
+    },
+    {
+      "name": "CLAIMS-WEB",
+      "path": "/Users/leonardofibonacci/code/projects/careclaimsadjusting-website"
+    },
+    {
+      "name": "CLAIMPILOT",
+      "path": "/Users/leonardofibonacci/code/projects/ClaimPilot"
+    },
+    {
+      "name": "OPEN-DESIGN",
+      "path": "/Users/leonardofibonacci/code/projects/open-design"
+    },
+    {
+      "name": "AI-SYSTEM-V2-PANEL",
+      "path": "/Users/leonardofibonacci/code/projects/ai-system-v2-panel"
+    }
+  ],
+  "settings": {
+    "aiSystemCockpit.openOnStartup": true,
+    "aiSystemCockpit.showStatusBarButton": true,
+    "workbench.startupEditor": "none",
+    "workbench.editor.enablePreview": false,
+    "workbench.tree.indent": 20,
+    "explorer.autoReveal": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "extensions.ignoreRecommendations": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.biome": "explicit"
+    },
+    "editor.stickyScroll.enabled": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "boundary",
+    "editor.rulers": [
+      80,
+      120
+    ],
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.maxTokenizationLineLength": 20000,
+    "editor.largeFileOptimizations": true,
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.tsserver.maxTsServerMemory": 4096,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "git.openRepositoryInParentFolders": "always",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.profiles.osx": {
+      "zsh": {
+        "path": "/bin/zsh",
+        "args": [
+          "-l"
+        ]
+      }
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.venv": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.ruff_cache": true,
+      "**/.cache": true,
+      "**/.tmp-audit": true,
+      "**/.playwright-mcp": true,
+      "**/.sixth": true,
+      "**/.cro-screens-*": true,
+      "**/.audit-shots": true,
+      "**/.design-mocks": true,
+      "**/AI-SYSTEM-V2-ARCHIVE": true,
+      "**/AI-SYSTEM-V2-MIGRATION": true,
+      "**/*.lockb": true,
+      "**/*.log": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/node_modules/**": true,
+      "**/.next/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      "**/.venv/**": true,
+      "**/__pycache__/**": true,
+      "**/.cache/**": true,
+      "**/public/**": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.venv": true,
+      "**/__pycache__": true,
+      "**/.cache": true,
+      "**/*.log": true,
+      "**/public/brand": true,
+      "**/public/products": true,
+      "**/public/marketing": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "z5jonathan.ai-system-cockpit",
+      "anthropic.claude-code",
+      "moonshot-ai.kimi-code",
+      "openai.chatgpt",
+      "eamodio.gitlens",
+      "biomejs.biome",
+      "bradlc.vscode-tailwindcss"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": []
+  }
+}

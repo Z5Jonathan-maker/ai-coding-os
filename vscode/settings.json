@@ -64,6 +64,11 @@
     "**/.venv/**": true,
     "**/__pycache__/**": true,
     "**/.cache/**": true,
+    "**/audits/**": true,
+    "**/memory/**": true,
+    "**/public/**": true,
+    "**/scraper/**": true,
+    "**/swarm/**": true,
     "**/AI-SYSTEM-V2-ARCHIVE/**": true,
     "**/AI-SYSTEM-V2-MIGRATION/**": true
   },
@@ -75,6 +80,11 @@
     "**/.venv": true,
     "**/__pycache__": true,
     "**/.cache": true,
+    "**/audits": true,
+    "**/memory": true,
+    "**/public": true,
+    "**/scraper": true,
+    "**/swarm": true,
     "**/*.log": true,
     "**/AI-SYSTEM-V2-ARCHIVE": true,
     "**/AI-SYSTEM-V2-MIGRATION": true

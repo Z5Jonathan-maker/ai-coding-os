@@ -50,7 +50,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-native-app-status` — installed native AI app versions and role map.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
-- `cc-provider-capacity` — live provider capacity check across Claude, Kimi, and DeepSeek; separates installed/healthy from quota-exhausted/degraded.
+- `cc-provider-capacity` — live provider capacity check across Claude, Codex, Kimi, and DeepSeek; separates installed/healthy from quota-exhausted/degraded.
 - `cc-pulse-status` — Pulse code-density protocol source, skill, and fit status.
 - `cc-prune` — manual disk hygiene for `.claude`.
 - `cc-review-diff` — precision-lane review of current git diff.

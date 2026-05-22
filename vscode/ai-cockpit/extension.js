@@ -286,7 +286,7 @@ class CockpitProvider {
       type: 'state',
       payload,
     });
-    shellExec('cc-provider-capacity | sed -n "1,24p"', { timeout: 45000 }).then((providerCapacity) => {
+    shellExec('cc-provider-capacity | sed -n "1,30p"', { timeout: 45000 }).then((providerCapacity) => {
       if (!this.view || nonce !== this.refreshNonce) return;
       this.view.webview.postMessage({
         type: 'state',

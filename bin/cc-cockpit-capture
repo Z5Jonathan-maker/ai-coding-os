@@ -156,11 +156,11 @@ Debug this repo and verify the safest next step.
 
 Auto
 Route selected: precision -> claude
-Fallback: design/kimi -> cheap/deepseek
+Fallback: codex/codex -> design/kimi -> cheap/deepseek
 
 Working tree clean.
 Product readiness: 15/15.
-Provider capacity: 2/3, degraded until Claude quota reset.
+Provider capacity: 3/4, degraded until Claude quota reset.
 Next step: keep changes scoped, verify release gate, then ship.</pre>
   </section>
 
@@ -209,7 +209,7 @@ capture_panel() {
 
 capture "readiness" "Product Readiness" "Ready with capacity warning" \
   "Product gate is green. Provider capacity is visible separately so quota exhaustion is never hidden." \
-  "$(card "Product Readiness" "Score: 15/15 checks (100%)\nStatus: product-ready" "View Gate")$(card "Provider Capacity" "Claude: quota_exhausted until reset\nKimi: ready\nDeepSeek: ready\nStatus: degraded" "View Capacity")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
+  "$(card "Product Readiness" "Score: 15/15 checks (100%)\nStatus: product-ready" "View Gate")$(card "Provider Capacity" "Claude: quota_exhausted until reset\nCodex: ready\nKimi: ready\nDeepSeek: ready\nStatus: degraded" "View Capacity")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
   "01-readiness.png"
 
 capture "first-run" "First Run Doctor" "First-run ready" \
@@ -219,7 +219,7 @@ capture "first-run" "First Run Doctor" "First-run ready" \
 
 capture "route" "Route Receipt" "Deterministic route proof" \
   "The cockpit shows selected lane, fallback chain, latency, tokens, and cost status." \
-  "$(card "Route" "Selected: precision -> claude\nFallback: precision/claude -> design/kimi -> cheap/deepseek\nHard floor: false" "View Receipt")$(card "Metrics" "Fallbacks: 21\nTokens logged: 490\nCost today: \$0.0000 / \$10.00" "View Metrics")$(card "Sessions" "Recent routed sessions and sticky state visible." "View Sessions")" \
+  "$(card "Route" "Selected: precision -> claude\nFallback: precision/claude -> codex/codex -> design/kimi -> cheap/deepseek\nHard floor: false" "View Receipt")$(card "Metrics" "Fallbacks: 21\nTokens logged: 490\nCost today: \$0.0000 / \$10.00" "View Metrics")$(card "Sessions" "Recent routed sessions and sticky state visible." "View Sessions")" \
   "03-route-receipt.png"
 
 capture "browser" "Browser Proof" "Browser mode: official" \
@@ -229,7 +229,7 @@ capture "browser" "Browser Proof" "Browser mode: official" \
 
 capture "composer" "Composer" "Auto-first execution" \
   "Auto, Code, Browser, Extract, and Route are intent modes. The router owns model choice and fallback." \
-  "$(card "Route" "Circuits: design:closed | image:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "Provider Capacity" "Claude: quota_exhausted\nKimi: ready\nDeepSeek: ready" "View Capacity")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
+  "$(card "Route" "Circuits: codex:closed | design:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "Provider Capacity" "Claude: quota_exhausted\nCodex: ready\nKimi: ready\nDeepSeek: ready" "View Capacity")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
   "05-composer.png"
 
 capture_panel "full-panel" "Full Cockpit Panel" "Full-panel work surface" \

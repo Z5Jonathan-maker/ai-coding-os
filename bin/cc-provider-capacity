@@ -13,6 +13,7 @@ const path = require('path');
 process.chdir(root);
 
 const { callAnthropic, probeHealth: probeClaude, PRIMARY: claudeModel } = require(path.join(root, 'lib/anthropic-client.cjs'));
+const { probeHealth: probeCodex, PRIMARY: codexModel } = require(path.join(root, 'lib/codex-client.cjs'));
 const { probeHealth: probeKimi, PRIMARY: kimiModel } = require(path.join(root, 'lib/kimi-client.cjs'));
 const { probeHealth: probeDeepSeek, PRIMARY: deepseekModel } = require(path.join(root, 'lib/deepseek-client.cjs'));
 const { classifyError } = require(path.join(root, 'lib/error-classify.cjs'));
@@ -47,6 +48,7 @@ async function probeLane(lane, provider, model, probeFn) {
 (async () => {
   const rows = [
     await claudeCapacity(),
+    await probeLane('code/direct', 'Codex', codexModel, probeCodex),
     await probeLane('design/browser', 'Kimi', kimiModel, probeKimi),
     await probeLane('cheap/bulk', 'DeepSeek', deepseekModel, probeDeepSeek),
   ];

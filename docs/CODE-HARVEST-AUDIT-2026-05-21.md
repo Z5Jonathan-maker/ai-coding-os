@@ -226,8 +226,10 @@ developers would star, clone, and pay attention to.
 
 ## Next Implementation Order
 
-1. `cc-context-meter` + cockpit card using Roo-style token distribution.
-2. Rich diff/file-change cockpit card using Roo-style file grouping/stats.
+1. `cc-context-meter` + cockpit card using Roo-style token distribution. Done
+   2026-05-21: structured JSON plus visual Context Pressure card.
+2. Rich diff/file-change cockpit card using Roo-style file grouping/stats. Done
+   2026-05-21: structured JSON plus visual File Changes card.
 3. Router lane circuit breaker/cooldown adapted from HCC.
 4. Router cost ledger hardened with HCC/Cline pricing ideas.
 5. `cc-session-ledger` using Langfuse plugin state/transcript patterns.

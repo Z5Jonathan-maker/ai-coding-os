@@ -110,7 +110,7 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, sessions, pulse, nativeApps, kimi } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, diffSummary, sessions, pulse, nativeApps, kimi } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi);
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
@@ -126,6 +126,8 @@
     $('product').textContent = product || 'No product readiness report available.';
     $('firstRun').textContent = firstRun || 'No first-run doctor available.';
     $('contextMeter').textContent = contextMeter || 'No context meter available.';
+    renderContextMeter(parseJson(contextMeterJson));
+    renderDiffSummary(parseJson(diffSummary));
     $('sessions').textContent = sessions || 'No session ledger available.';
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
@@ -174,5 +176,50 @@
         ? 'Product gate, first-run doctor, and official browser bridge are ready.'
         : readiness.body,
     };
+  }
+
+  function parseJson(text) {
+    try {
+      return JSON.parse(text || '{}');
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function renderContextMeter(data) {
+    const used = clamp(Number(data.usedPercent || 0), 0, 100);
+    const reserve = clamp(Number(data.reservedPercent || 0), 0, 100 - used);
+    $('contextUsed').textContent = `${used}%`;
+    $('contextAvailable').textContent = `${Number(data.availableTokens || 0).toLocaleString()}`;
+    $('contextDiff').textContent = `${Number(data.diffChars || 0).toLocaleString()}`;
+    $('contextStatus').textContent = data.statusText || 'No structured context data available.';
+    $('contextUsedBar').style.width = `${used}%`;
+    $('contextReserveBar').style.left = `${used}%`;
+    $('contextReserveBar').style.width = `${reserve}%`;
+    $('contextUsedBar').className = data.status === 'high' ? 'danger' : data.status === 'medium' ? 'caution' : '';
+  }
+
+  function renderDiffSummary(data) {
+    $('diffFiles').textContent = Number(data.fileCount || 0).toLocaleString();
+    $('diffAdded').textContent = `+${Number(data.totalAdded || 0).toLocaleString()}`;
+    $('diffRemoved').textContent = `-${Number(data.totalRemoved || 0).toLocaleString()}`;
+    if (data.clean) {
+      $('diffSummary').textContent = 'No working-tree or staged diff.';
+      return;
+    }
+    const files = Array.isArray(data.files) ? data.files : [];
+    const hunks = Array.isArray(data.hunks) ? data.hunks : [];
+    const fileLines = files.slice(0, 10).map((file) => (
+      `${file.scope.padEnd(8)} +${String(file.added).padStart(4)} -${String(file.removed).padStart(4)}  ${file.path}`
+    ));
+    const hunkLines = hunks.slice(0, 8).map((hunk) => `${hunk.scope.padEnd(8)} ${hunk.path} ${hunk.header}`);
+    $('diffSummary').textContent = [
+      fileLines.join('\n') || 'No file stats.',
+      hunkLines.length ? `\nHunks:\n${hunkLines.join('\n')}` : '',
+    ].filter(Boolean).join('\n');
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
   }
 }());

@@ -37,6 +37,8 @@ if git rev-parse --show-toplevel >/dev/null 2>&1; then
 fi
 
 chars=$(printf '%s%s' "$input" "$diff_text" | wc -c | tr -d ' ')
+input_chars=$(printf '%s' "$input" | wc -c | tr -d ' ')
+diff_chars=$(printf '%s' "$diff_text" | wc -c | tr -d ' ')
 tokens=$(( (chars + 3) / 4 ))
 window=$(( window > 0 ? window : 1 ))
 reserve=$(( reserve < 0 ? 0 : reserve ))
@@ -46,22 +48,31 @@ used_pct=$(( tokens * 100 / window ))
 reserve_pct=$(( reserve * 100 / window ))
 available_pct=$(( available * 100 / window ))
 
+if [ "$tokens" -gt $(( window * 80 / 100 )) ]; then
+  status="high"
+  status_text="HIGH PRESSURE - reduce attached files, diff, or prompt before routing."
+elif [ "$tokens" -gt $(( window * 55 / 100 )) ]; then
+  status="medium"
+  status_text="MEDIUM PRESSURE - okay for precision, risky for broad autonomous loops."
+else
+  status="clear"
+  status_text="CLEAR - enough room for current routing."
+fi
+
 if [ "$json" = 1 ]; then
-  printf '{"repo":%s,"branch":%s,"contextWindow":%d,"estimatedInputTokens":%d,"reservedOutputTokens":%d,"availableTokens":%d,"usedPercent":%d,"reservedPercent":%d,"availablePercent":%d,"includedDiff":%s}\n' \
+  printf '{"repo":%s,"branch":%s,"contextWindow":%d,"inputChars":%d,"diffChars":%d,"totalChars":%d,"estimatedInputTokens":%d,"reservedOutputTokens":%d,"availableTokens":%d,"usedPercent":%d,"reservedPercent":%d,"availablePercent":%d,"status":%s,"statusText":%s,"includedDiff":%s}\n' \
     "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$repo")" \
     "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$branch")" \
-    "$window" "$tokens" "$reserve" "$available" "$used_pct" "$reserve_pct" "$available_pct" "$([ "$include_diff" = 1 ] && printf true || printf false)"
+    "$window" "$input_chars" "$diff_chars" "$chars" "$tokens" "$reserve" "$available" "$used_pct" "$reserve_pct" "$available_pct" \
+    "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$status")" \
+    "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$status_text")" \
+    "$([ "$include_diff" = 1 ] && printf true || printf false)"
   exit 0
 fi
 
 printf '# Context Meter\n\n'
 printf 'Repo: %s\nBranch: %s\n' "$repo" "$branch"
-printf 'Context window: %d tokens\nEstimated input: %d tokens\nReserved output: %d tokens\nAvailable: %d tokens\n\n' "$window" "$tokens" "$reserve" "$available"
+printf 'Context window: %d tokens\nEstimated input: %d tokens\nReserved output: %d tokens\nAvailable: %d tokens\n' "$window" "$tokens" "$reserve" "$available"
+printf 'Input chars: %d\nDiff chars: %d\n\n' "$input_chars" "$diff_chars"
 printf 'Used: %d%% | Reserved: %d%% | Available: %d%%\n' "$used_pct" "$reserve_pct" "$available_pct"
-if [ "$tokens" -gt $(( window * 80 / 100 )) ]; then
-  printf '\nStatus: HIGH PRESSURE - reduce attached files, diff, or prompt before routing.\n'
-elif [ "$tokens" -gt $(( window * 55 / 100 )) ]; then
-  printf '\nStatus: MEDIUM PRESSURE - okay for precision, risky for broad autonomous loops.\n'
-else
-  printf '\nStatus: CLEAR - enough room for current routing.\n'
-fi
+printf '\nStatus: %s\n' "$status_text"

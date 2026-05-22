@@ -17,6 +17,7 @@ const COMMANDS = {
   productReadiness: 'cc-product-readiness',
   firstRun: 'cc-first-run',
   contextMeter: 'cc-context-meter --include-diff',
+  contextMeterJson: 'cc-context-meter --json --include-diff',
   sessionLedger: 'cc-session-ledger list 10',
   pulseStatus: 'cc-pulse-status',
   nativeAppStatus: 'cc-native-app-status',
@@ -24,6 +25,7 @@ const COMMANDS = {
   repoIndex: 'cc-repo-index',
   semanticIndex: 'cc-semantic-index',
   diffHunks: 'cc-diff-hunks',
+  diffHunksJson: 'cc-diff-hunks --json',
   workflowProof: 'cc-workflow-proof',
   browserProof: 'cc-browser-proof',
   fiveMinuteDemo: 'cc-demo-five-minute --browser-url "data:text/html,%3Ctitle%3EAI%20Cockpit%20Demo%3C/title%3E%3Cbody%3Ecockpit%20demo%20mode%20proof%3C/body%3E" --max-chars 1200',
@@ -208,7 +210,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, diffSummary, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -218,6 +220,8 @@ class CockpitProvider {
       shellExec('cc-product-readiness | sed -n "1,36p"', { timeout: 120000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
       shellExec('cc-context-meter --include-diff | sed -n "1,16p"', { timeout: 12000 }),
+      shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
+      shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-session-ledger list 10 | sed -n "1,20p"', { timeout: 12000 }),
       shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
       shellExec('cc-native-app-status | sed -n "1,42p"', { timeout: 12000 }),
@@ -239,6 +243,8 @@ class CockpitProvider {
         product: product.text,
         firstRun: firstRun.text,
         contextMeter: contextMeter.text,
+        contextMeterJson: contextMeterJson.text,
+        diffSummary: diffSummary.text,
         sessions: sessions.text,
         pulse: pulse.text,
         nativeApps: nativeApps.text,
@@ -504,14 +510,37 @@ class CockpitProvider {
     <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
     <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
     <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>
-    <article><h2>Context Meter</h2><pre id="contextMeter">Loading...</pre><button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button></article>
+    <article class="metric-card">
+      <h2>Context Pressure</h2>
+      <div class="statline">
+        <span><strong id="contextUsed">--</strong><small>used</small></span>
+        <span><strong id="contextAvailable">--</strong><small>available</small></span>
+        <span><strong id="contextDiff">--</strong><small>diff chars</small></span>
+      </div>
+      <div class="meter" aria-label="Context usage">
+        <span id="contextUsedBar"></span>
+        <span id="contextReserveBar"></span>
+      </div>
+      <p id="contextStatus">Loading context pressure.</p>
+      <pre id="contextMeter">Loading...</pre>
+      <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button>
+    </article>
     <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
     <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
     <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>
     <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
     <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
     <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
-    <article><h2>Diff Hunks</h2><pre>Changed files, hunk headers, and patch preview.</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Hunks</button></article>
+    <article class="metric-card">
+      <h2>File Changes</h2>
+      <div class="statline">
+        <span><strong id="diffFiles">--</strong><small>files</small></span>
+        <span><strong id="diffAdded">--</strong><small>added</small></span>
+        <span><strong id="diffRemoved">--</strong><small>removed</small></span>
+      </div>
+      <pre id="diffSummary">Loading...</pre>
+      <button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Hunks</button>
+    </article>
     <article><h2>Browser Proof</h2><pre>WebBridge readiness and bounded page proof output.</pre><button data-inline-name="Browser Proof" data-inline-command="cc-browser-proof">View Proof</button></article>
     <article><h2>Demo Mode</h2><pre>Readiness, route proof, browser proof, and cockpit packaging in one flow.</pre><button data-command="fiveMinuteDemo">Run Demo</button></article>
     <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>

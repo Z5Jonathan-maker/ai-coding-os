@@ -19,6 +19,8 @@ It adds:
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
   status, Kimi status, product readiness, and disk readiness
+- visual context-pressure and file-change cards: token pressure, output reserve,
+  available context, changed-file count, added/removed lines, and hunk summary
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
 
@@ -53,12 +55,12 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Permission Matrix` | Show allowed, review-required, and denied autonomy boundaries |
 | `AI: Save Plan` | Write a read-only plan artifact to `.ai/plans/` |
 | `AI: Review Diff` | Review current git diff through the precision lane |
-| `AI: Context Meter` | Show estimated context-window pressure and output reserve |
+| `AI: Context Meter` | Show estimated context-window pressure, diff size, output reserve, and available tokens |
 | `AI: Context Snapshot` | Show current repo context packet |
 | `AI: Session Ledger` | Show recent routed sessions and sticky/fallback state |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
-| `AI: Diff Hunks` | Show changed files, hunk headers, and patch preview |
+| `AI: Diff Hunks` | Show changed-file stats, hunk headers, patch preview, and cockpit file-change summary |
 | `AI: Checkpoints` | Show shadow Git and session checkpoint timeline |
 | `AI: Loop Quality` | Show autonomous loop depth, memory, and anti-pattern readiness |
 | `AI: Checkpoint Diff` | Diff current worktree against a shadow checkpoint step |
@@ -122,6 +124,16 @@ cost is not logged by the provider call, it says so instead of estimating.
 `AI: Save Plan` is the Plan/Act bridge. It writes the route preview plus a
 read-only implementation plan to `.ai/plans/` so execution starts from an
 artifact, not terminal scrollback.
+
+`AI: Context Meter` and the cockpit Context Pressure card are the first
+Roo/Cursor-inspired trust surface. They expose context usage before routing,
+including reserved output space and diff pressure, so large prompts fail visibly
+before they waste a premium lane call.
+
+`AI: Diff Hunks` and the cockpit File Changes card are the first
+Cline/Roo-inspired review surface. They group changed files, added/removed
+lines, and hunk headers before sending a review or route request, without
+adding apply behavior or hidden write actions.
 
 `AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
 smoke, router integrity, system demo, first-run doctor, cockpit install, VS

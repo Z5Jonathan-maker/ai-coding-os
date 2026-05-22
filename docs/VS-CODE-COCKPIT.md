@@ -57,7 +57,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Review Diff` | Review current git diff through the precision lane |
 | `AI: Context Meter` | Show estimated context-window pressure, diff size, output reserve, and available tokens |
 | `AI: Context Snapshot` | Show current repo context packet |
-| `AI: Session Ledger` | Show recent routed sessions and sticky/fallback state |
+| `AI: Session Ledger` | Show recent routed sessions, cwd-aware resume metadata, stale state, and sticky/fallback state |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
 | `AI: Diff Hunks` | Show changed-file stats, hunk headers, patch preview, and cockpit file-change summary |
@@ -149,7 +149,8 @@ credential boundaries without mutating the user's home directory.
 tokens, reserves output room, and shows remaining context before a route runs.
 
 `AI: Session Ledger` is the Langfuse-inspired session surface. It shows routed
-turns, models, fallbacks, and sticky routing without exposing full transcripts.
+turns, cwd, transcript pointer when available, stale state, models, fallbacks,
+and sticky routing without exposing full transcripts.
 
 `AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
 WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.

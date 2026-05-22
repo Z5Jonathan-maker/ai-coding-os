@@ -58,7 +58,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-router-smoke` — deterministic dry-run checks for expected model/platform routing.
 - `cc-self-update` — monthly platform update sweep.
 - `cc-semantic-index` — dependency-free repo symbol map using `ctags` and `rg`.
-- `cc-session-ledger` — recent routed sessions, lanes, models, fallbacks, and sticky state.
+- `cc-session-ledger` — recent routed sessions, cwd-aware resume metadata, stale state, lanes, models, fallbacks, and sticky state; supports `--json`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-workflow-proof` — one-command route/readiness/repo/diff proof packet.

@@ -236,7 +236,9 @@ developers would star, clone, and pay attention to.
 4. Router cost ledger hardened with HCC/Cline pricing ideas. Done
    2026-05-21: route receipts now expose token input/output, token source, and
    cost fields consistently when upstream usage is supplied.
-5. `cc-session-ledger` using Langfuse plugin state/transcript patterns.
+5. `cc-session-ledger` using Langfuse plugin state/transcript patterns. Done
+   2026-05-21: future session rows store cwd and transcript path, list output
+   marks stale sessions, and `--json` supports cockpit/project filtering.
 6. `cc-context-snapshot --json` provider interface inspired by Continue.
 7. Browser proof output protocol inspired by agent-browser.
 

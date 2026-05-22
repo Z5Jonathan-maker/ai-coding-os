@@ -14,9 +14,10 @@ opened from the Activity Bar or command palette. The first refresh loads daily
 health only, and deeper product/readiness reports run on demand from their
 buttons.
 
-Runtime rule: `vscode/argv.json` disables VS Code hardware acceleration on this
-machine. This avoids Electron renderer crash loops while keeping the cockpit
-itself lazy-loaded.
+Runtime rule: `vscode/argv.json` records the hardware-acceleration preference,
+and `code-stable` launches VS Code with the verified `--disable-gpu` switch for
+renderer-crash recovery. This avoids Electron renderer crash loops while keeping
+the cockpit itself lazy-loaded.
 
 Extension rule: `vscode/extensions.txt` is the wanted editor surface and
 `vscode/obsolete-extensions.txt` removes duplicate AI assistants that previously

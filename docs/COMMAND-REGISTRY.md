@@ -64,6 +64,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
+- `code-stable` — launch VS Code through the verified `--disable-gpu` renderer-crash recovery path.
 
 ## Claude/Codex workflow helpers
 

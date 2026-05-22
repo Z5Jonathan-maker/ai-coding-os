@@ -548,6 +548,21 @@ class CockpitProvider {
     </div>
   </aside>
 
+  <section class="topbar" aria-label="Global actions">
+    <button class="askbar">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4-4m0 0 4 4M9 8v8"/><path d="M15 8h4v4"/></svg>
+      <span>Ask anything...</span>
+      <kbd>cmd K</kbd>
+    </button>
+    <div class="top-actions">
+      <button class="focus-button">Focus</button>
+      <button class="round-button" data-command="refresh" title="Refresh" aria-label="Refresh cockpit">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3"/><path d="M17.7 3.5v2.8h-2.8M6.3 20.5v-2.8h2.8"/></svg>
+      </button>
+      <button class="user-orb" aria-label="Profile">J</button>
+    </div>
+  </section>
+
   <header>
     <div class="brand-lockup">
       <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'cockpit.svg'))}" alt="" class="brand-mark">
@@ -595,6 +610,11 @@ class CockpitProvider {
     </div>
     <textarea id="prompt" rows="5" placeholder="What would you like to build or solve?"></textarea>
     <div class="chips" id="chips"></div>
+    <div class="composer-pills" aria-label="Primary context controls">
+      <button class="pill active" data-mode="autoRun" aria-pressed="true"><span>Auto</span><small>Intelligent</small></button>
+      <button class="pill" data-command="pickFile"><span>Attach</span><small>Files</small></button>
+      <button class="pill" data-command="attachDiff"><span>Context</span><small>Diff + file</small></button>
+    </div>
     <div class="runrow">
       <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Continue work</span></button>
       <button class="secondary command-button" data-run="explainRoute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
@@ -641,6 +661,8 @@ class CockpitProvider {
         <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
         <p>Next up: convert dashboard controls into persistent workspace flow.</p>
       </div>
+      <div class="stream-status in-progress">In progress</div>
+      <div class="avatar-stack"><span>J</span><span>C</span><span>K</span></div>
       <div class="stream-meta"><span>Changes</span><strong>12 files</strong></div>
       <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
@@ -652,6 +674,8 @@ class CockpitProvider {
         <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
         <p>Next up: add regression examples for creative direction and implementation handoff.</p>
       </div>
+      <div class="stream-status review">Review</div>
+      <div class="avatar-stack"><span>C</span><span>D</span></div>
       <div class="stream-meta"><span>Changes</span><strong>3 files</strong></div>
       <div class="stream-meta"><span>Tests</span><strong class="warn">Warnings</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
@@ -663,6 +687,8 @@ class CockpitProvider {
         <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1h ago</span></div>
         <p>Next up: verify official Kimi WebBridge extension session before browser tasks.</p>
       </div>
+      <div class="stream-status in-progress">In progress</div>
+      <div class="avatar-stack"><span>K</span></div>
       <div class="stream-meta"><span>Changes</span><strong>6 files</strong></div>
       <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Kimi Web</strong></div>
@@ -674,6 +700,8 @@ class CockpitProvider {
         <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
         <p>Next up: isolate integration failure and rerun release gate.</p>
       </div>
+      <div class="stream-status blocked">Blocked</div>
+      <div class="avatar-stack"><span>C</span></div>
       <div class="stream-meta"><span>Changes</span><strong>2 files</strong></div>
       <div class="stream-meta"><span>Tests</span><strong class="bad">Failing</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
@@ -705,6 +733,7 @@ class CockpitProvider {
         <button class="ghost-button">View all</button>
       </div>
       <div class="activity-item"><span class="ok-dot"></span><div><strong>Workstream home added</strong><small>Codex - now</small></div><em>+ UI</em></div>
+      <div class="activity-preview"><span>Workspace home</span><strong>Continue work</strong><small>Route hidden until needed</small></div>
       <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Creative lane documented</strong><small>Image 2.0 - Kimi</small></div><em>routed</em></div>
       <div class="activity-item"><span class="ok-dot"></span><div><strong>Release gates passing</strong><small>15/15 readiness</small></div><em>clean</em></div>
     </div>

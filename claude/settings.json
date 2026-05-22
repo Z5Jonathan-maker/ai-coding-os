@@ -139,7 +139,7 @@
     "command": "/Users/leonardofibonacci/.claude/scripts/status-line.sh"
   },
   "enabledPlugins": {
-    "claude-video-vision@claude-video-vision": true
+    "claude-video-vision@claude-video-vision": false
   },
   "extraKnownMarketplaces": {
     "claude-video-vision": {
@@ -156,71 +156,7 @@
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
   "excludeDynamicSystemPromptSections": true,
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/leonardofibonacci/Claude Code",
-        "/Users/leonardofibonacci/code/projects",
-        "/Users/leonardofibonacci/AI-SYSTEM-V2",
-        "/Users/leonardofibonacci/AI-HQ"
-      ]
-    },
-    "github": {
-      "command": "/bin/zsh",
-      "args": [
-        "-lc",
-        "export GITHUB_PERSONAL_ACCESS_TOKEN=\"$(gh auth token)\"; exec npx -y @modelcontextprotocol/server-github@2025.4.8"
-      ]
-    },
-    "git": {
-      "command": "/Users/leonardofibonacci/.claude/mcp-servers/.venv/bin/mcp-server-git",
-      "args": []
-    },
-    "fetch": {
-      "command": "/Users/leonardofibonacci/.claude/mcp-servers/.venv/bin/mcp-server-fetch",
-      "args": []
-    },
-    "mempalace": {
-      "command": "/Users/leonardofibonacci/.local/share/uv/tools/mempalace/bin/mempalace-mcp",
-      "args": [
-        "--palace",
-        "/Users/leonardofibonacci/mempalace"
-      ]
-    },
-    "webclaw": {
-      "command": "/Users/leonardofibonacci/.webclaw/webclaw-mcp",
-      "args": []
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--isolated",
-        "--headless"
-      ],
-      "disabled": true
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@latest"
-      ],
-      "disabled": true
-    },
-    "shadcn": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@jpisnice/shadcn-ui-mcp-server"
-      ],
-      "disabled": true
-    }
-  },
+  "mcpServers": {},
   "profiles": {
     "cc-router": {
       "env": {

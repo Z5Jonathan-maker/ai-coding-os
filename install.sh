@@ -135,7 +135,9 @@ link .aider.conf.yml .aider.conf.yml
 link repomix.config.json .repomixrc
 link .zellij.kdl .config/zellij/config.kdl
 link zellij-layout.kdl .config/zellij/layouts/dev.kdl
+link vscode/argv.json "Library/Application Support/Code/argv.json"
 link vscode/settings.json "Library/Application Support/Code/User/settings.json"
+link vscode/argv.json "Library/Application Support/Code/User/argv.json"
 link vscode/keybindings.json "Library/Application Support/Code/User/keybindings.json"
 link vscode/tasks.json "Library/Application Support/Code/User/tasks.json"
 link vscode/mcp.json "Library/Application Support/Code/User/mcp.json"
@@ -192,6 +194,11 @@ if command -v npm >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/npm-global-packages.txt
       echo "warn npm global command not on PATH: $cmd"
     fi
   done <"$DOTFILES_DIR/npm-global-packages.txt"
+  if [ -x "$HOME/local/opt/node/bin/codex" ]; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$HOME/local/opt/node/bin/codex" "$HOME/.local/bin/codex"
+    echo "ok   codex shim"
+  fi
 fi
 
 if command -v code >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/vscode/extensions.txt" ]; then
@@ -200,6 +207,18 @@ if command -v code >/dev/null 2>&1 && [ -f "$DOTFILES_DIR/vscode/extensions.txt"
   vscode_ext_list=$(mktemp)
   trap 'rm -f "$vscode_ext_list"' EXIT
   code --list-extensions >"$vscode_ext_list"
+  if [ -f "$DOTFILES_DIR/vscode/obsolete-extensions.txt" ]; then
+    while IFS= read -r ext; do
+      case "$ext" in
+      "" | \#*) continue ;;
+      esac
+      if grep -Fxqi "$ext" "$vscode_ext_list"; then
+        echo "uninstall obsolete vscode extension: $ext"
+        code --uninstall-extension "$ext" >/dev/null || true
+        code --list-extensions >"$vscode_ext_list"
+      fi
+    done <"$DOTFILES_DIR/vscode/obsolete-extensions.txt"
+  fi
   while IFS= read -r ext; do
     case "$ext" in
     "" | \#*) continue ;;

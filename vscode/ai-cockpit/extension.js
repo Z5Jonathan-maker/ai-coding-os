@@ -23,6 +23,7 @@ const COMMANDS = {
   pulseStatus: 'cc-pulse-status',
   nativeAppStatus: 'cc-native-app-status',
   kimiStatus: 'cc-kimi-status',
+  repoMap: 'cc-repo-map --json 12',
   repoIndex: 'cc-repo-index',
   semanticIndex: 'cc-semantic-index',
   diffHunks: 'cc-diff-hunks',
@@ -69,6 +70,7 @@ function activate(context) {
     command('aiSystemCockpit.pulseStatus', () => showOutput(output, 'Pulse Status', COMMANDS.pulseStatus)),
     command('aiSystemCockpit.nativeAppStatus', () => showOutput(output, 'Native App Status', COMMANDS.nativeAppStatus)),
     command('aiSystemCockpit.kimiStatus', () => showOutput(output, 'Kimi Status', COMMANDS.kimiStatus)),
+    command('aiSystemCockpit.repoMap', () => showOutput(output, 'Repo Map', 'cc-repo-map 30')),
     command('aiSystemCockpit.repoIndex', () => showOutput(output, 'Repo Index', COMMANDS.repoIndex)),
     command('aiSystemCockpit.semanticIndex', () => showOutput(output, 'Semantic Index', COMMANDS.semanticIndex)),
     command('aiSystemCockpit.diffHunks', () => showOutput(output, 'Diff Hunks', COMMANDS.diffHunks)),
@@ -212,7 +214,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -229,6 +231,7 @@ class CockpitProvider {
       shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
       shellExec('cc-native-app-status | sed -n "1,42p"', { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
+      shellExec(COMMANDS.repoMap, { timeout: 12000 }),
       shellExec('cc-jobs | sed -n "1,10p"', { timeout: 12000 }),
       shellExec('cc-lane capabilities | sed -n "1,14p"', { timeout: 12000 }),
     ]);
@@ -253,6 +256,7 @@ class CockpitProvider {
         pulse: pulse.text,
         nativeApps: nativeApps.text,
         kimi: kimi.text,
+        repoMap: repoMap.text,
         jobs: jobs.text,
         lanes: lanes.text,
       },
@@ -289,6 +293,7 @@ class CockpitProvider {
       pulseStatus: () => vscode.commands.executeCommand('aiSystemCockpit.pulseStatus'),
       nativeAppStatus: () => vscode.commands.executeCommand('aiSystemCockpit.nativeAppStatus'),
       kimiStatus: () => vscode.commands.executeCommand('aiSystemCockpit.kimiStatus'),
+      repoMap: () => vscode.commands.executeCommand('aiSystemCockpit.repoMap'),
       repoIndex: () => vscode.commands.executeCommand('aiSystemCockpit.repoIndex'),
       semanticIndex: () => vscode.commands.executeCommand('aiSystemCockpit.semanticIndex'),
       diffHunks: () => vscode.commands.executeCommand('aiSystemCockpit.diffHunks'),
@@ -505,6 +510,7 @@ class CockpitProvider {
     <button data-command="loopQuality">Loop Quality</button>
     <button data-command="pulseStatus">Pulse Status</button>
     <button data-command="nativeAppStatus">Native Apps</button>
+    <button data-command="repoMap">Repo Map</button>
   </section>
 
   <section class="cards">
@@ -536,6 +542,7 @@ class CockpitProvider {
     <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
     <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>
     <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
+    <article><h2>Repo Map</h2><pre id="repoMap">Loading...</pre><button data-inline-name="Repo Map" data-inline-command="cc-repo-map 30">View Repo Map</button></article>
     <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
     <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
     <article class="metric-card">

@@ -87,6 +87,7 @@ Primary VS Code tasks:
 - `AI: Session Ledger`
 - `AI: Pulse Status`
 - `AI: Native App Status`
+- `AI: Repo Map`
 - `AI: Browser Proof`
 
 Native extension:
@@ -97,7 +98,7 @@ Native extension:
 - exposes the same intent modes as a sidebar product surface
 - includes a selected-mode prompt composer with current file/selection context,
   file/diff context chips, streaming output, route preview, router metrics,
-  semantic index, diff hunks, context meter, Kimi status, jobs, lanes,
+  repo map, semantic index, diff hunks, context meter, Kimi status, jobs, lanes,
   permissions, checkpoints, loop quality, Pulse status, native app status,
   route receipts, readiness, and disk gate
 - renders common inspection reports inline, keeping routine control checks

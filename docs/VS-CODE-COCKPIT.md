@@ -58,6 +58,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Context Meter` | Show estimated context-window pressure, diff size, output reserve, and available tokens |
 | `AI: Context Snapshot` | Show current repo context packet and named provider inclusion state |
 | `AI: Session Ledger` | Show recent routed sessions, cwd-aware resume metadata, stale state, and sticky/fallback state |
+| `AI: Repo Map` | Show ranked high-signal files, entrypoints, changed files, symbols, and scores |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |
 | `AI: Diff Hunks` | Show changed-file stats, hunk headers, patch preview, and cockpit file-change summary |
@@ -153,6 +154,10 @@ turns, cwd, transcript pointer when available, stale state, models, fallbacks,
 and sticky routing without exposing full transcripts. Transcript mode groups
 JSONL into user prompts, assistant calls, tool calls/results, completion state,
 and token totals.
+
+`AI: Repo Map` is the Aider-inspired project map. It ranks high-signal files by
+entrypoint shape, source type, changed state, symbols, and file size so routing
+context starts from likely-important files instead of raw tree order.
 
 `AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
 WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.

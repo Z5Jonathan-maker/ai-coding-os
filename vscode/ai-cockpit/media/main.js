@@ -110,7 +110,7 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi);
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
@@ -133,6 +133,7 @@
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
     $('kimi').textContent = kimi || 'No Kimi status available.';
+    renderRepoMap(parseJson(repoMap));
     $('jobs').textContent = message.payload.jobs || 'No jobs available.';
     $('lanes').textContent = message.payload.lanes || 'No lane registry available.';
   });
@@ -260,6 +261,22 @@
         response ? `\n  A: ${response}` : '',
       ].join('');
     }).join('\n\n');
+  }
+
+  function renderRepoMap(data) {
+    const top = Array.isArray(data.top) ? data.top : [];
+    if (!top.length) {
+      $('repoMap').textContent = 'No repo map available.';
+      return;
+    }
+    const head = `files=${data.mapped_count || 0} clean=${data.clean ? 'yes' : 'no'} branch=${data.branch || '-'}`;
+    const lines = top.slice(0, 12).map((file) => {
+      const symbols = Array.isArray(file.symbols) && file.symbols.length
+        ? ` :: ${file.symbols.slice(0, 5).join(', ')}`
+        : '';
+      return `${String(file.score || 0).padStart(3)} ${file.dirty ? '*' : ' '} ${String(file.lines || 0).padStart(5)} ${file.path}${symbols}`;
+    });
+    $('repoMap').textContent = [head, ...lines].join('\n');
   }
 
   function topKey(obj) {

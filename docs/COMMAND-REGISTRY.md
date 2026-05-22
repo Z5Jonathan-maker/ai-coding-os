@@ -52,6 +52,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-pulse-status` — Pulse code-density protocol source, skill, and fit status.
 - `cc-prune` — manual disk hygiene for `.claude`.
 - `cc-review-diff` — precision-lane review of current git diff.
+- `cc-repo-map` — Aider-inspired ranked repo map with entrypoints, changed files, symbols, scores, and `--json` output.
 - `cc-repo-index` — compact workspace index for cockpit context and repo inspection.
 - `cc-router-receipt` — latest router decision, fallback, quota, token receipt.
 - `cc-router-metrics` — router usage, fallback, failure, token, and session metrics.

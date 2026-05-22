@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+'use strict';
+
+const cp = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const args = process.argv.slice(2);
+const json = args.includes('--json');
+const limit = Number(args.find(a => /^\d+$/.test(a)) || 30);
+const run = cmd => cp.execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+const root = (() => { try { return run('git rev-parse --show-toplevel'); } catch { return null; } })();
+if (!root) { console.error('cc-repo-map: not inside a git repository'); process.exit(2); }
+process.chdir(root);
+
+const ignored = /(^|\/)(node_modules|dist|build|coverage|\.next|\.git)\/|\.min\./;
+const source = /\.(cjs|css|go|java|js|jsx|mjs|php|py|rb|rs|scss|sh|ts|tsx|zsh)$/;
+const files = run('git ls-files').split('\n').filter(f => f && !ignored.test(f));
+const dirty = new Set(run('git status --short --porcelain=v1').split('\n').filter(Boolean).map(l => l.slice(3)));
+const rx = /(^|\n)\s*(export\s+)?(async\s+)?(function|class|const|let|var|def|interface|type|enum)\s+([A-Za-z0-9_$-]+)/g;
+const weight = f => {
+  const b = path.basename(f), p = f.toLowerCase();
+  let n = source.test(f) ? 10 : 0;
+  if (/^(readme|package|deno|cargo|go\.mod|pyproject|requirements|makefile|dockerfile)/i.test(b)) n += 55;
+  if (/(^|\/)(app|src|lib|bin|scripts|vscode|docs)\//.test(p)) n += 20;
+  if (/(^|\/)(index|main|server|cli|extension|route|page|layout)\./.test(p)) n += 35;
+  if (/^(bin|scripts)\//.test(p)) n += 25;
+  if (dirty.has(f)) n += 80;
+  return n;
+};
+const rows = files.map(f => {
+  let text = '';
+  try { text = fs.readFileSync(f, 'utf8'); } catch {}
+  const symbols = [...text.matchAll(rx)].slice(0, 12).map(m => m[5]);
+  const lines = text ? text.split('\n').length : 0;
+  const score = weight(f) + Math.min(symbols.length * 6, 72) + (lines > 0 && lines < 500 ? 8 : 0);
+  return { path: f, score, lines, dirty: dirty.has(f), symbols };
+}).sort((a, b) => b.score - a.score || a.path.localeCompare(b.path));
+const entrypoints = rows.filter(r => /(^|\/)(package\.json|README\.md|index|main|server|cli|extension|page|layout)\./i.test(r.path)).slice(0, 20);
+const data = {
+  repo: root,
+  branch: run('git branch --show-current') || null,
+  clean: dirty.size === 0,
+  file_count: files.length,
+  mapped_count: rows.length,
+  entrypoints,
+  changed: rows.filter(r => r.dirty),
+  top: rows.slice(0, limit),
+};
+if (json) { console.log(JSON.stringify(data, null, 2)); process.exit(0); }
+console.log(`# Repo Map\n\nRepo: ${data.repo}\nBranch: ${data.branch || '-'}\nFiles mapped: ${data.mapped_count}\nClean: ${data.clean ? 'yes' : 'no'}\n`);
+console.log('## Top Files\n');
+for (const r of data.top) console.log(`${String(r.score).padStart(3)} ${r.dirty ? '*' : ' '} ${String(r.lines).padStart(5)} ${r.path}${r.symbols.length ? ` :: ${r.symbols.slice(0, 6).join(', ')}` : ''}`);
+if (data.changed.length) {
+  console.log('\n## Changed\n');
+  for (const r of data.changed.slice(0, 20)) console.log(`${r.path}${r.symbols.length ? ` :: ${r.symbols.slice(0, 6).join(', ')}` : ''}`);
+}

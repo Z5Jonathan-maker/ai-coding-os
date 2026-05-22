@@ -164,6 +164,9 @@ developers would star, clone, and pay attention to.
   dependency-free `cc-semantic-index` is good but intentionally simple.
 - Verification: compare `cc-semantic-index` output against Aider repo map on
   `~/dotfiles` and `~/code/projects/cc-router`.
+- Status: Repo-map half done 2026-05-21. `cc-repo-map --json` now ranks
+  high-signal files by entrypoint shape, source type, changed state, symbols,
+  and file size; cockpit renders that map. History compaction remains separate.
 
 ### P1 — Browser Output Protocol
 
@@ -255,6 +258,9 @@ developers would star, clone, and pay attention to.
    `cc-session-ledger transcript <path> --json` groups JSONL into prompt,
    assistant-call, tool-call/result, token, cwd, and completion summaries, and
    the cockpit now renders session JSON instead of pasted terminal output.
+9. Aider-inspired repo map. Done 2026-05-21: `cc-repo-map --json` scores and
+   ranks high-signal files, entrypoints, changed files, symbols, and source
+   shape; the cockpit exposes it as `AI: Repo Map`.
 
 This order is intentional: visible UX first, router reliability second, durable
 session intelligence third.

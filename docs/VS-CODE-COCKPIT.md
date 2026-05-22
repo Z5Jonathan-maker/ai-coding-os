@@ -39,6 +39,7 @@ It adds:
 - a composer with one primary Run path, Auto as the default mode, optional
   Code/Browser/Extract/Route modes, streaming results, attached file/diff
   context, current file/selection context, and `cmd+enter` execution
+- work stream controls for copy, clear, and stopping the active routed process
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
   status, Kimi status, product readiness, and disk readiness

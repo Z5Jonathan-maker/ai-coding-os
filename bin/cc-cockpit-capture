@@ -131,7 +131,18 @@ HTML
   <section class="result-panel">
     <div class="panel-head">
       <h2>Result</h2>
-      <button>Demo</button>
+      <div class="result-actions" aria-label="Work stream actions">
+        <button class="mini-button" title="Copy work stream" aria-label="Copy work stream">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="mini-button" title="Clear work stream" aria-label="Clear work stream">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>
+        </button>
+        <button class="mini-button stop-button" title="Stop current run" aria-label="Stop current run" disabled>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+        </button>
+        <button class="mini-button text-mini">Demo</button>
+      </div>
     </div>
     <pre>Ready.</pre>
   </section>

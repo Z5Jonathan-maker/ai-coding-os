@@ -223,6 +223,7 @@ class CockpitProvider {
     this.extensionUri = extensionUri;
     this.output = output;
     this.contextTimer = null;
+    this.activeRun = null;
   }
 
   resolveWebviewView(view) {
@@ -320,6 +321,8 @@ class CockpitProvider {
       researchExtract: () => vscode.commands.executeCommand('aiSystemCockpit.researchExtract'),
       savePlan: () => vscode.commands.executeCommand('aiSystemCockpit.savePlan'),
       reviewDiff: () => vscode.commands.executeCommand('aiSystemCockpit.reviewDiff'),
+      stopRun: () => this.stopActiveRun(),
+      copyResult: () => vscode.env.clipboard.writeText(String(message.text || '')),
     };
     if (message.command === 'runPrompt') {
       this.runPrompt(
@@ -364,34 +367,64 @@ class CockpitProvider {
 
   runInlineStream(name, commandLine) {
     if (!this.view) return;
-    let body = '';
+    this.stopActiveRun(false);
     this.view.webview.postMessage({
       type: 'result',
-      payload: { title: name || 'Running', body: 'Running...' },
+      payload: { title: name || 'Running', body: 'Running...', running: true },
     });
     const child = cp.spawn('/bin/zsh', ['-lc', commandLine], {
       cwd: cwd(),
       env: process.env,
     });
+    const run = {
+      child,
+      title: name || 'Running',
+      body: '',
+      stopped: false,
+    };
+    this.activeRun = run;
     const push = (chunk) => {
-      body = `${body}${chunk}`.slice(-60000);
+      run.body = `${run.body}${chunk}`.slice(-60000);
+      if (!this.view) return;
       this.view.webview.postMessage({
         type: 'result',
-        payload: { title: name || 'Running', body: body || 'Running...' },
+        payload: { title: run.title, body: run.body || 'Running...', running: true },
       });
     };
     child.stdout.on('data', data => push(data.toString()));
     child.stderr.on('data', data => push(data.toString()));
     child.on('error', error => push(`\n${error.message}`));
     child.on('close', code => {
+      if (this.activeRun !== run) return;
+      this.activeRun = null;
+      const stopped = run.stopped;
+      if (!this.view) return;
       this.view.webview.postMessage({
         type: 'result',
         payload: {
-          title: `${name || 'Result'}${code === 0 ? '' : ` (exit ${code})`}`,
-          body: body || '(no output)',
+          title: stopped ? `${run.title} (stopped)` : `${run.title}${code === 0 ? '' : ` (exit ${code})`}`,
+          body: stopped ? `${run.body || '(no output)'}\n\nStopped by user.` : run.body || '(no output)',
+          running: false,
         },
       });
     });
+  }
+
+  stopActiveRun(showStopped = true) {
+    if (!this.activeRun) return;
+    const run = this.activeRun;
+    run.stopped = true;
+    if (showStopped && this.view) {
+      this.view.webview.postMessage({
+        type: 'result',
+        payload: {
+          title: `${run.title} (stopping)`,
+          body: `${run.body || 'Stopping current run...'}\n\nStopping current run...`,
+          running: true,
+        },
+      });
+    }
+    run.child.kill('SIGTERM');
   }
 
   async pickFileContext() {
@@ -534,7 +567,18 @@ class CockpitProvider {
   <section class="result-panel">
     <div class="panel-head">
       <h2 id="resultTitle">${variant === 'panel' ? 'Work Stream' : 'Result'}</h2>
-      <button data-command="fiveMinuteDemo">Demo</button>
+      <div class="result-actions" aria-label="Work stream actions">
+        <button class="mini-button" data-result-action="copy" title="Copy work stream" aria-label="Copy work stream">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button class="mini-button" data-result-action="clear" title="Clear work stream" aria-label="Clear work stream">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>
+        </button>
+        <button class="mini-button stop-button" id="stopRun" data-result-action="stop" title="Stop current run" aria-label="Stop current run" disabled>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+        </button>
+        <button class="mini-button text-mini" data-command="fiveMinuteDemo">Demo</button>
+      </div>
     </div>
     <pre id="result">Ready.</pre>
   </section>

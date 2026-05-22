@@ -50,6 +50,22 @@
       return;
     }
 
+    const resultAction = event.target.closest('button[data-result-action]');
+    if (resultAction) {
+      const action = resultAction.dataset.resultAction;
+      if (action === 'copy') {
+        vscode.postMessage({ command: 'copyResult', text: $('result').textContent || '' });
+      } else if (action === 'clear') {
+        activePrompt = '';
+        setRunning(false);
+        $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Work Stream' : 'Result';
+        $('result').textContent = 'Ready.';
+      } else if (action === 'stop') {
+        vscode.postMessage({ command: 'stopRun' });
+      }
+      return;
+    }
+
     const button = event.target.closest('button[data-command]');
     if (button) {
       clearTranscriptPrompt();
@@ -172,13 +188,21 @@
     if (message.type !== 'result') return;
     $('resultTitle').textContent = message.payload.title || 'Last Result';
     $('result').textContent = formatTranscript(message.payload.title, message.payload.body);
+    setRunning(Boolean(message.payload.running));
   });
 
   function startTranscript(mode, prompt) {
     activePrompt = String(prompt || '').trim();
     if (!activePrompt) return;
+    setRunning(true);
     $('resultTitle').textContent = 'Working';
     $('result').textContent = formatTranscript(modeLabel(mode), 'Running...');
+  }
+
+  function setRunning(running) {
+    document.body.classList.toggle('is-running', running);
+    const stop = $('stopRun');
+    if (stop) stop.disabled = !running;
   }
 
   function clearTranscriptPrompt() {

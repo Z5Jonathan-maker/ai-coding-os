@@ -50,6 +50,25 @@ function formatCircuit(circuit) {
     : state;
 }
 
+function usageTokens(row) {
+  const receipt = row.route_receipt || {};
+  if (typeof receipt.tokens_in === 'number' || typeof receipt.tokens_out === 'number') {
+    return (Number(receipt.tokens_in) || 0) + (Number(receipt.tokens_out) || 0);
+  }
+  const usage = row.usage || {};
+  const input = Number(usage.input_tokens ?? usage.prompt_tokens ?? usage.input ?? 0) || 0;
+  const output = Number(usage.output_tokens ?? usage.completion_tokens ?? usage.output ?? 0) || 0;
+  return Number(usage.total_tokens ?? usage.total ?? (input + output)) || 0;
+}
+
+function loggedCost(row) {
+  const receiptCost = row.route_receipt?.cost_usd;
+  const entryCost = row.cost?.cost;
+  const legacyCost = row.usage?.cost_usd ?? row.usage?.total_cost_usd;
+  const value = receiptCost ?? entryCost ?? legacyCost;
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
 function summarize(rows) {
   const recent = rows.slice(-windowSize);
   const byClass = {};
@@ -61,7 +80,7 @@ function summarize(rows) {
     byClass[cls] = (byClass[cls] || 0) + 1;
     if (row.fallback || row.route_receipt?.fallback_used) fallbacks++;
     if (Array.isArray(row.verification_flags) && row.verification_flags.length) flagged++;
-    tokens += row.usage?.total_tokens || 0;
+    tokens += usageTokens(row);
   }
   const quotaTotal = ['chat', 'cheap', 'precision'].reduce((sum, cls) => sum + (byClass[cls] || 0), 0);
   const quota = ['chat', 'cheap', 'precision'].map(cls => {
@@ -85,8 +104,10 @@ function printLatest(row) {
   console.log(`Fallback attempts: ${receipt.fallback_attempts || 0}`);
   console.log(`Latency: ${row.latency_ms || 0}ms`);
   console.log(`Prompt chars: ${row.prompt_chars || receipt.prompt_chars || 0}`);
-  console.log(`Tokens logged: ${row.usage?.total_tokens || 0}`);
-  console.log(`Cost logged: ${row.usage?.cost_usd == null ? 'not logged' : `$${row.usage.cost_usd}`}`);
+  const tokenSource = receipt.token_usage_source || (usageTokens(row) > 0 ? 'provider/legacy' : 'not supplied');
+  console.log(`Tokens logged: ${usageTokens(row)} (${tokenSource})`);
+  const cost = loggedCost(row);
+  console.log(`Cost logged: ${cost == null ? 'not logged' : `$${cost.toFixed(6)}`}`);
   if (Array.isArray(receipt.fallback_chain) && receipt.fallback_chain.length) {
     console.log(`Fallback chain: ${receipt.fallback_chain.map(item => `${item.class}/${item.platform} [${formatCircuit(item.circuit)}]`).join(' -> ')}`);
   }

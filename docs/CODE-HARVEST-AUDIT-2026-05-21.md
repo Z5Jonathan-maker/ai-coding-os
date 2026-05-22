@@ -233,7 +233,9 @@ developers would star, clone, and pay attention to.
 3. Router lane circuit breaker/cooldown adapted from HCC. Done 2026-05-21:
    SQLite breaker already existed; route receipts now expose per-lane circuit
    state and cooldown visibility.
-4. Router cost ledger hardened with HCC/Cline pricing ideas.
+4. Router cost ledger hardened with HCC/Cline pricing ideas. Done
+   2026-05-21: route receipts now expose token input/output, token source, and
+   cost fields consistently when upstream usage is supplied.
 5. `cc-session-ledger` using Langfuse plugin state/transcript patterns.
 6. `cc-context-snapshot --json` provider interface inspired by Continue.
 7. Browser proof output protocol inspired by agent-browser.

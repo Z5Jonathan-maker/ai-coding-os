@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-version="${1:-v0.1.0-rc6}"
+version="${1:-v0.1.0-rc7}"
 dist="$DOTFILES/dist"
 bundle="$dist/ai-coding-os-${version}.tar.gz"
 staging="$(mktemp -d "${TMPDIR:-/tmp}/cc-release-bundle.XXXXXX")"
@@ -54,7 +54,7 @@ done < <(find "$DOTFILES/docs/media/cockpit" -maxdepth 1 -type f \( -name '*.png
 } >"$root/BUNDLE-README.md"
 
 tar -C "$staging" -czf "$bundle" "ai-coding-os-${version}"
-shasum -a 256 "$bundle" >"$bundle.sha256"
+(cd "$dist" && shasum -a 256 "$(basename "$bundle")" >"$(basename "$bundle").sha256")
 
 printf 'Bundle: %s\n' "$bundle"
 printf 'Bytes: %s\n' "$(wc -c <"$bundle" | tr -d ' ')"

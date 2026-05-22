@@ -65,6 +65,6 @@ Do not tag until every required gate passes from a clean tree.
 Suggested first tag:
 
 ```sh
-git tag v0.1.0-rc4
-git push origin v0.1.0-rc4
+git tag v0.1.0-rc5
+git push origin v0.1.0-rc5
 ```

@@ -43,8 +43,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Known limitations: `docs/KNOWN-LIMITATIONS.md`
 - Roadmap: `docs/ROADMAP.md`
 - Release checklist: `docs/RELEASE-CHECKLIST.md`
-- Release notes: `docs/RELEASE-NOTES-v0.1.0-rc4.md`
-- Release manifest: `docs/RELEASE-MANIFEST-v0.1.0-rc4.md`
+- Release notes: `docs/RELEASE-NOTES-v0.1.0-rc5.md`
+- Release manifest: `docs/RELEASE-MANIFEST-v0.1.0-rc5.md`
 - Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`

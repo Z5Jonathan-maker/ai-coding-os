@@ -24,7 +24,8 @@ developer-grade public launch.
   and transcript.
 - Add structured route history inside the cockpit.
 - Add a public demo fixture repo so evaluators can test routing without using
-  private projects.
+  private projects. Done 2026-05-21: `fixtures/demo-project` and
+  `cc-demo-fixture`.
 - Split personal-machine checks from product checks where external users cannot
   reproduce local-only services.
 

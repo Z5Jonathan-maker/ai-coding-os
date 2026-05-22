@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+src="${DOTFILES:-$HOME/dotfiles}/fixtures/demo-project"
+[ -d "$src" ] || { echo "cc-demo-fixture: missing fixture at $src" >&2; exit 2; }
+work="$(mktemp -d "${TMPDIR:-/tmp}/cc-demo-fixture.XXXXXX")"
+cp -R "$src"/. "$work"/
+(
+  cd "$work"
+  git init -q
+  git config user.email "demo@example.local"
+  git config user.name "AI Cockpit Demo"
+  git add .
+  git commit -qm "Initial demo fixture"
+  printf '\nEvaluation note: route this small pricing helper safely.\n' >>README.md
+  npm test
+  printf '\nFixture: %s\n\n' "$work"
+  cc-workflow-proof "debug node module calculation and verify unit tests"
+)

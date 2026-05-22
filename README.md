@@ -58,14 +58,15 @@ cc-release-check
 cc-public-ci-check
 cc-product-readiness
 cc-demo-five-minute
+cc-demo-fixture
 cc-system-demo
 cc-workflow-proof
 cc-browser-proof --url https://example.com --max-chars 1200
 ```
 
-Expected mature state: readiness is green, system demo passes, workflow proof
-shows route/readiness/repo/diff context, and browser proof returns bounded page
-content.
+Expected mature state: readiness is green, system demo passes, fixture demo
+runs against a harmless public repo, workflow proof shows route/readiness/repo
+map/diff context, and browser proof returns bounded page content.
 
 ## Cockpit Preview
 

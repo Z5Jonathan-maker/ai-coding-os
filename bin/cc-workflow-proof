@@ -16,6 +16,10 @@ printf '```\n\n'
 printf '## Repo Index\n\n'
 cc-repo-index | sed -n '1,54p'
 
+printf '\n## Repo Map\n\n```text\n'
+cc-repo-map 18
+printf '```\n\n'
+
 printf '\n## Diff Review Surface\n\n```text\n'
 if git rev-parse --show-toplevel >/dev/null 2>&1; then
   git diff --stat -- . | sed -n '1,40p'

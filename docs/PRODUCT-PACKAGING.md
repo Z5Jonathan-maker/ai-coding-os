@@ -46,6 +46,7 @@ Run:
 
 ```sh
 cc-system-demo
+cc-demo-fixture
 ```
 
 From VS Code, run the task:
@@ -154,9 +155,10 @@ Installed system is 100% when:
 5. active configs are committed and pushed
 6. one real workflow has run end-to-end: route -> edit -> verify -> browser/UI check -> final review
 7. `cc-workflow-proof` produces a readable proof packet
+8. `cc-demo-fixture` proves the route/repo-map/diff flow on a public fixture
 
-Current known blocker: product readiness. Run `cc-product-readiness` for the
-exact list; dirty/synced repo state is expected while active work is in flight.
+Current local state is tracked by `cc-product-readiness`; dirty/synced repo
+state is expected while active work is in flight.
 
 Sellable system is 100% when:
 

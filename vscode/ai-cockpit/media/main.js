@@ -4,6 +4,7 @@
   let selectedMode = 'autoRun';
   let contextBlock = '';
   let attached = [];
+  let activePrompt = '';
 
   function renderChips() {
     $('chips').innerHTML = '';
@@ -38,12 +39,14 @@
 
     const button = event.target.closest('button[data-command]');
     if (button) {
+      clearTranscriptPrompt();
       vscode.postMessage({ command: button.dataset.command });
       return;
     }
 
     const runButton = event.target.closest('button[data-run]');
     if (runButton) {
+      startTranscript(runButton.dataset.run, $('prompt').value);
       vscode.postMessage({
         command: 'runPrompt',
         mode: runButton.dataset.run,
@@ -56,6 +59,7 @@
 
     const selectedRun = event.target.closest('button[data-run-selected]');
     if (selectedRun) {
+      startTranscript(selectedMode, $('prompt').value);
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
@@ -68,6 +72,7 @@
 
     const inlineButton = event.target.closest('button[data-inline-command]');
     if (!inlineButton) return;
+    clearTranscriptPrompt();
     vscode.postMessage({
       command: 'inline',
       name: inlineButton.dataset.inlineName,
@@ -82,6 +87,7 @@
   document.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
+      startTranscript(selectedMode, $('prompt').value);
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
@@ -149,8 +155,34 @@
     const message = event.data;
     if (message.type !== 'result') return;
     $('resultTitle').textContent = message.payload.title || 'Last Result';
-    $('result').textContent = message.payload.body || '(no output)';
+    $('result').textContent = formatTranscript(message.payload.title, message.payload.body);
   });
+
+  function startTranscript(mode, prompt) {
+    activePrompt = String(prompt || '').trim();
+    if (!activePrompt) return;
+    $('resultTitle').textContent = 'Working';
+    $('result').textContent = formatTranscript(modeLabel(mode), 'Running...');
+  }
+
+  function clearTranscriptPrompt() {
+    activePrompt = '';
+  }
+
+  function formatTranscript(title, body) {
+    const prompt = activePrompt ? `You\n${activePrompt}\n\n` : '';
+    return `${prompt}${title || 'AI'}\n${body || '(no output)'}`;
+  }
+
+  function modeLabel(mode) {
+    return {
+      autoRun: 'Auto',
+      buildFix: 'Code',
+      designBrowser: 'Design / Browser',
+      researchExtract: 'Research / Extract',
+      explainRoute: 'Route Preview',
+    }[mode] || 'AI';
+  }
 
   function deriveHealth(readiness, product, firstRun, kimi, route) {
     const productKnown = /Status:\s*product-ready|Status:\s*not product-ready|Blockers:/i.test(product || '');

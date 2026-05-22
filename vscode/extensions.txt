@@ -18,5 +18,4 @@ openai.chatgpt
 redhat.vscode-yaml
 streetsidesoftware.code-spell-checker
 tamasfe.even-better-toml
-upstash.context7-mcp
 yzhang.markdown-all-in-one

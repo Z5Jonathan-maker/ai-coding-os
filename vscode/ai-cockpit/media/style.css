@@ -442,3 +442,113 @@ footer {
   margin-top: 12px;
   padding-bottom: 8px;
 }
+
+body.panel-mode {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 16px 18px;
+  background: var(--vscode-editor-background);
+}
+
+.panel-mode header,
+.panel-mode .hero,
+.panel-mode .composer {
+  flex: 0 0 auto;
+}
+
+.panel-mode header {
+  order: 0;
+  margin-bottom: 0;
+}
+
+.panel-mode .hero {
+  order: 1;
+  margin-bottom: 0;
+  padding: 10px 12px;
+}
+
+.panel-mode .composer {
+  order: 3;
+  margin-bottom: 0;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  padding: 12px;
+}
+
+.panel-mode .composer-head,
+.panel-mode textarea,
+.panel-mode .chips,
+.panel-mode .mode-drawer,
+.panel-mode .toolrow,
+.panel-mode .check {
+  grid-column: 1 / -1;
+}
+
+.panel-mode textarea {
+  min-height: 74px;
+  max-height: 160px;
+  font-size: 13px;
+}
+
+.panel-mode .runrow {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(140px, 180px) minmax(120px, 160px);
+}
+
+.panel-mode .toolrow {
+  grid-template-columns: repeat(3, minmax(120px, 150px));
+}
+
+.panel-mode .result-panel {
+  order: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  padding: 14px;
+}
+
+.panel-mode .panel-head {
+  flex: 0 0 auto;
+}
+
+.panel-mode #result {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
+  padding: 18px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.panel-mode details,
+.panel-mode footer {
+  display: none;
+}
+
+.panel-mode h1 {
+  font-size: 20px;
+}
+
+@media (min-width: 1100px) {
+  .panel-mode .composer {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .panel-mode .runrow,
+  .panel-mode .toolrow {
+    grid-column: auto;
+  }
+
+  .panel-mode .runrow {
+    min-width: 330px;
+  }
+
+  .panel-mode .toolrow {
+    min-width: 440px;
+  }
+}

@@ -45,6 +45,7 @@ const ACTIONS = [
 function activate(context) {
   const output = vscode.window.createOutputChannel('AI Cockpit');
   const provider = new CockpitProvider(context.extensionUri, output);
+  const panel = new CockpitPanel(context.extensionUri, output);
   const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 92);
 
   context.subscriptions.push(
@@ -53,7 +54,7 @@ function activate(context) {
     vscode.window.registerWebviewViewProvider('aiSystemCockpit.dashboard', provider, {
       webviewOptions: { retainContextWhenHidden: true },
     }),
-    command('aiSystemCockpit.open', () => vscode.commands.executeCommand('workbench.view.extension.aiSystemCockpit')),
+    command('aiSystemCockpit.open', () => panel.open()),
     command('aiSystemCockpit.refresh', () => provider.refresh()),
     command('aiSystemCockpit.status', () => showOutput(output, 'Status', COMMANDS.status)),
     command('aiSystemCockpit.systemDemo', () => showOutput(output, 'System Demo', COMMANDS.systemDemo)),
@@ -84,8 +85,14 @@ function activate(context) {
     command('aiSystemCockpit.explainRoute', explainRoute),
     command('aiSystemCockpit.savePlan', savePlan),
     ...ACTIONS.map(([id, label, purpose]) => command(`aiSystemCockpit.${id}`, () => routerAsk(label, purpose))),
-    vscode.window.onDidChangeActiveTextEditor(() => provider.refreshContext()),
-    vscode.window.onDidChangeTextEditorSelection(() => provider.refreshContext())
+    vscode.window.onDidChangeActiveTextEditor(() => {
+      provider.refreshContext();
+      panel.refreshContext();
+    }),
+    vscode.window.onDidChangeTextEditorSelection(() => {
+      provider.refreshContext();
+      panel.refreshContext();
+    })
   );
 
   if (vscode.workspace.getConfiguration('aiSystemCockpit').get('showStatusBarButton', true)) {
@@ -97,7 +104,7 @@ function activate(context) {
   }
 
   if (vscode.workspace.getConfiguration('aiSystemCockpit').get('openOnStartup', false)) {
-    setTimeout(() => vscode.commands.executeCommand('workbench.view.extension.aiSystemCockpit'), 1200);
+    [1200, 4500].forEach((delay) => setTimeout(() => panel.open(), delay));
   }
 }
 
@@ -183,17 +190,16 @@ function quote(value) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
 
-async function refreshStatus(item) {
-  const timer = setInterval(async () => {
+function refreshStatus(item) {
+  const update = async () => {
     const result = await shellExec('cc-cockpit-status | sed -n "1,14p"', { timeout: 15000 });
-    const failed = /FAIL/.test(result.text);
-    item.text = failed ? '$(warning) AI Cockpit' : '$(pass) AI Cockpit';
+    item.text = /FAIL/.test(result.text) ? '$(warning) AI Cockpit' : '$(pass) AI Cockpit';
     item.tooltip = result.text || 'AI Cockpit status unavailable';
+  };
+  const timer = setInterval(async () => {
+    await update();
   }, 60000);
-
-  const first = await shellExec('cc-cockpit-status | sed -n "1,14p"', { timeout: 15000 });
-  item.text = /FAIL/.test(first.text) ? '$(warning) AI Cockpit' : '$(pass) AI Cockpit';
-  item.tooltip = first.text || 'AI Cockpit status unavailable';
+  update();
   return { dispose: () => clearInterval(timer) };
 }
 
@@ -207,7 +213,7 @@ class CockpitProvider {
   resolveWebviewView(view) {
     this.view = view;
     view.webview.options = { enableScripts: true };
-    view.webview.html = this.html(view.webview);
+    view.webview.html = this.html(view.webview, 'sidebar');
     view.webview.onDidReceiveMessage((message) => this.handle(message));
     this.refresh();
   }
@@ -423,7 +429,7 @@ class CockpitProvider {
     this.runInlineStream(label, `router-ask ${force}${quote(enriched)}`);
   }
 
-  html(webview) {
+  html(webview, variant = 'sidebar') {
     const nonce = String(Date.now());
     const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'style.css'));
     const jsUri = webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'main.js'));
@@ -436,7 +442,7 @@ class CockpitProvider {
   <link rel="stylesheet" href="${cssUri}">
   <title>AI Cockpit</title>
 </head>
-<body>
+<body class="${variant}-mode">
   <header>
     <div>
       <div class="eyebrow">AI-SYSTEM-V2</div>
@@ -487,7 +493,7 @@ class CockpitProvider {
 
   <section class="result-panel">
     <div class="panel-head">
-      <h2 id="resultTitle">Result</h2>
+      <h2 id="resultTitle">${variant === 'panel' ? 'Work Stream' : 'Result'}</h2>
       <button data-command="fiveMinuteDemo">Demo</button>
     </div>
     <pre id="result">Ready.</pre>
@@ -565,6 +571,54 @@ class CockpitProvider {
   <script nonce="${nonce}" src="${jsUri}"></script>
 </body>
 </html>`;
+  }
+}
+
+class CockpitPanel extends CockpitProvider {
+  constructor(extensionUri, output) {
+    super(extensionUri, output);
+    this.panel = null;
+  }
+
+  open() {
+    if (this.panel) {
+      this.panel.reveal(vscode.ViewColumn.One);
+      this.enterFocusLayout();
+      this.refreshContext();
+      return;
+    }
+    this.panel = vscode.window.createWebviewPanel(
+      'aiSystemCockpit.panel',
+      'AI Cockpit',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+      }
+    );
+    this.view = this.panel;
+    this.panel.iconPath = vscode.Uri.joinPath(this.extensionUri, 'media', 'cockpit.svg');
+    this.panel.webview.html = this.html(this.panel.webview, 'panel');
+    this.panel.webview.onDidReceiveMessage((message) => this.handle(message), null, []);
+    this.panel.onDidDispose(() => {
+      this.panel = null;
+      this.view = null;
+    });
+    this.enterFocusLayout();
+    this.refresh();
+  }
+
+  enterFocusLayout() {
+    setTimeout(() => {
+      [
+        'workbench.action.closeSidebar',
+        'workbench.action.closeAuxiliaryBar',
+        'workbench.action.joinAllGroups',
+        'workbench.action.focusActiveEditorGroup',
+      ].forEach((id) => {
+        vscode.commands.executeCommand(id).then(undefined, () => undefined);
+      });
+    }, 150);
   }
 }
 

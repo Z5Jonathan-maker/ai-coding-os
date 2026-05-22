@@ -14,3 +14,4 @@ pablodelucca.pixel-agents
 sixth.sixth-ai
 supabase.vscode-supabase-extension
 tock.vscode-css-custom-properties
+upstash.context7-mcp

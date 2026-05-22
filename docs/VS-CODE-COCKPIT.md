@@ -8,9 +8,11 @@ The native cockpit extension lives at `vscode/ai-cockpit/` and is installed by
 `install.sh` into `~/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0`.
 It can also be packaged with `cc-package-cockpit`.
 
-Startup rule: the cockpit activates after VS Code startup and opens the sidebar
-so the interface is visible. The first refresh loads daily health only, and
-deeper product/readiness reports run on demand from their buttons.
+Startup rule: the cockpit activates after VS Code startup and opens a full
+editor panel so the interface is visible and usable as the primary work
+surface. The Activity Bar container remains available for status/launcher use.
+The first refresh loads daily health only, and deeper product/readiness reports
+run on demand from their buttons.
 
 Runtime rule: `vscode/argv.json` records the hardware-acceleration preference,
 and `code-stable` launches VS Code with the verified `--disable-gpu` switch for
@@ -24,12 +26,14 @@ spawned orphan extension-host daemons.
 It adds:
 
 - an Activity Bar container named `AI Cockpit`
-- a sidebar dashboard for readiness, route receipt, permissions, checkpoints,
-  jobs, lanes, and disk gate
-- a composer-first sidebar with one primary Run path, Auto as the default mode,
-  optional Code/Browser/Extract/Route modes in a drawer, streaming results,
-  attached file/diff context, current file/selection context, and `cmd+enter`
-  execution
+- a full editor panel that opens like Claude/Kimi/Cursor-style work surfaces:
+  large Work Stream above, compact command composer below, sidebars hidden, and
+  editor groups joined
+- a sidebar dashboard kept as a launcher/status surface for readiness, route
+  receipt, permissions, checkpoints, jobs, lanes, and disk gate
+- a composer with one primary Run path, Auto as the default mode, optional
+  Code/Browser/Extract/Route modes, streaming results, attached file/diff
+  context, current file/selection context, and `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
   status, Kimi status, product readiness, and disk readiness
@@ -48,7 +52,7 @@ create a second router, model menu, or hidden agent runtime.
 ## First-Run Flow
 
 1. Open VS Code.
-2. Open the `AI Cockpit` Activity Bar view.
+2. The full `AI Cockpit` editor panel should open automatically.
 3. Run `System Demo`.
 4. If it fails, fix the listed gate before doing serious work.
 5. Use `Auto` for normal work. It lets the router pick the lane and fallback.
@@ -196,12 +200,13 @@ It exists to keep generated code dense without adding another model lane.
 desktop app checks, including installation/version state and each app's role in
 the system.
 
-The sidebar composer is the native daily-driver path. It defaults to Auto and
-keeps the main screen focused on command → run → result. Current file or
-selected code context, extra files, git diff chips, and optional Code/Browser/
-Extract/Route modes are still available, but they sit behind compact controls
-instead of competing with the prompt. Code mode no longer hard-forces
-precision; the router keeps fallback authority when a provider circuit is open.
+The editor panel composer is the native daily-driver path. It defaults to Auto
+and keeps the main screen focused on command -> visible work stream -> result.
+Current file or selected code context, extra files, git diff chips, and optional
+Code/Browser/Extract/Route modes are still available, but they sit behind
+compact controls instead of competing with the prompt. Code mode no longer
+hard-forces precision; the router keeps fallback authority when a provider
+circuit is open.
 
 ## Keyboard Map
 

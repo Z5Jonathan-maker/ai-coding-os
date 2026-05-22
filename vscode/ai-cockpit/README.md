@@ -4,11 +4,12 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 
 ## Features
 
-- Sidebar dashboard for readiness, route receipts, router metrics, permissions, checkpoints, jobs, lanes, disk, and product readiness.
-- Prompt composer with Build, Design, Research, Route, and Plan modes.
-- Current file or selected code context can be attached to prompts.
-- Extra files and git diff can be attached as context chips.
+- Auto-first prompt composer that lets the router choose the working lane instead of forcing a brittle model path.
+- Intent modes for Code, Browser, Extract, and Route preview.
+- Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
 - Inline streaming route/output, diff review, repo index, and inspection reports.
+- Primary cards for route receipt, file changes, context pressure, and last result, with deeper diagnostics collapsed under Project Context, System Checks, and Advanced.
+- Degraded health state when a provider circuit is open, with Auto mode as the recovery path.
 - Status bar readiness entry.
 
 ## Requirements

@@ -8,7 +8,7 @@
 
 body {
   margin: 0;
-  padding: 14px;
+  padding: 12px;
   color: var(--vscode-foreground);
   background: var(--vscode-sideBar-background);
   font-family: var(--vscode-font-family);
@@ -32,7 +32,7 @@ header {
 
 h1 {
   margin: 2px 0 0;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1.1;
 }
 
@@ -94,10 +94,10 @@ button:hover {
   background: var(--vscode-testing-iconQueued);
 }
 
-.grid {
+.quickbar {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
   margin-bottom: 12px;
 }
 
@@ -160,9 +160,9 @@ textarea {
 }
 
 .mode {
-  min-height: 26px;
+  min-height: 30px;
   border-color: transparent;
-  padding: 4px 3px;
+  padding: 4px 2px;
   color: var(--vscode-descriptionForeground);
   background: transparent;
   font-size: 11px;
@@ -238,6 +238,30 @@ textarea:focus {
   gap: 10px;
 }
 
+.primary-cards {
+  margin-bottom: 12px;
+}
+
+details {
+  margin: 0 0 10px;
+  border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
+  border-radius: 8px;
+  background: var(--vscode-sideBar-background);
+}
+
+summary {
+  min-height: 34px;
+  padding: 9px 11px;
+  color: var(--vscode-foreground);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+details .cards {
+  padding: 0 8px 8px;
+}
+
 article {
   padding: 11px;
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
@@ -252,7 +276,7 @@ article button {
 
 pre {
   min-height: 24px;
-  max-height: 132px;
+  max-height: 150px;
   overflow: auto;
   margin: 0;
   padding: 8px;

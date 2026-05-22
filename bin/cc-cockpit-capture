@@ -65,7 +65,7 @@ HTML
   <header>
     <div>
       <div class="eyebrow">AI-SYSTEM-V2</div>
-      <h1>Cockpit</h1>
+      <h1>AI Cockpit</h1>
     </div>
     <button title="Refresh">Refresh</button>
   </header>
@@ -80,30 +80,29 @@ HTML
 
   <section class="composer">
     <div class="composer-head">
-      <label for="prompt">Prompt</label>
+      <label for="prompt">Ask</label>
       <span id="context">vscode/ai-cockpit/extension.js:209</span>
     </div>
     <div class="modebar" role="tablist" aria-label="Mode">
-      <button class="mode active">Build</button>
-      <button class="mode">Design</button>
-      <button class="mode">Research</button>
+      <button class="mode active">Auto</button>
+      <button class="mode">Code</button>
+      <button class="mode">Browser</button>
+      <button class="mode">Extract</button>
       <button class="mode">Route</button>
-      <button class="mode">Plan</button>
     </div>
-    <textarea id="prompt" rows="4">Debug this repo and verify the safest next step.</textarea>
+    <textarea id="prompt" rows="5">Debug this repo and verify the safest next step.</textarea>
     <div class="chips"><button class="chip">git diff x</button><button class="chip">README.md x</button></div>
-    <label class="check"><input type="checkbox" checked> Include current file / selection</label>
-    <div class="runrow"><button class="primary">Run Mode</button><button>Preview Route</button></div>
+    <label class="check"><input type="checkbox" checked> Include current file or selection</label>
+    <div class="runrow"><button class="primary">Run</button><button>Preview Route</button></div>
     <div class="toolrow"><button>Attach File</button><button>Attach Diff</button><button>Review Diff</button></div>
   </section>
 
-  <section class="grid">
-    <button>Build / Fix</button><button>Design / Browser</button>
-    <button>Research / Extract</button><button>Explain Route</button>
-    <button>Workflow Proof</button><button>Demo Mode</button>
+  <section class="quickbar">
+    <button>Health</button><button>Review Diff</button>
+    <button>Browser Proof</button><button>Demo</button>
   </section>
 
-  <section class="cards">
+  <section class="cards primary-cards">
 ${cards}
   </section>
 </body>
@@ -145,9 +144,9 @@ capture "browser" "Browser Proof" "Browser mode: shim" \
   "$(card "Kimi" "Desktop: installed\nCLI: v1.41.0\nWebBridge: running=true\nmode=shim" "View Kimi Status")$(card "Browser Proof" "Browser mode: shim\nWebBridge: running=true extension_connected=true\nbounded page proof returned" "View Proof")$(card "Known Boundary" "Official extension requires user approval." "View Boundary")" \
   "04-browser-proof.png"
 
-capture "composer" "Composer" "Mode-driven execution" \
-  "Build, Design, Research, Route, and Plan are intent modes. The router owns model choice." \
-  "$(card "Last Result" "Explain Route\nSelected: precision -> claude\nFallback: design/kimi, cheap/deepseek" "Run Mode")$(card "Context Meter" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Demo Mode" "Readiness, route proof, browser proof, and package proof in one flow." "Run Demo")" \
+capture "composer" "Composer" "Auto-first execution" \
+  "Auto, Code, Browser, Extract, and Route are intent modes. The router owns model choice and fallback." \
+  "$(card "Route" "Circuits: design:closed | image:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
   "05-composer.png"
 
 if command -v sips >/dev/null 2>&1; then
@@ -157,7 +156,7 @@ fi
 
 capture "package" "Package Proof" "VSIX ready" \
   "The cockpit packages as a distributable VS Code extension." \
-  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 13.79 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
+  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 16.13 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
   "06-package.png"
 
 printf '\nDone. Media written to %s\n' "$OUT_DIR"

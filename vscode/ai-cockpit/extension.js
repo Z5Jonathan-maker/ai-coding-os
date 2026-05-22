@@ -36,7 +36,8 @@ const COMMANDS = {
 };
 
 const ACTIONS = [
-  ['buildFix', 'Build / Fix', 'precision'],
+  ['autoRun', 'Auto', null],
+  ['buildFix', 'Code', null],
   ['designBrowser', 'Design / Browser', 'design'],
   ['researchExtract', 'Research / Extract', 'cheap'],
 ];
@@ -303,6 +304,7 @@ class CockpitProvider {
       jobs: () => vscode.commands.executeCommand('aiSystemCockpit.jobs'),
       openSettings: () => vscode.commands.executeCommand('aiSystemCockpit.openSettings'),
       explainRoute: () => vscode.commands.executeCommand('aiSystemCockpit.explainRoute'),
+      autoRun: () => vscode.commands.executeCommand('aiSystemCockpit.autoRun'),
       buildFix: () => vscode.commands.executeCommand('aiSystemCockpit.buildFix'),
       designBrowser: () => vscode.commands.executeCommand('aiSystemCockpit.designBrowser'),
       researchExtract: () => vscode.commands.executeCommand('aiSystemCockpit.researchExtract'),
@@ -422,7 +424,8 @@ class CockpitProvider {
       return;
     }
     const modes = {
-      buildFix: ['Build / Fix', 'precision'],
+      autoRun: ['Auto', null],
+      buildFix: ['Code', null],
       designBrowser: ['Design / Browser', 'design'],
       researchExtract: ['Research / Extract', 'cheap'],
     };
@@ -448,9 +451,9 @@ class CockpitProvider {
   <header>
     <div>
       <div class="eyebrow">AI-SYSTEM-V2</div>
-      <h1>Cockpit</h1>
+      <h1>AI Cockpit</h1>
     </div>
-    <button data-command="refresh" title="Refresh">↻</button>
+    <button data-command="refresh" title="Refresh">Refresh</button>
   </header>
 
   <section class="hero">
@@ -463,24 +466,24 @@ class CockpitProvider {
 
   <section class="composer">
     <div class="composer-head">
-      <label for="prompt">Prompt</label>
+      <label for="prompt">Ask</label>
       <span id="context">No active editor</span>
     </div>
     <div class="modebar" role="tablist" aria-label="Mode">
-      <button class="mode active" data-mode="buildFix">Build</button>
-      <button class="mode" data-mode="designBrowser">Design</button>
-      <button class="mode" data-mode="researchExtract">Research</button>
+      <button class="mode active" data-mode="autoRun">Auto</button>
+      <button class="mode" data-mode="buildFix">Code</button>
+      <button class="mode" data-mode="designBrowser">Browser</button>
+      <button class="mode" data-mode="researchExtract">Extract</button>
       <button class="mode" data-mode="explainRoute">Route</button>
-      <button class="mode" data-mode="savePlan">Plan</button>
     </div>
-    <textarea id="prompt" rows="4" placeholder="Describe the task. The cockpit routes it to the right lane."></textarea>
+    <textarea id="prompt" rows="5" placeholder="Tell the system what to do. Auto is safest: it previews routing signals and lets the router choose the lane."></textarea>
     <div class="chips" id="chips"></div>
     <label class="check">
       <input id="includeContext" type="checkbox" checked>
-      Include current file / selection
+      Include current file or selection
     </label>
     <div class="runrow">
-      <button class="primary" data-run-selected="true">Run Mode</button>
+      <button class="primary" data-run-selected="true">Run</button>
       <button data-run="explainRoute">Preview Route</button>
     </div>
     <div class="toolrow">
@@ -490,38 +493,16 @@ class CockpitProvider {
     </div>
   </section>
 
-  <section class="grid">
-    <button data-command="buildFix">Build / Fix</button>
-    <button data-command="designBrowser">Design / Browser</button>
-    <button data-command="researchExtract">Research / Extract</button>
-    <button data-command="explainRoute">Explain Route</button>
-    <button data-command="savePlan">Save Plan</button>
+  <section class="quickbar">
+    <button data-command="productReadiness">Health</button>
     <button data-command="reviewDiff">Review Diff</button>
-    <button data-command="repoIndex">Repo Index</button>
-    <button data-command="semanticIndex">Semantic Index</button>
-    <button data-command="diffHunks">Diff Hunks</button>
-    <button data-command="workflowProof">Workflow Proof</button>
     <button data-command="browserProof">Browser Proof</button>
-    <button data-command="fiveMinuteDemo">Demo Mode</button>
-    <button data-command="firstRun">First Run</button>
-    <button data-command="contextMeter">Context Meter</button>
-    <button data-command="contextSnapshot">Context Snapshot</button>
-    <button data-command="sessionLedger">Sessions</button>
-    <button data-command="loopQuality">Loop Quality</button>
-    <button data-command="pulseStatus">Pulse Status</button>
-    <button data-command="nativeAppStatus">Native Apps</button>
-    <button data-command="repoMap">Repo Map</button>
+    <button data-command="fiveMinuteDemo">Demo</button>
   </section>
 
-  <section class="cards">
+  <section class="cards primary-cards">
     <article><h2>Route</h2><pre id="route">Loading...</pre><button data-inline-name="Route Receipt" data-inline-command="cc-router-receipt">View Receipt</button></article>
-    <article><h2>Metrics</h2><pre id="metrics">Loading...</pre><button data-inline-name="Router Metrics" data-inline-command="cc-router-metrics">View Metrics</button></article>
-    <article><h2>Permissions</h2><pre id="permissions">Loading...</pre><button data-inline-name="Permission Matrix" data-inline-command="cc-permission-matrix">View Matrix</button></article>
-    <article><h2>Checkpoints</h2><pre id="checkpoints">Loading...</pre><button data-inline-name="Checkpoints" data-inline-command="cc-checkpoints">View Timeline</button></article>
-    <article><h2>Loop Quality</h2><pre>Depth ladder, loop status, and anti-pattern memory readiness.</pre><button data-inline-name="Loop Quality" data-inline-command="cc-loop-quality">View Loop Quality</button></article>
-    <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
-    <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
-    <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>
+    <article><h2>File Changes</h2><div class="statline"><span><strong id="diffFiles">--</strong><small>files</small></span><span><strong id="diffAdded">--</strong><small>added</small></span><span><strong id="diffRemoved">--</strong><small>removed</small></span></div><pre id="diffSummary">Loading...</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Diff</button></article>
     <article class="metric-card">
       <h2>Context Pressure</h2>
       <div class="statline">
@@ -537,30 +518,45 @@ class CockpitProvider {
       <pre id="contextMeter">Loading...</pre>
       <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button>
     </article>
-    <article><h2>Context Providers</h2><pre id="contextSnapshot">Loading...</pre><button data-inline-name="Context Snapshot" data-inline-command="cc-context-snapshot --json">View Snapshot</button></article>
-    <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
-    <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
-    <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>
-    <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
-    <article><h2>Repo Map</h2><pre id="repoMap">Loading...</pre><button data-inline-name="Repo Map" data-inline-command="cc-repo-map 30">View Repo Map</button></article>
-    <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
-    <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
-    <article class="metric-card">
-      <h2>File Changes</h2>
-      <div class="statline">
-        <span><strong id="diffFiles">--</strong><small>files</small></span>
-        <span><strong id="diffAdded">--</strong><small>added</small></span>
-        <span><strong id="diffRemoved">--</strong><small>removed</small></span>
-      </div>
-      <pre id="diffSummary">Loading...</pre>
-      <button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Hunks</button>
-    </article>
-    <article><h2>Browser Proof</h2><pre>WebBridge readiness and bounded page proof output.</pre><button data-inline-name="Browser Proof" data-inline-command="cc-browser-proof">View Proof</button></article>
-    <article><h2>Demo Mode</h2><pre>Readiness, route proof, browser proof, and cockpit packaging in one flow.</pre><button data-command="fiveMinuteDemo">Run Demo</button></article>
-    <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
-    <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>
     <article class="result"><h2 id="resultTitle">Last Result</h2><pre id="result">Run Explain Route from the prompt composer to see output here.</pre></article>
   </section>
+
+  <details open>
+    <summary>Project Context</summary>
+    <section class="cards">
+      <article><h2>Repo Map</h2><pre id="repoMap">Loading...</pre><button data-inline-name="Repo Map" data-inline-command="cc-repo-map 30">View Repo Map</button></article>
+      <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
+      <article><h2>Context Providers</h2><pre id="contextSnapshot">Loading...</pre><button data-inline-name="Context Snapshot" data-inline-command="cc-context-snapshot --json">View Snapshot</button></article>
+      <article><h2>Repo Index</h2><pre id="repo">Run repo index to inspect workspace shape.</pre><button data-inline-name="Repo Index" data-inline-command="cc-repo-index">View Index</button></article>
+    </section>
+  </details>
+
+  <details>
+    <summary>System Checks</summary>
+    <section class="cards">
+      <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+      <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>
+      <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
+      <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>
+      <article><h2>Permissions</h2><pre id="permissions">Loading...</pre><button data-inline-name="Permission Matrix" data-inline-command="cc-permission-matrix">View Matrix</button></article>
+      <article><h2>Checkpoints</h2><pre id="checkpoints">Loading...</pre><button data-inline-name="Checkpoints" data-inline-command="cc-checkpoints">View Timeline</button></article>
+    </section>
+  </details>
+
+  <details>
+    <summary>Advanced</summary>
+    <section class="cards">
+      <article><h2>Metrics</h2><pre id="metrics">Loading...</pre><button data-inline-name="Router Metrics" data-inline-command="cc-router-metrics">View Metrics</button></article>
+      <article><h2>Jobs</h2><pre id="jobs">Loading...</pre><button data-inline-name="Jobs" data-inline-command="cc-jobs">View Jobs</button></article>
+      <article><h2>Lanes</h2><pre id="lanes">Loading...</pre><button data-inline-name="Lane Registry" data-inline-command="cc-lane capabilities">View Lanes</button></article>
+      <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
+      <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>
+      <article><h2>Semantic Index</h2><pre>Symbol map and high-signal definitions.</pre><button data-inline-name="Semantic Index" data-inline-command="cc-semantic-index">View Semantic Index</button></article>
+      <article><h2>Browser Proof</h2><pre>WebBridge readiness and bounded page proof output.</pre><button data-inline-name="Browser Proof" data-inline-command="cc-browser-proof">View Proof</button></article>
+      <article><h2>Demo Mode</h2><pre>Readiness, route proof, browser proof, and cockpit packaging in one flow.</pre><button data-command="fiveMinuteDemo">Run Demo</button></article>
+      <article><h2>Loop Quality</h2><pre>Depth ladder, loop status, and anti-pattern memory readiness.</pre><button data-inline-name="Loop Quality" data-inline-command="cc-loop-quality">View Loop Quality</button></article>
+    </section>
+  </details>
 
   <footer>
     <button data-command="status">Full Status</button>
@@ -597,7 +593,7 @@ function editorContext() {
     : `${file}:${line}`;
   const block = selection
     ? `\n\nCurrent selection from ${file}:${line}:\n\`\`\`\n${selection.slice(0, 12000)}\n\`\`\``
-    : `\n\nCurrent file: ${file}:${line}`;
+    : `\n\nCurrent file ${file}:${line}:\n\`\`\`\n${doc.getText().slice(0, 12000)}\n\`\`\``;
   return { label, block };
 }
 

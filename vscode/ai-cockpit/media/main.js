@@ -1,7 +1,7 @@
 (function () {
   const vscode = acquireVsCodeApi();
   const $ = (id) => document.getElementById(id);
-  let selectedMode = 'buildFix';
+  let selectedMode = 'autoRun';
   let contextBlock = '';
   let attached = [];
 
@@ -111,7 +111,7 @@
     if (message.type !== 'state') return;
 
     const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap } = message.payload;
-    const health = deriveHealth(readiness, product, firstRun, kimi);
+    const health = deriveHealth(readiness, product, firstRun, kimi, route);
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
     $('readinessBody').textContent = health.body;
@@ -145,10 +145,11 @@
     $('result').textContent = message.payload.body || '(no output)';
   });
 
-  function deriveHealth(readiness, product, firstRun, kimi) {
+  function deriveHealth(readiness, product, firstRun, kimi, route) {
     const productReady = /Status:\s*product-ready/.test(product || '');
     const firstRunReady = /Status:\s*first-run-ready/.test(firstRun || '');
     const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || 'unknown';
+    const precisionOpen = /tier3:open|precision.*open/i.test(route || '');
     if (!productReady) {
       const blocker = (product || '').match(/Blockers:\n([\s\S]+)/)?.[1]?.split('\n').find(Boolean);
       return {
@@ -162,6 +163,13 @@
         level: 'blocked',
         title: 'First-run setup blocked',
         body: 'Run First Run to see missing required tools before installing.',
+      };
+    }
+    if (precisionOpen) {
+      return {
+        level: 'degraded',
+        title: 'Ready, code lane degraded',
+        body: 'The precision/code lane circuit is open. Use Auto mode so the router can choose a working fallback, or inspect Route Receipt.',
       };
     }
     if (browserMode === 'shim') {

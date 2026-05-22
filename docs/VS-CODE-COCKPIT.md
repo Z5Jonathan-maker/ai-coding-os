@@ -13,9 +13,9 @@ It adds:
 - an Activity Bar container named `AI Cockpit`
 - a sidebar dashboard for readiness, route receipt, permissions, checkpoints,
   jobs, lanes, and disk gate
-- an in-sidebar prompt composer with selected modes, route preview, streaming
-  results, attached file/diff context, current file/selection context, and
-  `cmd+enter` execution
+- an Auto-first in-sidebar prompt composer with Code, Browser, Extract, and
+  Route preview modes, streaming results, attached file/diff context, current
+  file/selection context, and `cmd+enter` execution
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
   status, Kimi status, product readiness, and disk readiness
@@ -23,6 +23,8 @@ It adds:
   available context, changed-file count, added/removed lines, and hunk summary
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
+- a degraded health state when a provider circuit is open, so a broken lane is
+  visible before the user burns another failed run
 
 The extension is deliberately a UI wrapper over existing commands. It does not
 create a second router, model menu, or hidden agent runtime.
@@ -33,8 +35,8 @@ create a second router, model menu, or hidden agent runtime.
 2. Open the `AI Cockpit` Activity Bar view.
 3. Run `System Demo`.
 4. If it fails, fix the listed gate before doing serious work.
-5. Run `Explain Route` before ambiguous work.
-6. Use intent actions, not raw model actions, for normal work.
+5. Use `Auto` for normal work. It lets the router pick the lane and fallback.
+6. Run `Explain Route` before ambiguous or expensive work.
 
 ## Task Map
 
@@ -45,8 +47,8 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Doctor` | System doctor |
 | `AI: Explain Route` | Show which lane should handle a request |
 | `AI: Lane Route` | Show the fallback chain for a capability |
-| `AI: Ask / Plan` | Read-only planning/question mode |
-| `AI: Build / Fix` | Code and system work |
+| `AI: Auto Run` | Default daily-driver path; lets the router pick the lane |
+| `AI: Code` | Code and system work without forcing the old precision lane |
 | `AI: Design / Browser` | UI, screenshots, browser, visual/operator work |
 | `AI: Research / Extract` | Cheap summarization, extraction, transforms |
 | `AI: Browser Check` | Validate browser/UI task routing for a target |
@@ -176,10 +178,12 @@ It exists to keep generated code dense without adding another model lane.
 desktop app checks, including installation/version state and each app's role in
 the system.
 
-The sidebar composer is the native daily-driver path. It keeps the current
-file or selected code visible as context, attaches extra files or git diff as
-chips, lets the user switch between Build, Design, Research, Route, and Plan
-without opening a terminal, and streams route/output back into the sidebar.
+The sidebar composer is the native daily-driver path. It defaults to Auto,
+keeps the current file or selected code visible as context, attaches extra
+files or git diff as chips, lets the user switch between Code, Browser,
+Extract, and Route without opening a terminal, and streams route/output back
+into the sidebar. Code mode no longer hard-forces precision; the router keeps
+fallback authority when a provider circuit is open.
 
 ## Keyboard Map
 
@@ -190,7 +194,7 @@ without opening a terminal, and streams route/output back into the sidebar.
 | `cmd+alt+3` | Kimi terminal |
 | `cmd+alt+4` | DeepSeek terminal |
 | `cmd+alt+5` | AI System terminal |
-| `cmd+alt+c` | Build / Fix |
+| `cmd+alt+c` | Code |
 | `cmd+alt+d` | Design / Browser |
 | `cmd+alt+r` | Research / Extract |
 | `cmd+alt+h` | Status |
@@ -210,7 +214,7 @@ No duplicate coding shells. No model hype buttons. The interface exposes intent:
 ```text
 build
 design/browser
-research/extract
+extract
 route explanation
 system readiness
 ```

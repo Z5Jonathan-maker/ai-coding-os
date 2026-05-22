@@ -11,12 +11,14 @@ developer-grade public launch.
 - Raise local disk headroom from the 25GB minimum to the 50GB preferred target.
 - Validate install on one fresh macOS Apple Silicon account.
 - Publish GitHub release notes from `docs/RELEASE-NOTES-v0.1.0-rc1.md`.
+  Current candidate: `docs/RELEASE-NOTES-v0.1.0-rc5.md`.
 - Keep `cc-public-ci-check` green in GitHub Actions for portable contributor
   validation.
 - Re-enable `.github/workflows/public-ci.yml` after the GitHub Actions billing
   block is cleared.
 - Attach the `cc-release-bundle` tarball and checksum to the public GitHub
-  release.
+  release. Local rc5 bundle/checksum generation is verified; GitHub release
+  upload remains manual/credentialed.
 
 ## v0.2.0
 

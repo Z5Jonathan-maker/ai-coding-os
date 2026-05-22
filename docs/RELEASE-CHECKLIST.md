@@ -52,6 +52,7 @@ Required result:
 - no secrets in tracked files
 - no unexplained private paths in public docs
 - fresh-clone dry-run verification passes without temp-home writes
+- public fixture demo passes in evaluator mode
 - root license is Apache-2.0
 - cockpit package license matches root Apache-2.0 license
 - browser mode boundary is visible

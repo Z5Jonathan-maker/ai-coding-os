@@ -27,6 +27,6 @@ named directly instead of hidden behind successful-looking demos.
 ## Must Fix Before Public Launch
 
 1. optionally replace deterministic preview media with real unlocked VS Code screenshots
-2. verify README on a fresh clone target
+2. validate install on one separate fresh macOS Apple Silicon account
 3. remove or explain any remaining personal-only paths in public docs
-4. create a tagged release candidate
+4. attach the rc5 release bundle/checksum to a GitHub release

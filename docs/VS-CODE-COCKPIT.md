@@ -8,6 +8,12 @@ The native cockpit extension lives at `vscode/ai-cockpit/` and is installed by
 `install.sh` into `~/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0`.
 It can also be packaged with `cc-package-cockpit`.
 
+Startup rule: the cockpit does not activate or auto-open by default. VS Code
+should boot to the user's normal workspace first; the cockpit loads only when
+opened from the Activity Bar or command palette. The first refresh loads daily
+health only, and deeper product/readiness reports run on demand from their
+buttons.
+
 It adds:
 
 - an Activity Bar container named `AI Cockpit`

@@ -96,7 +96,7 @@ function activate(context) {
     context.subscriptions.push(refreshStatus(statusItem));
   }
 
-  if (vscode.workspace.getConfiguration('aiSystemCockpit').get('openOnStartup', true)) {
+  if (vscode.workspace.getConfiguration('aiSystemCockpit').get('openOnStartup', false)) {
     setTimeout(() => vscode.commands.executeCommand('workbench.view.extension.aiSystemCockpit'), 1200);
   }
 }
@@ -215,26 +215,15 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, jobs, lanes] = await Promise.all([
+    const deferred = 'Not loaded on startup. Open this report to run the full check.';
+    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
-      shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
-      shellExec('cc-permission-matrix --summary', { timeout: 12000 }),
-      shellExec('cc-checkpoints summary', { timeout: 12000 }),
-      shellExec('cc-disk-readiness | sed -n "1,11p"', { timeout: 20000 }),
-      shellExec('cc-product-readiness | sed -n "1,36p"', { timeout: 120000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
       shellExec('cc-context-meter --include-diff | sed -n "1,16p"', { timeout: 12000 }),
       shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
-      shellExec(COMMANDS.contextSnapshot, { timeout: 12000 }),
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
-      shellExec(COMMANDS.sessionLedger, { timeout: 12000 }),
-      shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
-      shellExec('cc-native-app-status | sed -n "1,42p"', { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
-      shellExec(COMMANDS.repoMap, { timeout: 12000 }),
-      shellExec('cc-jobs | sed -n "1,10p"', { timeout: 12000 }),
-      shellExec('cc-lane capabilities | sed -n "1,14p"', { timeout: 12000 }),
     ]);
 
     this.view.webview.postMessage({
@@ -243,23 +232,23 @@ class CockpitProvider {
         readiness: summarizeReadiness(status.text),
         context: editorContext(),
         route: receipt.text,
-        metrics: metrics.text,
-        permissions: permissions.text,
-        checkpoints: checkpoints.text,
-        disk: disk.text,
-        product: product.text,
+        metrics: deferred,
+        permissions: deferred,
+        checkpoints: deferred,
+        disk: deferred,
+        product: deferred,
         firstRun: firstRun.text,
         contextMeter: contextMeter.text,
         contextMeterJson: contextMeterJson.text,
-        contextSnapshot: contextSnapshot.text,
+        contextSnapshot: '{}',
         diffSummary: diffSummary.text,
-        sessions: sessions.text,
-        pulse: pulse.text,
-        nativeApps: nativeApps.text,
+        sessions: '{}',
+        pulse: deferred,
+        nativeApps: deferred,
         kimi: kimi.text,
-        repoMap: repoMap.text,
-        jobs: jobs.text,
-        lanes: lanes.text,
+        repoMap: '{}',
+        jobs: deferred,
+        lanes: deferred,
       },
     });
   }

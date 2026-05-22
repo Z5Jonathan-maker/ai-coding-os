@@ -153,6 +153,7 @@
   });
 
   function deriveHealth(readiness, product, firstRun, kimi, route) {
+    const productKnown = /Status:\s*product-ready|Status:\s*not product-ready|Blockers:/i.test(product || '');
     const productReady = /Status:\s*product-ready/.test(product || '');
     const firstRunReady = /Status:\s*first-run-ready/.test(firstRun || '');
     const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || 'unknown';
@@ -178,7 +179,7 @@
         body: 'Daily routes are usable. Browser automation is using the shim profile, not the official logged-in Chrome extension.',
       };
     }
-    if (!productReady) {
+    if (productKnown && !productReady) {
       const blocker = (product || '').match(/Blockers:\n([\s\S]+)/)?.[1]?.split('\n').find(Boolean);
       return {
         level: 'degraded',

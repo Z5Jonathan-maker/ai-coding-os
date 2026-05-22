@@ -13,7 +13,7 @@
   "workbench.editor.tabSizing": "shrink",
   "window.confirmBeforeClose": "never",
   "window.confirmSaveUntitledWorkspace": false,
-  "window.restoreWindows": "all",
+  "window.restoreWindows": "none",
   "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace",
   "editor.fontSize": 13,
   "editor.tabSize": 2,
@@ -158,7 +158,7 @@
   "claudeCode.preferredLocation": "panel",
   "claudeCode.allowDangerouslySkipPermissions": false,
   "claudeCode.initialPermissionMode": "default",
-  "aiSystemCockpit.openOnStartup": true,
+  "aiSystemCockpit.openOnStartup": false,
   "aiSystemCockpit.showStatusBarButton": true,
   "json.schemaDownload.trustedDomains": {
     "https://schemastore.azurewebsites.net/": true,

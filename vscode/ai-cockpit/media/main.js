@@ -68,6 +68,8 @@
 
     const workstreamButton = event.target.closest('button[data-workstream-prompt]');
     if (workstreamButton) {
+      const article = workstreamButton.closest('.workstream');
+      if (article) selectWorkstream(article);
       const prompt = workstreamButton.dataset.workstreamPrompt || '';
       $('prompt').value = prompt;
       startTranscript(selectedMode, prompt);
@@ -79,6 +81,12 @@
         includeContext: $('includeContext').checked,
         contextBlock: fullContext(),
       });
+      return;
+    }
+
+    const workstream = event.target.closest('.workstream[data-workstream]');
+    if (workstream) {
+      selectWorkstream(workstream);
       return;
     }
 
@@ -175,6 +183,8 @@
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
     $('readinessBody').textContent = health.body;
+    const railLabel = $('railStatusLabel');
+    if (railLabel) railLabel.textContent = health.level === 'ready' ? 'Ready' : health.level === 'blocked' ? 'Blocked' : 'Degraded';
     $('context').textContent = context && context.label ? context.label : 'No active editor';
     $('statusDot').classList.toggle('warn', health.level === 'blocked');
     $('statusDot').classList.toggle('degraded', health.level === 'degraded');
@@ -220,6 +230,35 @@
     document.body.classList.toggle('is-running', running);
     const stop = $('stopRun');
     if (stop) stop.disabled = !running;
+    document.querySelectorAll('button[data-run-selected], button[data-workstream-prompt]').forEach((button) => {
+      button.disabled = running;
+      button.setAttribute('aria-busy', String(running));
+    });
+  }
+
+  function selectWorkstream(workstream) {
+    document.querySelectorAll('.workstream').forEach((item) => {
+      const active = item === workstream;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-selected', String(active));
+    });
+
+    setText('detailTitle', workstream.dataset.workstream);
+    setText('detailDescription', workstream.dataset.summary);
+    setText('detailFocus', workstream.dataset.focus);
+    setText('detailFocusBody', workstream.dataset.focusBody);
+    setText('detailRoute', workstream.dataset.route);
+    setText('detailStarted', workstream.dataset.started);
+
+    const progress = clamp(Number(workstream.dataset.progress || 0), 0, 100);
+    setText('detailProgress', `${progress}%`);
+    const progressBar = $('detailProgressBar');
+    if (progressBar) progressBar.style.width = `${progress}%`;
+  }
+
+  function setText(id, value) {
+    const node = $(id);
+    if (node && value) node.textContent = value;
   }
 
   function clearTranscriptPrompt() {

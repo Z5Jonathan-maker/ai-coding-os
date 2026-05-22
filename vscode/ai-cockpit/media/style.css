@@ -848,6 +848,7 @@ body.panel-mode {
   border-radius: 999px;
   color: #29243a;
   background: rgba(255, 255, 255, .82);
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background .16s ease;
 }
 
 .user-orb {
@@ -906,12 +907,17 @@ body.panel-mode {
   padding: 0 12px;
   color: #aeb6cc;
   background: transparent;
+  transition: color .16s ease, background .16s ease, transform .16s ease;
 }
 
 .rail-nav button.active,
 .rail-nav button:hover {
   color: #ffffff;
   background: #171b34;
+}
+
+.rail-nav button:hover {
+  transform: translateX(1px);
 }
 
 .rail-status {
@@ -1002,6 +1008,18 @@ body.panel-mode {
   border-radius: 16px;
   background: rgba(255, 255, 255, .9);
   box-shadow: 0 16px 42px rgba(89, 70, 180, .12);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.panel-mode .composer:focus-within {
+  border-color: #b9abff;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 18px 48px rgba(89, 70, 180, .16);
+}
+
+.panel-mode.is-running .composer {
+  border-color: #8f7cff;
+  box-shadow: 0 18px 54px rgba(89, 70, 180, .2);
 }
 
 .panel-mode .composer-head,
@@ -1072,6 +1090,12 @@ body.panel-mode {
   padding: 0 13px;
   color: #343044;
   background: #ffffff;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background .16s ease;
+}
+
+.panel-mode .pill:hover {
+  border-color: #d8d0ff;
+  transform: translateY(-1px);
 }
 
 .panel-mode .chips:empty {
@@ -1117,6 +1141,7 @@ body.panel-mode {
   color: #343044;
   border-color: #e5e1f3;
   background: #ffffff;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background .16s ease, opacity .16s ease;
 }
 
 .panel-mode .mode.active,
@@ -1158,12 +1183,20 @@ body.panel-mode {
   color: #17141f;
   background: rgba(255, 255, 255, .88);
   box-shadow: 0 1px 0 rgba(20, 20, 40, .03);
+  cursor: pointer;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease, background .16s ease;
 }
 
 .panel-mode .workstream.active {
   background:
     linear-gradient(90deg, rgba(124, 92, 255, .045), rgba(255, 255, 255, .92) 24%),
     rgba(255, 255, 255, .92);
+}
+
+.panel-mode .workstream:hover {
+  border-color: #d8d0ff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(68, 50, 160, .06);
 }
 
 .stream-status {
@@ -1335,6 +1368,17 @@ body.panel-mode {
   box-shadow: 0 8px 18px rgba(91, 75, 219, .22);
 }
 
+.panel-mode .stream-action:disabled,
+.panel-mode .primary:disabled {
+  cursor: wait;
+  opacity: .68;
+  transform: none;
+}
+
+.panel-mode.is-running .primary span::after {
+  content: " ...";
+}
+
 .panel-mode .workspace-detail {
   grid-area: detail;
   display: flex;
@@ -1351,6 +1395,7 @@ body.panel-mode {
   border-radius: 16px;
   background: rgba(255, 255, 255, .88);
   box-shadow: 0 12px 30px rgba(30, 20, 80, .05);
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
 
 .detail-card h2,
@@ -1390,6 +1435,7 @@ body.panel-mode {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(135deg, #6d5df6, #8f5cf6);
+  transition: width .22s ease;
 }
 
 .activity-card {
@@ -1576,6 +1622,80 @@ body.panel-mode {
 }
 
 @media (max-width: 760px) {
+  body.panel-mode {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "main"
+      "composer"
+      "detail"
+      "streams";
+    padding: 18px;
+    overflow: auto;
+  }
+
+  .panel-mode .workspace-rail,
+  .panel-mode .topbar {
+    display: none;
+  }
+
+  .panel-mode .home-intro,
+  .panel-mode .composer,
+  .panel-mode .workstreams-panel,
+  .panel-mode .workspace-detail {
+    grid-column: 1;
+  }
+
+  .panel-mode .home-intro {
+    padding-top: 0;
+  }
+
+  .panel-mode .workspace-detail {
+    min-height: auto;
+    padding-top: 0;
+    margin-bottom: 16px;
+    overflow: visible;
+  }
+
+  .panel-mode .workstreams-panel {
+    margin-top: 0;
+    overflow: visible;
+  }
+
+  .panel-mode .composer {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-mode .composer-pills {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .panel-mode .pill {
+    justify-content: center;
+    padding-inline: 10px;
+  }
+
+  .panel-mode .pill small {
+    display: none;
+  }
+
+  .panel-mode .workstream {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+  }
+
+  .panel-mode .workstream .avatar-stack,
+  .panel-mode .workstream .stream-meta,
+  .panel-mode .workstream .stream-action {
+    display: none;
+  }
+
+  .panel-mode .runrow {
+    width: auto;
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
   .panel-mode .control-deck,
   .permissionbar,
   .panel-mode .toolrow {

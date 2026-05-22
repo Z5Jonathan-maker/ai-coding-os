@@ -544,7 +544,7 @@ class CockpitProvider {
     </nav>
     <div class="rail-status">
       <span>System status</span>
-      <strong><i></i> Ready</strong>
+      <strong><i></i><span id="railStatusLabel">Ready</span></strong>
     </div>
   </aside>
 
@@ -655,7 +655,7 @@ class CockpitProvider {
       <h2>Your workstreams</h2>
       <button class="ghost-button">New workspace</button>
     </div>
-    <article class="workstream active">
+    <article class="workstream active" data-workstream="DoseCraft landing page" data-summary="Modern landing page for DoseCraft with pricing, FAQ, and marketing sections." data-focus="Building responsive pricing section" data-focus-body="Implementing UI and connecting it to CMS." data-progress="72" data-route="Codex - Kimi" data-started="Today, 9:41 AM">
       <div class="stream-icon dose"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 1.5 5.4 4.2 5.7 8.2l2.3 2.3-3.2 1.1-1.1 3.2-2.3-2.3C9.4 15.2 6.7 13.3 5.2 9.8L12 3Z"/><path d="M9 15l-3 3M14.5 8.5h.01"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 2m ago</span></div>
@@ -668,7 +668,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue DoseCraft landing page. Implement the responsive pricing section and connect it to CMS.">Continue</button>
     </article>
-    <article class="workstream">
+    <article class="workstream" data-workstream="AI cockpit polish" data-summary="Premium VS Code workspace cockpit with routing hidden under one primary Continue action." data-focus="Polish installed panel details" data-focus-body="Tightening animation, empty states, row selection, and responsive behavior." data-progress="81" data-route="Claude - Kimi" data-started="Today, 11:08 AM">
       <div class="stream-icon polish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
@@ -681,7 +681,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Claude - Kimi</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
     </article>
-    <article class="workstream">
+    <article class="workstream" data-workstream="Router reliability pass" data-summary="Regression coverage and fallback hardening for the multimodal routing layer." data-focus="Stabilize creative handoff routes" data-focus-body="Adding examples for Image 2.0 direction and Kimi implementation handoff." data-progress="58" data-route="Claude - Codex" data-started="Yesterday, 7:32 PM">
       <div class="stream-icon router"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5l2 3h7"/><path d="M5 17h5l2-3h7"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
@@ -694,7 +694,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue the router reliability pass. Add regression coverage for creative direction and implementation handoff.">Continue</button>
     </article>
-    <article class="workstream blocked">
+    <article class="workstream blocked" data-workstream="Review failing tests" data-summary="Failure triage workspace for release and integration gates." data-focus="Isolate integration failure" data-focus-body="Find the smallest broken path, rerun the gate, then patch without broad refactors." data-progress="31" data-route="Codex" data-started="Yesterday, 4:18 PM">
       <div class="stream-icon tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4h8v3"/><path d="M6 11h12"/><path d="M7 7h10v12H7z"/><path d="M4 15h3M17 15h3M9 19l-2 2M15 19l2 2"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
@@ -707,7 +707,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Review failing tests. Isolate the integration failure, rerun the relevant gate, and report the safest fix.">Continue</button>
     </article>
-    <article class="workstream">
+    <article class="workstream" data-workstream="Browser auth setup" data-summary="Official logged-in Chrome bridge configuration for authenticated browser tasks." data-focus="Complete OAuth session storage" data-focus-body="Verify the extension-backed session before browser-dependent automations run." data-progress="64" data-route="Kimi Web" data-started="May 21, 2:16 PM">
       <div class="stream-icon browser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/><path d="M9 15h6"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1d ago</span></div>
@@ -727,18 +727,18 @@ class CockpitProvider {
       <div class="detail-head">
         <div>
           <span class="detail-kicker">Active workspace</span>
-          <h2>DoseCraft landing page</h2>
+          <h2 id="detailTitle">DoseCraft landing page</h2>
         </div>
         <button class="mini-button">...</button>
       </div>
-      <p>Modern landing page for DoseCraft with pricing, FAQ, and marketing sections.</p>
-      <div class="progress-row"><span>Overall progress</span><strong>72%</strong></div>
-      <div class="progress"><span style="width:72%"></span></div>
+      <p id="detailDescription">Modern landing page for DoseCraft with pricing, FAQ, and marketing sections.</p>
+      <div class="progress-row"><span>Overall progress</span><strong id="detailProgress">72%</strong></div>
+      <div class="progress"><span id="detailProgressBar" style="width:72%"></span></div>
     </div>
     <div class="detail-card">
       <span class="detail-kicker">Current focus</span>
-      <h3>Building responsive pricing section</h3>
-      <p>Implementing UI and connecting it to CMS.</p>
+      <h3 id="detailFocus">Building responsive pricing section</h3>
+      <p id="detailFocusBody">Implementing UI and connecting it to CMS.</p>
     </div>
     <div class="detail-card activity-card">
       <div class="section-head">
@@ -752,9 +752,9 @@ class CockpitProvider {
       <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Design reference applied</strong><small>Image 2.0 - 12m ago</small></div><em>routed</em></div>
     </div>
     <div class="detail-card route-card">
-      <span>Route</span><strong>Codex - Kimi</strong>
+      <span>Route</span><strong id="detailRoute">Codex - Kimi</strong>
       <span>Models used</span><strong class="model-stack"><i>K</i><i>C</i><i>G</i></strong>
-      <span>Started</span><strong>Today, 9:41 AM</strong>
+      <span>Started</span><strong id="detailStarted">Today, 9:41 AM</strong>
     </div>
   </aside>
 

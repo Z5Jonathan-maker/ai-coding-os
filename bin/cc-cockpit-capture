@@ -255,6 +255,14 @@ capture_panel() {
   printf 'captured %s\n' "$OUT_DIR/$out"
 }
 
+capture_panel_mobile() {
+  local name="$1" title="$2" hero="$3" body="$4" cards="$5" out="$6"
+  local html="$tmp/$name.html"
+  write_page "$html" "$title" "$hero" "$body" "$cards" "panel-mode"
+  playwright screenshot --channel chrome --viewport-size 430,932 --full-page "file://$html" "$OUT_DIR/$out" >/dev/null
+  printf 'captured %s\n' "$OUT_DIR/$out"
+}
+
 capture "readiness" "Product Readiness" "Ready with capacity warning" \
   "Product gate is green. Provider capacity is visible separately so quota exhaustion is never hidden." \
   "$(card "Product Readiness" "Score: 15/15 checks (100%)\nStatus: product-ready" "View Gate")$(card "Provider Capacity" "Claude: quota_exhausted until reset\nCodex: ready\nKimi: ready\nDeepSeek: ready\nStatus: degraded" "View Capacity")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
@@ -284,6 +292,11 @@ capture_panel "full-panel" "Full Cockpit Panel" "Full-panel work surface" \
   "The full editor panel keeps the work stream large and puts the command composer below it." \
   "$(card "Route" "Selected: auto\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")" \
   "06-full-panel.png"
+
+capture_panel_mobile "full-panel-mobile" "Full Cockpit Panel Mobile" "Narrow-panel work surface" \
+  "The full panel collapses into a focused single-column work surface." \
+  "$(card "Route" "Selected: auto\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")" \
+  "07-full-panel-mobile.png"
 
 if command -v sips >/dev/null 2>&1; then
   sips -s format gif "$OUT_DIR/05-composer.png" --out "$OUT_DIR/05-composer.gif" >/dev/null

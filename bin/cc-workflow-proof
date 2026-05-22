@@ -5,9 +5,13 @@ prompt="${*:-debug this repo and verify the safest next step}"
 
 printf '# Workflow Proof\n\n'
 
-printf '## Product Readiness\n\n```text\n'
-cc-product-readiness | sed -n '1,28p'
-printf '```\n\n'
+if [ "${CC_WORKFLOW_PROOF_SKIP_READINESS:-0}" = 1 ]; then
+  printf "## Product Readiness\n\n\`\`\`text\nskipped by CC_WORKFLOW_PROOF_SKIP_READINESS=1\n\`\`\`\n\n"
+else
+  printf '## Product Readiness\n\n```text\n'
+  cc-product-readiness | sed -n '1,28p'
+  printf '```\n\n'
+fi
 
 printf '## Route Preview\n\n```text\n'
 "$HOME/AI-SYSTEM-V2/scripts/intent-route.sh" --dry-run "$prompt" | sed -n '1,34p'

@@ -26,6 +26,7 @@ steps may be skipped.
 - issue templates and workflow YAML parse
 - license metadata is aligned
 - launch media exists
+- public fixture demo works without private project context
 - macOS first-run doctor is understandable when run on macOS
 - cockpit packaging works when Node/npm are available
 

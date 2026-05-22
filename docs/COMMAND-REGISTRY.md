@@ -63,7 +63,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-session-ledger` — recent routed sessions, cwd-aware resume metadata, stale state, lanes, models, fallbacks, sticky state, and transcript turn summaries; supports `--json`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
-- `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet.
+- `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
 
 ## Claude/Codex workflow helpers
 

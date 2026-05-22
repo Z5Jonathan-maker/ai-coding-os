@@ -57,6 +57,7 @@ fi
 
 if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
   run_optional "Cockpit package" "$DOTFILES/bin/cc-package-cockpit"
+  run_optional "Public fixture demo" env CC_WORKFLOW_PROOF_SKIP_READINESS=1 "$DOTFILES/bin/cc-demo-fixture"
 else
   printf '\n## Cockpit package\n'
   printf 'skip Cockpit package\n'

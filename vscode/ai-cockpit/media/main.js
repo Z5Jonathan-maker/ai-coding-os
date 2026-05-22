@@ -171,7 +171,7 @@
 
   function formatTranscript(title, body) {
     const prompt = activePrompt ? `You\n${activePrompt}\n\n` : '';
-    return `${prompt}${title || 'AI'}\n${body || '(no output)'}`;
+    return `${prompt}${title || 'AI'}\n${cleanOutput(body)}`;
   }
 
   function modeLabel(mode) {
@@ -182,6 +182,35 @@
       researchExtract: 'Research / Extract',
       explainRoute: 'Route Preview',
     }[mode] || 'AI';
+  }
+
+  function cleanOutput(body) {
+    const text = String(body || '').trim();
+    if (!text) return '(no output)';
+    return text
+      .split('\n')
+      .map(line => formatRouterNotice(line))
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  function formatRouterNotice(line) {
+    const trimmed = line.trim();
+    if (/^Receipt:\s*\{/.test(trimmed)) return 'Receipt: recorded internally';
+    if (!trimmed.startsWith('{')) return line;
+    try {
+      const event = JSON.parse(trimmed);
+      if (event.type === 'circuit_breaker_open') {
+        const tier = event.data && event.data.tierId ? ` (${event.data.tierId})` : '';
+        return `Router notice: precision lane${tier} is degraded. Auto will continue through the available fallback chain.`;
+      }
+      if (event.level === 'warn' && event.message) {
+        return `Router notice: ${event.message}`;
+      }
+    } catch (_) {
+      return line;
+    }
+    return line;
   }
 
   function deriveHealth(readiness, product, firstRun, kimi, route) {

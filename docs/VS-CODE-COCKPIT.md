@@ -41,9 +41,10 @@ It adds:
   Code/Browser/Extract/Route modes, streaming results, attached file/diff
   context, current file/selection context, and `cmd+enter` execution
 - work stream controls for copy, clear, and stopping the active routed process
-- inline report rendering for route receipts, router metrics, permission
-  matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
-  status, Kimi status, product readiness, and disk readiness
+- inline report rendering for route receipts, router metrics, provider
+  capacity, permission matrix, checkpoints, jobs, lanes, context pressure,
+  Pulse status, native app status, Kimi status, product readiness, and disk
+  readiness
 - visual context-pressure and file-change cards: token pressure, output reserve,
   available context, changed-file count, added/removed lines, and hunk summary
 - a status bar readiness button
@@ -81,6 +82,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Browser Check` | Validate browser/UI task routing for a target |
 | `AI: Route Receipt` | Show latest route decision, fallback, quota, token receipt |
 | `AI: Router Metrics` | Show usage mix, fallback pressure, failures, tokens, and sessions |
+| `AI: Provider Capacity` | Show live Claude/Kimi/DeepSeek availability and quota exhaustion separately from install health |
 | `AI: Permission Matrix` | Show allowed, review-required, and denied autonomy boundaries |
 | `AI: Save Plan` | Write a read-only plan artifact to `.ai/plans/` |
 | `AI: Review Diff` | Review current git diff through the precision lane |

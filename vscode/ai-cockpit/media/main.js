@@ -154,8 +154,8 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap } = message.payload;
-    const health = deriveHealth(readiness, product, firstRun, kimi, route);
+    const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap } = message.payload;
+    const health = deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity);
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
     $('readinessBody').textContent = health.body;
@@ -164,6 +164,7 @@
     $('statusDot').classList.toggle('degraded', health.level === 'degraded');
     $('route').textContent = route || 'No route receipt available.';
     $('metrics').textContent = metrics || 'No router metrics available.';
+    $('providerCapacity').textContent = providerCapacity || 'No provider capacity report available.';
     $('permissions').textContent = permissions || 'No permission matrix available.';
     $('checkpoints').textContent = checkpoints || 'No checkpoints available.';
     $('disk').textContent = disk || 'No disk readiness report available.';
@@ -177,7 +178,7 @@
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
     $('kimi').textContent = kimi || 'No Kimi status available.';
-    renderStatusGrid(route, parseJson(diffSummary), parseJson(contextMeterJson), kimi);
+    renderStatusGrid(route, parseJson(diffSummary), parseJson(contextMeterJson), providerCapacity);
     renderRepoMap(parseJson(repoMap));
     $('jobs').textContent = message.payload.jobs || 'No jobs available.';
     $('lanes').textContent = message.payload.lanes || 'No lane registry available.';
@@ -256,12 +257,14 @@
     return line;
   }
 
-  function deriveHealth(readiness, product, firstRun, kimi, route) {
+  function deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity) {
     const productKnown = /Status:\s*product-ready|Status:\s*not product-ready|Blockers:/i.test(product || '');
     const productReady = /Status:\s*product-ready/.test(product || '');
     const firstRunReady = /Status:\s*first-run-ready/.test(firstRun || '');
     const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || 'unknown';
     const precisionOpen = /tier3:open|precision.*open/i.test(route || '');
+    const claudeQuota = /Claude\s+quota_exhausted/i.test(providerCapacity || '');
+    const providerDegraded = /status=degraded|warn/i.test(providerCapacity || '');
     if (!firstRunReady) {
       return {
         level: 'blocked',
@@ -274,6 +277,21 @@
         level: 'degraded',
         title: 'Ready, code lane degraded',
         body: 'The precision/code lane circuit is open. Use Auto mode so the router can choose a working fallback, or inspect Route Receipt.',
+      };
+    }
+    if (claudeQuota) {
+      const reset = String(providerCapacity || '').match(/resets[^\n]+/)?.[0] || 'Claude quota is exhausted.';
+      return {
+        level: 'degraded',
+        title: 'Ready, Claude quota exhausted',
+        body: `Auto fallback is working through Kimi and DeepSeek. Precision lane reset: ${reset}`,
+      };
+    }
+    if (providerDegraded) {
+      return {
+        level: 'degraded',
+        title: 'Ready, provider capacity degraded',
+        body: 'One provider lane is degraded. Auto mode remains usable through the available fallback chain.',
       };
     }
     if (browserMode === 'shim') {
@@ -321,18 +339,17 @@
     $('contextUsedBar').className = data.status === 'high' ? 'danger' : data.status === 'medium' ? 'caution' : '';
   }
 
-  function renderStatusGrid(route, diff, context, kimi) {
+  function renderStatusGrid(route, diff, context, providerCapacity) {
     const routeMatch = String(route || '').match(/Latest:\s*([^\n|]+)/);
     $('routePill').textContent = routeMatch ? routeMatch[1].trim().slice(0, 18) : 'Auto';
     const files = Number(diff.fileCount || 0);
     $('diffPill').textContent = diff.clean ? 'Clean' : `${files} file${files === 1 ? '' : 's'}`;
     const used = clamp(Number(context.usedPercent || 0), 0, 100);
     $('contextPill').textContent = `${used}%`;
-    const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || '';
-    $('browserPill').textContent = browserMode === 'official-extension'
-      ? 'Ready'
-      : browserMode === 'shim'
-        ? 'Shim'
+    $('capacityPill').textContent = /status=full-capacity/.test(providerCapacity || '')
+      ? 'Full'
+      : /status=degraded|quota_exhausted|warn/.test(providerCapacity || '')
+        ? 'Degraded'
         : 'Check';
   }
 

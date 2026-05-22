@@ -159,7 +159,8 @@ Route selected: precision -> claude
 Fallback: design/kimi -> cheap/deepseek
 
 Working tree clean.
-Product readiness: 14/14.
+Product readiness: 15/15.
+Provider capacity: 2/3, degraded until Claude quota reset.
 Next step: keep changes scoped, verify release gate, then ship.</pre>
   </section>
 
@@ -169,7 +170,7 @@ Next step: keep changes scoped, verify release gate, then ship.</pre>
       <button><span>Route</span><strong>Auto</strong></button>
       <button><span>Changes</span><strong>6 files</strong></button>
       <button><span>Context</span><strong>1%</strong></button>
-      <button><span>Browser</span><strong>Shim</strong></button>
+      <button><span>Capacity</span><strong>Degraded</strong></button>
     </section>
   </details>
 
@@ -206,9 +207,9 @@ capture_panel() {
   printf 'captured %s\n' "$OUT_DIR/$out"
 }
 
-capture "readiness" "Product Readiness" "Ready with browser shim" \
-  "Product gate is green. Browser automation is using the shim profile, not the official logged-in Chrome extension." \
-  "$(card "Product Readiness" "Score: 14/14 checks (100%)\nStatus: product-ready" "View Gate")$(card "Disk" "Free: 25GB\nMinimum gate: 25GB\nStatus: PASS" "View Disk Report")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
+capture "readiness" "Product Readiness" "Ready with capacity warning" \
+  "Product gate is green. Provider capacity is visible separately so quota exhaustion is never hidden." \
+  "$(card "Product Readiness" "Score: 15/15 checks (100%)\nStatus: product-ready" "View Gate")$(card "Provider Capacity" "Claude: quota_exhausted until reset\nKimi: ready\nDeepSeek: ready\nStatus: degraded" "View Capacity")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
   "01-readiness.png"
 
 capture "first-run" "First Run Doctor" "First-run ready" \
@@ -221,14 +222,14 @@ capture "route" "Route Receipt" "Deterministic route proof" \
   "$(card "Route" "Selected: precision -> claude\nFallback: precision/claude -> design/kimi -> cheap/deepseek\nHard floor: false" "View Receipt")$(card "Metrics" "Fallbacks: 21\nTokens logged: 490\nCost today: \$0.0000 / \$10.00" "View Metrics")$(card "Sessions" "Recent routed sessions and sticky state visible." "View Sessions")" \
   "03-route-receipt.png"
 
-capture "browser" "Browser Proof" "Browser mode: shim" \
-  "Mode is explicit. Shim is valid for proof and demos but not equivalent to logged-in Chrome control." \
-  "$(card "Kimi" "Desktop: installed\nCLI: v1.41.0\nWebBridge: running=true\nmode=shim" "View Kimi Status")$(card "Browser Proof" "Browser mode: shim\nWebBridge: running=true extension_connected=true\nbounded page proof returned" "View Proof")$(card "Known Boundary" "Official extension requires user approval." "View Boundary")" \
+capture "browser" "Browser Proof" "Browser mode: official" \
+  "Mode is explicit. Browser automation is attached to the official logged-in Chrome extension." \
+  "$(card "Kimi" "Desktop: installed\nCLI: v1.41.0\nWebBridge: running=true\nmode=official-extension" "View Kimi Status")$(card "Browser Proof" "Browser mode: official-extension\nWebBridge: running=true extension_connected=true\nbounded page proof returned" "View Proof")$(card "Known Boundary" "If extension disconnects, the cockpit reports it instead of masking it." "View Boundary")" \
   "04-browser-proof.png"
 
 capture "composer" "Composer" "Auto-first execution" \
   "Auto, Code, Browser, Extract, and Route are intent modes. The router owns model choice and fallback." \
-  "$(card "Route" "Circuits: design:closed | image:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
+  "$(card "Route" "Circuits: design:closed | image:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "Provider Capacity" "Claude: quota_exhausted\nKimi: ready\nDeepSeek: ready" "View Capacity")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
   "05-composer.png"
 
 capture_panel "full-panel" "Full Cockpit Panel" "Full-panel work surface" \

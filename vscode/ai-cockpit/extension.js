@@ -10,6 +10,7 @@ const COMMANDS = {
   systemDemo: 'cc-system-demo',
   routeReceipt: 'cc-router-receipt',
   routerMetrics: 'cc-router-metrics',
+  providerCapacity: 'cc-provider-capacity',
   permissionMatrix: 'cc-permission-matrix',
   checkpoints: 'cc-checkpoints',
   loopQuality: 'cc-loop-quality',
@@ -60,6 +61,7 @@ function activate(context) {
     command('aiSystemCockpit.systemDemo', () => showOutput(output, 'System Demo', COMMANDS.systemDemo)),
     command('aiSystemCockpit.routeReceipt', () => showOutput(output, 'Route Receipt', COMMANDS.routeReceipt)),
     command('aiSystemCockpit.routerMetrics', () => showOutput(output, 'Router Metrics', COMMANDS.routerMetrics)),
+    command('aiSystemCockpit.providerCapacity', () => showOutput(output, 'Provider Capacity', COMMANDS.providerCapacity)),
     command('aiSystemCockpit.permissionMatrix', () => showOutput(output, 'Permission Matrix', COMMANDS.permissionMatrix)),
     command('aiSystemCockpit.checkpoints', () => showOutput(output, 'Checkpoints', COMMANDS.checkpoints)),
     command('aiSystemCockpit.loopQuality', () => showOutput(output, 'Loop Quality', COMMANDS.loopQuality)),
@@ -238,7 +240,7 @@ class CockpitProvider {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
     const deferred = 'Not loaded on startup. Open this report to run the full check.';
-    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi] = await Promise.all([
+    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi, providerCapacity] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
@@ -246,6 +248,7 @@ class CockpitProvider {
       shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
+      shellExec('cc-provider-capacity | sed -n "1,24p"', { timeout: 45000 }),
     ]);
 
     this.view.webview.postMessage({
@@ -255,6 +258,7 @@ class CockpitProvider {
         context: editorContext(),
         route: receipt.text,
         metrics: deferred,
+        providerCapacity: providerCapacity.text,
         permissions: deferred,
         checkpoints: deferred,
         disk: deferred,
@@ -293,6 +297,7 @@ class CockpitProvider {
       systemDemo: () => vscode.commands.executeCommand('aiSystemCockpit.systemDemo'),
       routeReceipt: () => vscode.commands.executeCommand('aiSystemCockpit.routeReceipt'),
       routerMetrics: () => vscode.commands.executeCommand('aiSystemCockpit.routerMetrics'),
+      providerCapacity: () => vscode.commands.executeCommand('aiSystemCockpit.providerCapacity'),
       permissionMatrix: () => vscode.commands.executeCommand('aiSystemCockpit.permissionMatrix'),
       checkpoints: () => vscode.commands.executeCommand('aiSystemCockpit.checkpoints'),
       loopQuality: () => vscode.commands.executeCommand('aiSystemCockpit.loopQuality'),
@@ -595,7 +600,7 @@ class CockpitProvider {
       <button data-inline-name="Route Receipt" data-inline-command="cc-router-receipt"><span>Route</span><strong id="routePill">Auto</strong></button>
       <button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks"><span>Changes</span><strong id="diffPill">--</strong></button>
       <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff"><span>Context</span><strong id="contextPill">--</strong></button>
-      <button data-command="kimiStatus"><span>Browser</span><strong id="browserPill">--</strong></button>
+      <button data-inline-name="Provider Capacity" data-inline-command="cc-provider-capacity"><span>Capacity</span><strong id="capacityPill">--</strong></button>
     </section>
   </details>
 
@@ -630,6 +635,7 @@ class CockpitProvider {
     <summary>System</summary>
     <section class="cards">
       <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
+      <article><h2>Provider Capacity</h2><pre id="providerCapacity">Loading...</pre><button data-inline-name="Provider Capacity" data-inline-command="cc-provider-capacity">View Capacity</button></article>
       <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>
       <article><h2>Kimi</h2><pre id="kimi">Loading...</pre><button data-inline-name="Kimi Status" data-inline-command="cc-kimi-status">View Kimi Status</button></article>
       <article><h2>Disk</h2><pre id="disk">Loading...</pre><button data-inline-name="Disk Readiness" data-inline-command="cc-disk-readiness">View Disk Report</button></article>

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+
+printf '# Provider Capacity\n\n'
+printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'Router: %s\n\n' "$ROUTER"
+
+node - "$ROUTER" <<'NODE'
+const root = process.argv[2];
+const path = require('path');
+process.chdir(root);
+
+const { callAnthropic, probeHealth: probeClaude, PRIMARY: claudeModel } = require(path.join(root, 'lib/anthropic-client.cjs'));
+const { probeHealth: probeKimi, PRIMARY: kimiModel } = require(path.join(root, 'lib/kimi-client.cjs'));
+const { probeHealth: probeDeepSeek, PRIMARY: deepseekModel } = require(path.join(root, 'lib/deepseek-client.cjs'));
+const { classifyError } = require(path.join(root, 'lib/error-classify.cjs'));
+
+function oneLine(value) {
+  return String(value ?? '').replace(/\s+/g, ' ').trim();
+}
+
+async function claudeCapacity() {
+  const probe = await probeClaude();
+  if (!probe.ok) return { lane: 'precision', provider: 'Claude', model: claudeModel, status: 'down', detail: probe.reason || 'version probe failed' };
+  try {
+    await callAnthropic(claudeModel, '', 'Reply with exactly: ok', { retries: 0, timeout: 30000 });
+    return { lane: 'precision', provider: 'Claude', model: claudeModel, status: 'ready', detail: 'prompt call succeeded' };
+  } catch (error) {
+    if (error.status === 429 || /out of extra usage|rate.?limit|quota/i.test(error.message || '')) {
+      return { lane: 'precision', provider: 'Claude', model: claudeModel, status: 'quota_exhausted', detail: error.message.replace(/^claude CLI \d+:\s*/, '') };
+    }
+    return { lane: 'precision', provider: 'Claude', model: claudeModel, status: classifyError(error), detail: error.message };
+  }
+}
+
+async function probeLane(lane, provider, model, probeFn) {
+  try {
+    const probe = await probeFn();
+    return { lane, provider, model, status: probe.ok ? 'ready' : 'down', detail: probe.version || probe.reason || JSON.stringify(probe) };
+  } catch (error) {
+    return { lane, provider, model, status: 'down', detail: error.message };
+  }
+}
+
+(async () => {
+  const rows = [
+    await claudeCapacity(),
+    await probeLane('design/browser', 'Kimi', kimiModel, probeKimi),
+    await probeLane('cheap/bulk', 'DeepSeek', deepseekModel, probeDeepSeek),
+  ];
+
+  for (const row of rows) {
+    console.log(`${row.status === 'ready' ? 'ok  ' : 'warn'} ${row.lane.padEnd(14)} ${row.provider.padEnd(8)} ${row.status}`);
+    console.log(`     model=${row.model}`);
+    console.log(`     ${oneLine(row.detail)}`);
+  }
+
+  const ready = rows.filter(r => r.status === 'ready').length;
+  const degraded = rows.some(r => r.status !== 'ready');
+  console.log(`\nready=${ready}/${rows.length} status=${degraded ? 'degraded' : 'full-capacity'}`);
+})();
+NODE

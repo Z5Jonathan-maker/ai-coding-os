@@ -37,6 +37,7 @@
       { "command": "aiSystemCockpit.reviewDiff", "title": "AI Cockpit: Review Diff" },
       { "command": "aiSystemCockpit.routeReceipt", "title": "AI Cockpit: Route Receipt" },
       { "command": "aiSystemCockpit.routerMetrics", "title": "AI Cockpit: Router Metrics" },
+      { "command": "aiSystemCockpit.providerCapacity", "title": "AI Cockpit: Provider Capacity" },
       { "command": "aiSystemCockpit.permissionMatrix", "title": "AI Cockpit: Permission Matrix" },
       { "command": "aiSystemCockpit.checkpoints", "title": "AI Cockpit: Checkpoints" },
       { "command": "aiSystemCockpit.loopQuality", "title": "AI Cockpit: Loop Quality" },

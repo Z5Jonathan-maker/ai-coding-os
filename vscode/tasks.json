@@ -95,6 +95,12 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Provider Capacity",
+      "type": "shell",
+      "command": "cc-provider-capacity",
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Permission Matrix",
       "type": "shell",
       "command": "cc-permission-matrix",

@@ -460,70 +460,80 @@ class CockpitProvider {
     <div class="status-dot" id="statusDot"></div>
     <div>
       <strong id="readinessTitle">Checking readiness</strong>
-      <p id="readinessBody">Loading lane registry, router smoke, disk gate, and live config links.</p>
+      <p id="readinessBody">Loading routes, setup, provider circuits, and disk gate.</p>
     </div>
   </section>
 
   <section class="composer">
     <div class="composer-head">
-      <label for="prompt">Ask</label>
+      <label for="prompt">Command</label>
       <span id="context">No active editor</span>
     </div>
-    <div class="modebar" role="tablist" aria-label="Mode">
-      <button class="mode active" data-mode="autoRun">Auto</button>
-      <button class="mode" data-mode="buildFix">Code</button>
-      <button class="mode" data-mode="designBrowser">Browser</button>
-      <button class="mode" data-mode="researchExtract">Extract</button>
-      <button class="mode" data-mode="explainRoute">Route</button>
-    </div>
-    <textarea id="prompt" rows="5" placeholder="Tell the system what to do. Auto lets the router choose the lane and fallback."></textarea>
+    <textarea id="prompt" rows="5" placeholder="Ask, build, debug, browse, or extract..."></textarea>
     <div class="chips" id="chips"></div>
-    <label class="check">
-      <input id="includeContext" type="checkbox" checked>
-      Include current file or selection
-    </label>
     <div class="runrow">
       <button class="primary" data-run-selected="true">Run</button>
       <button data-run="explainRoute">Preview Route</button>
     </div>
+    <details class="mode-drawer">
+      <summary>Mode: Auto</summary>
+      <div class="modebar" role="tablist" aria-label="Mode">
+        <button class="mode active" data-mode="autoRun">Auto</button>
+        <button class="mode" data-mode="buildFix">Code</button>
+        <button class="mode" data-mode="designBrowser">Browser</button>
+        <button class="mode" data-mode="researchExtract">Extract</button>
+        <button class="mode" data-mode="explainRoute">Route</button>
+      </div>
+    </details>
     <div class="toolrow">
       <button data-command="pickFile">Attach File</button>
       <button data-command="attachDiff">Attach Diff</button>
       <button data-command="reviewDiff">Review Diff</button>
     </div>
+    <label class="check">
+      <input id="includeContext" type="checkbox" checked>
+      Include active file
+    </label>
   </section>
 
-  <section class="quickbar">
-    <button data-command="productReadiness">Health</button>
-    <button data-command="reviewDiff">Review Diff</button>
-    <button data-command="browserProof">Browser Proof</button>
-    <button data-command="fiveMinuteDemo">Demo</button>
-  </section>
-
-  <section class="cards primary-cards">
-    <article><h2>Route</h2><pre id="route">Loading...</pre><button data-inline-name="Route Receipt" data-inline-command="cc-router-receipt">View Receipt</button></article>
-    <article><h2>File Changes</h2><div class="statline"><span><strong id="diffFiles">--</strong><small>files</small></span><span><strong id="diffAdded">--</strong><small>added</small></span><span><strong id="diffRemoved">--</strong><small>removed</small></span></div><pre id="diffSummary">Loading...</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Diff</button></article>
-    <article class="metric-card">
-      <h2>Context Pressure</h2>
-      <div class="statline">
-        <span><strong id="contextUsed">--</strong><small>used</small></span>
-        <span><strong id="contextAvailable">--</strong><small>available</small></span>
-        <span><strong id="contextDiff">--</strong><small>diff chars</small></span>
-      </div>
-      <div class="meter" aria-label="Context usage">
-        <span id="contextUsedBar"></span>
-        <span id="contextReserveBar"></span>
-      </div>
-      <p id="contextStatus">Loading context pressure.</p>
-      <pre id="contextMeter">Loading...</pre>
-      <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button>
-    </article>
-    <article class="result"><h2 id="resultTitle">Last Result</h2><pre id="result">Run Explain Route from the prompt composer to see output here.</pre></article>
+  <section class="result-panel">
+    <div class="panel-head">
+      <h2 id="resultTitle">Result</h2>
+      <button data-command="fiveMinuteDemo">Demo</button>
+    </div>
+    <pre id="result">Ready.</pre>
   </section>
 
   <details open>
-    <summary>Project Context</summary>
+    <summary>Overview</summary>
+    <section class="status-grid" aria-label="Live cockpit state">
+      <button data-inline-name="Route Receipt" data-inline-command="cc-router-receipt"><span>Route</span><strong id="routePill">Auto</strong></button>
+      <button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks"><span>Changes</span><strong id="diffPill">--</strong></button>
+      <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff"><span>Context</span><strong id="contextPill">--</strong></button>
+      <button data-command="kimiStatus"><span>Browser</span><strong id="browserPill">--</strong></button>
+    </section>
+  </details>
+
+  <details>
+    <summary>Context</summary>
     <section class="cards">
+      <article><h2>Route</h2><pre id="route">Loading...</pre><button data-inline-name="Route Receipt" data-inline-command="cc-router-receipt">View Receipt</button></article>
+      <article><h2>File Changes</h2><div class="statline"><span><strong id="diffFiles">--</strong><small>files</small></span><span><strong id="diffAdded">--</strong><small>added</small></span><span><strong id="diffRemoved">--</strong><small>removed</small></span></div><pre id="diffSummary">Loading...</pre><button data-inline-name="Diff Hunks" data-inline-command="cc-diff-hunks">View Diff</button></article>
+      <article class="metric-card">
+        <h2>Context Pressure</h2>
+        <div class="statline">
+          <span><strong id="contextUsed">--</strong><small>used</small></span>
+          <span><strong id="contextAvailable">--</strong><small>available</small></span>
+          <span><strong id="contextDiff">--</strong><small>diff chars</small></span>
+        </div>
+        <div class="meter" aria-label="Context usage">
+          <span id="contextUsedBar"></span>
+          <span id="contextReserveBar"></span>
+        </div>
+        <p id="contextStatus">Loading context pressure.</p>
+        <pre id="contextMeter">Loading...</pre>
+        <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button>
+      </article>
       <article><h2>Repo Map</h2><pre id="repoMap">Loading...</pre><button data-inline-name="Repo Map" data-inline-command="cc-repo-map 30">View Repo Map</button></article>
       <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
       <article><h2>Context Providers</h2><pre id="contextSnapshot">Loading...</pre><button data-inline-name="Context Snapshot" data-inline-command="cc-context-snapshot --json">View Snapshot</button></article>
@@ -532,7 +542,7 @@ class CockpitProvider {
   </details>
 
   <details>
-    <summary>System Checks</summary>
+    <summary>System</summary>
     <section class="cards">
       <article><h2>Product Readiness</h2><pre id="product">Loading...</pre><button data-inline-name="Product Readiness" data-inline-command="cc-product-readiness">View Gate</button></article>
       <article><h2>First Run</h2><pre id="firstRun">Loading...</pre><button data-inline-name="First Run Doctor" data-inline-command="cc-first-run">View Doctor</button></article>

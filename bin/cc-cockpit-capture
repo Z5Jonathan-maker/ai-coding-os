@@ -83,28 +83,47 @@ HTML
       <label for="prompt">Ask</label>
       <span id="context">vscode/ai-cockpit/extension.js:209</span>
     </div>
-    <div class="modebar" role="tablist" aria-label="Mode">
-      <button class="mode active">Auto</button>
-      <button class="mode">Code</button>
-      <button class="mode">Browser</button>
-      <button class="mode">Extract</button>
-      <button class="mode">Route</button>
-    </div>
     <textarea id="prompt" rows="5">Debug this repo and verify the safest next step.</textarea>
     <div class="chips"><button class="chip">git diff x</button><button class="chip">README.md x</button></div>
-    <label class="check"><input type="checkbox" checked> Include current file or selection</label>
     <div class="runrow"><button class="primary">Run</button><button>Preview Route</button></div>
+    <details class="mode-drawer">
+      <summary>Mode: Auto</summary>
+      <div class="modebar" role="tablist" aria-label="Mode">
+        <button class="mode active">Auto</button>
+        <button class="mode">Code</button>
+        <button class="mode">Browser</button>
+        <button class="mode">Extract</button>
+        <button class="mode">Route</button>
+      </div>
+    </details>
     <div class="toolrow"><button>Attach File</button><button>Attach Diff</button><button>Review Diff</button></div>
+    <label class="check"><input type="checkbox" checked> Include active file</label>
   </section>
 
-  <section class="quickbar">
-    <button>Health</button><button>Review Diff</button>
-    <button>Browser Proof</button><button>Demo</button>
+  <section class="result-panel">
+    <div class="panel-head">
+      <h2>Result</h2>
+      <button>Demo</button>
+    </div>
+    <pre>Ready.</pre>
   </section>
 
-  <section class="cards primary-cards">
+  <details open>
+    <summary>Overview</summary>
+    <section class="status-grid" aria-label="Live cockpit state">
+      <button><span>Route</span><strong>Auto</strong></button>
+      <button><span>Changes</span><strong>6 files</strong></button>
+      <button><span>Context</span><strong>1%</strong></button>
+      <button><span>Browser</span><strong>Shim</strong></button>
+    </section>
+  </details>
+
+  <details>
+    <summary>Context</summary>
+    <section class="cards">
 ${cards}
-  </section>
+    </section>
+  </details>
 </body>
 </html>
 HTML
@@ -156,7 +175,7 @@ fi
 
 capture "package" "Package Proof" "VSIX ready" \
   "The cockpit packages as a distributable VS Code extension." \
-  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 16.18 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
+  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 16.57 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
   "06-package.png"
 
 printf '\nDone. Media written to %s\n' "$OUT_DIR"

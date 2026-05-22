@@ -8,7 +8,7 @@
 
 body {
   margin: 0;
-  padding: 12px;
+  padding: 14px 12px;
   color: var(--vscode-foreground);
   background: var(--vscode-sideBar-background);
   font-family: var(--vscode-font-family);
@@ -19,7 +19,7 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .eyebrow {
@@ -71,8 +71,8 @@ button:hover {
   grid-template-columns: 12px 1fr;
   gap: 10px;
   align-items: start;
-  padding: 12px;
-  margin-bottom: 12px;
+  padding: 13px;
+  margin-bottom: 10px;
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
   border-radius: 8px;
   background: var(--vscode-editor-background);
@@ -94,17 +94,46 @@ button:hover {
   background: var(--vscode-testing-iconQueued);
 }
 
-.quickbar {
+.status-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+}
+
+.status-grid button {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  min-height: 54px;
+  border-color: var(--vscode-input-border, var(--vscode-panel-border));
+  padding: 8px 6px;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  text-align: left;
+}
+
+.status-grid span {
+  overflow: hidden;
+  color: var(--vscode-descriptionForeground);
+  font-size: 10px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-grid strong {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .composer {
   display: grid;
-  gap: 8px;
-  padding: 11px;
+  gap: 9px;
+  padding: 12px;
   margin-bottom: 12px;
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
   border-radius: 8px;
@@ -137,7 +166,7 @@ label {
 
 textarea {
   width: 100%;
-  min-height: 78px;
+  min-height: 96px;
   resize: vertical;
   border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
   border-radius: 6px;
@@ -159,8 +188,26 @@ textarea {
   background: var(--vscode-sideBar-background);
 }
 
-.mode {
+.mode-drawer {
+  margin: 0;
+  border-color: var(--vscode-input-border, var(--vscode-panel-border));
+  background: var(--vscode-sideBar-background);
+}
+
+.mode-drawer summary {
   min-height: 30px;
+  padding: 7px 9px;
+  color: var(--vscode-descriptionForeground);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mode-drawer .modebar {
+  margin: 0 8px 8px;
+}
+
+.mode {
+  min-height: 32px;
   border-color: transparent;
   padding: 4px 2px;
   color: var(--vscode-descriptionForeground);
@@ -199,7 +246,7 @@ textarea:focus {
 
 .runrow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   gap: 7px;
 }
 
@@ -211,6 +258,31 @@ textarea:focus {
 
 .primary {
   background: var(--vscode-button-background);
+}
+
+.result-panel {
+  padding: 11px;
+  margin-bottom: 12px;
+  border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
+  border-radius: 8px;
+  background: var(--vscode-editor-background);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.panel-head h2 {
+  margin: 0;
+}
+
+.panel-head button {
+  min-height: 26px;
+  padding: 4px 8px;
 }
 
 .chips {
@@ -259,6 +331,10 @@ summary {
 }
 
 details .cards {
+  padding: 0 8px 8px;
+}
+
+details .status-grid {
   padding: 0 8px 8px;
 }
 

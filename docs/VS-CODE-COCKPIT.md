@@ -13,9 +13,10 @@ It adds:
 - an Activity Bar container named `AI Cockpit`
 - a sidebar dashboard for readiness, route receipt, permissions, checkpoints,
   jobs, lanes, and disk gate
-- an Auto-first in-sidebar prompt composer with Code, Browser, Extract, and
-  Route preview modes, streaming results, attached file/diff context, current
-  file/selection context, and `cmd+enter` execution
+- a composer-first sidebar with one primary Run path, Auto as the default mode,
+  optional Code/Browser/Extract/Route modes in a drawer, streaming results,
+  attached file/diff context, current file/selection context, and `cmd+enter`
+  execution
 - inline report rendering for route receipts, router metrics, permission
   matrix, checkpoints, jobs, lanes, context pressure, Pulse status, native app
   status, Kimi status, product readiness, and disk readiness
@@ -182,12 +183,12 @@ It exists to keep generated code dense without adding another model lane.
 desktop app checks, including installation/version state and each app's role in
 the system.
 
-The sidebar composer is the native daily-driver path. It defaults to Auto,
-keeps the current file or selected code visible as context, attaches extra
-files or git diff as chips, lets the user switch between Code, Browser,
-Extract, and Route without opening a terminal, and streams route/output back
-into the sidebar. Code mode no longer hard-forces precision; the router keeps
-fallback authority when a provider circuit is open.
+The sidebar composer is the native daily-driver path. It defaults to Auto and
+keeps the main screen focused on command → run → result. Current file or
+selected code context, extra files, git diff chips, and optional Code/Browser/
+Extract/Route modes are still available, but they sit behind compact controls
+instead of competing with the prompt. Code mode no longer hard-forces
+precision; the router keeps fallback authority when a provider circuit is open.
 
 ## Keyboard Map
 

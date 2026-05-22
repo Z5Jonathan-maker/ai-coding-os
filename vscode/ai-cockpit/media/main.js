@@ -31,6 +31,8 @@
       document.querySelectorAll('button[data-mode]').forEach((button) => {
         button.classList.toggle('active', button.dataset.mode === selectedMode);
       });
+      const summary = document.querySelector('.mode-drawer summary');
+      if (summary) summary.textContent = `Mode: ${modeButton.textContent}`;
       return;
     }
 
@@ -71,6 +73,10 @@
       name: inlineButton.dataset.inlineName,
       commandLine: inlineButton.dataset.inlineCommand,
     });
+  });
+
+  window.addEventListener('load', () => {
+    setTimeout(() => $('prompt')?.focus(), 0);
   });
 
   document.addEventListener('keydown', (event) => {
@@ -133,6 +139,7 @@
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
     $('kimi').textContent = kimi || 'No Kimi status available.';
+    renderStatusGrid(route, parseJson(diffSummary), parseJson(contextMeterJson), kimi);
     renderRepoMap(parseJson(repoMap));
     $('jobs').textContent = message.payload.jobs || 'No jobs available.';
     $('lanes').textContent = message.payload.lanes || 'No lane registry available.';
@@ -207,6 +214,21 @@
     $('contextReserveBar').style.left = `${used}%`;
     $('contextReserveBar').style.width = `${reserve}%`;
     $('contextUsedBar').className = data.status === 'high' ? 'danger' : data.status === 'medium' ? 'caution' : '';
+  }
+
+  function renderStatusGrid(route, diff, context, kimi) {
+    const routeMatch = String(route || '').match(/Latest:\s*([^\n|]+)/);
+    $('routePill').textContent = routeMatch ? routeMatch[1].trim().slice(0, 18) : 'Auto';
+    const files = Number(diff.fileCount || 0);
+    $('diffPill').textContent = diff.clean ? 'Clean' : `${files} file${files === 1 ? '' : 's'}`;
+    const used = clamp(Number(context.usedPercent || 0), 0, 100);
+    $('contextPill').textContent = `${used}%`;
+    const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || '';
+    $('browserPill').textContent = browserMode === 'official-extension'
+      ? 'Ready'
+      : browserMode === 'shim'
+        ? 'Shim'
+        : 'Check';
   }
 
   function renderDiffSummary(data) {

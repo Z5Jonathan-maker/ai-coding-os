@@ -18,6 +18,7 @@ const COMMANDS = {
   firstRun: 'cc-first-run',
   contextMeter: 'cc-context-meter --include-diff',
   contextMeterJson: 'cc-context-meter --json --include-diff',
+  contextSnapshot: 'cc-context-snapshot --json',
   sessionLedger: 'cc-session-ledger list 10',
   pulseStatus: 'cc-pulse-status',
   nativeAppStatus: 'cc-native-app-status',
@@ -63,6 +64,7 @@ function activate(context) {
     command('aiSystemCockpit.productReadiness', () => showOutput(output, 'Product Readiness', COMMANDS.productReadiness)),
     command('aiSystemCockpit.firstRun', () => showOutput(output, 'First Run Doctor', COMMANDS.firstRun)),
     command('aiSystemCockpit.contextMeter', () => showOutput(output, 'Context Meter', COMMANDS.contextMeter)),
+    command('aiSystemCockpit.contextSnapshot', () => showOutput(output, 'Context Snapshot', COMMANDS.contextSnapshot)),
     command('aiSystemCockpit.sessionLedger', () => showOutput(output, 'Session Ledger', COMMANDS.sessionLedger)),
     command('aiSystemCockpit.pulseStatus', () => showOutput(output, 'Pulse Status', COMMANDS.pulseStatus)),
     command('aiSystemCockpit.nativeAppStatus', () => showOutput(output, 'Native App Status', COMMANDS.nativeAppStatus)),
@@ -210,7 +212,7 @@ class CockpitProvider {
   async refresh() {
     if (!this.view) return;
     this.view.webview.postMessage({ type: 'loading' });
-    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, diffSummary, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
+    const [status, receipt, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, jobs, lanes] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-router-metrics 25 | sed -n "1,24p"', { timeout: 12000 }),
@@ -221,6 +223,7 @@ class CockpitProvider {
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
       shellExec('cc-context-meter --include-diff | sed -n "1,16p"', { timeout: 12000 }),
       shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
+      shellExec(COMMANDS.contextSnapshot, { timeout: 12000 }),
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-session-ledger list 10 | sed -n "1,20p"', { timeout: 12000 }),
       shellExec('cc-pulse-status | sed -n "1,18p"', { timeout: 12000 }),
@@ -244,6 +247,7 @@ class CockpitProvider {
         firstRun: firstRun.text,
         contextMeter: contextMeter.text,
         contextMeterJson: contextMeterJson.text,
+        contextSnapshot: contextSnapshot.text,
         diffSummary: diffSummary.text,
         sessions: sessions.text,
         pulse: pulse.text,
@@ -280,6 +284,7 @@ class CockpitProvider {
       productReadiness: () => vscode.commands.executeCommand('aiSystemCockpit.productReadiness'),
       firstRun: () => vscode.commands.executeCommand('aiSystemCockpit.firstRun'),
       contextMeter: () => vscode.commands.executeCommand('aiSystemCockpit.contextMeter'),
+      contextSnapshot: () => vscode.commands.executeCommand('aiSystemCockpit.contextSnapshot'),
       sessionLedger: () => vscode.commands.executeCommand('aiSystemCockpit.sessionLedger'),
       pulseStatus: () => vscode.commands.executeCommand('aiSystemCockpit.pulseStatus'),
       nativeAppStatus: () => vscode.commands.executeCommand('aiSystemCockpit.nativeAppStatus'),
@@ -495,6 +500,7 @@ class CockpitProvider {
     <button data-command="fiveMinuteDemo">Demo Mode</button>
     <button data-command="firstRun">First Run</button>
     <button data-command="contextMeter">Context Meter</button>
+    <button data-command="contextSnapshot">Context Snapshot</button>
     <button data-command="sessionLedger">Sessions</button>
     <button data-command="loopQuality">Loop Quality</button>
     <button data-command="pulseStatus">Pulse Status</button>
@@ -525,6 +531,7 @@ class CockpitProvider {
       <pre id="contextMeter">Loading...</pre>
       <button data-inline-name="Context Meter" data-inline-command="cc-context-meter --include-diff">View Context</button>
     </article>
+    <article><h2>Context Providers</h2><pre id="contextSnapshot">Loading...</pre><button data-inline-name="Context Snapshot" data-inline-command="cc-context-snapshot --json">View Snapshot</button></article>
     <article><h2>Sessions</h2><pre id="sessions">Loading...</pre><button data-inline-name="Session Ledger" data-inline-command="cc-session-ledger list 12">View Sessions</button></article>
     <article><h2>Pulse</h2><pre id="pulse">Loading...</pre><button data-inline-name="Pulse Status" data-inline-command="cc-pulse-status">View Pulse Status</button></article>
     <article><h2>Native Apps</h2><pre id="nativeApps">Loading...</pre><button data-inline-name="Native App Status" data-inline-command="cc-native-app-status">View Native Apps</button></article>

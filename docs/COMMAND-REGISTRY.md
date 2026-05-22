@@ -34,7 +34,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
 - `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
-- `cc-context-snapshot` — current repo context packet for routing/debugging.
+- `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.

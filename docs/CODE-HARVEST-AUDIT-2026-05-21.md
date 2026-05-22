@@ -239,7 +239,10 @@ developers would star, clone, and pay attention to.
 5. `cc-session-ledger` using Langfuse plugin state/transcript patterns. Done
    2026-05-21: future session rows store cwd and transcript path, list output
    marks stale sessions, and `--json` supports cockpit/project filtering.
-6. `cc-context-snapshot --json` provider interface inspired by Continue.
+6. `cc-context-snapshot --json` provider interface inspired by Continue. Done
+   2026-05-21: JSON exposes named providers, included flags, sources, ignored
+   dirs, rules, diff, top-level files, project shape, checks, and current-file
+   hook.
 7. Browser proof output protocol inspired by agent-browser.
 
 This order is intentional: visible UX first, router reliability second, durable

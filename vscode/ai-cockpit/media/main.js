@@ -110,7 +110,7 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, diffSummary, sessions, pulse, nativeApps, kimi } = message.payload;
+    const { readiness, context, route, metrics, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi);
     contextBlock = context && context.block ? context.block : '';
     $('readinessTitle').textContent = health.title;
@@ -127,6 +127,7 @@
     $('firstRun').textContent = firstRun || 'No first-run doctor available.';
     $('contextMeter').textContent = contextMeter || 'No context meter available.';
     renderContextMeter(parseJson(contextMeterJson));
+    renderContextSnapshot(parseJson(contextSnapshot));
     renderDiffSummary(parseJson(diffSummary));
     $('sessions').textContent = sessions || 'No session ledger available.';
     $('pulse').textContent = pulse || 'No Pulse status available.';
@@ -217,6 +218,23 @@
       fileLines.join('\n') || 'No file stats.',
       hunkLines.length ? `\nHunks:\n${hunkLines.join('\n')}` : '',
     ].filter(Boolean).join('\n');
+  }
+
+  function renderContextSnapshot(data) {
+    const providers = Array.isArray(data.providers) ? data.providers : [];
+    if (!providers.length) {
+      $('contextSnapshot').textContent = 'No structured context providers available.';
+      return;
+    }
+    $('contextSnapshot').textContent = providers.map((provider) => {
+      const marker = provider.included ? 'yes' : 'no';
+      const count = Array.isArray(provider.values)
+        ? provider.values.length
+        : provider.values && typeof provider.values === 'object'
+          ? Object.keys(provider.values).length
+          : provider.values ? 1 : 0;
+      return `${provider.id.padEnd(12)} included=${marker.padEnd(3)} items=${String(count).padStart(3)} source=${provider.source || '-'}`;
+    }).join('\n');
   }
 
   function clamp(value, min, max) {

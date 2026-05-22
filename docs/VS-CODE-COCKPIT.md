@@ -56,7 +56,7 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Save Plan` | Write a read-only plan artifact to `.ai/plans/` |
 | `AI: Review Diff` | Review current git diff through the precision lane |
 | `AI: Context Meter` | Show estimated context-window pressure, diff size, output reserve, and available tokens |
-| `AI: Context Snapshot` | Show current repo context packet |
+| `AI: Context Snapshot` | Show current repo context packet and named provider inclusion state |
 | `AI: Session Ledger` | Show recent routed sessions, cwd-aware resume metadata, stale state, and sticky/fallback state |
 | `AI: Repo Index` | Show compact workspace file/symbol/status index |
 | `AI: Semantic Index` | Show dependency-free symbol map and high-signal definitions |

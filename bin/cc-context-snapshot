@@ -17,7 +17,8 @@ if [ "$json" = 1 ]; then
 const fs = require('fs'), cp = require('child_process'), path = require('path');
 const target = path.resolve(process.argv[2] || process.cwd());
 const sh = c => { try { return cp.execSync(c, { cwd: target, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return ''; } };
-const files = fs.readdirSync(target, { withFileTypes: true }).map(d => d.name).filter(n => !['.git','node_modules','.next','dist','build'].includes(n)).sort().slice(0, 120);
+const ignoredDirs = ['.git','node_modules','.next','dist','build','coverage','.turbo','.cache'];
+const files = fs.readdirSync(target, { withFileTypes: true }).map(d => d.name).filter(n => !ignoredDirs.includes(n)).sort().slice(0, 120);
 const pkg = fs.existsSync(path.join(target, 'package.json')) ? JSON.parse(fs.readFileSync(path.join(target, 'package.json'), 'utf8')) : null;
 const scripts = pkg?.scripts || {};
 const checks = ['lint','typecheck','test','build'].filter(k => scripts[k]).map(k => `npm run ${k}`);
@@ -30,16 +31,40 @@ const shape = [
   fs.existsSync(path.join(target, 'Cargo.toml')) ? 'rust' : null,
   fs.existsSync(path.join(target, 'go.mod')) ? 'go' : null,
 ].filter(Boolean);
+const status = sh('git status --short').split('\n').filter(Boolean).slice(0, 80);
+const changed = sh('git diff --name-only HEAD').split('\n').filter(Boolean).slice(0, 80);
+const diffStat = sh('git diff --stat -- .');
+const rules = [
+  'AGENTS.md',
+  'CLAUDE.md',
+  '.cursorrules',
+  '.clinerules',
+  '.windsurfrules',
+  '.aider.conf.yml',
+  '.github/copilot-instructions.md',
+].filter(f => fs.existsSync(path.join(target, f)));
+const currentFile = process.env.CC_CONTEXT_FILE ? path.resolve(target, process.env.CC_CONTEXT_FILE) : null;
+function provider(id, source, values, extra = {}) {
+  const included = Array.isArray(values)
+    ? values.length > 0
+    : values && typeof values === 'object'
+      ? Object.keys(values).length > 0
+      : !!values;
+  return { id, included, source, values, ...extra };
+}
 console.log(JSON.stringify({
   generated: new Date().toISOString(),
   target,
+  ignored: ignoredDirs,
   providers: [
-    { id: 'git', root: sh('git rev-parse --show-toplevel'), branch: sh('git branch --show-current'), status: sh('git status --short').split('\n').filter(Boolean).slice(0, 80) },
-    { id: 'shape', values: shape },
-    { id: 'scripts', values: scripts },
-    { id: 'checks', values: checks },
-    { id: 'top_level', values: files },
-    { id: 'recent', values: sh('git diff --name-only HEAD').split('\n').filter(Boolean).slice(0, 80) },
+    provider('git', 'git rev-parse/status', { root: sh('git rev-parse --show-toplevel'), branch: sh('git branch --show-current'), status }),
+    provider('shape', 'well-known project files', shape),
+    provider('scripts', 'package.json scripts', scripts),
+    provider('checks', 'package.json script names', checks),
+    provider('rules', 'repo instruction files', rules),
+    provider('top_level', 'directory listing', files, { ignored: ignoredDirs }),
+    provider('diff', 'git diff --name-only/stat', { files: changed, stat: diffStat }),
+    provider('current_file', 'CC_CONTEXT_FILE', currentFile),
   ],
 }, null, 2));
 NODE

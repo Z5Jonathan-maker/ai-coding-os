@@ -29,4 +29,4 @@ named directly instead of hidden behind successful-looking demos.
 1. optionally replace deterministic preview media with real unlocked VS Code screenshots
 2. validate install on one separate fresh macOS Apple Silicon account
 3. remove or explain any remaining personal-only paths in public docs
-4. attach the rc5 release bundle/checksum to a GitHub release
+4. clear the GitHub Actions billing/spending-limit state so cloud CI runs again

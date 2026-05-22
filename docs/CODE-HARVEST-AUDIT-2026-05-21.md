@@ -243,7 +243,10 @@ developers would star, clone, and pay attention to.
    2026-05-21: JSON exposes named providers, included flags, sources, ignored
    dirs, rules, diff, top-level files, project shape, checks, and current-file
    hook.
-7. Browser proof output protocol inspired by agent-browser.
+7. Browser proof output protocol inspired by agent-browser. Done 2026-05-21:
+   `cc-browser-proof --json` now emits a bounded proof packet with nonce
+   boundaries, origin, max/returned/content chars, truncation status, and
+   screenshot path placeholder instead of exposing an unbounded raw snapshot.
 
 This order is intentional: visible UX first, router reliability second, durable
 session intelligence third.

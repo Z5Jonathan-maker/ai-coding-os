@@ -29,7 +29,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-backup` — restic backup of operational state.
 - `cc-backup-verify` — quarterly restore verification.
 - `cc-bootstrap` — one-shot platform bootstrapper.
-- `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output.
+- `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output; `--json` returns nonce boundaries, origin, truncation metadata, and proof content.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
 - `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.

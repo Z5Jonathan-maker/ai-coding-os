@@ -25,6 +25,11 @@ of:
 - `locked-session`
 - `not-ready`
 
+`cc-browser-proof --json` also returns a bounded proof packet with nonce
+boundaries, origin, max/returned/content chars, truncation status, and
+`screenshot_path` when a lane provides one. This is the reviewer-facing proof
+contract; raw snapshots are implementation detail.
+
 ## Current Boundary
 
 Chrome and macOS intentionally require user approval for externally installed

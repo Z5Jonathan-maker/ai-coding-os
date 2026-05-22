@@ -154,6 +154,9 @@ and sticky routing without exposing full transcripts.
 
 `AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
 WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.
+The JSON packet includes origin, max/returned/content chars, truncation status,
+and screenshot path when available, so a reviewer can tell proof from raw page
+noise.
 
 `AI: Five-Minute Demo` is the launch demo mode. It runs the same command a
 public evaluator can run from the terminal and streams the proof into the

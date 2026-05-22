@@ -23,6 +23,8 @@ It adds:
   available context, changed-file count, added/removed lines, and hunk summary
 - a status bar readiness button
 - command palette actions for the same intent modes as the task layer
+- a daily readiness state that separates usable routes from the stricter
+  release/product gate
 - a degraded health state when a provider circuit is open, so a broken lane is
   visible before the user burns another failed run
 
@@ -143,6 +145,8 @@ adding apply behavior or hidden write actions.
 `AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
 smoke, router integrity, system demo, first-run doctor, cockpit install, VS
 Code symlinks, disk headroom, repo cleanliness, upstream sync, and product docs.
+It is intentionally stricter than daily cockpit readiness because active coding
+normally creates a dirty working tree.
 
 `AI: First Run Doctor` is the public setup surface. It names required tools,
 optional AI lanes, personal services, planned symlinks, package drift, and

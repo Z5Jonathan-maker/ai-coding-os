@@ -476,7 +476,7 @@ class CockpitProvider {
       <button class="mode" data-mode="researchExtract">Extract</button>
       <button class="mode" data-mode="explainRoute">Route</button>
     </div>
-    <textarea id="prompt" rows="5" placeholder="Tell the system what to do. Auto is safest: it previews routing signals and lets the router choose the lane."></textarea>
+    <textarea id="prompt" rows="5" placeholder="Tell the system what to do. Auto lets the router choose the lane and fallback."></textarea>
     <div class="chips" id="chips"></div>
     <label class="check">
       <input id="includeContext" type="checkbox" checked>

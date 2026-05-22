@@ -156,7 +156,7 @@ fi
 
 capture "package" "Package Proof" "VSIX ready" \
   "The cockpit packages as a distributable VS Code extension." \
-  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 16.13 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
+  "$(card "Package" "DONE Packaged: dist/ai-system-cockpit-0.1.0.vsix\n9 files, 16.18 KB" "View Package")$(card "License" "Apache-2.0\nRoot and VSIX package aligned." "View License")$(card "Release Gate" "cc-package-cockpit exits successfully." "Run Gate")" \
   "06-package.png"
 
 printf '\nDone. Media written to %s\n' "$OUT_DIR"

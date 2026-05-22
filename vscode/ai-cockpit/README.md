@@ -9,6 +9,7 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 - Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
 - Inline streaming route/output, diff review, repo index, and inspection reports.
 - Primary cards for route receipt, file changes, context pressure, and last result, with deeper diagnostics collapsed under Project Context, System Checks, and Advanced.
+- Daily readiness state separates usable lanes from the stricter release/product gate.
 - Degraded health state when a provider circuit is open, with Auto mode as the recovery path.
 - Status bar readiness entry.
 

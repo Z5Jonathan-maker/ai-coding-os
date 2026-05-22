@@ -95,7 +95,7 @@
     const message = event.data;
     if (message.type === 'loading') {
       $('readinessTitle').textContent = 'Refreshing cockpit';
-      $('readinessBody').textContent = 'Checking live routes, permissions, checkpoints, and disk gate.';
+      $('readinessBody').textContent = 'Checking live routes, required setup, provider circuits, and disk gate.';
       return;
     }
     if (message.type === 'context') {
@@ -150,14 +150,6 @@
     const firstRunReady = /Status:\s*first-run-ready/.test(firstRun || '');
     const browserMode = (kimi || '').match(/mode=([^\s]+)/)?.[1] || 'unknown';
     const precisionOpen = /tier3:open|precision.*open/i.test(route || '');
-    if (!productReady) {
-      const blocker = (product || '').match(/Blockers:\n([\s\S]+)/)?.[1]?.split('\n').find(Boolean);
-      return {
-        level: 'blocked',
-        title: 'Product gate blocked',
-        body: blocker ? `Fix first: ${blocker.replace(/^- /, '')}` : (readiness.body || 'Run Product Readiness for details.'),
-      };
-    }
     if (!firstRunReady) {
       return {
         level: 'blocked',
@@ -176,14 +168,22 @@
       return {
         level: 'degraded',
         title: 'Ready with browser shim',
-        body: 'Product gate is green. Browser automation is using the shim profile, not the official logged-in Chrome extension.',
+        body: 'Daily routes are usable. Browser automation is using the shim profile, not the official logged-in Chrome extension.',
+      };
+    }
+    if (!productReady) {
+      const blocker = (product || '').match(/Blockers:\n([\s\S]+)/)?.[1]?.split('\n').find(Boolean);
+      return {
+        level: 'degraded',
+        title: 'Daily ready, release gate pending',
+        body: blocker ? `Release cleanup: ${blocker.replace(/^- /, '')}` : 'Daily routes are usable. Run Product Readiness before packaging or release.',
       };
     }
     return {
       level: 'ready',
       title: browserMode === 'official-extension' ? 'System ready' : readiness.title,
       body: browserMode === 'official-extension'
-        ? 'Product gate, first-run doctor, and official browser bridge are ready.'
+        ? 'Daily routes, required setup, release gate, and official browser bridge are ready.'
         : readiness.body,
     };
   }

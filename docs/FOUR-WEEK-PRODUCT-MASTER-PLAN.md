@@ -158,7 +158,7 @@ install it, run the demo, inspect the architecture, and file useful issues.
 5. Add browser automation truth table to Kimi/WebBridge docs. Done 2026-05-21.
 6. Create the five-minute demo script. Done 2026-05-21: `cc-demo-five-minute`.
 7. Package cockpit and capture proof. Done 2026-05-21: `cc-package-cockpit` created `dist/ai-system-cockpit-0.1.0.vsix`; `cc-cockpit-capture` generated `docs/media/cockpit/`.
-8. Collapse the launch gate into one command. Done 2026-05-21: `cc-release-check` passes `passed=9 failed=0`.
+8. Collapse the launch gate into one command. Done 2026-05-21: `cc-release-check` passes and now includes the public fixture demo.
 
 ## Non-Negotiable Quality Bar
 

@@ -14,7 +14,7 @@ Tag: `v0.1.0-rc4`
 ```text
 cc-evaluator-check: Status: evaluator-ready
 cc-public-ci-check: passed=8 failed=0
-cc-release-check: passed=10 failed=0
+cc-release-check: passed=11 failed=0
 cc-release-bundle v0.1.0-rc4: bundle + .sha256 generated
 ```
 

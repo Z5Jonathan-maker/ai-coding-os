@@ -92,6 +92,7 @@ cd "$DOTFILES" || exit 1
 run_gate "First-run doctor" '^Status: first-run-ready$' "$DOTFILES/install.sh" --dry-run
 run_gate "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product-readiness"
 run_gate "Five-minute demo" '^passed=4 failed=0$' "$DOTFILES/bin/cc-demo-five-minute" --prompt "$prompt" --browser-url "$browser_url" --max-chars "$max_chars"
+run_gate "Fixture demo" 'Fixture: .*/cc-demo-fixture|Selected:  precision' "$DOTFILES/bin/cc-demo-fixture"
 run_gate "Weekly health" 'weekly health: all 15 green' "$DOTFILES/bin/cc-health-weekly" --verbose
 run_gate "Cockpit package" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
 run_gate "Release bundle" 'Bundle: .*/dist/ai-coding-os-.*\.tar\.gz' "$DOTFILES/bin/cc-release-bundle" "$version"

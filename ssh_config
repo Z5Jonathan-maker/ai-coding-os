@@ -1,6 +1,3 @@
-# OrbStack: must come before any Host block.
-Include ~/.orbstack/ssh/config
-
 Host github.com gitlab.com
   HostName %h
   User git

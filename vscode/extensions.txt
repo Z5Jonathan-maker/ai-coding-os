@@ -9,8 +9,6 @@ editorconfig.editorconfig
 esbenp.prettier-vscode
 github.vscode-github-actions
 moonshot-ai.kimi-code
-ms-azuretools.vscode-containers
-ms-azuretools.vscode-docker
 ms-playwright.playwright
 ms-python.debugpy
 ms-python.python

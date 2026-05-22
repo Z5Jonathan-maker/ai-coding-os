@@ -48,13 +48,7 @@ say_or_print "Raycast onboarding"
 open -a Raycast
 prompt_ok "Step through Raycast's onboarding screens.\\nRecommend swapping its hotkey to ⌘ Space (you'll need to disable Spotlight's hotkey first in Keyboard Shortcuts → Spotlight).\\n\\nClick OK when finished."
 
-# Step 4: OrbStack — Docker alternative onboarding
-echo
-echo "=== OrbStack onboarding ==="
-open -a OrbStack
-prompt_ok "Step through OrbStack onboarding (Personal license is free for personal use).\\nClick OK when 'orbctl --version' works in a fresh shell."
-
-# Step 4.5: VS Code — primary editor/control plane for this machine
+# Step 4: VS Code — primary editor/control plane for this machine
 echo
 echo "=== VS Code onboarding ==="
 open -a "Visual Studio Code" 2>/dev/null || true
@@ -96,7 +90,6 @@ echo
 echo "--- post-onboard sanity ---"
 printf "Rectangle running:  %s\n" "$(pgrep -x Rectangle >/dev/null && echo yes || echo no)"
 printf "Hammerspoon running: %s\n" "$(pgrep -x Hammerspoon >/dev/null && echo yes || echo no)"
-printf "OrbStack running:   %s\n" "$(pgrep -x OrbStack >/dev/null && echo yes || echo no)"
 printf "1Password running:  %s\n" "$(pgrep -x 1Password >/dev/null && echo yes || echo no)"
 printf "Slack running:      %s\n" "$(pgrep -x Slack >/dev/null && echo yes || echo no)"
 printf "Notion running:     %s\n" "$(pgrep -x Notion >/dev/null && echo yes || echo no)"

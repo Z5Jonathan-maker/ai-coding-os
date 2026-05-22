@@ -78,8 +78,6 @@ useful, delete it or move it out of `bin/`.
 
 - `cc-browse-mcp` — browser-use MCP stdio shim.
 - `cc-grant-access` — guide macOS Accessibility permission setup.
-- `cc-langfuse-env` — load Langfuse env then exec a command.
-- `cc-langfuse-up` — install/start local Langfuse stack.
 - `cc-new-editorial` — scaffold editorial site projects.
 - `cc-sudoers-install` — assisted sudoers install flow.
 - `gh-auto-auth` — GitHub device-code auth automation.

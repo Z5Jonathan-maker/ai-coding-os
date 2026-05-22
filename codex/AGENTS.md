@@ -136,7 +136,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Use TEL / call gamma/notion/vercel/etc" | `tel` | Credentialed action gateway — credentials stay out of the transcript. **Status:** daemon live; Keychain-first auth works now, with 1Password only as optional fallback for unmigrated services. |
 | "Show me brain state / system snapshot" | (no skill — run `~/.Codex/scripts/snapshot.sh`) | Single-command full state report |
 | "Use my logged-in browser / open a page / screenshot / click around" | `kimi-webbridge` | Default real Chrome bridge with user session/cookies preserved |
-| "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with auto-browser MCP. |
+| "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with Kimi WebBridge or Playwright depending on task shape. |
 | "Monitor controversial repos / grey-area archive" | `grey-area-arsenal` | GitHub monitor + local archive tooling |
 | "Build me a website / landing page / marketing site / 3D hero" | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
 | "Start the self-paced autonomous loop / mega-cycle" | `mega-cycle` | Self-paced depth-ladder loop. Each cycle ≥ previous (surface→diagnostic→root-cause→refactor→audit→foundation). Anti-pattern memories auto-apply. Pairs with `nonstop` + `wired-up`. Slash command at `~/.Codex/commands/mega-cycle.md`. |
@@ -221,7 +221,6 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Throwaway / ephemeral browser automation (no user session needed) | `playwright` MCP | Use when the task spins up fresh sessions, scrapes public pages, or runs CI-style smoke tests. Clean slate every run. |
 | Browser automation, clean sites (CLI alt) | `agent-browser` *(CLI, not MCP)* | Fast Rust-native CLI from vercel-labs/agent-browser; ships skills via `agent-browser skills get core --full`; no MCP — invoke via Bash |
 | Browser automation, anti-bot-protected sites (Cloudflare/Google/etc.) | `camofox-browser` *(optional REST API on `localhost:9377`, not MCP)* | Optional archived lane; not installed by default on this machine. Prefer Kimi WebBridge first, then restore camofox from archive only if a task truly needs Firefox fingerprint spoofing. |
-| Sensitive supervised browse (manual approval gates) | `auto-browser` | Approval gates built-in. Use when each click needs explicit user confirmation. |
 | Read Figma design / get_design_context | `claude_ai_Figma` | URL parsing built-in |
 | Email read/send | `claude_ai_Gmail` | OAuth-gated |
 | Calendar | `claude_ai_Google_Calendar` | OAuth-gated |
@@ -319,7 +318,8 @@ Source of truth: `~/.Codex/tel/`. Credentialed action gateway — credentials st
 
 ## TELEMETRY
 
-Langfuse traces every session at `http://127.0.0.1:3000`. Don't disable.
+Self-hosted container telemetry is retired from the core stack.
+Use lightweight local logs and router/session ledgers by default.
 
 ## IMPORTED SKILLS
 

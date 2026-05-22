@@ -334,12 +334,6 @@ do_doctor() {
     warn "browser-harness: not installed (run cc-bootstrap browser-harness for hints)"
   fi
 
-  # auto-browser
-  if docker ps --format '{{.Names}}' 2>/dev/null | grep -q auto-browser; then
-    ok "auto-browser: containers running"
-  else
-    warn "auto-browser: containers not running (cd ~/code/security/auto-browser && docker compose up -d)"
-  fi
 }
 
 cmd_all() {

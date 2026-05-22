@@ -10,7 +10,7 @@ your phone gets an ntfy push. Otherwise silent.
 |---|---|---|
 | **Daily 03:30** | `cc-backup` (restic → B2) | silent; alerts on failure |
 | **Sunday 09:00** | `cc-health-weekly` — weekly health sweep | ntfy ONLY if issues |
-| **1st of month 06:00** | `cc-self-update` — brew + repos + docker + uv + npm globals | ntfy summary always |
+| **1st of month 06:00** | `cc-self-update` — brew + repos + uv + npm globals | ntfy summary always |
 | **1st of Jan/Apr/Jul/Oct 03:00** | `cc-backup-verify` — restic check + restore-test | ntfy summary; HIGH PRIORITY on failure |
 | **Continuous** | `cc-loop` watchdog (when running) | ntfy on Stop, mercury daemon auto-restart |
 
@@ -43,8 +43,7 @@ Silent if all green. Phone push if any red, with detail.
 ## What `cc-self-update` updates
 
 - `brew update && brew upgrade`
-- `git pull --ff-only` for: `huashu-design`, `browser-harness`, `mercury-agent`, `ui-ux-pro-max-skill`, `langfuse`, `andrej-karpathy-skills`, `auto-browser`
-- `docker compose pull && docker compose up -d` for: langfuse stack + auto-browser stack
+- `git pull --ff-only` for: `huashu-design`, `browser-harness`, `mercury-agent`, `ui-ux-pro-max-skill`, `andrej-karpathy-skills`
 - `uv tool upgrade --all` (mempalace, browser-use, gdown, etc.)
 - `npm-global-packages.txt` via `install.sh` for npm-only global CLIs
 - `vscode/extensions.txt` via `install.sh` for editor extensions
@@ -101,7 +100,7 @@ cc-backup-verify --full           # full restic check (100% data) + restore-test
 With these maintenance LaunchAgents loaded, **almost nothing**:
 - ✓ Disk pressure is watched weekly; run `cc-prune` manually when needed
 - ✓ Backups continue (cc-backup daily) + verified quarterly
-- ✓ Brew + cloned repos + docker images + uv tools all updated monthly
+- ✓ Brew + cloned repos + uv tools all updated monthly
 - ✓ Health checked weekly — phone gets pushed if anything red
 - ⚠ MCP server packages auto-resolve via npx, so they get updated on first call after a long pause (no manual action needed)
 - ⚠ Anthropic ships breaking changes occasionally; cc-health-weekly will detect downstream failures, ntfy will tell you
@@ -127,7 +126,7 @@ launchctl load -w ~/Library/LaunchAgents/com.user.cc-health-weekly.plist
 
 This file lives in `~/dotfiles/docs/MAINTENANCE.md`. Update when the
 platform gains new components that need lifecycle management (e.g.
-when you add a new MCP server worth tracking, or a new docker stack).
+when you add a new MCP server worth tracking).
 
 Last updated: 2026-05-20. 3 LaunchAgents (weekly health, monthly
 update, quarterly backup verify) cover the platform end-to-end.

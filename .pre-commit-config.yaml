@@ -4,13 +4,6 @@ repos:
     hooks:
       - id: gitleaks
 
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.10.0
-    hooks:
-      - id: shellcheck
-        args: ["-S", "warning"]
-        exclude: '^bin/fzf-git\.sh$'  # vendored zsh script from junegunn/fzf-git.sh; shellcheck does not support zsh dialect
-
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.10.0-2
     hooks:
@@ -20,6 +13,13 @@ repos:
 
   - repo: local
     hooks:
+      - id: shellcheck-local
+        name: ShellCheck
+        entry: shellcheck -S warning
+        language: system
+        types: [shell]
+        exclude: '^bin/fzf-git\.sh$'  # vendored zsh script from junegunn/fzf-git.sh; shellcheck does not support zsh dialect
+
       - id: routing-drift
         name: routing-drift (CLAUDE.md ↔ skills/agents)
         entry: bash -c '"$HOME/.claude/scripts/routing-drift-check.sh"'

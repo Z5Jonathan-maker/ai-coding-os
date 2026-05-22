@@ -6,7 +6,6 @@
 # Updates (each is safe-fail; one failure doesn't abort the rest):
 #   - brew update + upgrade
 #   - All cloned skill/tool repos (git pull --ff-only)
-#   - Docker images for langfuse + auto-browser (compose pull + up -d)
 #   - npx-cached MCP servers (clear cache, re-resolve on next call)
 #   - uv tool upgrade (mempalace, browser-use, gdown, etc.)
 #   - npm globals listed in ~/dotfiles/npm-global-packages.txt
@@ -61,9 +60,7 @@ for repo in \
   "$HOME/code/research/browser-harness" \
   "$HOME/code/research/mercury-agent" \
   "$HOME/code/research/ui-ux-pro-max-skill" \
-  "$HOME/code/research/langfuse" \
-  "$HOME/code/research/wassim-drive/andrej-karpathy-skills-main" \
-  "$HOME/code/security/auto-browser"; do
+  "$HOME/code/research/wassim-drive/andrej-karpathy-skills-main"; do
   [ -d "$repo/.git" ] || continue
   log "  → $repo"
   if [ "$DRY_RUN" = "0" ]; then
@@ -75,22 +72,7 @@ for repo in \
   fi
 done
 
-# 3. Docker stacks
-log ""
-log "── docker compose pull + up -d ──"
-for stack in "$HOME/code/research/langfuse" "$HOME/code/security/auto-browser"; do
-  [ -f "$stack/docker-compose.yml" ] || [ -f "$stack/docker-compose.yaml" ] || continue
-  log "  → $stack"
-  if [ "$DRY_RUN" = "0" ]; then
-    if (cd "$stack" && docker compose pull >>"$LOG" 2>&1 && docker compose up -d >>"$LOG" 2>&1); then
-      updated+=("docker:$(basename "$stack")")
-    else
-      failed+=("docker:$(basename "$stack")")
-    fi
-  fi
-done
-
-# 4. uv tools
+# 3. uv tools
 log ""
 log "── uv tool upgrade --all ──"
 if [ -x /opt/homebrew/bin/uv ]; then
@@ -101,7 +83,7 @@ if [ -x /opt/homebrew/bin/uv ]; then
   fi
 fi
 
-# 5. npm globals
+# 4. npm globals
 log ""
 log "── npm global packages ──"
 npm_bin="$(npm_cmd || true)"

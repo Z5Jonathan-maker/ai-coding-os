@@ -9,7 +9,6 @@ Stuff that needs human attention because it's interactive, sensitive, or UI-only
 ## Apps that need first-run setup
 
 - [ ] **Rectangle** — System Settings → Privacy & Security → Accessibility → enable Rectangle.
-- [ ] **OrbStack** — open the app, run through onboarding (Docker Desktop alternative). Then `orbctl --version` should work.
 - [ ] **1Password** — sign in, set up browser extension. For SSH agent (replaces ssh-agent + Keychain): open 1Password → Settings → Developer → "Use the SSH agent".
 - [ ] **Raycast** — onboarding wizard. Recommend swapping its hotkey to `⌘ Space` (and re-binding Spotlight to something else).
 - [ ] **Slack / Notion** — sign in.

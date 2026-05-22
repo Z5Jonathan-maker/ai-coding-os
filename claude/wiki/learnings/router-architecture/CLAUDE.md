@@ -111,7 +111,7 @@ Claude Code has access to these Model Context Protocol servers in ALL directorie
 | `context7` | Upstash vector search |
 | `mempalace` | Semantic memory search |
 | `webclaw` | Web scraping |
-| `auto-browser` | HTTP browser proxy (localhost:8000) |
+| `kimi-webbridge` | Logged-in Chrome automation via local WebBridge |
 
 ## Swarm Arsenal (50 commands)
 

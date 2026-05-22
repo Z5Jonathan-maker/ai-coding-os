@@ -27,7 +27,7 @@ The "when X, pick Y not Z" logic. Captures non-obvious routing decisions so the 
 - **chrome-devtools** = default. Inspection, lighthouse, screenshots, network log
 - **agent-browser** (CLI via Bash) = primary scripted browser automation as of 2026-05-04 (vercel-labs/agent-browser, native Rust). Replaces `playwright` MCP. Run `agent-browser skills get core --full` first to load workflow patterns. Use for: nav, click, type, screenshot, eval JS, snapshot (a11y), CDP connect, multi-session. No MCP — invoke directly. **Use for clean sites without bot detection.**
 - **camofox-browser** (REST API on `:9377`) = stealth-tier when site has Cloudflare / Google / similar fingerprint detection. Camoufox = Firefox fork with C++-level spoofing of navigator, WebGL, AudioContext, WebRTC, screen geometry — patches happen in browser engine before JS sees them. Source: `~/code/research/camofox-browser/`. OpenAPI at `http://localhost:9377/openapi.json`. Routing rule: try agent-browser first; if you see "blocked" / Cloudflare challenge / 403, switch to camofox-browser. Cost: ~40MB idle RAM, lazy browser launch.
-- **auto-browser** = sensitive flows (login, payment, account ops) where approval gates matter
+- **Kimi WebBridge** = sensitive flows (login, payment, account ops) using the user's real Chrome session
 - ~~browser-use~~ = retired 2026-05-03 (redundant)
 
 ## D5: Which design skill

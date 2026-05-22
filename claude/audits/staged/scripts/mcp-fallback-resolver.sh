@@ -14,9 +14,8 @@ PRIMARY="${1:?usage: $0 <mcp-name>}"
 # Fallback chain: each line is "primary fallback1 fallback2 ..."
 # Order matters — first healthy fallback wins.
 FALLBACKS="
-chrome-devtools playwright auto-browser
-playwright chrome-devtools auto-browser
-auto-browser chrome-devtools playwright
+chrome-devtools playwright
+playwright chrome-devtools
 github
 context7
 mempalace

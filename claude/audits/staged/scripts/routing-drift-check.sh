@@ -21,7 +21,7 @@ declare -a issues=()
 # Built-in agents (provided by Claude Code, not in ~/.claude/agents/)
 BUILTINS="Explore Plan general-purpose claude-code-guide statusline-setup code-reviewer"
 # MCP servers (validated by mcp-probe.sh, not by file presence)
-MCPS="auto-browser chrome-devtools claude_ai_Amplitude claude_ai_Figma claude_ai_Gamma claude_ai_Gmail claude_ai_Google_Calendar claude_ai_Google_Drive claude_ai_Vibe_Prospecting context7 github mempalace playwright shadcn webclaw"
+MCPS="chrome-devtools claude_ai_Amplitude claude_ai_Figma claude_ai_Gamma claude_ai_Gmail claude_ai_Google_Calendar claude_ai_Google_Drive claude_ai_Vibe_Prospecting context7 github mempalace playwright shadcn webclaw"
 
 is_builtin() {
   for b in $BUILTINS; do [ "$1" = "$b" ] && return 0; done

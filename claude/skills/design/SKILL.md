@@ -1,6 +1,6 @@
 ---
 name: design
-description: Generate, preview, and iterate on UI/UX designs as self-contained HTML/CSS/SVG mockups, anchored to a project's DESIGN.md visual identity spec. Use when the user says "design this", "mock up", "make a landing page", "build a component", "/design", "iterate on the design", "show me how this looks", or wants visual artifacts that compose with the existing browser stack. Composes with Figma MCP (read brand tokens), chrome-devtools MCP (lighthouse + a11y audit), playwright/browser-use/auto-browser (render + visual regression), DESIGN.md format from google-labs-code/design.md.
+description: Generate, preview, and iterate on UI/UX designs as self-contained HTML/CSS/SVG mockups, anchored to a project's DESIGN.md visual identity spec. Use when the user says "design this", "mock up", "make a landing page", "build a component", "/design", "iterate on the design", "show me how this looks", or wants visual artifacts that compose with the existing browser stack. Composes with Figma MCP (read brand tokens), chrome-devtools MCP (lighthouse + a11y audit), Playwright/Kimi WebBridge (render + visual regression), DESIGN.md format from google-labs-code/design.md.
 ---
 
 # /design — visual identity → working mockup loop
@@ -218,7 +218,7 @@ edit `lib/brand.ts` for the new brand and rip what you don't need.
 | chrome-devtools MCP | `lighthouse_audit`, DOM/a11y snapshots |
 | playwright MCP | Multi-viewport screenshots |
 | browser-use + cc-browse | Autonomous iteration on existing live sites |
-| auto-browser (noVNC) | Phone-side review during AFK iteration |
+| Kimi WebBridge | Logged-in Chrome review during AFK iteration |
 | caveman | Keep design-iteration responses terse — visual diffs are what matters, not prose |
 | session-handover | Each design iteration becomes a checkpoint, /recall searchable later |
 | ntfy-notify | Phone push when a long iteration cycle finishes |

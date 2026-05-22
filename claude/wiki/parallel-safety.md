@@ -21,7 +21,6 @@ Last incident (2026-05-12): a 6-parallel UI-test swarm in `claude-code-router` d
 | `mcp-firecrawl` | ✅ | none needed | API wrapper, rate-limited but parallel-safe |
 | `context7` | ✅ | none needed | Upstash API |
 | `github` | ✅ | none needed | GitHub API (token-based rate limits apply) |
-| `auto-browser` | ❌ not for swarms | by design | Single shared backend on `127.0.0.1:8000` with supervised-session model. Use chrome-devtools or playwright for fan-out, auto-browser for one-at-a-time supervised flows. |
 | `webclaw` | ✅ probable | none — uses local binary | Local stdio, no shared state observed |
 | `open-design` | ⚠️ daemon single-instance | by design | The daemon is single-process; multiple agents share it. Functions don't conflict but heavy load may queue. |
 | `claude.ai *` (Gmail, Drive, Calendar, Figma, Gamma, Vibe Prospecting, Amplitude) | ✅ | none needed | HTTP MCPs hosted by providers, parallel-safe by design |
@@ -31,7 +30,7 @@ Last incident (2026-05-12): a 6-parallel UI-test swarm in `claude-code-router` d
 Quick checks before you dispatch a swarm against an MCP you haven't profiled:
 
 1. **Does it wrap a browser?** Look for `--isolated` / `--user-data-dir` / similar profile flags. If absent, assume parallel-hostile.
-2. **Does it bind a fixed port?** Single-port servers serialize all access (auto-browser pattern). Fine for one agent, queues under load.
+2. **Does it bind a fixed port?** Single-port servers serialize all access. Fine for one agent, queues under load.
 3. **Does it write to a single backing file?** Check the source for `writeFileSync(...)` on a fixed path. Concurrent writers = race.
 4. **Does it use SQLite with WAL?** Then concurrent readers are safe and writers are serialized cleanly. WAL is in `journal_mode=wal` PRAGMA.
 5. **Is it an HTTP API wrapper?** Almost always parallel-safe; only worry is the upstream's rate limits.

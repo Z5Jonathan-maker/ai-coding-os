@@ -9,7 +9,7 @@ The user has TWO unattended-execution surfaces. This skill decides which.
 
 | Surface | Best for |
 |---|---|
-| **Local: `cc-loop` / `mercury` / `cc-swarm` on the iMac** | Anything touching local-only resources (MemPalace, Langfuse self-host, browser stack with persistent profiles, 1Password CLI, mail-OTP scraper, Tier-2 DeepSeek router, project files on local disk) |
+| **Local: `cc-loop` / `mercury` / `cc-swarm` on the iMac** | Anything touching local-only resources (MemPalace, Kimi WebBridge, browser stack with persistent profiles, 1Password CLI, mail-OTP scraper, Tier-2 DeepSeek router, project files on local disk) |
 | **Cloud: Anthropic [Claude Code Routines](https://code.claude.com/docs/en/routines)** | Pure GitHub-event-driven or scheduled jobs that don't need local files / MCPs / browsers / secrets. Triggered by cron OR push/PR/issue. Runs in Anthropic's infra — no Mac required, no self-hosted state to manage. |
 
 ## Decision algorithm (run this when classifying a task)
@@ -19,13 +19,13 @@ Walk these checks in order. **First YES wins → route there.**
 ### → LOCAL (`cc-loop` / `mercury` / `cc-swarm`)
 
 1. **Touches MemPalace search?** → local (data is at `~/mempalace`)
-2. **Reads/writes Langfuse traces directly?** → local (instance at `127.0.0.1:3000`)
-3. **Drives a browser?** → local (playwright profile, auto-browser noVNC, browser-harness CDP all live here)
+2. **Needs local session telemetry or router ledgers?** → local (self-hosted container telemetry is retired)
+3. **Drives a browser?** → local (Kimi WebBridge, Chrome profile, browser-harness CDP all live here)
 4. **Reads from 1Password?** → local (CLI is biometric-bound to this Mac)
 5. **Scrapes Mail.app for OTPs?** → local (mail-code only works against your inbox)
 6. **Uses Tier-2 DeepSeek router?** → local (router lives at `~/Claude Code/`)
 7. **Touches `~/dotfiles/`, `~/code/projects/<thing>/`, or any local file path?** → local
-8. **Needs a long-running browser session with takeover capability?** → local + auto-browser noVNC
+8. **Needs a long-running browser session with takeover capability?** → local + Kimi WebBridge
 9. **Needs `mercury`'s SQLite Second Brain or Telegram channel?** → local
 10. **Multi-agent fan-out via `cc-swarm` worktrees?** → local (worktrees are on local disk)
 

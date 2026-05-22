@@ -127,7 +127,7 @@ Proven multi-step recipes. Pick a recipe; follow the steps; deviate only when re
 8. Once converged: the `strategy.md` IS the reusable browser skill — graduate to `wiki/logs/winning-patterns.md` (browser-task domain) with the converged strategy
 9. Subsequent invocations of the same task use the converged strategy directly — no re-discovery
 
-**Composes with:** auto-browser MCP (the actual browser control surface, already loaded). The autobrowse skill is the orchestration layer; auto-browser MCP can be the underlying executor.
+**Composes with:** Kimi WebBridge for logged-in Chrome flows, or Playwright for clean repeatable browser tests. The autobrowse skill is the orchestration layer; the browser executor is selected per task.
 
 **Security note:** This skill has accepted-risk status (3 scanner warnings) — see `wiki/logs/failure-log.md` 2026-05-03 entry. Don't extend its allowed-tools surface beyond the SKILL.md frontmatter. Audit task definitions in `tasks/<name>/task.md` before running against sites that handle PII or money.
 

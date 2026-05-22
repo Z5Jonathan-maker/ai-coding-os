@@ -45,7 +45,6 @@ All tools execute silently — 59 permissions pre-approved.
 | **context7** | vector search | Upstash knowledge retrieval |
 | **mempalace** | semantic search | Long-term memory recall |
 | **webclaw** | scrape | Web extraction |
-| **auto-browser** | HTTP proxy | Browser proxy (localhost:8000) |
 | **glif** | run workflows | AI workflows (needs `GLIF_API_TOKEN`) |
 | **firecrawl** | scrape + JS exec | Deep web scraping (needs `FIRECRAWL_API_KEY`) |
 

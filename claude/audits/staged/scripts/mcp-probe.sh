@@ -52,25 +52,13 @@ CACHE="${HOME}/.claude/mcp-needs-auth-cache.json"
   fi
 
   echo "## Routing-table cross-check"
-  for mcp in chrome-devtools playwright github context7 mempalace auto-browser webclaw; do
+  for mcp in chrome-devtools playwright github context7 mempalace webclaw; do
     if echo "$list" | grep -q "^$mcp:"; then
       echo "- ✓ $mcp present"
     else
       echo "- 🔴 $mcp missing (referenced in CLAUDE.md routing table)"
     fi
   done
-
-  echo
-  echo "## Langfuse emission test"
-  if [ -n "${LANGFUSE_BASE_URL:-}" ]; then
-    if curl -fsS -m 3 "${LANGFUSE_BASE_URL}/api/public/health" >/dev/null 2>&1; then
-      echo "- ✓ Langfuse endpoint responding at ${LANGFUSE_BASE_URL}"
-    else
-      echo "- 🔴 Langfuse endpoint unreachable at ${LANGFUSE_BASE_URL} — telemetry silently dropping"
-    fi
-  else
-    echo "- 🟡 LANGFUSE_BASE_URL not set in env — plugin may be misconfigured"
-  fi
 
   echo
   echo "## TEL canary"

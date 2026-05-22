@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Monthly platform update sweep. Runs 1st of each month at 06:00.
-  Pulls latest for: brew, cloned skill/tool repos, docker images,
+  Pulls latest for: brew, cloned skill/tool repos,
   uv tools, npm globals, npm cache. ntfy-pushes summary.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

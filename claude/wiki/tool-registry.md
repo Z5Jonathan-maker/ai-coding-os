@@ -23,7 +23,6 @@ Every tool the brain can call. Mirrors CLAUDE.md routing tables but adds depth: 
 | MCP | What it does | When to pick | Notes |
 |---|---|---|---|
 | `chrome-devtools` | DevTools Protocol — inspect, screenshot, lighthouse, network log, performance trace | Default browser MCP for inspection/perf | Spawns Chromium ~2s cold start |
-| `auto-browser` | Supervised browser with approval gates | Sensitive flows: login, payment, account ops | Built-in human-takeover |
 | `github` | gh-equivalent ops: issues, PRs, repos, workflows | GitHub state queries + mutations | Native `gh` CLI also works for read |
 | `context7` | Library/SDK/API doc lookup | Always prefer over WebSearch for docs | Lower hallucination risk |
 | `mempalace` | Long-term semantic search across all sessions | Pair with `recall` skill for "what did we discuss" | Episodic, not factual |
@@ -45,7 +44,7 @@ Every tool the brain can call. Mirrors CLAUDE.md routing tables but adds depth: 
 | MCP | Why retired | Date | Replacement |
 |---|---|---|---|
 | `playwright` | Replaced by `agent-browser` CLI (faster, no MCP overhead) | 2026-05-04 | `agent-browser` for clean sites; `chrome-devtools` for inspection |
-| `browser-use` | Redundant with chrome-devtools + auto-browser | 2026-05-03 | `chrome-devtools` (default), `auto-browser` (supervised) |
+| `browser-use` | Redundant with chrome-devtools + Kimi WebBridge | 2026-05-03 | `chrome-devtools` (inspection), `Kimi WebBridge` (logged-in browser flows) |
 
 ## Tool selection priority order
 

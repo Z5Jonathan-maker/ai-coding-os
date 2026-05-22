@@ -592,8 +592,9 @@ class CockpitProvider {
 
   <section class="home-intro">
     <div>
-      <h2>Good morning, Jonathan.</h2>
-      <p>Pick up where you left off. Your workstreams are ready.</p>
+      <span class="mission-kicker">Current mission</span>
+      <h2>DoseCraft landing page</h2>
+      <p>Continue the responsive pricing section. Routing, files, browser context, and design references are already staged.</p>
     </div>
     <div class="home-actions">
       <button class="focus-button">Focus</button>
@@ -608,7 +609,7 @@ class CockpitProvider {
       <label for="prompt">Command</label>
       <span id="context">No active editor</span>
     </div>
-    <textarea id="prompt" rows="5" placeholder="What would you like to build or solve?"></textarea>
+    <textarea id="prompt" rows="5" placeholder="Ask, adjust, or continue this mission."></textarea>
     <div class="chips" id="chips"></div>
     <div class="composer-pills" aria-label="Primary context controls">
       <button class="pill active" data-mode="autoRun" aria-pressed="true"><span>Auto</span><small>Intelligent</small></button>
@@ -652,7 +653,7 @@ class CockpitProvider {
 
   <section class="workstreams-panel">
     <div class="section-head">
-      <h2>Your workstreams</h2>
+      <h2>Active workstreams</h2>
       <button class="ghost-button">New workspace</button>
     </div>
     <article class="workstream active" data-workstream="DoseCraft landing page" data-summary="Modern landing page for DoseCraft with pricing, FAQ, and marketing sections." data-focus="Building responsive pricing section" data-focus-body="Implementing UI and connecting it to CMS." data-progress="72" data-route="Codex - Kimi" data-started="Today, 9:41 AM">
@@ -726,7 +727,7 @@ class CockpitProvider {
     <div class="detail-card">
       <div class="detail-head">
         <div>
-          <span class="detail-kicker">Active workspace</span>
+          <span class="detail-kicker">Mission state</span>
           <h2 id="detailTitle">DoseCraft landing page</h2>
         </div>
         <button class="mini-button">...</button>
@@ -736,7 +737,7 @@ class CockpitProvider {
       <div class="progress"><span id="detailProgressBar" style="width:72%"></span></div>
     </div>
     <div class="detail-card">
-      <span class="detail-kicker">Current focus</span>
+      <span class="detail-kicker">Next best move</span>
       <h3 id="detailFocus">Building responsive pricing section</h3>
       <p id="detailFocusBody">Implementing UI and connecting it to CMS.</p>
     </div>

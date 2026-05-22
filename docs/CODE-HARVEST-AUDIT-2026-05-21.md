@@ -230,7 +230,9 @@ developers would star, clone, and pay attention to.
    2026-05-21: structured JSON plus visual Context Pressure card.
 2. Rich diff/file-change cockpit card using Roo-style file grouping/stats. Done
    2026-05-21: structured JSON plus visual File Changes card.
-3. Router lane circuit breaker/cooldown adapted from HCC.
+3. Router lane circuit breaker/cooldown adapted from HCC. Done 2026-05-21:
+   SQLite breaker already existed; route receipts now expose per-lane circuit
+   state and cooldown visibility.
 4. Router cost ledger hardened with HCC/Cline pricing ideas.
 5. `cc-session-ledger` using Langfuse plugin state/transcript patterns.
 6. `cc-context-snapshot --json` provider interface inspired by Continue.

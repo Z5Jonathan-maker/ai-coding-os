@@ -25,6 +25,31 @@ function pct(value) {
   return `${(value * 100).toFixed(0)}%`;
 }
 
+function currentCircuits() {
+  try {
+    const tieredAsk = require(path.join(routerRoot, 'lib/tiered-ask.cjs'));
+    const registry = require(path.join(routerRoot, 'lib/tier-registry.cjs'));
+    const ids = new Set(registry.all().map(t => t.id).filter(Boolean));
+    ids.add('tier2-fallback');
+    return Object.fromEntries(
+      Object.entries(tieredAsk.getCircuitState())
+        .filter(([id]) => ids.has(id))
+        .sort(([a], [b]) => a.localeCompare(b))
+    );
+  } catch (_) {
+    return {};
+  }
+}
+
+function formatCircuit(circuit) {
+  if (!circuit) return 'unknown';
+  const state = circuit.state || (circuit.open ? 'open' : circuit.halfOpen ? 'half_open' : circuit.probeInFlight ? 'probe_in_flight' : 'closed');
+  const cooldown = circuit.cooldown_remaining_ms || 0;
+  return cooldown > 0
+    ? `${state}, cooldown ${Math.ceil(cooldown / 1000)}s`
+    : state;
+}
+
 function summarize(rows) {
   const recent = rows.slice(-windowSize);
   const byClass = {};
@@ -63,7 +88,7 @@ function printLatest(row) {
   console.log(`Tokens logged: ${row.usage?.total_tokens || 0}`);
   console.log(`Cost logged: ${row.usage?.cost_usd == null ? 'not logged' : `$${row.usage.cost_usd}`}`);
   if (Array.isArray(receipt.fallback_chain) && receipt.fallback_chain.length) {
-    console.log(`Fallback chain: ${receipt.fallback_chain.map(item => `${item.class}/${item.platform}`).join(' -> ')}`);
+    console.log(`Fallback chain: ${receipt.fallback_chain.map(item => `${item.class}/${item.platform} [${formatCircuit(item.circuit)}]`).join(' -> ')}`);
   }
 }
 
@@ -81,6 +106,9 @@ if (mode === '--summary' || mode === 'summary') {
   console.log(`Latest: ${receipt.served_class || latest.class || 'unknown'} / ${receipt.served_platform || latest.tier || 'unknown'} / ${receipt.served_model || latest.model || 'unknown'} | fallback=${Boolean(latest.fallback || receipt.fallback_used)} | latency=${latest.latency_ms || 0}ms`);
   console.log(`Window: last ${summary.recent.length} | fallbacks=${summary.fallbacks} | flags=${summary.flagged} | tokens=${summary.tokens || 'not logged'}`);
   console.log(`Quota classes: ${summary.quotaTotal}/${summary.recent.length} calls | ${summary.quota.join(' | ')}`);
+  const circuits = currentCircuits();
+  const visible = Object.entries(circuits).slice(0, 6).map(([id, c]) => `${id}:${formatCircuit(c)}`);
+  if (visible.length) console.log(`Circuits: ${visible.join(' | ')}`);
   process.exit(0);
 }
 
@@ -93,3 +121,12 @@ console.log(`Fallbacks: ${summary.fallbacks}`);
 console.log(`Verification flags: ${summary.flagged}`);
 console.log(`Tokens logged: ${summary.tokens || 'not logged'}`);
 console.log(`Quota classes: ${summary.quotaTotal}/${summary.recent.length} calls | ${summary.quota.join(' | ')}`);
+const circuits = currentCircuits();
+if (Object.keys(circuits).length) {
+  console.log('');
+  console.log('## Current Provider Circuits');
+  console.log('');
+  for (const [id, c] of Object.entries(circuits)) {
+    console.log(`${id}: ${formatCircuit(c)} failures=${c.failures || 0} successes=${c.successes || 0}`);
+  }
+}

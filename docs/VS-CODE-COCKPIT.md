@@ -118,8 +118,9 @@ read-only rollback visibility. Restores still require explicit terminal action
 through `cc-rollback restore <N>`, which prompts before overwriting files.
 
 `AI: Route Receipt` is the cost/control surface. It shows the latest served
-lane/model, fallback status, latency, logged tokens, and quota drift. If exact
-cost is not logged by the provider call, it says so instead of estimating.
+lane/model, fallback status, latency, logged tokens, quota drift, and current
+provider circuit state. If exact cost is not logged by the provider call, it
+says so instead of estimating.
 
 `AI: Save Plan` is the Plan/Act bridge. It writes the route preview plus a
 read-only implementation plan to `.ai/plans/` so execution starts from an

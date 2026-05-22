@@ -150,7 +150,9 @@ tokens, reserves output room, and shows remaining context before a route runs.
 
 `AI: Session Ledger` is the Langfuse-inspired session surface. It shows routed
 turns, cwd, transcript pointer when available, stale state, models, fallbacks,
-and sticky routing without exposing full transcripts.
+and sticky routing without exposing full transcripts. Transcript mode groups
+JSONL into user prompts, assistant calls, tool calls/results, completion state,
+and token totals.
 
 `AI: Browser Proof` is the agent-browser-inspired output protocol. It reports
 WebBridge health and wraps page snapshots in nonce-tagged, bounded boundaries.

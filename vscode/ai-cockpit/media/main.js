@@ -129,7 +129,7 @@
     renderContextMeter(parseJson(contextMeterJson));
     renderContextSnapshot(parseJson(contextSnapshot));
     renderDiffSummary(parseJson(diffSummary));
-    $('sessions').textContent = sessions || 'No session ledger available.';
+    renderSessions(parseJson(sessions));
     $('pulse').textContent = pulse || 'No Pulse status available.';
     $('nativeApps').textContent = nativeApps || 'No native app status available.';
     $('kimi').textContent = kimi || 'No Kimi status available.';
@@ -235,6 +235,40 @@
           : provider.values ? 1 : 0;
       return `${provider.id.padEnd(12)} included=${marker.padEnd(3)} items=${String(count).padStart(3)} source=${provider.source || '-'}`;
     }).join('\n');
+  }
+
+  function renderSessions(data) {
+    const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+    if (!sessions.length) {
+      $('sessions').textContent = 'No routed sessions for this project yet.';
+      return;
+    }
+    $('sessions').textContent = sessions.slice(0, 8).map((session) => {
+      const state = session.stale ? 'stale' : 'active';
+      const lane = topKey(session.classes);
+      const model = topKey(session.models);
+      const cwd = session.cwd ? `\n  cwd=${session.cwd}` : '';
+      const transcript = session.transcript_path ? '\n  transcript=linked' : '';
+      const prompt = compact(session.last_prompt || '');
+      const response = compact(session.last_response || '');
+      return [
+        `${session.session_id} (${state})`,
+        `  turns=${session.turns || 0} lane=${lane} model=${model} fallbacks=${session.fallbacks || 0} sticky=${session.sticky || 0}`,
+        cwd,
+        transcript,
+        prompt ? `\n  Q: ${prompt}` : '',
+        response ? `\n  A: ${response}` : '',
+      ].join('');
+    }).join('\n\n');
+  }
+
+  function topKey(obj) {
+    const entries = Object.entries(obj || {}).sort((a, b) => Number(b[1]) - Number(a[1]));
+    return entries[0] ? entries[0][0] : '-';
+  }
+
+  function compact(value) {
+    return String(value).replace(/\s+/g, ' ').slice(0, 120);
   }
 
   function clamp(value, min, max) {

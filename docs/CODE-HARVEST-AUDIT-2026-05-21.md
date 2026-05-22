@@ -131,6 +131,10 @@ developers would star, clone, and pay attention to.
   for a developer-grade session timeline.
 - Verification: `cc-session-ledger --json` emits turn summaries from a transcript
   without needing Langfuse running.
+- Status: Done 2026-05-21. `cc-session-ledger transcript <path> --json` now
+  emits bounded turn summaries with prompt, assistant-call, tool-call,
+  tool-result, completion, cwd, and token fields. `show --json` attaches the
+  transcript summary when the ledger has a transcript pointer.
 
 ### P1 — Codebase Indexing / Context Providers
 
@@ -247,6 +251,10 @@ developers would star, clone, and pay attention to.
    `cc-browser-proof --json` now emits a bounded proof packet with nonce
    boundaries, origin, max/returned/content chars, truncation status, and
    screenshot path placeholder instead of exposing an unbounded raw snapshot.
+8. Transcript parser / turn grouper inspired by Langfuse. Done 2026-05-21:
+   `cc-session-ledger transcript <path> --json` groups JSONL into prompt,
+   assistant-call, tool-call/result, token, cwd, and completion summaries, and
+   the cockpit now renders session JSON instead of pasted terminal output.
 
 This order is intentional: visible UX first, router reliability second, durable
 session intelligence third.

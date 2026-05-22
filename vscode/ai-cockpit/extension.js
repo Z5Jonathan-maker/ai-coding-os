@@ -226,6 +226,7 @@ class CockpitProvider {
     this.output = output;
     this.contextTimer = null;
     this.activeRun = null;
+    this.refreshNonce = 0;
   }
 
   resolveWebviewView(view) {
@@ -238,9 +239,10 @@ class CockpitProvider {
 
   async refresh() {
     if (!this.view) return;
+    const nonce = ++this.refreshNonce;
     this.view.webview.postMessage({ type: 'loading' });
     const deferred = 'Not loaded on startup. Open this report to run the full check.';
-    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi, providerCapacity] = await Promise.all([
+    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
@@ -248,34 +250,45 @@ class CockpitProvider {
       shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
-      shellExec('cc-provider-capacity | sed -n "1,24p"', { timeout: 45000 }),
     ]);
+
+    const payload = {
+      readiness: summarizeReadiness(status.text),
+      context: editorContext(),
+      route: receipt.text,
+      metrics: deferred,
+      providerCapacity: 'Checking live provider capacity...',
+      permissions: deferred,
+      checkpoints: deferred,
+      disk: deferred,
+      product: deferred,
+      firstRun: firstRun.text,
+      contextMeter: contextMeter.text,
+      contextMeterJson: contextMeterJson.text,
+      contextSnapshot: '{}',
+      diffSummary: diffSummary.text,
+      sessions: '{}',
+      pulse: deferred,
+      nativeApps: deferred,
+      kimi: kimi.text,
+      repoMap: '{}',
+      jobs: deferred,
+      lanes: deferred,
+    };
 
     this.view.webview.postMessage({
       type: 'state',
-      payload: {
-        readiness: summarizeReadiness(status.text),
-        context: editorContext(),
-        route: receipt.text,
-        metrics: deferred,
-        providerCapacity: providerCapacity.text,
-        permissions: deferred,
-        checkpoints: deferred,
-        disk: deferred,
-        product: deferred,
-        firstRun: firstRun.text,
-        contextMeter: contextMeter.text,
-        contextMeterJson: contextMeterJson.text,
-        contextSnapshot: '{}',
-        diffSummary: diffSummary.text,
-        sessions: '{}',
-        pulse: deferred,
-        nativeApps: deferred,
-        kimi: kimi.text,
-        repoMap: '{}',
-        jobs: deferred,
-        lanes: deferred,
-      },
+      payload,
+    });
+    shellExec('cc-provider-capacity | sed -n "1,24p"', { timeout: 45000 }).then((providerCapacity) => {
+      if (!this.view || nonce !== this.refreshNonce) return;
+      this.view.webview.postMessage({
+        type: 'state',
+        payload: {
+          ...payload,
+          providerCapacity: providerCapacity.text || 'Provider capacity unavailable.',
+        },
+      });
     });
   }
 

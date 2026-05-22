@@ -762,7 +762,9 @@ body.panel-mode {
   overflow: hidden;
   padding: 0 26px 0 0;
   color: #17141f;
-  background: #faf9fd;
+  background:
+    radial-gradient(circle at 72% 0%, rgba(126, 92, 255, .055), transparent 32%),
+    #fbfafe;
 }
 
 .panel-mode header {
@@ -780,7 +782,9 @@ body.panel-mode {
   flex-direction: column;
   padding: 22px 16px;
   color: #eef0ff;
-  background: #090d1a;
+  background:
+    radial-gradient(circle at 30% 0%, rgba(124, 92, 255, .18), transparent 28%),
+    #080d19;
 }
 
 .panel-mode .topbar {
@@ -859,6 +863,16 @@ body.panel-mode {
   margin-bottom: 28px;
 }
 
+.rail-brand::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-left: auto;
+  border-right: 1.5px solid #7f87a3;
+  border-bottom: 1.5px solid #7f87a3;
+  transform: rotate(45deg) translateY(-2px);
+}
+
 .rail-brand strong,
 .rail-brand span {
   display: block;
@@ -873,7 +887,8 @@ body.panel-mode {
 .rail-mark {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 9px;
+  filter: drop-shadow(0 8px 18px rgba(124, 92, 255, .28));
 }
 
 .rail-nav {
@@ -1145,6 +1160,12 @@ body.panel-mode {
   box-shadow: 0 1px 0 rgba(20, 20, 40, .03);
 }
 
+.panel-mode .workstream.active {
+  background:
+    linear-gradient(90deg, rgba(124, 92, 255, .045), rgba(255, 255, 255, .92) 24%),
+    rgba(255, 255, 255, .92);
+}
+
 .stream-status {
   width: max-content;
   border-radius: 999px;
@@ -1181,14 +1202,33 @@ body.panel-mode {
   place-items: center;
   border: 2px solid #ffffff;
   border-radius: 50%;
-  color: #ffffff;
-  background: linear-gradient(135deg, #17141f, #6d5df6);
+  color: transparent;
+  background:
+    radial-gradient(circle at 50% 39%, #f7d7bb 0 24%, transparent 25%),
+    radial-gradient(circle at 46% 31%, #2c1c18 0 18%, transparent 19%),
+    linear-gradient(135deg, #17141f, #6d5df6);
   font-size: 10px;
   font-weight: 800;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, .14);
 }
 
 .avatar-stack span:first-child {
   margin-left: 0;
+}
+
+.avatar-stack span:nth-child(2) {
+  background:
+    radial-gradient(circle at 52% 38%, #edc8aa 0 24%, transparent 25%),
+    radial-gradient(circle at 50% 29%, #151923 0 18%, transparent 19%),
+    linear-gradient(135deg, #0f766e, #7c5cff);
+}
+
+.avatar-stack span:nth-child(3) {
+  background:
+    radial-gradient(circle at 50% 39%, #f3c9aa 0 24%, transparent 25%),
+    radial-gradient(circle at 48% 31%, #4b2b1f 0 18%, transparent 19%),
+    linear-gradient(135deg, #1d4ed8, #8b5cf6);
 }
 
 .panel-mode .workstream.active {
@@ -1198,14 +1238,49 @@ body.panel-mode {
 
 .stream-icon {
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 31px;
+  height: 31px;
   place-items: center;
-  border-radius: 9px;
+  border-radius: 10px;
   color: #6d5df6;
   background: #f0edff;
   font-size: 11px;
   font-weight: 800;
+}
+
+.stream-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.stream-icon.dose {
+  color: #6b59ee;
+  background: #f0edff;
+}
+
+.stream-icon.polish {
+  color: #334155;
+  background: #eef2ff;
+}
+
+.stream-icon.router {
+  color: #0f766e;
+  background: #e8faf4;
+}
+
+.stream-icon.tests {
+  color: #c93b4a;
+  background: #fff0f2;
+}
+
+.stream-icon.browser {
+  color: #2563eb;
+  background: #edf5ff;
 }
 
 .stream-title strong,
@@ -1251,6 +1326,13 @@ body.panel-mode {
 .stream-action {
   color: #ffffff;
   background: #6d5df6;
+}
+
+.panel-mode .workstream.active .stream-action {
+  color: #ffffff;
+  border-color: transparent;
+  background: linear-gradient(135deg, #6b59ee, #8759f2);
+  box-shadow: 0 8px 18px rgba(91, 75, 219, .22);
 }
 
 .panel-mode .workspace-detail {
@@ -1312,23 +1394,56 @@ body.panel-mode {
 
 .activity-card {
   display: grid;
-  gap: 14px;
+  gap: 13px;
 }
 
 .activity-preview {
-  min-height: 82px;
+  position: relative;
+  min-height: 86px;
   display: grid;
   align-content: end;
   gap: 3px;
   border-radius: 10px;
   padding: 12px;
   color: #ffffff;
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, 0) 42%),
     linear-gradient(90deg, transparent 0 12%, rgba(255, 255, 255, .12) 12% 13%, transparent 13% 36%, rgba(255, 255, 255, .1) 36% 37%, transparent 37% 100%),
     linear-gradient(135deg, rgba(17, 24, 39, .96), rgba(48, 37, 96, .96)),
     #17141f;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+.activity-preview::before {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 15px;
+  width: 96px;
+  height: 34px;
+  border-radius: 7px;
+  background:
+    linear-gradient(90deg, #7c5cff 0 44%, #42d7c7 44% 48%, rgba(255, 255, 255, .12) 48% 100%),
+    rgba(255, 255, 255, .1);
+  box-shadow:
+    -80px 7px 0 -12px rgba(255, 255, 255, .18),
+    -52px 21px 0 -14px rgba(66, 215, 199, .8),
+    inset 0 0 0 1px rgba(255, 255, 255, .16);
+}
+
+.activity-preview::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  width: 44px;
+  height: 28px;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 50% 45%, #42d7c7 0 18%, transparent 19%),
+    linear-gradient(135deg, rgba(124, 92, 255, .9), rgba(255, 255, 255, .1));
+  opacity: .95;
 }
 
 .activity-preview span,
@@ -1378,6 +1493,14 @@ body.panel-mode {
   background: #7c5cff;
 }
 
+.ok-dot.code {
+  background: #0f766e;
+}
+
+.ok-dot.globe {
+  background: #2563eb;
+}
+
 .route-card {
   justify-content: space-between;
   gap: 10px;
@@ -1385,8 +1508,42 @@ body.panel-mode {
   font-size: 12px;
 }
 
+.panel-mode .route-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  row-gap: 10px;
+  column-gap: 14px;
+}
+
 .route-card strong {
   color: #17141f;
+}
+
+.model-stack {
+  display: inline-flex;
+  gap: 4px;
+  justify-self: end;
+}
+
+.model-stack i {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #111827;
+  font-size: 10px;
+  font-style: normal;
+  line-height: 1;
+}
+
+.model-stack i:nth-child(2) {
+  background: #4f46e5;
+}
+
+.model-stack i:nth-child(3) {
+  background: #16a34a;
 }
 
 .panel-mode details,

@@ -656,59 +656,46 @@ class CockpitProvider {
       <button class="ghost-button">New workspace</button>
     </div>
     <article class="workstream active">
-      <div class="stream-icon">AI</div>
+      <div class="stream-icon dose"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 1.5 5.4 4.2 5.7 8.2l2.3 2.3-3.2 1.1-1.1 3.2-2.3-2.3C9.4 15.2 6.7 13.3 5.2 9.8L12 3Z"/><path d="M9 15l-3 3M14.5 8.5h.01"/></svg></div>
       <div class="stream-main">
-        <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
-        <p>Next up: convert dashboard controls into persistent workspace flow.</p>
-      </div>
-      <div class="stream-status in-progress">In progress</div>
-      <div class="avatar-stack"><span>J</span><span>C</span><span>K</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>12 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
-    </article>
-    <article class="workstream">
-      <div class="stream-icon">DC</div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 12m ago</span></div>
+        <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 2m ago</span></div>
         <p>Next up: implement responsive pricing section and connect to CMS.</p>
       </div>
       <div class="stream-status in-progress">In progress</div>
-      <div class="avatar-stack"><span>J</span><span>K</span><span>I</span></div>
+      <div class="avatar-stack"><span>J</span><span>K</span><span>I</span><span>+2</span></div>
       <div class="stream-meta"><span>Changes</span><strong>8 files</strong></div>
       <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue DoseCraft landing page. Implement the responsive pricing section and connect it to CMS.">Continue</button>
     </article>
     <article class="workstream">
-      <div class="stream-icon">RT</div>
+      <div class="stream-icon polish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg></div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
+        <p>Next up: polish animation, empty states, and installed panel details.</p>
+      </div>
+      <div class="stream-status review">Review</div>
+      <div class="avatar-stack"><span>J</span><span>K</span></div>
+      <div class="stream-meta"><span>Changes</span><strong>5 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="warn">Warnings</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Claude - Kimi</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
+    </article>
+    <article class="workstream">
+      <div class="stream-icon router"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5l2 3h7"/><path d="M5 17h5l2-3h7"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
         <p>Next up: add regression examples for creative direction and implementation handoff.</p>
       </div>
-      <div class="stream-status review">Review</div>
-      <div class="avatar-stack"><span>C</span><span>D</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>3 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="warn">Warnings</strong></div>
+      <div class="stream-status in-progress">In progress</div>
+      <div class="avatar-stack"><span>C</span></div>
+      <div class="stream-meta"><span>Changes</span><strong>12 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="bad">Failing (2)</strong></div>
       <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue the router reliability pass. Add regression coverage for creative direction and implementation handoff.">Continue</button>
     </article>
-    <article class="workstream">
-      <div class="stream-icon">WB</div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1h ago</span></div>
-        <p>Next up: verify official Kimi WebBridge extension session before browser tasks.</p>
-      </div>
-      <div class="stream-status in-progress">In progress</div>
-      <div class="avatar-stack"><span>K</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>6 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Kimi Web</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue browser auth setup. Verify official Kimi WebBridge extension session before browser tasks.">Continue</button>
-    </article>
     <article class="workstream blocked">
-      <div class="stream-icon">!</div>
+      <div class="stream-icon tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4h8v3"/><path d="M6 11h12"/><path d="M7 7h10v12H7z"/><path d="M4 15h3M17 15h3M9 19l-2 2M15 19l2 2"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
         <p>Next up: isolate integration failure and rerun release gate.</p>
@@ -720,6 +707,19 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Review failing tests. Isolate the integration failure, rerun the relevant gate, and report the safest fix.">Continue</button>
     </article>
+    <article class="workstream">
+      <div class="stream-icon browser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/><path d="M9 15h6"/></svg></div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1d ago</span></div>
+        <p>Next up: complete Google OAuth flow and session storage.</p>
+      </div>
+      <div class="stream-status in-progress">In progress</div>
+      <div class="avatar-stack"><span>K</span></div>
+      <div class="stream-meta"><span>Changes</span><strong>6 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Kimi Web</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue browser auth setup. Verify official Kimi WebBridge extension session before browser tasks.">Continue</button>
+    </article>
   </section>
 
   <aside class="workspace-detail" aria-label="Active workspace">
@@ -727,32 +727,34 @@ class CockpitProvider {
       <div class="detail-head">
         <div>
           <span class="detail-kicker">Active workspace</span>
-          <h2>AI cockpit polish</h2>
+          <h2>DoseCraft landing page</h2>
         </div>
         <button class="mini-button">...</button>
       </div>
-      <p>Persistent workspace home with routing hidden under one primary Continue Work action.</p>
+      <p>Modern landing page for DoseCraft with pricing, FAQ, and marketing sections.</p>
       <div class="progress-row"><span>Overall progress</span><strong>72%</strong></div>
       <div class="progress"><span style="width:72%"></span></div>
     </div>
     <div class="detail-card">
       <span class="detail-kicker">Current focus</span>
-      <h3>Make the cockpit feel inevitable</h3>
-      <p>Reduce visible system management and expose momentum, context, and the next best move.</p>
+      <h3>Building responsive pricing section</h3>
+      <p>Implementing UI and connecting it to CMS.</p>
     </div>
     <div class="detail-card activity-card">
       <div class="section-head">
         <h3>Recent activity</h3>
         <button class="ghost-button">View all</button>
       </div>
-      <div class="activity-item"><span class="ok-dot"></span><div><strong>Workstream home added</strong><small>Codex - now</small></div><em>+ UI</em></div>
-      <div class="activity-preview"><span>Workspace home</span><strong>Continue work</strong><small>Route hidden until needed</small></div>
-      <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Creative lane documented</strong><small>Image 2.0 - Kimi</small></div><em>routed</em></div>
-      <div class="activity-item"><span class="ok-dot"></span><div><strong>Release gates passing</strong><small>15/15 readiness</small></div><em>clean</em></div>
+      <div class="activity-item"><span class="ok-dot code"></span><div><strong>Updated PricingSection.tsx</strong><small>Codex - 2m ago</small></div><em>+142 -18</em></div>
+      <div class="activity-item"><span class="ok-dot globe"></span><div><strong>Rendered pricing page</strong><small>Kimi Browser - 4m ago</small></div><em>view</em></div>
+      <div class="activity-preview"><span>DoseCraft preview</span><strong>Simple, transparent pricing</strong><small>Responsive section rendered</small></div>
+      <div class="activity-item"><span class="ok-dot"></span><div><strong>Tests passed</strong><small>Codex - 6m ago</small></div><em>12 tests</em></div>
+      <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Design reference applied</strong><small>Image 2.0 - 12m ago</small></div><em>routed</em></div>
     </div>
     <div class="detail-card route-card">
       <span>Route</span><strong>Codex - Kimi</strong>
-      <span>Models used</span><strong>4 core lanes</strong>
+      <span>Models used</span><strong class="model-stack"><i>K</i><i>C</i><i>G</i></strong>
+      <span>Started</span><strong>Today, 9:41 AM</strong>
     </div>
   </aside>
 

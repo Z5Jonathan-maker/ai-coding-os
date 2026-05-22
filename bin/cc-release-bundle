@@ -3,7 +3,7 @@
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/dotfiles}"
-version="${1:-v0.1.0-rc7}"
+version="${1:-v0.1.0-rc8}"
 dist="$DOTFILES/dist"
 bundle="$dist/ai-coding-os-${version}.tar.gz"
 staging="$(mktemp -d "${TMPDIR:-/tmp}/cc-release-bundle.XXXXXX")"

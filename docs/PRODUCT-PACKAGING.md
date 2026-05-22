@@ -28,7 +28,9 @@ trust tier, and safety boundary.
 
 ## What Makes It Sellable
 
-- **One cockpit:** VS Code is the surface. No duplicate IDEs.
+- **Persistent workspace home:** VS Code is the surface. The primary action is
+  Continue Work, not manage routes or inspect dashboards.
+- **One cockpit:** no duplicate IDEs.
 - **Native cockpit UI:** Activity Bar, sidebar dashboard, status bar, and command palette actions.
 - **Opinionated lanes:** each AI has a specific job.
 - **Creative-reference loop:** Image 2.0 creates approved visual direction;

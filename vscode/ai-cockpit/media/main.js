@@ -66,6 +66,22 @@
       return;
     }
 
+    const workstreamButton = event.target.closest('button[data-workstream-prompt]');
+    if (workstreamButton) {
+      const prompt = workstreamButton.dataset.workstreamPrompt || '';
+      $('prompt').value = prompt;
+      startTranscript(selectedMode, prompt);
+      vscode.postMessage({
+        command: 'runPrompt',
+        mode: selectedMode,
+        prompt,
+        permissionMode,
+        includeContext: $('includeContext').checked,
+        contextBlock: fullContext(),
+      });
+      return;
+    }
+
     const button = event.target.closest('button[data-command]');
     if (button) {
       clearTranscriptPrompt();

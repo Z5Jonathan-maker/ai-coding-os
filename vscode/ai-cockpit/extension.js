@@ -525,6 +525,29 @@ class CockpitProvider {
   <title>AI Cockpit</title>
 </head>
 <body class="${variant}-mode">
+  <aside class="workspace-rail" aria-label="Cockpit navigation">
+    <div class="rail-brand">
+      <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'cockpit.svg'))}" alt="" class="rail-mark">
+      <div>
+        <strong>cc-cockpit</strong>
+        <span>Local mode</span>
+      </div>
+    </div>
+    <nav class="rail-nav">
+      <button class="active"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Home</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v16"/></svg><span>Workspaces</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6l5-3-5-3Z"/><path d="M6 21v-6l-5 3 5 3Z"/><path d="M18 21v-6l5 3-5 3Z"/><path d="M12 9v3M8 16l4-4 4 4"/></svg><span>Agents</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/></svg><span>Browser</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 4-4 16"/></svg><span>Code</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="m8 15 2.5-3 2 2.4L15 11l1 4"/></svg><span>Assets</span></button>
+      <button><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg><span>Knowledge</span></button>
+    </nav>
+    <div class="rail-status">
+      <span>System status</span>
+      <strong><i></i> Ready</strong>
+    </div>
+  </aside>
+
   <header>
     <div class="brand-lockup">
       <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'cockpit.svg'))}" alt="" class="brand-mark">
@@ -552,15 +575,28 @@ class CockpitProvider {
     <span>Open Full Cockpit</span>
   </button>
 
+  <section class="home-intro">
+    <div>
+      <h2>Good morning, Jonathan.</h2>
+      <p>Pick up where you left off. Your workstreams are ready.</p>
+    </div>
+    <div class="home-actions">
+      <button class="focus-button">Focus</button>
+      <button class="mini-button" data-command="refresh" title="Refresh" aria-label="Refresh cockpit">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3"/><path d="M17.7 3.5v2.8h-2.8M6.3 20.5v-2.8h2.8"/></svg>
+      </button>
+    </div>
+  </section>
+
   <section class="composer">
     <div class="composer-head">
       <label for="prompt">Command</label>
       <span id="context">No active editor</span>
     </div>
-    <textarea id="prompt" rows="5" placeholder="Ask, build, debug, browse, or extract..."></textarea>
+    <textarea id="prompt" rows="5" placeholder="What would you like to build or solve?"></textarea>
     <div class="chips" id="chips"></div>
     <div class="runrow">
-      <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Run</span></button>
+      <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Continue work</span></button>
       <button class="secondary command-button" data-run="explainRoute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
     </div>
     <section class="control-deck" aria-label="Cockpit controls">
@@ -593,6 +629,90 @@ class CockpitProvider {
       Include active file
     </label>
   </section>
+
+  <section class="workstreams-panel">
+    <div class="section-head">
+      <h2>Your workstreams</h2>
+      <button class="ghost-button">New workspace</button>
+    </div>
+    <article class="workstream active">
+      <div class="stream-icon">AI</div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
+        <p>Next up: convert dashboard controls into persistent workspace flow.</p>
+      </div>
+      <div class="stream-meta"><span>Changes</span><strong>12 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
+    </article>
+    <article class="workstream">
+      <div class="stream-icon">RT</div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
+        <p>Next up: add regression examples for creative direction and implementation handoff.</p>
+      </div>
+      <div class="stream-meta"><span>Changes</span><strong>3 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="warn">Warnings</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue the router reliability pass. Add regression coverage for creative direction and implementation handoff.">Continue</button>
+    </article>
+    <article class="workstream">
+      <div class="stream-icon">WB</div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1h ago</span></div>
+        <p>Next up: verify official Kimi WebBridge extension session before browser tasks.</p>
+      </div>
+      <div class="stream-meta"><span>Changes</span><strong>6 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Kimi Web</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue browser auth setup. Verify official Kimi WebBridge extension session before browser tasks.">Continue</button>
+    </article>
+    <article class="workstream blocked">
+      <div class="stream-icon">!</div>
+      <div class="stream-main">
+        <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
+        <p>Next up: isolate integration failure and rerun release gate.</p>
+      </div>
+      <div class="stream-meta"><span>Changes</span><strong>2 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="bad">Failing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
+      <button class="stream-action" data-workstream-prompt="Review failing tests. Isolate the integration failure, rerun the relevant gate, and report the safest fix.">Continue</button>
+    </article>
+  </section>
+
+  <aside class="workspace-detail" aria-label="Active workspace">
+    <div class="detail-card">
+      <div class="detail-head">
+        <div>
+          <span class="detail-kicker">Active workspace</span>
+          <h2>AI cockpit polish</h2>
+        </div>
+        <button class="mini-button">...</button>
+      </div>
+      <p>Persistent workspace home with routing hidden under one primary Continue Work action.</p>
+      <div class="progress-row"><span>Overall progress</span><strong>72%</strong></div>
+      <div class="progress"><span style="width:72%"></span></div>
+    </div>
+    <div class="detail-card">
+      <span class="detail-kicker">Current focus</span>
+      <h3>Make the cockpit feel inevitable</h3>
+      <p>Reduce visible system management and expose momentum, context, and the next best move.</p>
+    </div>
+    <div class="detail-card activity-card">
+      <div class="section-head">
+        <h3>Recent activity</h3>
+        <button class="ghost-button">View all</button>
+      </div>
+      <div class="activity-item"><span class="ok-dot"></span><div><strong>Workstream home added</strong><small>Codex - now</small></div><em>+ UI</em></div>
+      <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Creative lane documented</strong><small>Image 2.0 - Kimi</small></div><em>routed</em></div>
+      <div class="activity-item"><span class="ok-dot"></span><div><strong>Release gates passing</strong><small>15/15 readiness</small></div><em>clean</em></div>
+    </div>
+    <div class="detail-card route-card">
+      <span>Route</span><strong>Codex - Kimi</strong>
+      <span>Models used</span><strong>4 core lanes</strong>
+    </div>
+  </aside>
 
   <section class="result-panel">
     <div class="panel-head">

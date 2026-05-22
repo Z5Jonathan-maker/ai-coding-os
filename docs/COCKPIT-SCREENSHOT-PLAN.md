@@ -13,6 +13,7 @@ surface, not a terminal command list.
 | 03-route-receipt | `AI: Explain Route` / `AI: Route Receipt` showing selected lane and fallback chain | `cc-workflow-proof "debug this repo and verify the safest next step"` |
 | 04-browser-proof | `AI: Browser Proof` showing browser mode, WebBridge health, and bounded page content | `cc-browser-proof --url https://example.com --max-chars 1200` |
 | 05-composer | Sidebar composer with mode selector, context chips, prompt, and streamed result | `AI: Ask / Plan` from the cockpit |
+| 06-full-panel | Full editor-panel cockpit with large Work Stream and bottom composer | `AI Cockpit: Open Full Cockpit` |
 | 06-package | VSIX package proof for the extension | `cc-package-cockpit` |
 
 ## Capture Standards
@@ -33,6 +34,7 @@ docs/media/cockpit/02-first-run.png
 docs/media/cockpit/03-route-receipt.png
 docs/media/cockpit/04-browser-proof.png
 docs/media/cockpit/05-composer.gif
+docs/media/cockpit/06-full-panel.png
 docs/media/cockpit/06-package.png
 ```
 
@@ -41,9 +43,10 @@ docs/media/cockpit/06-package.png
 The final README should use:
 
 1. `01-readiness.png` near "Quick Proof".
-2. `05-composer.gif` near "Why This Exists".
-3. `03-route-receipt.png` near the lane table.
-4. `04-browser-proof.png` near browser automation boundaries.
+2. `06-full-panel.png` near "Why This Exists".
+3. `05-composer.gif` near sidebar/launcher explanation.
+4. `03-route-receipt.png` near the lane table.
+5. `04-browser-proof.png` near browser automation boundaries.
 
 ## Current Status
 

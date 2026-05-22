@@ -21,6 +21,7 @@ mkdir -p "$OUT_DIR"
 
 write_page() {
   local file="$1" title="$2" hero="$3" body="$4" cards="$5"
+  local body_class="${6:-}"
   {
     cat <<HTML
 <!doctype html>
@@ -59,9 +60,10 @@ write_page() {
 HTML
     cat "$CSS"
     cat <<HTML
+    body.panel-mode { max-width: none; margin: 0; }
   </style>
 </head>
-<body>
+<body${body_class:+ class="$body_class"}>
   <header>
     <div class="brand-lockup">
       <svg class="brand-mark" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -135,7 +137,7 @@ HTML
 
   <section class="result-panel">
     <div class="panel-head">
-      <h2>Result</h2>
+      <h2>Work Stream</h2>
       <div class="result-actions" aria-label="Work stream actions">
         <button class="mini-button" title="Copy work stream" aria-label="Copy work stream">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -149,7 +151,16 @@ HTML
         <button class="mini-button text-mini">Demo</button>
       </div>
     </div>
-    <pre>Ready.</pre>
+    <pre>You
+Debug this repo and verify the safest next step.
+
+Auto
+Route selected: precision -> claude
+Fallback: design/kimi -> cheap/deepseek
+
+Working tree clean.
+Product readiness: 14/14.
+Next step: keep changes scoped, verify release gate, then ship.</pre>
   </section>
 
   <details open>
@@ -187,6 +198,14 @@ capture() {
   printf 'captured %s\n' "$OUT_DIR/$out"
 }
 
+capture_panel() {
+  local name="$1" title="$2" hero="$3" body="$4" cards="$5" out="$6"
+  local html="$tmp/$name.html"
+  write_page "$html" "$title" "$hero" "$body" "$cards" "panel-mode"
+  playwright screenshot --channel chrome --viewport-size 1440,900 "file://$html" "$OUT_DIR/$out" >/dev/null
+  printf 'captured %s\n' "$OUT_DIR/$out"
+}
+
 capture "readiness" "Product Readiness" "Ready with browser shim" \
   "Product gate is green. Browser automation is using the shim profile, not the official logged-in Chrome extension." \
   "$(card "Product Readiness" "Score: 14/14 checks (100%)\nStatus: product-ready" "View Gate")$(card "Disk" "Free: 25GB\nMinimum gate: 25GB\nStatus: PASS" "View Disk Report")$(card "First Run" "required_missing=0 optional_missing=0 personal_missing=0\nStatus: first-run-ready" "View Doctor")" \
@@ -211,6 +230,11 @@ capture "composer" "Composer" "Auto-first execution" \
   "Auto, Code, Browser, Extract, and Route are intent modes. The router owns model choice and fallback." \
   "$(card "Route" "Circuits: design:closed | image:closed | tier3:closed\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")$(card "Context Pressure" "Input estimate visible.\nDiff/context chips attached." "View Context")$(card "Last Result" "Explain Route\nSelected: auto -> router fallback chain" "Run")" \
   "05-composer.png"
+
+capture_panel "full-panel" "Full Cockpit Panel" "Full-panel work surface" \
+  "The full editor panel keeps the work stream large and puts the command composer below it." \
+  "$(card "Route" "Selected: auto\nFallback: router-owned" "View Receipt")$(card "File Changes" "files: 6\nadded: 126\nremoved: 91" "View Diff")" \
+  "06-full-panel.png"
 
 if command -v sips >/dev/null 2>&1; then
   sips -s format gif "$OUT_DIR/05-composer.png" --out "$OUT_DIR/05-composer.gif" >/dev/null

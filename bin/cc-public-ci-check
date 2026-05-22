@@ -103,6 +103,7 @@ media_artifacts() {
     docs/media/cockpit/04-browser-proof.png \
     docs/media/cockpit/05-composer.png \
     docs/media/cockpit/05-composer.gif \
+    docs/media/cockpit/06-full-panel.png \
     docs/media/cockpit/06-package.png; do
     if [ ! -s "$file" ]; then
       printf 'missing media artifact: %s\n' "$file"

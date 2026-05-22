@@ -22,6 +22,27 @@ header {
   margin-bottom: 12px;
 }
 
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--vscode-focusBorder) 50%, transparent);
+  border-radius: 8px;
+  padding: 7px;
+  color: var(--vscode-focusBorder);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-focusBorder) 18%, transparent), transparent 58%),
+    var(--vscode-editor-background);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--vscode-foreground) 8%, transparent);
+}
+
 .eyebrow {
   color: var(--vscode-descriptionForeground);
   font-size: 11px;
@@ -34,6 +55,12 @@ h1 {
   margin: 2px 0 0;
   font-size: 18px;
   line-height: 1.1;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.2;
 }
 
 h2 {
@@ -60,10 +87,39 @@ button {
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
 }
 
 button:hover {
   background: var(--vscode-button-hoverBackground);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.icon-button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  border-color: var(--vscode-input-border, var(--vscode-panel-border));
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .hero {
@@ -132,12 +188,14 @@ button:hover {
 
 .composer {
   display: grid;
-  gap: 9px;
-  padding: 12px;
+  gap: 10px;
+  padding: 13px;
   margin-bottom: 12px;
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
   border-radius: 8px;
-  background: var(--vscode-editor-background);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--vscode-focusBorder) 5%, transparent), transparent 30%),
+    var(--vscode-editor-background);
 }
 
 .composer-head {
@@ -169,13 +227,13 @@ textarea {
   min-height: 96px;
   resize: vertical;
   border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: 8px;
+  padding: 10px;
   color: var(--vscode-input-foreground);
   background: var(--vscode-input-background);
   font: inherit;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .modebar {
@@ -184,32 +242,32 @@ textarea {
   gap: 4px;
   padding: 3px;
   border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
-  border-radius: 7px;
+  border-radius: 8px;
   background: var(--vscode-sideBar-background);
 }
 
-.mode-drawer {
-  margin: 0;
-  border-color: var(--vscode-input-border, var(--vscode-panel-border));
-  background: var(--vscode-sideBar-background);
+.control-deck {
+  display: grid;
+  gap: 10px;
 }
 
-.mode-drawer summary {
-  min-height: 30px;
-  padding: 7px 9px;
+.control-group {
+  display: grid;
+  gap: 5px;
+}
+
+.control-label {
   color: var(--vscode-descriptionForeground);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.mode-drawer .modebar {
-  margin: 0 8px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
 .mode {
-  min-height: 32px;
+  min-height: 34px;
   border-color: transparent;
-  padding: 4px 2px;
+  padding: 5px 4px;
   color: var(--vscode-descriptionForeground);
   background: transparent;
   font-size: 11px;
@@ -221,7 +279,52 @@ textarea {
 
 .mode.active {
   color: var(--vscode-button-foreground);
-  background: var(--vscode-button-background);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-button-foreground) 12%, transparent), transparent),
+    var(--vscode-button-background);
+}
+
+.permissionbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.permission {
+  display: grid;
+  gap: 2px;
+  min-height: 48px;
+  border-color: var(--vscode-input-border, var(--vscode-panel-border));
+  padding: 8px 9px;
+  color: var(--vscode-descriptionForeground);
+  background: var(--vscode-editor-background);
+  text-align: left;
+}
+
+.permission strong,
+.permission span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission strong {
+  color: var(--vscode-foreground);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.permission span {
+  font-size: 10px;
+}
+
+.permission.active {
+  border-color: color-mix(in srgb, var(--vscode-focusBorder) 72%, var(--vscode-input-border, transparent));
+  color: var(--vscode-foreground);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-focusBorder) 16%, transparent), transparent),
+    var(--vscode-editor-background);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--vscode-focusBorder) 14%, transparent);
 }
 
 textarea:focus {
@@ -250,6 +353,16 @@ textarea:focus {
   gap: 7px;
 }
 
+.command-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
 .toolrow {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -257,15 +370,45 @@ textarea:focus {
 }
 
 .primary {
-  background: var(--vscode-button-background);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-button-foreground) 14%, transparent), transparent),
+    var(--vscode-button-background);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--vscode-button-foreground) 14%, transparent);
+}
+
+.secondary,
+.tool-button {
+  color: var(--vscode-foreground);
+  background: var(--vscode-editor-background);
+  border-color: var(--vscode-input-border, var(--vscode-panel-border));
+}
+
+.tool-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.secondary:hover,
+.tool-button:hover,
+.icon-button:hover,
+.permission:hover,
+.status-grid button:hover {
+  border-color: color-mix(in srgb, var(--vscode-focusBorder) 55%, var(--vscode-input-border, transparent));
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--vscode-focusBorder) 10%, transparent), transparent),
+    var(--vscode-editor-background);
 }
 
 .result-panel {
-  padding: 11px;
+  padding: 12px;
   margin-bottom: 12px;
   border: 1px solid var(--vscode-sideBarSectionHeader-border, var(--vscode-panel-border));
   border-radius: 8px;
-  background: var(--vscode-editor-background);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--vscode-foreground) 3%, transparent), transparent 24%),
+    var(--vscode-editor-background);
 }
 
 .panel-head {
@@ -356,7 +499,7 @@ pre {
   overflow: auto;
   margin: 0;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--vscode-editor-foreground);
   background: var(--vscode-textCodeBlock-background);
   font-family: var(--vscode-editor-font-family);
@@ -447,9 +590,9 @@ body.panel-mode {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 13px;
   overflow: hidden;
-  padding: 16px 18px;
+  padding: 16px 18px 14px;
   background: var(--vscode-editor-background);
 }
 
@@ -467,21 +610,22 @@ body.panel-mode {
 .panel-mode .hero {
   order: 1;
   margin-bottom: 0;
-  padding: 10px 12px;
+  padding: 11px 13px;
 }
 
 .panel-mode .composer {
   order: 3;
   margin-bottom: 0;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  padding: 12px;
+  padding: 14px;
+  box-shadow: 0 -10px 28px color-mix(in srgb, var(--vscode-editor-background) 70%, transparent);
 }
 
 .panel-mode .composer-head,
 .panel-mode textarea,
 .panel-mode .chips,
-.panel-mode .mode-drawer,
+.panel-mode .control-deck,
 .panel-mode .toolrow,
 .panel-mode .check {
   grid-column: 1 / -1;
@@ -489,17 +633,22 @@ body.panel-mode {
 
 .panel-mode textarea {
   min-height: 74px;
-  max-height: 160px;
+  max-height: 150px;
   font-size: 13px;
 }
 
 .panel-mode .runrow {
   grid-column: 1 / -1;
-  grid-template-columns: minmax(140px, 180px) minmax(120px, 160px);
+  grid-template-columns: minmax(150px, 210px) minmax(130px, 170px);
 }
 
 .panel-mode .toolrow {
   grid-template-columns: repeat(3, minmax(120px, 150px));
+}
+
+.panel-mode .control-deck {
+  grid-template-columns: minmax(360px, 1fr) minmax(300px, .9fr);
+  align-items: end;
 }
 
 .panel-mode .result-panel {
@@ -520,7 +669,7 @@ body.panel-mode {
   flex: 1 1 auto;
   max-height: none;
   min-height: 0;
-  padding: 18px;
+  padding: 18px 20px;
   font-size: 13px;
   line-height: 1.55;
 }
@@ -531,7 +680,7 @@ body.panel-mode {
 }
 
 .panel-mode h1 {
-  font-size: 20px;
+  font-size: 21px;
 }
 
 @media (min-width: 1100px) {
@@ -550,5 +699,17 @@ body.panel-mode {
 
   .panel-mode .toolrow {
     min-width: 440px;
+  }
+}
+
+@media (max-width: 760px) {
+  .panel-mode .control-deck,
+  .permissionbar,
+  .panel-mode .toolrow {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-mode .runrow {
+    grid-template-columns: 1fr;
   }
 }

@@ -29,6 +29,11 @@ It adds:
 - a full editor panel that opens like Claude/Kimi/Cursor-style work surfaces:
   large Work Stream above, compact command composer below, sidebars hidden, and
   editor groups joined
+- a dedicated cockpit brand mark plus premium command buttons for the primary
+  Run, Preview Route, and context actions
+- a permission selector with Ask, Review, and Autopilot modes; Auto classifies
+  the task first, then sends the selected authority as execution policy so the
+  policy text does not skew routing
 - a sidebar dashboard kept as a launcher/status surface for readiness, route
   receipt, permissions, checkpoints, jobs, lanes, and disk gate
 - a composer with one primary Run path, Auto as the default mode, optional

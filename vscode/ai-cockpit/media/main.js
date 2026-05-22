@@ -2,6 +2,7 @@
   const vscode = acquireVsCodeApi();
   const $ = (id) => document.getElementById(id);
   let selectedMode = 'autoRun';
+  let permissionMode = 'review';
   let contextBlock = '';
   let attached = [];
   let activePrompt = '';
@@ -31,9 +32,21 @@
       selectedMode = modeButton.dataset.mode;
       document.querySelectorAll('button[data-mode]').forEach((button) => {
         button.classList.toggle('active', button.dataset.mode === selectedMode);
+        button.setAttribute('aria-pressed', String(button.dataset.mode === selectedMode));
       });
-      const summary = document.querySelector('.mode-drawer summary');
-      if (summary) summary.textContent = `Mode: ${modeButton.textContent}`;
+      $('modeSummary').textContent = `Mode: ${modeButton.textContent}`;
+      return;
+    }
+
+    const permissionButton = event.target.closest('button[data-permission]');
+    if (permissionButton) {
+      permissionMode = permissionButton.dataset.permission;
+      document.querySelectorAll('button[data-permission]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.permission === permissionMode);
+        button.setAttribute('aria-pressed', String(button.dataset.permission === permissionMode));
+      });
+      const label = permissionButton.querySelector('strong')?.textContent || permissionButton.textContent;
+      $('permissionSummary').textContent = `Authority: ${label.trim()}`;
       return;
     }
 
@@ -51,6 +64,7 @@
         command: 'runPrompt',
         mode: runButton.dataset.run,
         prompt: $('prompt').value,
+        permissionMode,
         includeContext: $('includeContext').checked,
         contextBlock: fullContext(),
       });
@@ -64,6 +78,7 @@
         command: 'runPrompt',
         mode: selectedMode,
         prompt: $('prompt').value,
+        permissionMode,
         includeContext: $('includeContext').checked,
         contextBlock: fullContext(),
       });
@@ -92,6 +107,7 @@
         command: 'runPrompt',
         mode: selectedMode,
         prompt: $('prompt').value,
+        permissionMode,
         includeContext: $('includeContext').checked,
         contextBlock: fullContext(),
       });
@@ -200,13 +216,14 @@
     if (!trimmed.startsWith('{')) return line;
     try {
       const event = JSON.parse(trimmed);
+      const diagnostic = /route|receipt|health|status/i.test(String(title || ''));
       if (event.type === 'circuit_breaker_open') {
-        if (!/route|receipt|health|status/i.test(String(title || ''))) return '';
+        if (!diagnostic) return '';
         const tier = event.data && event.data.tierId ? ` (${event.data.tierId})` : '';
         return `Router notice: precision lane${tier} is degraded. Auto will continue through the available fallback chain.`;
       }
-      if (event.level === 'warn' && event.message) {
-        if (!/route|receipt|health|status/i.test(String(title || ''))) return '';
+      if ((event.service || event.level) && !diagnostic) return '';
+      if (event.message) {
         return `Router notice: ${event.message}`;
       }
     } catch (_) {

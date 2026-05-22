@@ -63,11 +63,22 @@ HTML
 </head>
 <body>
   <header>
-    <div>
-      <div class="eyebrow">AI-SYSTEM-V2</div>
-      <h1>AI Cockpit</h1>
+    <div class="brand-lockup">
+      <svg class="brand-mark" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="4.25" stroke="#7AA2FF" stroke-width="1.5"/>
+        <path d="M7.25 12C7.25 9.37665 9.37665 7.25 12 7.25C14.6234 7.25 16.75 9.37665 16.75 12C16.75 14.6234 14.6234 16.75 12 16.75C9.37665 16.75 7.25 14.6234 7.25 12Z" stroke="#9BE7C8" stroke-width="1.4"/>
+        <path d="M12 5.75V8.75M12 15.25V18.25M5.75 12H8.75M15.25 12H18.25" stroke="#F8D66D" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M10.35 12.05L11.45 13.15L13.9 10.7" stroke="#FFFFFF" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <div class="eyebrow">AI-SYSTEM-V2</div>
+        <h1>AI Cockpit</h1>
+        <p class="brand-subtitle">Router control surface</p>
+      </div>
     </div>
-    <button title="Refresh">Refresh</button>
+    <button class="icon-button" title="Refresh" aria-label="Refresh cockpit">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3"/><path d="M17.7 3.5v2.8h-2.8M6.3 20.5v-2.8h2.8"/></svg>
+    </button>
   </header>
 
   <section class="hero">
@@ -80,23 +91,40 @@ HTML
 
   <section class="composer">
     <div class="composer-head">
-      <label for="prompt">Ask</label>
+      <label for="prompt">Command</label>
       <span id="context">vscode/ai-cockpit/extension.js:209</span>
     </div>
     <textarea id="prompt" rows="5">Debug this repo and verify the safest next step.</textarea>
     <div class="chips"><button class="chip">git diff x</button><button class="chip">README.md x</button></div>
-    <div class="runrow"><button class="primary">Run</button><button>Preview Route</button></div>
-    <details class="mode-drawer">
-      <summary>Mode: Auto</summary>
-      <div class="modebar" role="tablist" aria-label="Mode">
-        <button class="mode active">Auto</button>
-        <button class="mode">Code</button>
-        <button class="mode">Browser</button>
-        <button class="mode">Extract</button>
-        <button class="mode">Route</button>
+    <div class="runrow">
+      <button class="primary command-button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Run</span></button>
+      <button class="secondary command-button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
+    </div>
+    <section class="control-deck" aria-label="Cockpit controls">
+      <div class="control-group">
+        <div class="control-label">Mode: Auto</div>
+        <div class="modebar" role="group" aria-label="Mode">
+          <button class="mode active" aria-pressed="true">Auto</button>
+          <button class="mode" aria-pressed="false">Code</button>
+          <button class="mode" aria-pressed="false">Browser</button>
+          <button class="mode" aria-pressed="false">Extract</button>
+          <button class="mode" aria-pressed="false">Route</button>
+        </div>
       </div>
-    </details>
-    <div class="toolrow"><button>Attach File</button><button>Attach Diff</button><button>Review Diff</button></div>
+      <div class="control-group permission-control">
+        <div class="control-label">Authority: Review</div>
+        <div class="permissionbar" role="group" aria-label="Permission mode">
+          <button class="permission" aria-pressed="false"><strong>Ask</strong><span>Confirm writes</span></button>
+          <button class="permission active" aria-pressed="true"><strong>Review</strong><span>Guarded edits</span></button>
+          <button class="permission" aria-pressed="false"><strong>Autopilot</strong><span>Safe loop</span></button>
+        </div>
+      </div>
+    </section>
+    <div class="toolrow">
+      <button class="tool-button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg><span>File</span></button>
+      <button class="tool-button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h6M7 17h10"/><path d="M4 4v16M20 4v16"/></svg><span>Diff</span></button>
+      <button class="tool-button"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
+    </div>
     <label class="check"><input type="checkbox" checked> Include active file</label>
   </section>
 

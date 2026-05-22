@@ -190,6 +190,21 @@ function quote(value) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
 
+function routerAskCommand(purpose, routeTask, runTask) {
+  if (purpose) return `router-ask --purpose ${quote(purpose)} ${quote(runTask)}`;
+  const parseReceipt = [
+    'try {',
+    'const r = JSON.parse(process.argv[1] || "{}");',
+    'process.stdout.write(r.final_class || "precision");',
+    '} catch (_) { process.stdout.write("precision"); }',
+  ].join(' ');
+  return [
+    `ROUTE_RECEIPT=$(router-ask --dry-run ${quote(routeTask)} 2>/dev/null | sed -n 's/^  Receipt:   //p' | tail -1)`,
+    `PURPOSE=$(node -e ${quote(parseReceipt)} "$ROUTE_RECEIPT")`,
+    `router-ask --purpose "$PURPOSE" ${quote(runTask)}`,
+  ].join('\n');
+}
+
 function refreshStatus(item) {
   const update = async () => {
     const result = await shellExec('cc-cockpit-status | sed -n "1,14p"', { timeout: 15000 });
@@ -307,7 +322,13 @@ class CockpitProvider {
       reviewDiff: () => vscode.commands.executeCommand('aiSystemCockpit.reviewDiff'),
     };
     if (message.command === 'runPrompt') {
-      this.runPrompt(message.mode, message.prompt, Boolean(message.includeContext), message.contextBlock || '');
+      this.runPrompt(
+        message.mode,
+        message.prompt,
+        Boolean(message.includeContext),
+        message.contextBlock || '',
+        message.permissionMode || 'review'
+      );
       return;
     }
     if (message.command === 'inline') {
@@ -403,19 +424,23 @@ class CockpitProvider {
     });
   }
 
-  runPrompt(mode, prompt, includeContext = false, contextBlock = '') {
+  runPrompt(mode, prompt, includeContext = false, contextBlock = '', permissionMode = 'review') {
     const clean = String(prompt || '').trim();
     if (!clean) {
       vscode.window.showInformationMessage('Enter a prompt in the AI Cockpit first.');
       return;
     }
-    const enriched = includeContext && contextBlock ? `${clean}${contextBlock}` : clean;
+    const permission = permissionInstruction(permissionMode);
+    const routeTask = includeContext && contextBlock ? `${clean}${contextBlock}` : clean;
+    const runTask = permission
+      ? `${routeTask}\n\n---\nCOCKPIT RUN POLICY\n${permission}`
+      : routeTask;
     if (mode === 'explainRoute') {
-      this.runInlineStream('Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(enriched)}`);
+      this.runInlineStream('Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(routeTask)}`);
       return;
     }
     if (mode === 'savePlan') {
-      runTerminal('AI Save Plan', `cc-plan ${quote(enriched)}`);
+      runTerminal('AI Save Plan', `cc-plan ${quote(runTask)}`);
       return;
     }
     const modes = {
@@ -425,8 +450,7 @@ class CockpitProvider {
       researchExtract: ['Research / Extract', 'cheap'],
     };
     const [label, purpose] = modes[mode] || modes.buildFix;
-    const force = purpose ? `--purpose ${quote(purpose)} ` : '';
-    this.runInlineStream(label, `router-ask ${force}${quote(enriched)}`);
+    this.runInlineStream(label, routerAskCommand(purpose, routeTask, runTask));
   }
 
   html(webview, variant = 'sidebar') {
@@ -437,18 +461,24 @@ class CockpitProvider {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="${cssUri}">
   <title>AI Cockpit</title>
 </head>
 <body class="${variant}-mode">
   <header>
-    <div>
-      <div class="eyebrow">AI-SYSTEM-V2</div>
-      <h1>AI Cockpit</h1>
+    <div class="brand-lockup">
+      <img src="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'cockpit.svg'))}" alt="" class="brand-mark">
+      <div>
+        <div class="eyebrow">AI-SYSTEM-V2</div>
+        <h1>AI Cockpit</h1>
+        <p class="brand-subtitle">Router control surface</p>
+      </div>
     </div>
-    <button data-command="refresh" title="Refresh">Refresh</button>
+    <button class="icon-button" data-command="refresh" title="Refresh" aria-label="Refresh cockpit">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3"/><path d="M17.7 3.5v2.8h-2.8M6.3 20.5v-2.8h2.8"/></svg>
+    </button>
   </header>
 
   <section class="hero">
@@ -467,23 +497,33 @@ class CockpitProvider {
     <textarea id="prompt" rows="5" placeholder="Ask, build, debug, browse, or extract..."></textarea>
     <div class="chips" id="chips"></div>
     <div class="runrow">
-      <button class="primary" data-run-selected="true">Run</button>
-      <button data-run="explainRoute">Preview Route</button>
+      <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Run</span></button>
+      <button class="secondary command-button" data-run="explainRoute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
     </div>
-    <details class="mode-drawer">
-      <summary>Mode: Auto</summary>
-      <div class="modebar" role="tablist" aria-label="Mode">
-        <button class="mode active" data-mode="autoRun">Auto</button>
-        <button class="mode" data-mode="buildFix">Code</button>
-        <button class="mode" data-mode="designBrowser">Browser</button>
-        <button class="mode" data-mode="researchExtract">Extract</button>
-        <button class="mode" data-mode="explainRoute">Route</button>
+    <section class="control-deck" aria-label="Cockpit controls">
+      <div class="control-group">
+        <div class="control-label" id="modeSummary">Mode: Auto</div>
+        <div class="modebar" role="group" aria-label="Mode">
+          <button class="mode active" data-mode="autoRun" aria-pressed="true">Auto</button>
+          <button class="mode" data-mode="buildFix" aria-pressed="false">Code</button>
+          <button class="mode" data-mode="designBrowser" aria-pressed="false">Browser</button>
+          <button class="mode" data-mode="researchExtract" aria-pressed="false">Extract</button>
+          <button class="mode" data-mode="explainRoute" aria-pressed="false">Route</button>
+        </div>
       </div>
-    </details>
+      <div class="control-group permission-control">
+        <div class="control-label" id="permissionSummary">Authority: Review</div>
+        <div class="permissionbar" role="group" aria-label="Permission mode">
+          <button class="permission" data-permission="ask" aria-pressed="false"><strong>Ask</strong><span>Confirm writes</span></button>
+          <button class="permission active" data-permission="review" aria-pressed="true"><strong>Review</strong><span>Guarded edits</span></button>
+          <button class="permission" data-permission="autopilot" aria-pressed="false"><strong>Autopilot</strong><span>Safe loop</span></button>
+        </div>
+      </div>
+    </section>
     <div class="toolrow">
-      <button data-command="pickFile">Attach File</button>
-      <button data-command="attachDiff">Attach Diff</button>
-      <button data-command="reviewDiff">Review Diff</button>
+      <button class="tool-button" data-command="pickFile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg><span>File</span></button>
+      <button class="tool-button" data-command="attachDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h6M7 17h10"/><path d="M4 4v16M20 4v16"/></svg><span>Diff</span></button>
+      <button class="tool-button" data-command="reviewDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
     </div>
     <label class="check">
       <input id="includeContext" type="checkbox" checked>
@@ -620,6 +660,15 @@ class CockpitPanel extends CockpitProvider {
       });
     }, 150);
   }
+}
+
+function permissionInstruction(mode) {
+  const modes = {
+    ask: 'Cockpit permission mode: Ask. Do not write files or run mutating commands without an explicit approval step.',
+    review: 'Cockpit permission mode: Review. Make safe local edits when the task is clear; surface risky or destructive actions before taking them.',
+    autopilot: 'Cockpit permission mode: Autopilot. Continue through safe local implementation and verification without extra prompts; still stop for paid, credential, destructive, or cross-user actions.',
+  };
+  return modes[mode] || modes.review;
 }
 
 function summarizeReadiness(text) {

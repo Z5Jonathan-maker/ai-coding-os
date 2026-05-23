@@ -31,6 +31,9 @@ for (const lane of registry.lanes || []) {
   laneIds.add(lane.id);
   if (!['active', 'optional', 'study', 'retired'].includes(lane.status)) err(`${lane.id}: invalid status`);
   if (!Array.isArray(lane.capabilities) || lane.capabilities.length === 0) err(`${lane.id}: capabilities required`);
+  for (const capability of lane.capabilities || []) {
+    if ((lane.unsupported || []).includes(capability)) err(`${lane.id}: capability also marked unsupported: ${capability}`);
+  }
   if (!lane.health || !lane.health.kind) err(`${lane.id}: health.kind required`);
   if (lane.health?.kind === 'command' && !lane.health.command) err(`${lane.id}: command health requires command`);
   if (lane.health?.kind === 'none' && lane.status === 'active') err(`${lane.id}: active lane cannot have health kind none`);
@@ -47,8 +50,19 @@ for (const [capability, route] of Object.entries(registry.capabilities || {})) {
     continue;
   }
   if (!laneIds.has(route.primary)) err(`${capability}: primary lane missing: ${route.primary}`);
+  const primary = (registry.lanes || []).find((lane) => lane.id === route.primary);
+  if (primary && !(primary.capabilities || []).includes(capability)) {
+    err(`${capability}: primary lane ${route.primary} does not declare capability`);
+  }
+  if (primary && (primary.unsupported || []).includes(capability)) {
+    err(`${capability}: primary lane ${route.primary} marks capability unsupported`);
+  }
   for (const fb of route.fallbacks || []) {
     if (!laneIds.has(fb)) err(`${capability}: fallback lane missing: ${fb}`);
+    const lane = (registry.lanes || []).find((candidate) => candidate.id === fb);
+    if (lane && (lane.unsupported || []).includes(capability)) {
+      err(`${capability}: fallback lane ${fb} marks capability unsupported`);
+    }
   }
   if ((!route.fallbacks || route.fallbacks.length === 0) && !route.noFallbackReason) {
     err(`${capability}: fallback or noFallbackReason required`);

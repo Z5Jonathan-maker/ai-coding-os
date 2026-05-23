@@ -47,7 +47,8 @@ Developer
 1. The cockpit is the user surface.
 2. The router is the engine.
 3. Lanes are capability boundaries, not model hype labels.
-4. Every fallback must be visible.
+4. Unsupported lane capabilities must be executable contract checks, not prose.
+5. Every fallback must be visible.
 5. Every launch claim needs a command that proves it.
 6. Credentials stay out of transcripts and git.
 7. Reference projects are harvested only for named gaps.

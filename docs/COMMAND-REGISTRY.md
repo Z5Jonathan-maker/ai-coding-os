@@ -10,7 +10,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-ai-checks` — run source-controlled AI checks from `.ai/checks/`.
 - `cc-browse` — autonomous browser-use lane with persistent profile.
 - `cc-image` — image client wrapper through the router project.
-- `cc-lane` — inspect the AI lane registry and capability fallback chain.
+- `cc-lane` — inspect the AI lane registry, capability fallback chain, and lane support/unsupported contracts.
 - `cc-loop` — unattended Claude runner.
 - `cc-pause` — pause `cc-loop`.
 - `cc-permission-matrix` — visible autonomy boundaries for cockpit approvals.

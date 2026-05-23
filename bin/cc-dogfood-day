@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+prompt="${CC_DOGFOOD_PROMPT:-debug this repo and verify the safest next step}"
+browser_url="${CC_DOGFOOD_BROWSER_URL:-data:text/html,<title>Dogfood Check</title><body>dogfood browser proof</body>}"
+max_chars="${CC_DOGFOOD_BROWSER_MAX_CHARS:-900}"
+pass=0
+fail=0
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-dogfood.XXXXXX")"
+  ok=0
+
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then
+    ok=0
+  fi
+
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+  rm -f "$tmp"
+}
+
+printf '# Developer-Day Dogfood\n\n'
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Prompt: %s\n' "$prompt"
+printf 'Browser URL: %s\n' "$browser_url"
+
+cd "$DOTFILES" || exit 1
+
+run "Router scenario matrix" '^ok   ' "$DOTFILES/bin/cc-router-smoke"
+run "Portable workflow proof" 'Route Preview|Repo Map|Diff Review Surface' env CC_WORKFLOW_PROOF_SKIP_READINESS=1 "$DOTFILES/bin/cc-workflow-proof" "$prompt"
+run "Context pressure proof" '"availableTokens":' "$DOTFILES/bin/cc-context-meter" --json --include-diff
+run "Diff surface proof" '"clean":' "$DOTFILES/bin/cc-diff-hunks" --json
+run "Browser proof" 'Browser mode:|BROWSER_PROOF_CONTENT|Readiness' "$DOTFILES/bin/cc-browser-proof" --url "$browser_url" --max-chars "$max_chars"
+run "Cockpit package proof" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
+run "Cockpit mission tests" '^# pass 3$' node --test "$DOTFILES"/vscode/ai-cockpit/test/*.test.js
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+
+[ "$fail" -eq 0 ]

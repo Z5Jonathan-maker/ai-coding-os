@@ -54,9 +54,11 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 
 ```sh
 cc-evaluator-check
+cc-ten-readiness
 cc-release-check
 cc-public-ci-check
 cc-product-readiness
+cc-dogfood-day
 cc-demo-five-minute
 cc-demo-fixture
 cc-system-demo
@@ -67,6 +69,11 @@ cc-browser-proof --url https://example.com --max-chars 1200
 Expected mature state: readiness is green, system demo passes, fixture demo
 runs against a harmless public repo, workflow proof shows route/readiness/repo
 map/diff context, and browser proof returns bounded page content.
+
+`cc-product-readiness` proves the local machine is ready. `cc-release-check`
+proves the distributable release path. `cc-ten-readiness` is stricter: it layers
+public CI, evaluator checks, developer-day dogfood, product/release gates,
+portable launch docs, and the documented 10/10 product contract.
 
 ## Cockpit Preview
 

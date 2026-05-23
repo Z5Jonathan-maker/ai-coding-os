@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+pass=0
+fail=0
+log_dir="${CC_TEN_LOG_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/cc-ten-readiness.XXXXXX")}"
+
+slug() {
+  printf '%s' "$1" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-'
+}
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$log_dir/$(slug "$name").log"
+  ok=0
+
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then
+    ok=0
+  fi
+
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    printf 'log  %s\n' "$tmp"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+}
+
+launch_docs_are_portable() {
+  ! grep -REn '/Users/leonardofibonacci|Jonathan'\''s local services|Jonathan'\''s machine' \
+    README.md \
+    docs/EVALUATOR-QUICKSTART.md \
+    docs/PRODUCT-PACKAGING.md \
+    docs/KNOWN-LIMITATIONS.md \
+    docs/VS-CODE-COCKPIT.md \
+    docs/FRESH-CLONE-VERIFY.md \
+    docs/RELEASE-CHECKLIST.md \
+    docs/ROADMAP.md
+}
+
+ten_contract_present() {
+  grep -Fq 'Sellable system is 100% when:' docs/PRODUCT-PACKAGING.md &&
+    grep -Fq 'Definition Of 100% Functional' docs/PRODUCT-PACKAGING.md &&
+    grep -Fq 'Must Fix Before Public Launch' docs/KNOWN-LIMITATIONS.md
+}
+
+printf '# 10/10 Readiness\n\n'
+printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Logs: %s\n' "$log_dir"
+
+cd "$DOTFILES" || exit 1
+
+run "Public CI" '^passed=9 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
+run "External evaluator" '^Status: evaluator-ready$' "$DOTFILES/bin/cc-evaluator-check"
+run "Developer-day dogfood" '^passed=7 failed=0$' "$DOTFILES/bin/cc-dogfood-day"
+run "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product-readiness"
+run "Release readiness" '^passed=11 failed=0$' "$DOTFILES/bin/cc-release-check"
+run "Portable launch docs" '' launch_docs_are_portable
+run "10/10 contract documented" '' ten_contract_present
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+printf 'logs=%s\n' "$log_dir"
+
+[ "$fail" -eq 0 ]

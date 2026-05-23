@@ -161,6 +161,16 @@ Installed system is 100% when:
 7. `cc-workflow-proof` produces a readable proof packet
 8. `cc-demo-fixture` proves the route/repo-map/diff flow on a public fixture
 
+Daily-driver confidence is sampled by:
+
+```sh
+cc-dogfood-day
+```
+
+That command is non-mutating. It proves the developer-day path across router
+scenario coverage, workflow proof, context pressure, diff surface, browser
+proof, cockpit packaging, and mission-state regression tests.
+
 Current local state is tracked by `cc-product-readiness`; dirty/synced repo
 state is expected while active work is in flight.
 
@@ -177,6 +187,16 @@ Sellable system is 100% when:
 9. the cockpit extension can be distributed as a VSIX
 10. route, repo context, diff review, and readiness can run inside the cockpit
 11. native app status and Pulse status are visible without terminal spelunking
+
+The strict gate is:
+
+```sh
+cc-ten-readiness
+```
+
+It is intentionally harsher than `cc-product-readiness`. It requires public CI,
+external evaluator readiness, dogfood proof, product readiness, release
+readiness, portable launch docs, and this documented 10/10 contract.
 
 ## Packaging Rule
 

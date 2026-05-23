@@ -34,10 +34,10 @@ steps may be skipped.
 
 - private API keys are configured
 - Kimi WebBridge has access to your logged-in browser
-- Jonathan's local services are present
+- maintainer-local services are present
 - GitHub Actions can run while account billing is blocked
 
-For full local release validation on Jonathan's machine, use:
+For full local release validation on the prepared maintainer machine, use:
 
 ```sh
 cc-release-check

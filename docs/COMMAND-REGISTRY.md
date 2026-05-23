@@ -39,6 +39,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.
 - `cc-demo-fixture` — run workflow proof against a temporary public fixture repo with tests and an intentional diff.
+- `cc-dogfood-day` — non-mutating developer-day proof across routing, workflow proof, context, diff, browser, package, and cockpit mission tests.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review; supports `--json`.
 - `cc-evaluator-check` — external evaluator check for fresh clones and public review.
@@ -64,6 +65,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-session-ledger` — recent routed sessions, cwd-aware resume metadata, stale state, lanes, models, fallbacks, sticky state, and transcript turn summaries; supports `--json`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
+- `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
 - `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
 - `code-stable` — launch VS Code through the verified `--disable-gpu` renderer-crash recovery path.
 

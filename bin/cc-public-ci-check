@@ -126,6 +126,7 @@ run "Git whitespace" git diff --check
 run "Bash syntax" bash_syntax
 run "Node syntax and JSON" node_syntax
 run "Cockpit mission tests" cockpit_tests
+run "Cockpit webview smoke" "$ROOT/bin/cc-cockpit-webview-smoke"
 run "Issue template YAML" issue_template_yaml
 run "Required public docs" required_docs
 run "Command registry complete" command_registry_complete

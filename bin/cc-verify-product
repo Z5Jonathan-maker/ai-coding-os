@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+prompt="${CC_VERIFY_PROMPT:-debug this repo and verify the safest next step}"
+browser_url="${CC_VERIFY_BROWSER_URL:-data:text/html,<title>Product Verify</title><body>product verification proof</body>}"
+max_chars="${CC_VERIFY_BROWSER_MAX_CHARS:-900}"
+log_dir="${CC_VERIFY_LOG_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/cc-verify-product.XXXXXX")}"
+pass=0
+fail=0
+
+slug() {
+  printf '%s' "$1" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-'
+}
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$log_dir/$(slug "$name").log"
+  ok=0
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then
+    ok=0
+  fi
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    printf 'log  %s\n' "$tmp"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+}
+
+printf '# Product Verification\n\n'
+printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'Dotfiles: %s\n' "$DOTFILES"
+printf 'Logs: %s\n' "$log_dir"
+
+cd "$DOTFILES" || exit 1
+
+run "First-run doctor" '^Status: first-run-ready$' "$DOTFILES/install.sh" --dry-run
+run "Source-controlled AI checks" '^Status: ai-checks-ready$' "$DOTFILES/bin/cc-ai-checks"
+run "Benchmark fixtures" '^Status: benchmark-fixtures-ready$' "$DOTFILES/bin/cc-benchmark-fixtures" --check
+run "Cockpit webview smoke" '^Status: cockpit-webview-ready$' "$DOTFILES/bin/cc-cockpit-webview-smoke"
+run "Cockpit package" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
+run "Five-minute demo" '^passed=4 failed=0$' "$DOTFILES/bin/cc-demo-five-minute" --prompt "$prompt" --browser-url "$browser_url" --max-chars "$max_chars"
+run "Fresh clone validation" '^Status: fresh-clone-ready$' "$DOTFILES/bin/cc-fresh-clone-check"
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+printf 'logs=%s\n' "$log_dir"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: product-verified\n'
+else
+  printf 'Status: product-verification-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

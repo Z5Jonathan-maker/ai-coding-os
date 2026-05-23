@@ -271,6 +271,24 @@ textarea {
   gap: 10px;
 }
 
+.context-drawer {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.context-drawer summary {
+  cursor: pointer;
+  color: var(--vscode-descriptionForeground);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.context-drawer[open] {
+  display: grid;
+  gap: 10px;
+}
+
 .control-group {
   display: grid;
   gap: 5px;
@@ -1295,13 +1313,8 @@ body.panel-mode::after {
   background: rgba(240, 237, 255, .88);
 }
 
-.panel-mode .control-deck {
-  display: none;
-}
-
-.panel-mode .toolrow,
-.panel-mode .check {
-  display: none;
+.panel-mode .context-drawer:not([open]) {
+  opacity: .76;
 }
 
 .panel-mode .modebar,

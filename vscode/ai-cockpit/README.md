@@ -9,6 +9,11 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 - Startup-safe by default: the cockpit does not activate or auto-open until opened.
 - Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
 - Inline streaming route/output, diff review, repo index, and inspection reports.
+- Native inline edit command: captures the current selection or line, routes to
+  Codex, opens a VS Code diff preview, then applies only after explicit approval.
+- Full cockpit opens beside the active editor and preserves workspace context.
+- Mode, permission, file, diff, and review controls are collapsed behind a
+  context drawer so continuation stays primary.
 - Deeper diagnostics collapsed under Overview, Context, System, and Advanced.
 - Daily readiness state separates usable lanes from the stricter release/product gate.
 - Degraded health state when a provider circuit is open, with Auto mode as the recovery path.
@@ -19,6 +24,7 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 - Jonathan's AI-SYSTEM-V2 dotfiles installed.
 - `router-ask`, `cc-system-demo`, `cc-product-readiness`, `cc-router-metrics`, and related cockpit commands available on `PATH`.
 - VS Code 1.96.0 or newer.
+- Provider accounts for the lanes you want to use. See `docs/PROVIDER-ACCOUNTS.md` at the repo root.
 
 ## Install
 
@@ -39,6 +45,7 @@ code --install-extension dist/ai-system-cockpit-0.1.0.vsix
 
 ```sh
 cc-product-readiness
+cc-cockpit-webview-smoke
 cc-system-demo
 cc-health-weekly --verbose
 ```

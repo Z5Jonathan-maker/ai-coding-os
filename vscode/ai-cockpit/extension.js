@@ -2,6 +2,7 @@
 
 const vscode = require('vscode');
 const cp = require('child_process');
+const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { buildMissionState } = require('./lib/mission-state');
@@ -85,6 +86,7 @@ function activate(context) {
     command('aiSystemCockpit.fiveMinuteDemo', () => provider.runInlineStream('Five-Minute Demo', COMMANDS.fiveMinuteDemo)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
+    command('aiSystemCockpit.inlineEdit', () => runInlineEdit(output)),
     command('aiSystemCockpit.openSettings', () => vscode.commands.executeCommand('workbench.action.openSettings', 'aiSystemCockpit')),
     command('aiSystemCockpit.explainRoute', explainRoute),
     command('aiSystemCockpit.savePlan', savePlan),
@@ -203,6 +205,108 @@ function quote(value) {
 function routerAskCommand(purpose, routeTask, runTask) {
   if (purpose) return `router-ask --purpose ${quote(purpose)} ${quote(runTask)}`;
   return `router-ask ${quote(runTask)}`;
+}
+
+function selectedEditRange(editor) {
+  if (editor.selection && !editor.selection.isEmpty) return editor.selection;
+  const line = editor.document.lineAt(editor.selection?.active?.line || 0);
+  return line.rangeIncludingLineBreak;
+}
+
+function surroundingContext(doc, range, radius = 8) {
+  const start = Math.max(0, range.start.line - radius);
+  const end = Math.min(doc.lineCount - 1, range.end.line + radius);
+  const lines = [];
+  for (let i = start; i <= end; i++) lines.push(`${i + 1}: ${doc.lineAt(i).text}`);
+  return lines.join('\n');
+}
+
+function parseRouterJson(text) {
+  try {
+    return JSON.parse(text || '{}');
+  } catch (_) {
+    return { result: text || '', meta: {} };
+  }
+}
+
+function stripCodeFences(text) {
+  const value = String(text || '').trim();
+  const fenced = value.match(/^```[a-zA-Z0-9_-]*\n([\s\S]*?)\n```$/);
+  return fenced ? fenced[1] : value;
+}
+
+function receiptSummary(meta = {}) {
+  const receipt = meta.route_receipt || {};
+  const platform = receipt.served_platform || meta.model || 'codex';
+  const model = receipt.served_model || meta.model || 'codex';
+  const fallback = receipt.fallback_used ? ` fallback_attempts=${receipt.fallback_attempts || 0}` : ' direct';
+  const cost = typeof receipt.cost_usd === 'number' ? ` cost=$${receipt.cost_usd.toFixed(4)}` : '';
+  const tokens = receipt.tokens_in || receipt.tokens_out ? ` tokens=${receipt.tokens_in || 0}/${receipt.tokens_out || 0}` : '';
+  return `${platform}/${model}${fallback}${cost}${tokens}`;
+}
+
+async function runInlineEdit(output) {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showInformationMessage('Open a file before running AI Cockpit inline edit.');
+    return;
+  }
+  const instruction = await askPrompt('Describe the inline edit to make to the current selection or line');
+  if (!instruction) return;
+  const doc = editor.document;
+  const range = selectedEditRange(editor);
+  const original = doc.getText(range);
+  const file = vscode.workspace.asRelativePath(doc.uri, false);
+  const prompt = [
+    'You are editing one code selection. Return only the replacement text. No markdown, no explanation.',
+    `File: ${file}`,
+    `Language: ${doc.languageId}`,
+    `Instruction: ${instruction}`,
+    '',
+    'Nearby context with line numbers:',
+    surroundingContext(doc, range),
+    '',
+    'Selected text to replace:',
+    original,
+  ].join('\n');
+
+  vscode.window.withProgress({
+    location: vscode.ProgressLocation.Notification,
+    title: 'AI Cockpit inline edit',
+    cancellable: false,
+  }, async () => {
+    const result = await shellExec(`router-ask --purpose codex --json ${quote(prompt)}`, {
+      timeout: 120000,
+      maxBuffer: 1024 * 1024 * 8,
+    });
+    if (!result.ok) {
+      output.appendLine(result.text || 'Inline edit failed.');
+      vscode.window.showWarningMessage(`Inline edit failed with code ${result.code}`);
+      return;
+    }
+    const parsed = parseRouterJson(result.stdout || result.text);
+    const replacement = stripCodeFences(parsed.result || parsed.text || '');
+    if (!replacement) {
+      vscode.window.showWarningMessage('Inline edit returned no replacement text.');
+      return;
+    }
+    const proposed = doc.getText().slice(0, doc.offsetAt(range.start)) + replacement + doc.getText().slice(doc.offsetAt(range.end));
+    const temp = path.join(os.tmpdir(), `ai-cockpit-${Date.now()}-${path.basename(file || 'inline-edit')}`);
+    fs.writeFileSync(temp, proposed);
+    await vscode.commands.executeCommand('vscode.diff', doc.uri, vscode.Uri.file(temp), `AI Inline Edit: ${file}`);
+    output.appendLine(`Inline edit receipt: ${receiptSummary(parsed.meta)}`);
+    const apply = await vscode.window.showInformationMessage('Apply AI inline edit?', { modal: true }, 'Apply');
+    if (apply !== 'Apply') return;
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(doc.uri, range, replacement);
+    const ok = await vscode.workspace.applyEdit(edit);
+    if (ok) {
+      await doc.save();
+      vscode.window.showInformationMessage(`AI inline edit applied. ${receiptSummary(parsed.meta)}`);
+    } else {
+      vscode.window.showWarningMessage('VS Code rejected the inline edit.');
+    }
+  });
 }
 
 function refreshStatus(item) {
@@ -641,35 +745,38 @@ class CockpitProvider {
       <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Continue</span></button>
       <button class="secondary command-button" data-run="explainRoute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
     </div>
-    <section class="control-deck" aria-label="Cockpit controls">
-      <div class="control-group">
-        <div class="control-label" id="modeSummary">Mode: Auto</div>
-        <div class="modebar" role="group" aria-label="Mode">
-          <button class="mode active" data-mode="autoRun" aria-pressed="true">Auto</button>
-          <button class="mode" data-mode="buildFix" aria-pressed="false">Code</button>
-          <button class="mode" data-mode="designBrowser" aria-pressed="false">Browser</button>
-          <button class="mode" data-mode="researchExtract" aria-pressed="false">Extract</button>
-          <button class="mode" data-mode="explainRoute" aria-pressed="false">Route</button>
+    <details class="context-drawer">
+      <summary>Context and controls</summary>
+      <section class="control-deck" aria-label="Cockpit controls">
+        <div class="control-group">
+          <div class="control-label" id="modeSummary">Mode: Auto</div>
+          <div class="modebar" role="group" aria-label="Mode">
+            <button class="mode active" data-mode="autoRun" aria-pressed="true">Auto</button>
+            <button class="mode" data-mode="buildFix" aria-pressed="false">Code</button>
+            <button class="mode" data-mode="designBrowser" aria-pressed="false">Browser</button>
+            <button class="mode" data-mode="researchExtract" aria-pressed="false">Extract</button>
+            <button class="mode" data-mode="explainRoute" aria-pressed="false">Route</button>
+          </div>
         </div>
-      </div>
-      <div class="control-group permission-control">
-        <div class="control-label" id="permissionSummary">Authority: Review</div>
-        <div class="permissionbar" role="group" aria-label="Permission mode">
-          <button class="permission" data-permission="ask" aria-pressed="false"><strong>Ask</strong><span>Confirm writes</span></button>
-          <button class="permission active" data-permission="review" aria-pressed="true"><strong>Review</strong><span>Guarded edits</span></button>
-          <button class="permission" data-permission="autopilot" aria-pressed="false"><strong>Autopilot</strong><span>Safe loop</span></button>
+        <div class="control-group permission-control">
+          <div class="control-label" id="permissionSummary">Authority: Review</div>
+          <div class="permissionbar" role="group" aria-label="Permission mode">
+            <button class="permission" data-permission="ask" aria-pressed="false"><strong>Ask</strong><span>Confirm writes</span></button>
+            <button class="permission active" data-permission="review" aria-pressed="true"><strong>Review</strong><span>Guarded edits</span></button>
+            <button class="permission" data-permission="autopilot" aria-pressed="false"><strong>Autopilot</strong><span>Safe loop</span></button>
+          </div>
         </div>
+      </section>
+      <div class="toolrow">
+        <button class="tool-button" data-command="pickFile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg><span>File</span></button>
+        <button class="tool-button" data-command="attachDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h6M7 17h10"/><path d="M4 4v16M20 4v16"/></svg><span>Diff</span></button>
+        <button class="tool-button" data-command="reviewDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
       </div>
-    </section>
-    <div class="toolrow">
-      <button class="tool-button" data-command="pickFile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg><span>File</span></button>
-      <button class="tool-button" data-command="attachDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h6M7 17h10"/><path d="M4 4v16M20 4v16"/></svg><span>Diff</span></button>
-      <button class="tool-button" data-command="reviewDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
-    </div>
-    <label class="check">
-      <input id="includeContext" type="checkbox" checked>
-      Include active file
-    </label>
+      <label class="check">
+        <input id="includeContext" type="checkbox" checked>
+        Include active file
+      </label>
+    </details>
   </section>
 
   <section class="workstreams-panel">
@@ -833,15 +940,14 @@ class CockpitPanel extends CockpitProvider {
 
   open() {
     if (this.panel) {
-      this.panel.reveal(vscode.ViewColumn.One);
-      this.enterFocusLayout();
+      this.panel.reveal(vscode.ViewColumn.Beside);
       this.refreshContext();
       return;
     }
     this.panel = vscode.window.createWebviewPanel(
       'aiSystemCockpit.panel',
       'AI Cockpit',
-      vscode.ViewColumn.One,
+      vscode.ViewColumn.Beside,
       {
         enableScripts: true,
         retainContextWhenHidden: true,
@@ -855,21 +961,7 @@ class CockpitPanel extends CockpitProvider {
       this.panel = null;
       this.view = null;
     });
-    this.enterFocusLayout();
     this.refresh();
-  }
-
-  enterFocusLayout() {
-    setTimeout(() => {
-      [
-        'workbench.action.closeSidebar',
-        'workbench.action.closeAuxiliaryBar',
-        'workbench.action.joinAllGroups',
-        'workbench.action.focusActiveEditorGroup',
-      ].forEach((id) => {
-        vscode.commands.executeCommand(id).then(undefined, () => undefined);
-      });
-    }, 150);
   }
 }
 

@@ -51,6 +51,9 @@ trust tier, and safety boundary.
 - **Benchmark fixtures:** `cc-benchmark-fixtures` runs tiny public coding,
   extraction, and design-routing fixtures with tests, route expectations,
   repo-map proof, and diff-surface proof.
+- **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
+  cockpit surface still contains the continuation UI, result stream, assets,
+  startup-safe activation contract, and clean npm audit.
 - **Feedback-law discipline:** Mega Cycle anti-pattern laws are executable through
   autonomy preflight, `ai depth-check`, `ai evolve`, and `cc-feedback-law-check`.
 - **Safe credentials:** TEL handles credentialed actions; free/lab lanes do not.
@@ -180,7 +183,8 @@ Installed system is 100% when:
 12. `cc-token-ledger --check` proves token/cost telemetry is readable
 13. `cc-mission-ledger --check` proves persistent continuation state is readable
 14. `cc-benchmark-fixtures --check` proves repeatable fixture coverage is green
-15. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+15. `cc-cockpit-webview-smoke` proves the cockpit package surface is structurally intact
+16. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 
@@ -216,6 +220,12 @@ The strict gate is:
 
 ```sh
 cc-ten-readiness
+```
+
+The external-facing proof command is:
+
+```sh
+cc-verify-product
 ```
 
 It is intentionally harsher than `cc-product-readiness`. It requires public CI,

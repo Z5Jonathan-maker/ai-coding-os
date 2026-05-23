@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const cockpit = path.join(root, 'vscode', 'ai-cockpit');
+const checks = [];
+
+function add(name, ok, detail = '') {
+  checks.push({ name, ok: Boolean(ok), detail });
+}
+
+function read(file) {
+  return fs.readFileSync(path.join(cockpit, file), 'utf8');
+}
+
+function has(file) {
+  return fs.existsSync(path.join(cockpit, file));
+}
+
+function auditOk() {
+  const res = cp.spawnSync('npm', ['audit', '--omit=dev', '--audit-level=moderate'], {
+    cwd: cockpit,
+    encoding: 'utf8',
+  });
+  return { ok: res.status === 0, detail: `${res.stdout || ''}${res.stderr || ''}` };
+}
+
+const pkg = JSON.parse(read('package.json'));
+const ext = read('extension.js');
+const js = read('media/main.js');
+const css = read('media/style.css');
+const audit = auditOk();
+
+add('package manifest', pkg.name === 'ai-system-cockpit' && pkg.main === './extension.js');
+add('lockfile present', has('package-lock.json'));
+add('npm audit clean', audit.ok, audit.detail);
+add('activity bar contribution', JSON.stringify(pkg.contributes || {}).includes('aiSystemCockpit.dashboard'));
+add('startup-safe activation', !JSON.stringify(pkg.activationEvents || []).includes('onStartupFinished'));
+add('mission ledger command wired', ext.includes("missionLedger: 'cc-mission-ledger list 10 --json'"));
+add('inline edit command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.inlineEdit') && ext.includes('function runInlineEdit'));
+add('panel preserves editor context', ext.includes('vscode.ViewColumn.Beside') && !ext.includes('enterFocusLayout'));
+add('advanced controls collapsed', ext.includes('class="context-drawer"') && css.includes('.context-drawer'));
+add('continuation UI ids present', ['continueTitle', 'continueBody', 'continueSafety', 'detailTitle', 'detailProgressBar'].every((id) => ext.includes(`id="${id}"`)));
+add('primary run path present', ext.includes('data-run-selected="true"') && js.includes('activeMissionPrompt'));
+add('result stream visible', ext.includes('result-panel') && js.includes('renderTranscript'));
+add('no stale demo workstreams', !/DoseCraft landing page|Router reliability pass|Browser auth setup/.test(ext));
+add('assets present', ['media/main.js', 'media/style.css', 'media/cockpit.svg', 'lib/mission-state.js'].every(has));
+add('material CSS present', css.includes('.workspace-rail') && css.includes('.mission-feed') && css.includes('.result-panel'));
+
+console.log('# Cockpit Webview Smoke\n');
+for (const check of checks) {
+  console.log(`${check.ok ? 'ok  ' : 'fail'} ${check.name}`);
+  if (!check.ok && check.detail) {
+    console.log(check.detail.split('\n').slice(0, 40).map((line) => `     ${line}`).join('\n'));
+  }
+}
+
+const pass = checks.filter((c) => c.ok).length;
+const fail = checks.length - pass;
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: cockpit-webview-blocked' : 'Status: cockpit-webview-ready');
+process.exit(fail ? 1 : 0);

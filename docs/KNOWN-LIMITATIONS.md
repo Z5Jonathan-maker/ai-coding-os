@@ -12,6 +12,8 @@ named directly instead of hidden behind successful-looking demos.
 | Shim mode | Works for proof/demos but does not inherit normal Chrome cookies | Browser truth table documents the boundary |
 | License | Apache-2.0 selected; support/commercial boundary still needs launch copy | `docs/LICENSE-SUPPORT.md` tracks the boundary |
 | Provider accounts | User must bring their own paid/free AI accounts | First-run doctor does not inspect secrets |
+| GitHub Actions | Workflow file exists, but cloud execution depends on account billing/spending state | Local `cc-public-ci-check` and `cc-verify-product` remain the source of truth until billing is cleared |
+| Dependency audit | Cockpit extension has a committed lockfile and zero npm vulnerabilities | `cc-cockpit-webview-smoke` runs npm audit as part of product proof |
 | Windows/Linux | Not supported as a launch target | Future work only |
 | Hosted/team mode | Not implemented | Sellable path is local product plus support/workflow packaging first |
 | Screenshots/GIFs | Deterministic preview media exists; real unlocked VS Code screenshots are still better for final marketing | `cc-cockpit-capture` writes `docs/media/cockpit/` |

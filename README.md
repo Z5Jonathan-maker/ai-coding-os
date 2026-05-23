@@ -46,6 +46,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Release notes: `docs/RELEASE-NOTES-v0.1.0-rc8.md`
 - Release manifest: `docs/RELEASE-MANIFEST-v0.1.0-rc8.md`
 - Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
+- Provider accounts: `docs/PROVIDER-ACCOUNTS.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`
@@ -53,29 +54,24 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 ## Quick Proof
 
 ```sh
-cc-evaluator-check
-cc-ten-readiness
-cc-ai-checks
-cc-benchmark-fixtures
-cc-fresh-clone-check
-cc-feedback-law-check
-cc-trust-profile
+cc-verify-product
+cc-provider-capacity
 cc-token-ledger
-cc-mission-ledger --check
-cc-release-check
-cc-public-ci-check
-cc-product-readiness
-cc-dogfood-day
-cc-demo-five-minute
-cc-demo-fixture
-cc-system-demo
-cc-workflow-proof
-cc-browser-proof --url https://example.com --max-chars 1200
 ```
 
-Expected mature state: readiness is green, system demo passes, fixture demo
-runs against a harmless public repo, workflow proof shows route/readiness/repo
-map/diff context, and browser proof returns bounded page content.
+Expected mature state: product verification is green, every live model lane is
+ready, and token economics are visible.
+
+For focused checks:
+
+```sh
+cc-ten-readiness
+cc-ai-checks
+cc-cockpit-webview-smoke
+cc-benchmark-fixtures
+cc-fresh-clone-check
+cc-public-ci-check
+```
 
 `cc-product-readiness` proves the local machine is ready. `cc-release-check`
 proves the distributable release path. `cc-fresh-clone-check` proves a clean
@@ -86,6 +82,10 @@ the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
 repo-local autonomy policy in `.ai/trust.json`. `cc-token-ledger` reports router
 economics from existing usage telemetry. `cc-mission-ledger` provides the
 append-only continuation state used by the cockpit mission surface.
+`cc-cockpit-webview-smoke` proves the packaged cockpit still has required
+continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
+single external-facing proof command that wraps first-run, source checks,
+fixtures, cockpit smoke, package, demo, and fresh-clone validation.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

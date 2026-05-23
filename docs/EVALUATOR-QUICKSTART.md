@@ -7,21 +7,24 @@ This guide is for someone reviewing the project from a fresh clone.
 Start with:
 
 ```sh
-bin/cc-evaluator-check
+bin/cc-verify-product
 ```
 
 Expected result on a fully prepared macOS machine:
 
 ```text
-Status: evaluator-ready
+Status: product-verified
 ```
 
-On Linux or a clean CI runner, the portable gate should pass and macOS-specific
-steps may be skipped.
+For a shorter portable check, run `bin/cc-evaluator-check`. On Linux or a clean
+CI runner, the portable gate should pass and macOS-specific steps may be skipped.
 
 ## What The Command Proves
 
 - repo syntax and public docs are coherent
+- cockpit webview/package smoke is green
+- source-controlled AI checks are green
+- benchmark fixtures are green
 - command registry is complete
 - issue templates and workflow YAML parse
 - license metadata is aligned

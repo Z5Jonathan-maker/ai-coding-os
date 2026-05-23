@@ -13,7 +13,7 @@ cc-public-ci-check
 Expected result:
 
 ```text
-passed=8 failed=0
+passed=10 failed=0
 ```
 
 ## GitHub Actions Status

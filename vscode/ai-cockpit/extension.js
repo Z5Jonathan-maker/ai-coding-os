@@ -610,14 +610,23 @@ class CockpitProvider {
       <span id="context">No active editor</span>
     </div>
     <div class="continuation-copy">
-      <span>Ready to continue</span>
-      <h3 id="continueTitle">Build the responsive pricing section.</h3>
-      <p id="continueBody">Codex will edit the component, Kimi will verify the browser preview, and the gate will run after changes settle.</p>
+      <span>Continue current work</span>
+      <h3 id="continueTitle">DoseCraft landing page</h3>
+      <div class="continuation-memory" aria-label="Mission memory">
+        <div>
+          <span>Last session</span>
+          <p id="continueLast">Implemented the landing page direction and staged the pricing section handoff.</p>
+        </div>
+        <div>
+          <span>Next best step</span>
+          <p id="continueBody">Implement the responsive pricing section and connect it to CMS.</p>
+        </div>
+      </div>
     </div>
     <div class="continuation-signals" aria-label="Continuation signals">
-      <span id="continueChanges">8 files staged</span>
+      <span id="continueChanges">8 files changed</span>
       <span id="continueTests">Tests passing</span>
-      <span id="continueRoute">Codex - Kimi</span>
+      <span id="continueSafety">Safe to continue</span>
     </div>
     <textarea id="prompt" rows="5" placeholder="Add a direction, or press Continue mission."></textarea>
     <div class="chips" id="chips"></div>
@@ -663,10 +672,10 @@ class CockpitProvider {
 
   <section class="workstreams-panel">
     <div class="section-head">
-      <h2>Active workstreams</h2>
+      <h2>Mission threads</h2>
       <button class="ghost-button">New workspace</button>
     </div>
-    <article class="workstream active" data-workstream="DoseCraft landing page" data-summary="Modern landing page for DoseCraft with pricing, FAQ, and marketing sections." data-focus="Building responsive pricing section" data-focus-body="Implementing UI and connecting it to CMS." data-progress="72" data-route="Codex - Kimi" data-started="Today, 9:41 AM">
+    <article class="workstream active" data-workstream="DoseCraft landing page" data-summary="Modern landing page for DoseCraft with pricing, FAQ, and marketing sections." data-last-session="Implemented the landing page direction and staged the pricing section handoff." data-focus="Building responsive pricing section" data-focus-body="Implement the responsive pricing section and connect it to CMS." data-progress="72" data-route="Codex - Kimi" data-started="Today, 9:41 AM">
       <div class="stream-icon dose"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 1.5 5.4 4.2 5.7 8.2l2.3 2.3-3.2 1.1-1.1 3.2-2.3-2.3C9.4 15.2 6.7 13.3 5.2 9.8L12 3Z"/><path d="M9 15l-3 3M14.5 8.5h.01"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 2m ago</span></div>
@@ -679,7 +688,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue DoseCraft landing page. Implement the responsive pricing section and connect it to CMS.">Continue</button>
     </article>
-    <article class="workstream" data-workstream="AI cockpit polish" data-summary="Premium VS Code workspace cockpit with routing hidden under one primary Continue action." data-focus="Polish installed panel details" data-focus-body="Tightening animation, empty states, row selection, and responsive behavior." data-progress="81" data-route="Claude - Kimi" data-started="Today, 11:08 AM">
+    <article class="workstream" data-workstream="AI cockpit polish" data-summary="Premium VS Code workspace cockpit with routing hidden under one primary Continue action." data-last-session="Reduced visible routing controls and moved execution into a continuation surface." data-focus="Polish installed panel details" data-focus-body="Simplify workspace transitions and make the panel feel like one continuous environment." data-progress="81" data-route="Claude - Kimi" data-started="Today, 11:08 AM">
       <div class="stream-icon polish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
@@ -692,7 +701,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Claude - Kimi</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
     </article>
-    <article class="workstream" data-workstream="Router reliability pass" data-summary="Regression coverage and fallback hardening for the multimodal routing layer." data-focus="Stabilize creative handoff routes" data-focus-body="Adding examples for Image 2.0 direction and Kimi implementation handoff." data-progress="58" data-route="Claude - Codex" data-started="Yesterday, 7:32 PM">
+    <article class="workstream" data-workstream="Router reliability pass" data-summary="Regression coverage and fallback hardening for the multimodal routing layer." data-last-session="Verified fallback chains and documented the creative-direction handoff boundary." data-focus="Stabilize creative handoff routes" data-focus-body="Add regression examples for creative direction and implementation handoff." data-progress="58" data-route="Claude - Codex" data-started="Yesterday, 7:32 PM">
       <div class="stream-icon router"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5l2 3h7"/><path d="M5 17h5l2-3h7"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
@@ -705,7 +714,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Continue the router reliability pass. Add regression coverage for creative direction and implementation handoff.">Continue</button>
     </article>
-    <article class="workstream blocked" data-workstream="Review failing tests" data-summary="Failure triage workspace for release and integration gates." data-focus="Isolate integration failure" data-focus-body="Find the smallest broken path, rerun the gate, then patch without broad refactors." data-progress="31" data-route="Codex" data-started="Yesterday, 4:18 PM">
+    <article class="workstream blocked" data-workstream="Review failing tests" data-summary="Failure triage workspace for release and integration gates." data-last-session="Captured the failing release gate and separated product failures from sync failures." data-focus="Isolate integration failure" data-focus-body="Find the smallest broken path, rerun the gate, then patch without broad refactors." data-progress="31" data-route="Codex" data-started="Yesterday, 4:18 PM">
       <div class="stream-icon tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4h8v3"/><path d="M6 11h12"/><path d="M7 7h10v12H7z"/><path d="M4 15h3M17 15h3M9 19l-2 2M15 19l2 2"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
@@ -718,7 +727,7 @@ class CockpitProvider {
       <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
       <button class="stream-action" data-workstream-prompt="Review failing tests. Isolate the integration failure, rerun the relevant gate, and report the safest fix.">Continue</button>
     </article>
-    <article class="workstream" data-workstream="Browser auth setup" data-summary="Official logged-in Chrome bridge configuration for authenticated browser tasks." data-focus="Complete OAuth session storage" data-focus-body="Verify the extension-backed session before browser-dependent automations run." data-progress="64" data-route="Kimi Web" data-started="May 21, 2:16 PM">
+    <article class="workstream" data-workstream="Browser auth setup" data-summary="Official logged-in Chrome bridge configuration for authenticated browser tasks." data-last-session="Confirmed the browser lane needs the official extension session, not an isolated shim profile." data-focus="Complete OAuth session storage" data-focus-body="Verify the extension-backed session before browser-dependent automations run." data-progress="64" data-route="Kimi Web" data-started="May 21, 2:16 PM">
       <div class="stream-icon browser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/><path d="M9 15h6"/></svg></div>
       <div class="stream-main">
         <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1d ago</span></div>
@@ -756,10 +765,10 @@ class CockpitProvider {
         <h3>Live mission feed</h3>
         <button class="ghost-button">View all</button>
       </div>
-      <div class="mission-agent active"><span class="agent-orb codex">C</span><div><strong>Codex is shaping the pricing component.</strong><small>Editing layout, states, and CMS handoff.</small></div><em>now</em></div>
-      <div class="mission-agent"><span class="agent-orb kimi">K</span><div><strong>Kimi checked the responsive preview.</strong><small>Browser pass completed on desktop and mobile.</small></div><em>4m</em></div>
+      <div class="mission-agent active"><span class="agent-orb codex">W</span><div><strong>Workspace is shaping the pricing component.</strong><small>Editing layout, states, and CMS handoff.</small></div><em>now</em></div>
+      <div class="mission-agent"><span class="agent-orb kimi">P</span><div><strong>Responsive preview was verified.</strong><small>Browser pass completed on desktop and mobile.</small></div><em>4m</em></div>
       <div class="activity-preview live-stage"><span>DoseCraft preview</span><strong>Simple, transparent pricing</strong><small>Latest browser render is clean.</small></div>
-      <div class="mission-agent done"><span class="agent-orb image">I</span><div><strong>Image 2.0 reference was applied.</strong><small>Creative direction is locked for this section.</small></div><em>12m</em></div>
+      <div class="mission-agent done"><span class="agent-orb image">R</span><div><strong>Creative reference was applied.</strong><small>Direction is locked for this section.</small></div><em>12m</em></div>
       <div class="mission-agent done"><span class="agent-orb test">T</span><div><strong>Tests are green.</strong><small>12 checks passed after the last edit.</small></div><em>6m</em></div>
     </div>
     <div class="detail-card route-card">

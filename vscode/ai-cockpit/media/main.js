@@ -239,7 +239,7 @@
     const focusBody = activeWorkstream?.dataset.focusBody || 'Routing context, files, and next action.';
     const activeAgent = document.querySelector('.mission-agent.active strong');
     const activeAgentNote = document.querySelector('.mission-agent.active small');
-    if (activeAgent) activeAgent.textContent = running ? 'Codex is continuing this mission.' : `Codex is handling ${focus.toLowerCase()}.`;
+    if (activeAgent) activeAgent.textContent = running ? 'Workspace is continuing this mission.' : `Workspace is handling ${focus.toLowerCase()}.`;
     if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : focusBody;
   }
 
@@ -256,11 +256,12 @@
     setText('detailFocusBody', workstream.dataset.focusBody);
     setText('detailRoute', workstream.dataset.route);
     setText('detailStarted', workstream.dataset.started);
-    setText('continueTitle', workstream.dataset.focus);
+    setText('continueTitle', workstream.dataset.workstream);
+    setText('continueLast', workstream.dataset.lastSession);
     setText('continueBody', workstream.dataset.focusBody);
     setText('continueChanges', streamMeta(workstream, 'Changes'));
     setText('continueTests', streamMeta(workstream, 'Tests'));
-    setText('continueRoute', workstream.dataset.route);
+    setText('continueSafety', safetyText(workstream));
 
     const progress = clamp(Number(workstream.dataset.progress || 0), 0, 100);
     setText('detailProgress', `${progress}%`);
@@ -278,6 +279,13 @@
       return item.querySelector('span')?.textContent.trim() === label;
     });
     return meta?.querySelector('strong')?.textContent.trim() || '';
+  }
+
+  function safetyText(workstream) {
+    const status = streamMeta(workstream, 'Tests').toLowerCase();
+    if (status.includes('fail')) return 'Needs attention';
+    if (status.includes('warn')) return 'Review before ship';
+    return 'Safe to continue';
   }
 
   function clearTranscriptPrompt() {

@@ -15,6 +15,9 @@ It is different from `cc-dogfood-day`:
 cc-dogfood-session --duration-minutes 360 --interval-minutes 30 --detached
 ```
 
+Detached mode prefers `tmux` when available so the session survives the parent
+terminal or Codex process.
+
 Default output:
 
 ```text

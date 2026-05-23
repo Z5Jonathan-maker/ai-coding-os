@@ -67,9 +67,20 @@ mkdir -p "$session_dir"
 if [ "$detached" -eq 1 ]; then
   args=(--duration-minutes "$duration_minutes" --interval-minutes "$interval_minutes" --max-cycles "$max_cycles" --prompt "$prompt" --session-id "$session_id" --output-dir "$session_root")
   [ "$skip_final_gates" -eq 1 ] && args+=(--skip-final-gates)
-  nohup "$DOTFILES/bin/cc-dogfood-session" "${args[@]}" >"$session_dir/session.log" 2>&1 &
-  pid=$!
-  printf '%s\n' "$pid" >"$session_dir/pid"
+  if command -v tmux >/dev/null 2>&1; then
+    cmd="cd $(printf '%q' "$DOTFILES") && $(printf '%q' "$DOTFILES/bin/cc-dogfood-session")"
+    for arg in "${args[@]}"; do
+      cmd="$cmd $(printf '%q' "$arg")"
+    done
+    cmd="$cmd >$(printf '%q' "$session_dir/session.log") 2>&1"
+    tmux new-session -d -s "$session_id" "$cmd"
+    printf '%s\n' "$session_id" >"$session_dir/tmux-session"
+    pid="tmux:$session_id"
+  else
+    nohup "$DOTFILES/bin/cc-dogfood-session" "${args[@]}" >"$session_dir/session.log" 2>&1 &
+    pid=$!
+    printf '%s\n' "$pid" >"$session_dir/pid"
+  fi
   printf 'Status: dogfood-session-started\n'
   printf 'session_id=%s\n' "$session_id"
   printf 'pid=%s\n' "$pid"
@@ -85,13 +96,14 @@ interval_seconds=$((interval_minutes * 60))
 [ "$interval_seconds" -lt 1 ] && interval_seconds=1
 
 {
+  printf '%s\n' "$prompt" >"$session_dir/prompt.txt"
   printf '{\n'
   printf '  "schema": "ai-coding-os.dogfood-session.v1",\n'
   printf '  "session_id": "%s",\n' "$session_id"
   printf '  "started_at": "%s",\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf '  "duration_minutes": %s,\n' "$duration_minutes"
   printf '  "interval_minutes": %s,\n' "$interval_minutes"
-  printf '  "prompt": %s\n' "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$prompt")"
+  printf '  "prompt_file": "%s"\n' "$session_dir/prompt.txt"
   printf '}\n'
 } >"$session_dir/session.json"
 

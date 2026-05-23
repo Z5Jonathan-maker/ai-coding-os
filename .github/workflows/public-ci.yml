@@ -11,6 +11,8 @@ jobs:
     runs-on: ${{ fromJSON(vars.PUBLIC_CI_RUNNER || '["ubuntu-latest"]') }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          set-safe-directory: false
       - uses: actions/setup-node@v6
         with:
           node-version: "22"

@@ -1,0 +1,446 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+
+const args = process.argv.slice(2);
+const command = args[0] && !args[0].startsWith('--') ? args[0] : 'run';
+
+const runtimeStatuses = ['starting', 'running', 'paused', 'error', 'missing'];
+const executionStatuses = ['queued', 'planning', 'acting', 'waiting_permission', 'verifying', 'done', 'failed'];
+const startupPhases = ['preflight', 'trust_check', 'route', 'context_pack', 'launch', 'ready', 'error'];
+const requiredEvents = [
+  'preflight.started',
+  'trust.decided',
+  'route.selected',
+  'context.attached',
+  'runtime.started',
+  'tool.requested',
+  'permission.requested',
+  'permission.replied',
+  'tool.completed',
+  'verification.started',
+  'verification.completed',
+  'proof.bundle.updated',
+  'mission.completed',
+];
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function numberValue(name, fallback) {
+  const parsed = Number(value(name, ''));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function listValue(name) {
+  return value(name, '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function slug(text) {
+  return String(text || 'mission')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64) || 'mission';
+}
+
+function now() {
+  return new Date().toISOString();
+}
+
+function quote(text) {
+  return `'${String(text).replace(/'/g, `'\\''`)}'`;
+}
+
+function repoRoot(cwd = process.cwd()) {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : cwd;
+}
+
+function runShell(cmd, options = {}) {
+  const res = spawnSync('/bin/zsh', ['-lc', cmd], {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    timeout: options.timeout || 20000,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root, MISSION_ID: options.missionId || '' },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status == null ? 124 : res.status,
+    command: cmd,
+    output: `${res.stdout || ''}${res.stderr || ''}`.trim().slice(0, 4000),
+  };
+}
+
+function writeJson(file, data) {
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function missionBase() {
+  return process.env.CC_MISSION_KERNEL_DIR || path.join(root, '.ai', 'missions');
+}
+
+function routeReceipt(task) {
+  const script = path.join(os.homedir(), 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+  if (!fs.existsSync(script)) {
+    return {
+      schema: 'ai-coding-os.route-receipt.v1',
+      selected: 'codex',
+      fallback_chain: [],
+      raw: `route script unavailable: ${script}`,
+    };
+  }
+  const res = runShell(`${script} --dry-run ${quote(task)}`, { timeout: 30000 });
+  const selected = (res.output.match(/Selected:\s+([^\n]+)/) || [])[1]?.trim() || 'codex';
+  const fallback = (res.output.match(/Fallback:\s+([^\n]+)/) || [])[1]?.trim() || '';
+  return {
+    schema: 'ai-coding-os.route-receipt.v1',
+    selected,
+    fallback_chain: fallback ? fallback.split(/\s*(?:\u2192|->)\s*/).map((item) => item.trim()).filter(Boolean) : [],
+    raw: res.output,
+  };
+}
+
+function trustDecision(task, mode) {
+  const res = runShell(`bin/cc-trust-gate --json --mode ${quote(mode)} --task ${quote(task)}`, { timeout: 15000 });
+  if (res.ok) {
+    try {
+      const parsed = JSON.parse(res.output);
+      return {
+        schema: 'ai-coding-os.trust-decision.v1',
+        decision: parsed.decision || 'allow',
+        mode: parsed.mode || mode,
+        hits: parsed.hits || [],
+        raw: parsed,
+      };
+    } catch (_) {}
+  }
+  return {
+    schema: 'ai-coding-os.trust-decision.v1',
+    decision: 'review',
+    mode,
+    hits: [{ id: 'trust_gate_unparsed', reason: res.output || `exit ${res.status}` }],
+    raw: res.output,
+  };
+}
+
+function costLedger() {
+  const res = runShell('bin/cc-token-ledger --check', { timeout: 15000 });
+  return {
+    schema: 'ai-coding-os.cost-ledger.v1',
+    source: 'cc-token-ledger',
+    calls: null,
+    estimated_cost_usd: null,
+    notes: res.ok ? ['token ledger ready'] : [res.output || 'token ledger unavailable'],
+  };
+}
+
+function changedFiles(cwd) {
+  const res = spawnSync('git', ['diff', '--name-only', '--'], { cwd, encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.split('\n').map((x) => x.trim()).filter(Boolean) : [];
+}
+
+function buildInput(overrides = {}) {
+  const title = value('title', 'Agent runtime mission');
+  const task = value('task', title);
+  const cwd = path.resolve(value('cwd', process.cwd()));
+  const repo = repoRoot(value('repo', cwd));
+  const id = value('mission-id', `${new Date().toISOString().slice(0, 10)}-${slug(title)}`);
+  return {
+    schema: 'ai-coding-os.agent-run-input.v1',
+    mission_id: id,
+    title,
+    task,
+    repo,
+    cwd,
+    agent: value('agent', 'codex'),
+    lane: value('lane', 'codex'),
+    provider: value('provider', 'codex'),
+    model: value('model', 'codex'),
+    permission_mode: value('permission-mode', 'review'),
+    tools_allowed: listValue('tools-allowed'),
+    tools_denied: listValue('tools-denied'),
+    context: value('context', ''),
+    budget: {
+      max_turns: numberValue('max-turns', 1),
+      max_cost_usd: numberValue('max-cost-usd', 0),
+    },
+    timeout_ms: numberValue('timeout-ms', 20000),
+    requires_browser: has('requires-browser'),
+    requires_visual_proof: has('requires-visual-proof'),
+    parent_mission_id: value('parent-mission-id', '') || null,
+    ...overrides,
+  };
+}
+
+function validateInput(input) {
+  const missing = ['mission_id', 'task', 'repo', 'cwd', 'agent', 'lane', 'provider', 'model', 'permission_mode', 'budget', 'timeout_ms', 'parent_mission_id']
+    .filter((key) => !Object.prototype.hasOwnProperty.call(input, key));
+  if (!Array.isArray(input.tools_allowed)) missing.push('tools_allowed');
+  if (!Array.isArray(input.tools_denied)) missing.push('tools_denied');
+  if (typeof input.requires_browser !== 'boolean') missing.push('requires_browser');
+  if (typeof input.requires_visual_proof !== 'boolean') missing.push('requires_visual_proof');
+  return missing;
+}
+
+function validateBundle(dir) {
+  const errors = [];
+  for (const file of ['mission.json', 'route.receipt.json', 'trust.decision.json', 'cost.ledger.json', 'proof.bundle.json', 'agent.timeline.json']) {
+    if (!fs.existsSync(path.join(dir, file))) errors.push(`missing ${file}`);
+  }
+  if (errors.length) return errors;
+
+  const mission = readJson(path.join(dir, 'mission.json'));
+  const proof = readJson(path.join(dir, 'proof.bundle.json'));
+  const timeline = readJson(path.join(dir, 'agent.timeline.json'));
+  const result = proof.result || {};
+  for (const key of ['runtime_status', 'execution_status', 'startup_phase']) {
+    if (mission[key] == null) errors.push(`mission missing ${key}`);
+  }
+  if (!runtimeStatuses.includes(mission.runtime_status)) errors.push('invalid runtime_status');
+  if (!executionStatuses.includes(mission.execution_status)) errors.push('invalid execution_status');
+  if (!startupPhases.includes(mission.startup_phase)) errors.push('invalid startup_phase');
+  if (result.schema !== 'ai-coding-os.agent-run-result.v1') errors.push('missing AgentRunResult');
+  for (const key of ['mission_id', 'agent', 'lane', 'provider', 'model', 'status', 'changed_files', 'commands', 'screenshots', 'artifacts', 'tokens', 'cost', 'permission_requests', 'errors', 'next_action', 'verdict']) {
+    if (result[key] == null) errors.push(`result missing ${key}`);
+  }
+  const stages = new Set(Array.isArray(timeline.events) ? timeline.events.map((event) => event.stage) : []);
+  for (const stage of requiredEvents) {
+    if (!stages.has(stage)) errors.push(`timeline missing ${stage}`);
+  }
+  return errors;
+}
+
+function runAdapter(input) {
+  const errors = validateInput(input);
+  if (errors.length) throw new Error(`invalid AgentRunInput: ${errors.join(', ')}`);
+
+  const timestamp = now();
+  const dir = path.join(missionBase(), input.mission_id);
+  fs.mkdirSync(dir, { recursive: true });
+  const timeline = [];
+  const commands = [];
+  const permissionRequests = [];
+  const runtimeErrors = [];
+
+  function event(stage, message, proof = []) {
+    timeline.push({ ts: now(), agent: input.agent, stage, message, proof });
+  }
+
+  function missionPatch(patch) {
+    const existing = fs.existsSync(path.join(dir, 'mission.json')) ? readJson(path.join(dir, 'mission.json')) : {};
+    writeJson(path.join(dir, 'mission.json'), {
+      schema: 'ai-coding-os.mission.v1',
+      id: input.mission_id,
+      title: input.title,
+      task: input.task,
+      repo: input.repo,
+      status: 'running',
+      runtime_status: 'starting',
+      execution_status: 'queued',
+      startup_phase: 'preflight',
+      route: `${input.lane}/${input.provider}`,
+      permission_mode: input.permission_mode,
+      parent_mission_id: input.parent_mission_id,
+      created_at: existing.created_at || timestamp,
+      updated_at: now(),
+      next_action: 'Continue through the selected runtime adapter, then verify the proof bundle.',
+      blockers: [],
+      agent_run_input: input,
+      ...existing,
+      ...patch,
+    });
+  }
+
+  event('preflight.started', 'Agent runtime preflight started.', ['AgentRunInput']);
+  missionPatch({ startup_phase: 'trust_check' });
+
+  const trust = trustDecision(input.task, input.permission_mode);
+  writeJson(path.join(dir, 'trust.decision.json'), { ...trust, mission_id: input.mission_id });
+  event('trust.decided', `Trust decision: ${trust.decision}`, trust.hits.map((hit) => hit.id || hit.reason || 'trust hit'));
+
+  missionPatch({ startup_phase: 'route' });
+  const route = routeReceipt(input.task);
+  writeJson(path.join(dir, 'route.receipt.json'), { ...route, mission_id: input.mission_id });
+  event('route.selected', `Route selected: ${route.selected}`, route.fallback_chain);
+
+  missionPatch({ startup_phase: 'context_pack', route: route.selected || `${input.lane}/${input.provider}` });
+  event('context.attached', input.context ? 'Context attached.' : 'No external context attached.', input.context ? [input.context.slice(0, 160)] : []);
+
+  const cost = costLedger();
+  writeJson(path.join(dir, 'cost.ledger.json'), { ...cost, mission_id: input.mission_id });
+
+  if (trust.decision === 'deny') {
+    const request = { reason: 'trust decision denied execution', mode: input.permission_mode, response: 'reject' };
+    permissionRequests.push(request);
+    event('permission.requested', 'Execution blocked by trust gate.', [request.reason]);
+    event('permission.replied', 'Permission rejected by trust gate.', [request.response]);
+    missionPatch({
+      status: 'blocked',
+      runtime_status: 'paused',
+      execution_status: 'waiting_permission',
+      startup_phase: 'error',
+      next_action: 'Resolve the trust policy hit before running this mission.',
+      blockers: trust.hits,
+    });
+  } else {
+    const request = { reason: 'local shell adapter run', mode: input.permission_mode, response: trust.decision === 'review' ? 'once' : 'always' };
+    permissionRequests.push(request);
+    event('permission.requested', 'Runtime requested shell adapter permission.', [request.reason]);
+    event('permission.replied', `Permission response: ${request.response}`, []);
+    missionPatch({ startup_phase: 'launch', runtime_status: 'running', execution_status: 'acting' });
+    event('runtime.started', `Runtime started for ${input.agent}.`, [`${input.provider}/${input.model}`]);
+
+    const adapterCommand = input.command || value('command', `printf 'agent-runtime:%s\\n' ${quote(input.mission_id)}`);
+    event('tool.requested', 'Shell tool requested.', [adapterCommand]);
+    const exec = runShell(adapterCommand, { cwd: input.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
+    commands.push({ kind: 'adapter', command: adapterCommand, exit_code: exec.status, ok: exec.ok, output: exec.output });
+    event('tool.completed', exec.ok ? 'Shell tool completed.' : 'Shell tool failed.', [`exit=${exec.status}`]);
+    if (!exec.ok) runtimeErrors.push(exec.output || `command exited ${exec.status}`);
+
+    missionPatch({ status: 'verifying', execution_status: 'verifying', startup_phase: exec.ok ? 'ready' : 'error', runtime_status: exec.ok ? 'running' : 'error' });
+    event('verification.started', 'Runtime verification started.', []);
+    const verifyCommand = input.verify_command || value('verify-command', 'true');
+    const verification = runShell(verifyCommand, { cwd: input.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
+    commands.push({ kind: 'verification', command: verifyCommand, exit_code: verification.status, ok: verification.ok, output: verification.output });
+    event('verification.completed', verification.ok ? 'Runtime verification passed.' : 'Runtime verification failed.', [`exit=${verification.status}`]);
+    if (!verification.ok) runtimeErrors.push(verification.output || `verification exited ${verification.status}`);
+  }
+
+  const finalStatus = runtimeErrors.length ? 'failed' : trust.decision === 'deny' ? 'blocked' : 'completed';
+  const verdict = finalStatus === 'completed' ? 'passed' : finalStatus === 'blocked' ? 'blocked' : 'failed';
+  const files = changedFiles(input.cwd);
+  const result = {
+    schema: 'ai-coding-os.agent-run-result.v1',
+    mission_id: input.mission_id,
+    agent: input.agent,
+    lane: input.lane,
+    provider: input.provider,
+    model: input.model,
+    status: finalStatus,
+    changed_files: files,
+    commands,
+    screenshots: [],
+    artifacts: [
+      'mission.json',
+      'route.receipt.json',
+      'trust.decision.json',
+      'cost.ledger.json',
+      'proof.bundle.json',
+      'agent.timeline.json',
+    ],
+    tokens: { source: 'cc-token-ledger', calls: null },
+    cost: { source: 'cc-token-ledger', estimated_cost_usd: null },
+    permission_requests: permissionRequests,
+    errors: runtimeErrors,
+    next_action: runtimeErrors.length ? 'Inspect the failed command output and rerun this mission.' : 'Mission proof is ready for review.',
+    verdict,
+  };
+
+  missionPatch({
+    status: verdict === 'passed' ? 'passed' : verdict === 'blocked' ? 'blocked' : 'failed',
+    runtime_status: verdict === 'passed' ? 'running' : verdict === 'blocked' ? 'paused' : 'error',
+    execution_status: verdict === 'passed' ? 'done' : verdict === 'blocked' ? 'waiting_permission' : 'failed',
+    startup_phase: verdict === 'failed' ? 'error' : 'ready',
+    updated_at: now(),
+    next_action: result.next_action,
+    blockers: verdict === 'blocked' ? trust.hits : runtimeErrors,
+  });
+
+  const proof = {
+    schema: 'ai-coding-os.proof-bundle.v1',
+    mission_id: input.mission_id,
+    changed_files: files,
+    commands,
+    screenshots: [],
+    artifacts: result.artifacts,
+    verdict,
+    result,
+  };
+  writeJson(path.join(dir, 'proof.bundle.json'), proof);
+  event('proof.bundle.updated', `Proof bundle updated: ${verdict}`, ['proof.bundle.json']);
+  event('mission.completed', `Mission completed with verdict: ${verdict}`, ['mission.json', 'agent.timeline.json']);
+  writeJson(path.join(dir, 'agent.timeline.json'), {
+    schema: 'ai-coding-os.agent-timeline.v1',
+    mission_id: input.mission_id,
+    events: timeline,
+  });
+
+  return { dir, input, result };
+}
+
+function check() {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-agent-runtime.'));
+  const originalDir = process.env.CC_MISSION_KERNEL_DIR;
+  process.env.CC_MISSION_KERNEL_DIR = temp;
+  try {
+    const input = buildInput({
+      mission_id: 'agent-runtime-check',
+      title: 'Agent runtime check',
+      task: 'Validate agent runtime adapter contract',
+      repo: root,
+      cwd: root,
+      context: 'fixture context',
+      tools_allowed: ['shell'],
+      tools_denied: ['paid_action'],
+      parent_mission_id: null,
+      command: 'printf agent-runtime-fixture',
+      verify_command: 'true',
+    });
+    const output = runAdapter(input);
+    const errors = validateBundle(output.dir);
+    if (errors.length) {
+      console.error(errors.join('\n'));
+      process.exit(1);
+    }
+  } finally {
+    if (originalDir == null) delete process.env.CC_MISSION_KERNEL_DIR;
+    else process.env.CC_MISSION_KERNEL_DIR = originalDir;
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+  console.log('Status: agent-runtime-ready');
+}
+
+try {
+  if (has('check')) check();
+  else if (command === 'run') {
+    const output = runAdapter(buildInput());
+    if (has('json')) console.log(JSON.stringify(output, null, 2));
+    else {
+      console.log(`Status: agent-runtime-${output.result.status}`);
+      console.log(`id=${output.input.mission_id}`);
+      console.log(`dir=${output.dir}`);
+      console.log(`verdict=${output.result.verdict}`);
+    }
+    if (output.result.verdict === 'failed') process.exit(1);
+  } else {
+    console.error(`cc-agent-runtime: unknown command: ${command}`);
+    process.exit(2);
+  }
+} catch (err) {
+  console.error(`cc-agent-runtime: ${err.message}`);
+  process.exit(1);
+}

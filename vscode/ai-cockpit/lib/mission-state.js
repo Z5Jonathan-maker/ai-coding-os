@@ -15,19 +15,45 @@ function compact(value, max = 120) {
   return text.length > max ? `${text.slice(0, max - 1)}...` : text;
 }
 
+function label(value) {
+  return String(value || '')
+    .replace(/[._-]+/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .trim();
+}
+
+function kernelProgress(mission) {
+  const execution = String(mission.execution_status || '');
+  if (execution === 'done') return 100;
+  if (execution === 'verifying') return 78;
+  if (execution === 'acting') return 58;
+  if (execution === 'planning') return 34;
+  if (execution === 'waiting_permission') return 30;
+  if (execution === 'failed') return 24;
+  return ({ planned: 18, running: 48, blocked: 36, verifying: 72, passed: 100, failed: 28 })[mission.status] || 42;
+}
+
 function matchingMission(payload, resolvedRepo) {
   const kernel = parseJson(payload.missionKernel, {});
   if (kernel && kernel.mission && kernel.mission.repo && !kernel.mission.stale) {
     if (path.resolve(kernel.mission.repo) === resolvedRepo) {
+      const runtime = [kernel.mission.runtime_status, kernel.mission.execution_status, kernel.mission.startup_phase]
+        .filter(Boolean)
+        .map(label)
+        .join(' / ');
       return {
         id: kernel.mission.id,
         repo: kernel.mission.repo,
         title: kernel.mission.title,
         status: kernel.mission.status === 'passed' ? 'ready' : kernel.mission.status || 'ready',
+        runtime_status: kernel.mission.runtime_status,
+        execution_status: kernel.mission.execution_status,
+        startup_phase: kernel.mission.startup_phase,
         next: kernel.mission.next_action,
         summary: kernel.mission.task,
+        runtime,
         lane: kernel.mission.route,
-        progress: ({ planned: 18, running: 48, blocked: 36, verifying: 72, passed: 100, failed: 28 })[kernel.mission.status] || 42,
+        progress: kernelProgress(kernel.mission),
         proof: kernel.proof && Array.isArray(kernel.proof.commands)
           ? kernel.proof.commands.map((cmd) => cmd.command || cmd.name || String(cmd)).filter(Boolean)
           : [],
@@ -104,6 +130,7 @@ function buildMissionState(payload, options = {}) {
   const missionTitle = ledgerMission && ledgerMission.title ? compact(ledgerMission.title, 90) : title;
   const missionNext = ledgerMission && ledgerMission.next ? compact(ledgerMission.next, 180) : '';
   const missionSummary = ledgerMission && ledgerMission.summary ? compact(ledgerMission.summary, 180) : '';
+  const runtimeSummary = ledgerMission && ledgerMission.runtime ? compact(`Runtime ${ledgerMission.runtime}`, 160) : '';
   const missionRoute = ledgerMission && ledgerMission.lane ? ledgerMission.lane : '';
   const summary = [
     branch ? `Branch ${branch}` : 'Current repository',
@@ -111,8 +138,12 @@ function buildMissionState(payload, options = {}) {
     browserReady ? 'browser bridge ready' : 'browser bridge unchecked',
   ].join(' - ');
   let lastSession;
-  if (missionSummary && !clean && diffKnown) {
+  if (missionSummary && runtimeSummary && !clean && diffKnown) {
+    lastSession = `Mission memory: ${missionSummary}. ${runtimeSummary}. Uncommitted work detected: ${fileCount} file${fileCount === 1 ? '' : 's'}, +${added} -${removed}.`;
+  } else if (missionSummary && !clean && diffKnown) {
     lastSession = `Mission memory: ${missionSummary}. Uncommitted work detected: ${fileCount} file${fileCount === 1 ? '' : 's'}, +${added} -${removed}.`;
+  } else if (missionSummary && runtimeSummary) {
+    lastSession = `Mission memory: ${missionSummary}. ${runtimeSummary}.`;
   } else if (missionSummary) {
     lastSession = `Mission memory: ${missionSummary}`;
   } else if (latestSession && latestSession.last_prompt) {
@@ -135,8 +166,9 @@ function buildMissionState(payload, options = {}) {
   const tests = !diffKnown ? 'Check diagnostics' : clean ? 'Gates on demand' : 'Verify before ship';
   const safety = capacityDegraded ? 'Provider degraded' : !diffKnown ? 'Review state' : clean ? 'Safe to continue' : 'Review diff first';
   const progress = !diffKnown ? 36 : clean && ledgerMission && ledgerMission.progress ? Number(ledgerMission.progress) : clean ? 64 : 42;
+  const execution = ledgerMission && ledgerMission.execution_status ? String(ledgerMission.execution_status).toLowerCase() : '';
   const activeKernel = Boolean(ledgerMission && ledgerMission.kernel && !['ready', 'passed'].includes(String(ledgerMission.status || '').toLowerCase()));
-  const status = !diffKnown ? 'Needs review' : activeKernel ? 'In progress' : clean ? 'Ready' : 'In progress';
+  const status = !diffKnown ? 'Needs review' : execution === 'waiting_permission' ? 'Needs review' : activeKernel ? 'In progress' : clean ? 'Ready' : 'In progress';
   const prompt = !diffKnown
     ? `Continue ${missionTitle}. First recover the live diff state, then inspect route history and choose the smallest safe next action.`
     : clean
@@ -171,6 +203,13 @@ function buildMissionState(payload, options = {}) {
         title: 'Mission memory loaded.',
         body: missionSummary || missionNext || 'Current repo matched the local mission ledger.',
         time: 'now',
+      }] : []),
+      ...(runtimeSummary ? [{
+        icon: 'A',
+        state: execution === 'done' ? 'done' : execution === 'failed' ? '' : 'active',
+        title: runtimeSummary,
+        body: `Startup phase: ${label(ledgerMission.startup_phase) || 'Unknown'}.`,
+        time: ledgerMission.updated_at || 'now',
       }] : []),
       {
         icon: 'R',

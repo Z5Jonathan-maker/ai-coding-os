@@ -176,6 +176,62 @@ test('mission kernel overrides ledger for current repo continuation state', () =
   assert.doesNotMatch(mission.lastSession, /Old ledger mission/);
 });
 
+test('mission kernel runtime state is surfaced before ledger fallback', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: '/tmp/project',
+      clean: true,
+      fileCount: 0,
+      totalAdded: 0,
+      totalRemoved: 0,
+    }),
+    contextMeterJson: '{}',
+    missionKernel: JSON.stringify({
+      mission: {
+        id: 'runtime-1',
+        repo: '/tmp/project',
+        title: 'Agent Runtime Adapter',
+        task: 'Run a mission through typed runtime input and proof output.',
+        status: 'running',
+        runtime_status: 'running',
+        execution_status: 'acting',
+        startup_phase: 'launch',
+        route: 'codex -> codex',
+        next_action: 'Finish the adapter proof bundle.',
+        updated_at: '2026-05-23T20:00:00Z',
+      },
+      proof: { commands: [{ command: 'cc-agent-runtime --check' }] },
+      timeline: {
+        events: [{
+          ts: '2026-05-23T20:01:00Z',
+          agent: 'codex',
+          stage: 'runtime.started',
+          message: 'Runtime started for codex.',
+          proof: ['codex/codex'],
+        }],
+      },
+    }),
+    missionLedger: JSON.stringify({
+      missions: [{
+        repo: '/tmp/project',
+        title: 'Old ledger mission',
+        progress: 100,
+      }],
+    }),
+    sessions: '{}',
+    route: '',
+    kimi: '',
+    providerCapacity: '',
+  }, { cwd: '/tmp/project' });
+
+  assert.equal(mission.title, 'Agent Runtime Adapter');
+  assert.equal(mission.progress, 58);
+  assert.match(mission.lastSession, /Runtime Running \/ Acting \/ Launch/);
+  assert.equal(mission.feed[0].title, 'Runtime started for codex.');
+  assert.match(mission.feed.map((item) => item.title).join('\n'), /Runtime Running \/ Acting \/ Launch/);
+  assert.doesNotMatch(mission.lastSession, /Old ledger mission/);
+});
+
 test('mission ledger events become the first live feed items', () => {
   const mission = buildMissionState({
     diffSummary: JSON.stringify({

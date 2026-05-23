@@ -32,12 +32,19 @@ Required fields:
 - `task`
 - `repo`
 - `status`: `planned`, `running`, `blocked`, `verifying`, `passed`, `failed`
+- `runtime_status`: `starting`, `running`, `paused`, `error`, `missing`
+- `execution_status`: `queued`, `planning`, `acting`, `waiting_permission`,
+  `verifying`, `done`, `failed`
+- `startup_phase`: `preflight`, `trust_check`, `route`, `context_pack`,
+  `launch`, `ready`, `error`
 - `route`
 - `permission_mode`
+- `parent_mission_id`
 - `created_at`
 - `updated_at`
 - `next_action`
 - `blockers`
+- `agent_run_input`
 
 ### `route.receipt.json`
 
@@ -108,6 +115,22 @@ Each event has:
 - `message`
 - `proof`
 
+Normalized runtime stages:
+
+- `preflight.started`
+- `trust.decided`
+- `route.selected`
+- `context.attached`
+- `runtime.started`
+- `tool.requested`
+- `permission.requested`
+- `permission.replied`
+- `tool.completed`
+- `verification.started`
+- `verification.completed`
+- `proof.bundle.updated`
+- `mission.completed`
+
 ## Commands
 
 Create a mission kernel:
@@ -127,6 +150,37 @@ Validate the kernel contract:
 ```sh
 cc-mission-kernel --check
 ```
+
+Run a mission through the local runtime adapter:
+
+```sh
+cc-agent-runtime run --title "Router reliability pass" --task "Fix fallback behavior and verify tests"
+```
+
+Validate the runtime adapter contract:
+
+```sh
+cc-agent-runtime --check
+```
+
+## Runtime Adapter
+
+`cc-agent-runtime` is the thin execution adapter above the Mission Kernel. It
+does not replace Codex, Claude, Kimi, DeepSeek, or the router. It standardizes
+how a routed run becomes durable state.
+
+The adapter writes:
+
+- typed `AgentRunInput` into `mission.json`
+- route receipt from the existing router dry-run
+- trust decision from `cc-trust-gate`
+- cost snapshot from `cc-token-ledger`
+- normalized timeline events
+- typed `AgentRunResult` inside `proof.bundle.json`
+
+This is the native extraction from OpenHands conversation/runtime separation,
+Cline task/tool permission state, and OpenCode session/provider/permission
+schemas, adapted to this local-first system.
 
 ## Cockpit Rule
 

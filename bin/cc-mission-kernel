@@ -161,9 +161,13 @@ function validateDir(dir) {
   const timeline = readJson(path.join(dir, 'agent.timeline.json'));
 
   if (mission.schema !== 'ai-coding-os.mission.v1') errors.push('mission schema mismatch');
-  for (const key of ['id', 'title', 'task', 'repo', 'status', 'route', 'permission_mode', 'created_at', 'updated_at', 'next_action', 'blockers']) {
+  for (const key of ['id', 'title', 'task', 'repo', 'status', 'runtime_status', 'execution_status', 'startup_phase', 'route', 'permission_mode', 'created_at', 'updated_at', 'next_action', 'blockers']) {
     if (mission[key] == null) errors.push(`mission missing ${key}`);
   }
+  if (!['planned', 'running', 'blocked', 'verifying', 'passed', 'failed'].includes(mission.status)) errors.push('mission status invalid');
+  if (!['starting', 'running', 'paused', 'error', 'missing'].includes(mission.runtime_status)) errors.push('mission runtime_status invalid');
+  if (!['queued', 'planning', 'acting', 'waiting_permission', 'verifying', 'done', 'failed'].includes(mission.execution_status)) errors.push('mission execution_status invalid');
+  if (!['preflight', 'trust_check', 'route', 'context_pack', 'launch', 'ready', 'error'].includes(mission.startup_phase)) errors.push('mission startup_phase invalid');
   if (route.schema !== 'ai-coding-os.route-receipt.v1') errors.push('route schema mismatch');
   if (trust.schema !== 'ai-coding-os.trust-decision.v1') errors.push('trust schema mismatch');
   if (cost.schema !== 'ai-coding-os.cost-ledger.v1') errors.push('cost schema mismatch');
@@ -195,8 +199,12 @@ function init() {
     task,
     repo,
     status: value('status', 'planned'),
+    runtime_status: value('runtime-status', 'starting'),
+    execution_status: value('execution-status', 'queued'),
+    startup_phase: value('startup-phase', 'preflight'),
     route: route.selected,
     permission_mode: mode,
+    parent_mission_id: value('parent-mission-id', '') || null,
     created_at: timestamp,
     updated_at: timestamp,
     next_action: value('next-action', 'Continue the mission through the routed lane, then verify and update the proof bundle.'),
@@ -217,7 +225,7 @@ function init() {
     events: [{
       ts: timestamp,
       agent: 'codex',
-      stage: 'init',
+      stage: 'preflight.started',
       message: `Mission kernel initialized: ${title}`,
       proof: [],
     }],
@@ -303,8 +311,12 @@ function check() {
     task: 'Validate mission kernel contract',
     repo: root,
     status: 'planned',
+    runtime_status: 'starting',
+    execution_status: 'queued',
+    startup_phase: 'preflight',
     route: 'codex',
     permission_mode: 'review',
+    parent_mission_id: null,
     created_at: timestamp,
     updated_at: timestamp,
     next_action: 'Validate schema',
@@ -344,7 +356,7 @@ function check() {
   writeJson(path.join(dir, 'agent.timeline.json'), {
     schema: 'ai-coding-os.agent-timeline.v1',
     mission_id: id,
-    events: [{ ts: timestamp, agent: 'codex', stage: 'check', message: 'fixture valid', proof: [] }],
+    events: [{ ts: timestamp, agent: 'codex', stage: 'preflight.started', message: 'fixture valid', proof: [] }],
   });
   const errors = validateDir(dir);
   if (originalDir == null) delete process.env.CC_MISSION_KERNEL_DIR;

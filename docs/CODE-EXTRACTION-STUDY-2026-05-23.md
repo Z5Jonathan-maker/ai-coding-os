@@ -294,6 +294,13 @@ Every run must write Mission Kernel timeline events:
 
 Proceed with Agent Runtime Adapter only after this study is committed.
 
+Implementation target:
+
+- `bin/cc-agent-runtime`
+- `.ai/checks/agent-runtime.md`
+- `docs/MISSION-KERNEL.md`
+- `vscode/ai-cockpit/lib/mission-state.js`
+
 The adapter should borrow:
 
 - OpenHands' separation of conversation, sandbox, execution, events

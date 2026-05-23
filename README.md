@@ -39,6 +39,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Competitive proof matrix: `docs/SUPERIORITY-MATRIX.md`
 - Extraction tracks: `docs/EXTRACTION-TRACKS.md`
 - Mission kernel: `docs/MISSION-KERNEL.md`
+- Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
 - Contribution guide: `CONTRIBUTING.md`
@@ -113,6 +114,7 @@ For focused checks:
 cc-ten-readiness
 cc-ai-checks
 cc-superiority-check
+cc-agent-runtime --check
 cc-mission-kernel --check
 cc-cockpit-webview-smoke
 cc-benchmark-fixtures
@@ -141,6 +143,9 @@ Cursor, Cline, OpenCode, Kimi, Codex, Windsurf, Devin, Octagents-style swarms,
 and token-router stacks tied to explicit proof commands and known gaps.
 `cc-mission-kernel` is the new mission object spine: mission, route receipt,
 trust decision, cost ledger, proof bundle, and agent timeline.
+`cc-agent-runtime` drives that spine from a typed runtime adapter and proves a
+mission can write route, trust, cost, proof, result, and normalized timeline
+artifacts.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

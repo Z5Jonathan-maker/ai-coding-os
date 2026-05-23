@@ -50,6 +50,9 @@ trust tier, and safety boundary.
 - **Mission kernel:** `cc-mission-kernel` standardizes durable mission
   artifacts: mission, route receipt, trust decision, cost ledger, proof bundle,
   and agent timeline. The cockpit can read this before falling back to ledgers.
+- **Agent runtime adapter:** `cc-agent-runtime` turns a typed `AgentRunInput`
+  into Mission Kernel route, trust, cost, proof, `AgentRunResult`, and
+  normalized timeline events.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -219,6 +222,8 @@ Installed system is 100% when:
     benchmark fixtures
 19. `cc-mission-kernel --check` proves mission artifacts have a documented,
     schema-validated object model for cockpit continuity and proof bundles
+20. `cc-agent-runtime --check` proves a harmless typed runtime run can create
+    route, trust, cost, proof, result, and timeline artifacts
 
 Daily-driver confidence is sampled by:
 
@@ -254,6 +259,9 @@ Sellable system is 100% when:
     graded benchmark depth
 15. the Mission Kernel exists as a concrete artifact contract so missions can
     carry route, trust, cost, proof, timeline, blockers, and next action
+16. the Agent Runtime Adapter exists so a mission can move through preflight,
+    trust, route, context, launch, tool execution, verification, and proof
+    without bespoke per-tool state
 
 The strict gate is:
 

@@ -863,6 +863,23 @@ body.panel-mode {
   font-weight: 800;
 }
 
+.panel-mode .round-button {
+  display: none;
+}
+
+.panel-mode .focus-button {
+  color: rgba(246, 244, 255, .86);
+  border: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, .055);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .12);
+}
+
+.panel-mode .user-orb {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, .1);
+  background: rgba(124, 92, 255, .2);
+}
+
 .rail-brand {
   display: flex;
   align-items: center;
@@ -1001,13 +1018,6 @@ body.panel-mode {
 
 .panel-mode .home-actions {
   display: none;
-}
-
-.panel-mode .focus-button,
-.panel-mode .home-actions .mini-button {
-  border: 1px solid #e4e1ef;
-  color: #1f2937;
-  background: #ffffff;
 }
 
 .panel-mode .composer {

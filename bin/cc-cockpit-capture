@@ -129,7 +129,7 @@ HTML
     </div>
     <div class="continuation-copy"><span>Continue current work</span><h3 id="continueTitle">DoseCraft landing page</h3><div class="continuation-memory" aria-label="Mission memory"><div><span>Last session</span><p id="continueLast">Implemented the landing page direction and staged the pricing section handoff.</p></div><div><span>Next best step</span><p id="continueBody">Implement the responsive pricing section and connect it to CMS.</p></div></div></div>
     <div class="continuation-signals" aria-label="Continuation signals"><span id="continueChanges">8 files changed</span><span id="continueTests">Tests passing</span><span id="continueSafety">Safe to continue</span></div>
-    <textarea id="prompt" rows="5" placeholder="Add a direction, or press Continue mission."></textarea>
+    <textarea id="prompt" rows="5" placeholder="Add a detail, or just Continue."></textarea>
     <div class="chips"></div>
     <div class="composer-pills" aria-label="Primary context controls"><button class="pill active"><span>Auto</span><small>Intelligent</small></button><button class="pill"><span>Attach</span><small>Files</small></button><button class="pill"><span>Context</span><small>Diff + file</small></button></div>
     <div class="runrow">

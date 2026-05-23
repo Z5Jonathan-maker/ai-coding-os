@@ -628,7 +628,7 @@ class CockpitProvider {
       <span id="continueTests">Tests passing</span>
       <span id="continueSafety">Safe to continue</span>
     </div>
-    <textarea id="prompt" rows="5" placeholder="Add a direction, or press Continue mission."></textarea>
+    <textarea id="prompt" rows="5" placeholder="Add a detail, or just Continue."></textarea>
     <div class="chips" id="chips"></div>
     <div class="composer-pills" aria-label="Primary context controls">
       <button class="pill active" data-mode="autoRun" aria-pressed="true"><span>Auto</span><small>Intelligent</small></button>

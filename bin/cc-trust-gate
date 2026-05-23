@@ -1,0 +1,127 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || process.cwd();
+const trustPath = process.env.CC_TRUST_PROFILE || path.join(root, '.ai', 'trust.json');
+const aiRoot = process.env.AI_SYSTEM_ROOT || path.join(process.env.HOME || '', 'AI-SYSTEM-V2');
+const checker = process.env.AI_PERMISSION_CHECKER || path.join(aiRoot, 'scripts', 'permission-check.cjs');
+const args = process.argv.slice(2);
+
+function arg(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function fail(message, code = 1, extra = {}) {
+  const payload = { ...extra, ok: false, decision: extra.decision || 'deny', message };
+  if (has('json')) console.log(JSON.stringify(payload, null, 2));
+  else {
+    console.error(`Trust gate: DENY`);
+    console.error(message);
+    if (extra.reason) console.error(extra.reason);
+  }
+  process.exit(code);
+}
+
+function loadTrust() {
+  try {
+    return JSON.parse(fs.readFileSync(trustPath, 'utf8'));
+  } catch (err) {
+    fail(`cannot read trust profile: ${trustPath}`, 2, { reason: err.message });
+  }
+}
+
+function permissionDecision(task) {
+  if (!fs.existsSync(checker)) return { decision: 'review', hits: [{ id: 'permission_checker_missing', reason: checker }] };
+  const res = spawnSync(process.execPath, [checker, '--json', task], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, DOTFILES: root },
+  });
+  try {
+    return JSON.parse(res.stdout || '{}');
+  } catch (_) {
+    return { decision: res.status === 0 ? 'allow' : 'review', hits: [{ id: 'permission_checker_parse', reason: res.stderr || res.stdout || 'unknown' }] };
+  }
+}
+
+function gate() {
+  const mode = String(arg('mode', 'review')).toLowerCase();
+  const task = arg('task') || args.filter((item, i) => !item.startsWith('--') && args[i - 1] !== '--mode' && args[i - 1] !== '--task').join(' ');
+  if (!task.trim()) fail('missing --task', 2);
+
+  const trust = loadTrust();
+  if (trust.allow_secrets !== false) fail('trust profile must keep allow_secrets=false');
+  if (!trust.allow_shell) fail('trust profile does not allow shell execution');
+
+  const decision = permissionDecision(task);
+  const hits = decision.hits || [];
+  const result = {
+    ok: true,
+    decision: decision.decision || 'allow',
+    mode,
+    task,
+    trust: {
+      workspace: trust.workspace,
+      network: trust.allow_network,
+      browser_profile: trust.allow_browser_profile,
+      paid_actions: trust.paid_actions,
+      credentialed_actions: trust.credentialed_actions,
+    },
+    hits: hits.map((hit) => ({ id: hit.id, reason: hit.reason })),
+  };
+
+  if (result.decision === 'deny') fail('policy denied this task', 3, result);
+  if (result.decision === 'review' && ['ask', 'autopilot'].includes(mode)) {
+    fail(`task requires explicit review and cockpit is in ${mode} mode`, 4, result);
+  }
+  if (/billing|payment method|invoice|subscribe|upgrade plan/i.test(task) && mode !== 'ask') {
+    result.decision = 'review';
+    result.message = 'billing task requires explicit human review';
+  }
+  if (/print|show|dump|expose|reveal/i.test(task) && /api key|secret|token|password|credential/i.test(task)) {
+    fail('secret exposure is never allowed', 3, result);
+  }
+
+  if (has('json')) console.log(JSON.stringify(result, null, 2));
+  else {
+    console.log(`Trust gate: ${result.decision.toUpperCase()}`);
+    console.log(`Mode: ${mode}`);
+    console.log(`Workspace: ${result.trust.workspace}`);
+    if (result.message) console.log(result.message);
+    for (const hit of result.hits) console.log(`- ${hit.id}: ${hit.reason}`);
+  }
+}
+
+function check() {
+  const probes = [
+    ['review', 'read files and summarize the project', true],
+    ['ask', 'brew install a new global dependency', false],
+    ['autopilot', 'brew install a new global dependency', false],
+    ['autopilot', 'print my api key', false],
+  ];
+  for (const [mode, task, expected] of probes) {
+    const res = spawnSync(process.execPath, [__filename, '--json', '--mode', mode, '--task', task], {
+      cwd: root,
+      encoding: 'utf8',
+      env: process.env,
+    });
+    if ((res.status === 0) !== expected) {
+      console.error(`trust gate probe failed: mode=${mode} task=${task} status=${res.status}`);
+      console.error(res.stdout || res.stderr);
+      process.exit(1);
+    }
+  }
+  console.log('Status: trust-gate-ready');
+}
+
+if (has('check')) check();
+else gate();

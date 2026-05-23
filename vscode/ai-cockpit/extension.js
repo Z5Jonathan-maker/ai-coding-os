@@ -149,6 +149,23 @@ function shellExec(cmd, options = {}) {
   });
 }
 
+function shellExecSync(cmd, options = {}) {
+  const res = cp.spawnSync('/bin/zsh', ['-lc', cmd], {
+    cwd: options.cwd || cwd(),
+    timeout: options.timeout || 30000,
+    maxBuffer: options.maxBuffer || 1024 * 1024 * 4,
+    encoding: 'utf8',
+    env: { ...process.env, ...options.env },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status || 0,
+    stdout: res.stdout || '',
+    stderr: res.stderr || '',
+    text: `${res.stdout || ''}${res.stderr || ''}`.trim(),
+  };
+}
+
 function runTerminal(name, commandLine) {
   const terminal = vscode.window.createTerminal({ name, cwd: cwd() });
   terminal.show();
@@ -607,6 +624,15 @@ class CockpitProvider {
       runTerminal('AI Save Plan', `cc-plan ${quote(runTask)}`);
       return;
     }
+    const gate = shellExecSync(`cc-trust-gate --json --mode ${quote(permissionMode)} --task ${quote(routeTask)}`, { timeout: 12000 });
+    if (gate.status !== 0) {
+      this.view?.webview.postMessage({
+        type: 'result',
+        payload: { title: 'Trust Gate', body: normalizeTrustGate(gate.text), running: false },
+      });
+      vscode.window.showWarningMessage('AI Cockpit blocked this task by trust policy. See Momentum for details.');
+      return;
+    }
     const modes = {
       autoRun: ['Auto', null],
       buildFix: ['Code', null],
@@ -972,6 +998,21 @@ function permissionInstruction(mode) {
     autopilot: 'Cockpit permission mode: Autopilot. Continue through safe local implementation and verification without extra prompts; still stop for paid, credential, destructive, or cross-user actions.',
   };
   return modes[mode] || modes.review;
+}
+
+function normalizeTrustGate(text) {
+  try {
+    const gate = JSON.parse(text);
+    const hits = (gate.hits || []).map((hit) => `- ${hit.id}: ${hit.reason}`).join('\n');
+    return [
+      `Decision: ${String(gate.decision || 'unknown').toUpperCase()}`,
+      `Mode: ${gate.mode || 'review'}`,
+      gate.message || '',
+      hits,
+    ].filter(Boolean).join('\n');
+  } catch (_) {
+    return text || 'Trust gate blocked this task.';
+  }
 }
 
 function summarizeReadiness(text) {

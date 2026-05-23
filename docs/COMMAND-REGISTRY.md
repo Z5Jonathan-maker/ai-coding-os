@@ -74,6 +74,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
 - `cc-token-ledger` — read-only router economics ledger: calls, token estimates, costs, fallbacks, and premium-spend avoidance.
 - `cc-trust-profile` — validate and print the repo-local `.ai/trust.json` workspace autonomy policy.
+- `cc-trust-gate` — enforce `.ai/trust.json` plus AI-SYSTEM-V2 permission policy before cockpit routing.
 - `cc-verify-product` — single external-facing product proof: first-run, source checks, fixtures, cockpit smoke, package, demo, and fresh clone.
 - `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
 - `code-stable` — launch VS Code through the verified `--disable-gpu` renderer-crash recovery path.

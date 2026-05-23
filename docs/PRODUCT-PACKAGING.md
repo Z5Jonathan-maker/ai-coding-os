@@ -180,11 +180,12 @@ Installed system is 100% when:
    run the fixture demo, and leave a temporary home untouched
 10. `cc-ai-checks` proves source-controlled checks in `.ai/checks/` pass
 11. `cc-trust-profile --check` proves repo-local autonomy policy is valid
-12. `cc-token-ledger --check` proves token/cost telemetry is readable
-13. `cc-mission-ledger --check` proves persistent continuation state is readable
-14. `cc-benchmark-fixtures --check` proves repeatable fixture coverage is green
-15. `cc-cockpit-webview-smoke` proves the cockpit package surface is structurally intact
-16. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+12. `cc-trust-gate --check` proves cockpit runs are machine-gated before routing
+13. `cc-token-ledger --check` proves token/cost telemetry is readable
+14. `cc-mission-ledger --check` proves persistent continuation state is readable
+15. `cc-benchmark-fixtures --check` proves repeatable fixture coverage is green
+16. `cc-cockpit-webview-smoke` proves the cockpit package surface is structurally intact
+17. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 

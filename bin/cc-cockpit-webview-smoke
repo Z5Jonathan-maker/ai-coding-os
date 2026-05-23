@@ -46,6 +46,7 @@ add('panel preserves editor context', ext.includes('vscode.ViewColumn.Beside') &
 add('advanced controls collapsed', ext.includes('class="context-drawer"') && css.includes('.context-drawer'));
 add('continuation UI ids present', ['continueTitle', 'continueBody', 'continueSafety', 'detailTitle', 'detailProgressBar'].every((id) => ext.includes(`id="${id}"`)));
 add('primary run path present', ext.includes('data-run-selected="true"') && js.includes('activeMissionPrompt'));
+add('trust gate enforced before routing', ext.includes('cc-trust-gate --json --mode') && ext.includes('normalizeTrustGate') && ext.indexOf('cc-trust-gate --json --mode') < ext.indexOf('this.runInlineStream(label'));
 add('result stream visible', ext.includes('result-panel') && js.includes('renderTranscript'));
 add('no stale demo workstreams', !/DoseCraft landing page|Router reliability pass|Browser auth setup/.test(ext));
 add('assets present', ['media/main.js', 'media/style.css', 'media/cockpit.svg', 'lib/mission-state.js'].every(has));

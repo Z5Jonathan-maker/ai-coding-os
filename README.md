@@ -79,9 +79,10 @@ clone can dry-run install, package, and run the public fixture without mutating 
 temp home. `cc-feedback-law-check` proves Mega Cycle feedback laws are loaded by
 autonomy preflight and exposed through the control plane. `cc-ai-checks` runs
 the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
-repo-local autonomy policy in `.ai/trust.json`. `cc-token-ledger` reports router
-economics from existing usage telemetry. `cc-mission-ledger` provides the
-append-only continuation state used by the cockpit mission surface.
+repo-local autonomy policy in `.ai/trust.json`, and `cc-trust-gate` enforces
+that policy before cockpit routing. `cc-token-ledger` reports router economics
+from existing usage telemetry. `cc-mission-ledger` provides the append-only
+continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
 single external-facing proof command that wraps first-run, source checks,

@@ -7,6 +7,7 @@ browser_url="${CC_RELEASE_BROWSER_URL:-data:text/html,<title>Release Check</titl
 max_chars="${CC_RELEASE_BROWSER_MAX_CHARS:-800}"
 version="${CC_RELEASE_VERSION:-v0.1.0-rc8}"
 log_dir="${CC_RELEASE_LOG_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/cc-release-check.XXXXXX")}"
+media_dir="$log_dir/cockpit-media"
 pass=0
 fail=0
 
@@ -96,8 +97,8 @@ run_gate "Fixture demo" 'Fixture: .*/cc-demo-fixture|Selected:  precision' "$DOT
 run_gate "Weekly health" 'weekly health: all [0-9]+ green' "$DOTFILES/bin/cc-health-weekly" --verbose
 run_gate "Cockpit package" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
 run_gate "Release bundle" 'Bundle: .*/dist/ai-coding-os-.*\.tar\.gz' "$DOTFILES/bin/cc-release-bundle" "$version"
-run_gate "Cockpit media capture" 'Media written to .*/docs/media/cockpit' "$DOTFILES/bin/cc-cockpit-capture"
-run_shell_gate "Cockpit media files" 'PNG image data|GIF image data' "file '$DOTFILES'/docs/media/cockpit/*"
+run_gate "Cockpit media capture" 'Media written to .*/cockpit-media' "$DOTFILES/bin/cc-cockpit-capture" "$media_dir"
+run_shell_gate "Cockpit media files" 'PNG image data|GIF image data' "file '$media_dir'/*"
 run_shell_gate "Git tree clean" '^## ' "test -z \"\$(git status --short)\" && git status --short --branch"
 run_shell_gate "Git upstream synced" '^synced$' "git fetch --quiet && test \"\$(git rev-parse HEAD)\" = \"\$(git rev-parse @{u})\" && printf 'synced\n'"
 

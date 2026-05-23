@@ -1,0 +1,6 @@
+{
+  "id": "refactor-cleanup",
+  "title": "Refactor cleanup fixture",
+  "prompt": "refactor this duplicate formatting helper without changing behavior and verify tests",
+  "expectSelectedRegex": "Selected:\\s+codex|Selected:\\s+precision"
+}

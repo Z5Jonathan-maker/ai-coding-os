@@ -1,0 +1,6 @@
+{
+  "id": "security-review",
+  "title": "Security review fixture",
+  "prompt": "review this token handling module for security risks, trust boundaries, and safe remediation",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex"
+}

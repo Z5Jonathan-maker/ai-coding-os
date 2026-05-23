@@ -1,0 +1,6 @@
+{
+  "id": "long-context",
+  "title": "Long context fixture",
+  "prompt": "read this large repository audit packet and summarize architecture risks with citations",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex"
+}

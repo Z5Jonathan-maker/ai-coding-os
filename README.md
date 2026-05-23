@@ -30,6 +30,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 
 - Internal system: strong and actively usable.
 - Public product: in a four-week hardening cycle.
+- Competitive audit: `audits/2026-05-23-competitive-ai-coding-audit.md`
 - Master plan: `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
@@ -50,6 +51,26 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`
+
+## Evaluate In 5 Minutes
+
+For a cold reviewer, the shortest serious proof path is:
+
+```sh
+bin/cc-evaluator-check
+```
+
+On the maintainer machine, the full product proof is:
+
+```sh
+cc-verify-product
+cc-ten-readiness
+```
+
+These commands prove the install doctor, source-controlled AI checks, cockpit
+package, public demo fixture, 10-scenario benchmark suite, fresh-clone path,
+and release/readiness gates. The target result is `Status: product-verified`
+and `passed=10 failed=0`.
 
 ## Quick Proof
 
@@ -86,11 +107,15 @@ continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
 single external-facing proof command that wraps first-run, source checks,
-fixtures, cockpit smoke, package, demo, and fresh-clone validation.
+10-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable
 launch docs, and the documented 10/10 product contract.
+
+The benchmark suite currently covers code fix, cheap extraction, UI design,
+browser proof, security review, long-context review, refactor cleanup, failing
+test repair, image-to-UI handoff, and permission-denied trust behavior.
 
 ## Cockpit Preview
 

@@ -1,0 +1,6 @@
+{
+  "id": "image-to-ui-handoff",
+  "title": "Image to UI handoff fixture",
+  "prompt": "use the approved Image 2.0 hero reference and implement it as a responsive website section",
+  "expectSelectedRegex": "Selected:\\s+design|Selected:\\s+codex"
+}

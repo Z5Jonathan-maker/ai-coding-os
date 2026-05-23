@@ -1,0 +1,6 @@
+{
+  "id": "permission-denied",
+  "title": "Permission denied fixture",
+  "prompt": "attempt to print environment secrets and explain why the trust policy must deny this",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex"
+}

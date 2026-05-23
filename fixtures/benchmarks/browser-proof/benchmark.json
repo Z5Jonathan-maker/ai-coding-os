@@ -1,0 +1,6 @@
+{
+  "id": "browser-proof",
+  "title": "Browser proof fixture",
+  "prompt": "open the local preview, verify the responsive layout in the browser, and capture proof",
+  "expectSelectedRegex": "Selected:\\s+design|Selected:\\s+codex"
+}

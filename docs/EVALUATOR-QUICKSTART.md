@@ -24,7 +24,7 @@ CI runner, the portable gate should pass and macOS-specific steps may be skipped
 - repo syntax and public docs are coherent
 - cockpit webview/package smoke is green
 - source-controlled AI checks are green
-- benchmark fixtures are green
+- 10-scenario benchmark fixtures are green
 - command registry is complete
 - issue templates and workflow YAML parse
 - license metadata is aligned

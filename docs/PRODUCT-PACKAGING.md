@@ -49,9 +49,11 @@ trust tier, and safety boundary.
 - **Code-density discipline:** Pulse is present as a generation/cleanup protocol, not another lane.
 - **Token ledger:** `cc-token-ledger` reports lane mix, estimated token usage,
   fallback count, cost, and premium-spend avoidance from existing router logs.
-- **Benchmark fixtures:** `cc-benchmark-fixtures` runs tiny public coding,
-  extraction, and design-routing fixtures with tests, route expectations,
-  repo-map proof, and diff-surface proof.
+- **Benchmark fixtures:** `cc-benchmark-fixtures` runs 10 public scenarios:
+  coding, extraction, design, browser proof, security review, long context,
+  refactor, failing test repair, image-to-UI handoff, and permission-denied
+  trust behavior. Each fixture includes tests, route expectations, repo-map
+  proof, and diff-surface proof.
 - **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
   cockpit surface still contains the continuation UI, result stream, assets,
   startup-safe activation contract, and clean npm audit.
@@ -184,7 +186,7 @@ Installed system is 100% when:
 12. `cc-trust-gate --check` proves cockpit runs are machine-gated before routing
 13. `cc-token-ledger --check` proves token/cost telemetry is readable
 14. `cc-mission-ledger --check` proves persistent continuation state is readable
-15. `cc-benchmark-fixtures --check` proves repeatable fixture coverage is green
+15. `cc-benchmark-fixtures --check` proves the 10-scenario fixture suite is green
 16. `cc-cockpit-webview-smoke` proves the cockpit package surface is structurally intact
 17. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and

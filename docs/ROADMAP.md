@@ -13,6 +13,10 @@ developer-grade public launch.
 - Publish GitHub release notes from `docs/RELEASE-NOTES-v0.1.0-rc7.md`.
 - Keep `cc-public-ci-check` green in GitHub Actions for portable contributor
   validation.
+- Keep `cc-benchmark-fixtures --check` green across 10 public scenarios. Done
+  2026-05-23: code fix, extraction, UI design, browser proof, security review,
+  long context, refactor, failing test repair, image-to-UI handoff, and
+  permission denial.
 - Keep `.github/workflows/public-ci.yml` runnable through the configurable
   `PUBLIC_CI_RUNNER` path. Done 2026-05-23: hosted Ubuntu is the primary path,
   with `imac-dotfiles` retained as backup.

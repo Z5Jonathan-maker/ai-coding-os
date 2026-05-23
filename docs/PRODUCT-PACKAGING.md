@@ -44,6 +44,8 @@ trust tier, and safety boundary.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
 - **Code-density discipline:** Pulse is present as a generation/cleanup protocol, not another lane.
+- **Token ledger:** `cc-token-ledger` reports lane mix, estimated token usage,
+  fallback count, cost, and premium-spend avoidance from existing router logs.
 - **Feedback-law discipline:** Mega Cycle anti-pattern laws are executable through
   autonomy preflight, `ai depth-check`, `ai evolve`, and `cc-feedback-law-check`.
 - **Safe credentials:** TEL handles credentialed actions; free/lab lanes do not.
@@ -170,7 +172,8 @@ Installed system is 100% when:
    run the fixture demo, and leave a temporary home untouched
 10. `cc-ai-checks` proves source-controlled checks in `.ai/checks/` pass
 11. `cc-trust-profile --check` proves repo-local autonomy policy is valid
-12. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+12. `cc-token-ledger --check` proves token/cost telemetry is readable
+13. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 

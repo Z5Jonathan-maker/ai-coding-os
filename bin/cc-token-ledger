@@ -1,0 +1,132 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const router = process.env.CC_ROUTER_ROOT || path.join(process.env.HOME, 'code/projects/cc-router');
+const log = process.env.CC_ROUTER_USAGE_LOG || path.join(router, 'memory', 'tier-usage.jsonl');
+const windowSize = Number.parseInt(process.env.CC_TOKEN_LEDGER_WINDOW || '100', 10);
+const checkOnly = process.argv.includes('--check');
+
+const tokenPricePerM = {
+  chat: 0,
+  cheap: 0.35,
+  deepseek: 0.35,
+  openrouter: 0.45,
+  design: 0,
+  kimi: 0,
+  cf_kimi: 0,
+  codex: 0,
+  image: 0,
+  precision: 12,
+  claude: 12,
+};
+
+function readRows() {
+  if (!fs.existsSync(log)) return [];
+  return fs.readFileSync(log, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => {
+      try { return JSON.parse(line); } catch { return null; }
+    })
+    .filter(Boolean);
+}
+
+function tokenUsage(row) {
+  const usage = row.usage || {};
+  const receipt = row.route_receipt || {};
+  const input = Number(usage.input_tokens ?? usage.prompt_tokens ?? receipt.tokens_in ?? 0) || 0;
+  const output = Number(usage.output_tokens ?? usage.completion_tokens ?? receipt.tokens_out ?? 0) || 0;
+  const total = Number(usage.total_tokens ?? usage.total ?? 0) || input + output;
+  if (total) return { total, estimated: false };
+  const chars = Number(row.prompt_chars ?? receipt.prompt_chars ?? 0) || 0;
+  return { total: chars ? Math.ceil(chars / 4) : 0, estimated: chars > 0 };
+}
+
+function lane(row) {
+  const r = row.route_receipt || {};
+  return r.served_class || row.class || r.final_class || 'unknown';
+}
+
+function platform(row) {
+  const r = row.route_receipt || {};
+  if (r.served_platform || r.platform || row.platform) return r.served_platform || r.platform || row.platform;
+  if (row.tier === 2) return 'deepseek';
+  if (row.tier === 3) return 'claude';
+  if (row.tier === 5) return 'codex';
+  if (row.tier === 'D') return 'kimi';
+  if (row.tier === 'OR') return 'openrouter';
+  return row.tier || lane(row);
+}
+
+function cost(row, tokens) {
+  const logged = row.route_receipt?.cost_usd ?? row.cost?.cost ?? row.usage?.cost_usd ?? row.usage?.total_cost_usd;
+  if (typeof logged === 'number' && Number.isFinite(logged)) return { usd: logged, estimated: false };
+  const key = tokenPricePerM[platform(row)] != null ? platform(row) : lane(row);
+  const price = tokenPricePerM[key] ?? 0;
+  return { usd: (tokens / 1_000_000) * price, estimated: price > 0 };
+}
+
+function summarize(rows) {
+  const recent = rows.slice(-windowSize);
+  const totals = { calls: recent.length, tokens: 0, estimatedTokens: 0, cost: 0, estimatedCost: 0, fallbacks: 0 };
+  const byLane = {};
+  const byPlatform = {};
+  for (const row of recent) {
+    const t = tokenUsage(row);
+    const c = cost(row, t.total);
+    const l = lane(row);
+    const p = platform(row);
+    totals.tokens += t.total;
+    totals.estimatedTokens += t.estimated ? t.total : 0;
+    totals.cost += c.usd;
+    totals.estimatedCost += c.estimated ? c.usd : 0;
+    if (row.fallback || row.route_receipt?.fallback_used) totals.fallbacks++;
+    byLane[l] = byLane[l] || { calls: 0, tokens: 0, cost: 0 };
+    byPlatform[p] = byPlatform[p] || { calls: 0, tokens: 0, cost: 0 };
+    for (const bucket of [byLane[l], byPlatform[p]]) {
+      bucket.calls++;
+      bucket.tokens += t.total;
+      bucket.cost += c.usd;
+    }
+  }
+  const precisionPrice = tokenPricePerM.precision;
+  const allPrecisionCost = (totals.tokens / 1_000_000) * precisionPrice;
+  totals.estimatedSavings = Math.max(0, allPrecisionCost - totals.cost);
+  return { totals, byLane, byPlatform, recent };
+}
+
+function printTable(title, obj) {
+  console.log(`\n## ${title}\n`);
+  for (const [name, v] of Object.entries(obj).sort((a, b) => b[1].calls - a[1].calls)) {
+    console.log(`${name.padEnd(14)} calls=${String(v.calls).padStart(4)} tokens=${String(v.tokens).padStart(8)} cost=$${v.cost.toFixed(4)}`);
+  }
+}
+
+const rows = readRows();
+if (!rows.length) {
+  console.log('# Token Ledger\n');
+  console.log(`Log: ${log}`);
+  console.log('No router usage rows found.');
+  console.log('Status: token-ledger-empty');
+  process.exit(checkOnly ? 1 : 0);
+}
+
+const { totals, byLane, byPlatform } = summarize(rows);
+
+if (!checkOnly) {
+  console.log('# Token Ledger\n');
+  console.log(`Log: ${log}`);
+  console.log(`Window: last ${totals.calls} calls`);
+  console.log(`Tokens: ${totals.tokens} (${totals.estimatedTokens} estimated from prompt chars)`);
+  console.log(`Cost: $${totals.cost.toFixed(4)} ($${totals.estimatedCost.toFixed(4)} estimated)`);
+  console.log(`Fallbacks: ${totals.fallbacks}`);
+  console.log(`All-precision baseline: $${((totals.tokens / 1_000_000) * tokenPricePerM.precision).toFixed(4)}`);
+  console.log(`Estimated premium spend avoided: $${totals.estimatedSavings.toFixed(4)}`);
+  printTable('By Lane', byLane);
+  printTable('By Platform', byPlatform);
+}
+
+console.log('Status: token-ledger-ready');

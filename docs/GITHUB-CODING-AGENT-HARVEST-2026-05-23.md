@@ -215,10 +215,12 @@ is either already covered, nice-but-noisy, or belongs after daily-driver proof.
 
 - 2026-05-23: `cc-ai-checks` and `.ai/checks/` added.
 - 2026-05-23: `.ai/trust.json` and `cc-trust-profile` added.
+- 2026-05-23: `cc-token-ledger` added and wired into source-controlled checks.
 
 The implementation is intentionally small: committed markdown checks call
-existing local proof commands, and the trust profile is a machine-readable policy
-contract. No new model lane, daemon, UI shell, or provider marketplace was added.
+existing local proof commands, the trust profile is a machine-readable policy
+contract, and token economics read from existing router telemetry. No new model
+lane, daemon, UI shell, or provider marketplace was added.
 
 ## Sources
 

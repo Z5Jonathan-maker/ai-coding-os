@@ -19,18 +19,29 @@ passed=10 failed=0
 ## GitHub Actions Status
 
 The workflow file exists at `.github/workflows/public-ci.yml` and supports both
-push and manual `workflow_dispatch` runs. GitHub is currently blocking job
-startup because the account has an Actions billing / spending-limit block. The
-latest pushed run did not execute any project code; the check annotation says:
+push and manual `workflow_dispatch` runs.
 
-```text
-The job was not started because recent account payments have failed or your
-spending limit needs to be increased. Please check the 'Billing & plans'
-section in your settings.
+The workflow defaults to GitHub-hosted Ubuntu runners, but `runs-on` is
+configurable through the repo variable `PUBLIC_CI_RUNNER`. On this maintainer
+repo, the variable is set to:
+
+```json
+["self-hosted","macOS","ARM64"]
 ```
 
-After billing is fixed:
+That keeps CI available when GitHub-hosted private-repo minutes are blocked by
+account billing or spending limits. The local runner is registered as
+`imac-dotfiles`.
+
+Trigger a run:
 
 ```sh
 gh workflow run public-ci.yml --repo Z5Jonathan-maker/dotfiles
+```
+
+Check runner status:
+
+```sh
+gh api repos/Z5Jonathan-maker/dotfiles/actions/runners \
+  --jq '.runners[] | {name,status,busy,labels:[.labels[].name]}'
 ```

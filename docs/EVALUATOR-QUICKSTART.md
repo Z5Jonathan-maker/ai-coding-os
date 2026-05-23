@@ -38,7 +38,8 @@ CI runner, the portable gate should pass and macOS-specific steps may be skipped
 - private API keys are configured
 - Kimi WebBridge has access to your logged-in browser
 - maintainer-local services are present
-- GitHub Actions can run while account billing is blocked
+- GitHub-hosted Actions minutes are available for your account; this maintainer
+  repo uses a self-hosted runner fallback while billing is blocked
 
 For full local release validation on the prepared maintainer machine, use:
 

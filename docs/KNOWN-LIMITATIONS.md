@@ -12,7 +12,7 @@ named directly instead of hidden behind successful-looking demos.
 | Shim mode | Works for proof/demos but does not inherit normal Chrome cookies | Browser truth table documents the boundary |
 | License | Apache-2.0 selected; support/commercial boundary still needs launch copy | `docs/LICENSE-SUPPORT.md` tracks the boundary |
 | Provider accounts | User must bring their own paid/free AI accounts | First-run doctor does not inspect secrets |
-| GitHub Actions | Workflow file exists, but cloud execution depends on account billing/spending state | Local `cc-public-ci-check` and `cc-verify-product` remain the source of truth until billing is cleared |
+| GitHub Actions | GitHub-hosted private-repo runners can be blocked by account billing/spending state | `.github/workflows/public-ci.yml` uses `PUBLIC_CI_RUNNER`; maintainer repo currently routes to the `imac-dotfiles` self-hosted runner |
 | Dependency audit | Cockpit extension has a committed lockfile and zero npm vulnerabilities | `cc-cockpit-webview-smoke` runs npm audit as part of product proof |
 | Windows/Linux | Not supported as a launch target | Future work only |
 | Hosted/team mode | Not implemented | Sellable path is local product plus support/workflow packaging first |
@@ -31,4 +31,4 @@ named directly instead of hidden behind successful-looking demos.
 1. optionally replace deterministic preview media with real unlocked VS Code screenshots
 2. validate install on one separate fresh macOS Apple Silicon account
 3. remove or explain any remaining personal-only paths in public docs
-4. clear the GitHub Actions billing/spending-limit state so cloud CI runs again
+4. decide whether final public launch should keep self-hosted CI or switch `PUBLIC_CI_RUNNER` back to GitHub-hosted Ubuntu after billing is cleared

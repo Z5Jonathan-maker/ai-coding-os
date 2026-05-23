@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node src/format.test.js"
+    "test": "node src/format.test.js",
+    "complexity": "node src/complexity.js"
   }
 }

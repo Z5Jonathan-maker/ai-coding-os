@@ -54,7 +54,8 @@ trust tier, and safety boundary.
   refactor, failing test repair, image-to-UI handoff, and permission-denied
   trust behavior. Each fixture includes tests, route expectations, repo-map
   proof, and diff-surface proof. `cc-benchmark-run` scores broken-first repair
-  fixtures with an expected patch and final test verification.
+  and refactor fixtures with an expected patch, baseline probe, and final test
+  verification.
 - **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
   cockpit surface still contains the continuation UI, result stream, assets,
   startup-safe activation contract, and clean npm audit.

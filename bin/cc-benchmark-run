@@ -31,6 +31,10 @@ json_get() {
   node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); const v=m[process.argv[2]]; process.stdout.write(v == null ? '' : String(v));" "$manifest" "$1"
 }
 
+json_has() {
+  node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.exit(m[process.argv[2]] == null ? 1 : 0);" "$manifest" "$1"
+}
+
 copy_fixture() {
   mkdir -p "$work"
   cp -R "$src"/. "$work"/
@@ -38,6 +42,13 @@ copy_fixture() {
 
 run_test() {
   (cd "$work" && npm test)
+}
+
+run_script() {
+  local script
+  script="$(json_get "$1")"
+  [ -n "$script" ] || return 0
+  (cd "$work" && bash -lc "$script")
 }
 
 apply_expected_patch() {
@@ -57,20 +68,21 @@ while i < len(patch):
     if patch[i].startswith('*** Update File: '):
         target = pathlib.Path(patch[i].split(': ', 1)[1])
         text = target.read_text()
+        old_lines = []
+        new_lines = []
         i += 1
         while i < len(patch) and not patch[i].startswith('*** '):
-            if patch[i].startswith('-') and not patch[i].startswith('---'):
-                old = patch[i][1:]
-                new_line = patch[i + 1] if i + 1 < len(patch) else ''
-                if not new_line.startswith('+'):
-                    raise SystemExit(f'expected replacement after {old!r}')
-                new = new_line[1:]
-                if old not in text:
-                    raise SystemExit(f'old text not found in {target}: {old}')
-                text = text.replace(old, new, 1)
-                i += 2
-            else:
-                i += 1
+            line = patch[i]
+            if line.startswith('-') and not line.startswith('---'):
+                old_lines.append(line[1:])
+            elif line.startswith('+') and not line.startswith('+++'):
+                new_lines.append(line[1:])
+            i += 1
+        old = '\n'.join(old_lines)
+        new = '\n'.join(new_lines)
+        if old not in text:
+            raise SystemExit(f'old text not found in {target}')
+        text = text.replace(old, new, 1)
         target.write_text(text)
     else:
         i += 1
@@ -98,6 +110,25 @@ if [ "$expect_fail" = "true" ]; then
     passed=$((passed + 1))
   fi
 
+  if json_has scoreBefore; then
+    printf '\n## Baseline score probe\n'
+    score_before_fail="$(json_get expectScoreBeforeFail)"
+    if run_script scoreBefore >/tmp/cc-benchmark-run.score-before 2>&1; then
+      score_before_status=0
+    else
+      score_before_status=1
+    fi
+    if { [ "$score_before_fail" = "true" ] && [ "$score_before_status" = 1 ]; } || { [ "$score_before_fail" != "true" ] && [ "$score_before_status" = 0 ]; }; then
+      printf 'ok   baseline score probe\n'
+      sed 's/^/     /' /tmp/cc-benchmark-run.score-before | sed -n '1,20p'
+      passed=$((passed + 1))
+    else
+      printf 'fail baseline score probe\n'
+      sed 's/^/     /' /tmp/cc-benchmark-run.score-before | sed -n '1,40p'
+      failed=$((failed + 1))
+    fi
+  fi
+
   printf '\n## Expected repair patch\n'
   if apply_expected_patch >/tmp/cc-benchmark-run.patch 2>&1; then
     printf 'ok   expected patch applied\n'
@@ -121,7 +152,20 @@ else
   failed=$((failed + 1))
 fi
 
-rm -f /tmp/cc-benchmark-run.initial /tmp/cc-benchmark-run.patch /tmp/cc-benchmark-run.final
+if json_has scoreAfter; then
+  printf '\n## Final score probe\n'
+  if run_script scoreAfter >/tmp/cc-benchmark-run.score-after 2>&1; then
+    printf 'ok   final score probe\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.score-after | sed -n '1,20p'
+    passed=$((passed + 1))
+  else
+    printf 'fail final score probe\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.score-after | sed -n '1,40p'
+    failed=$((failed + 1))
+  fi
+fi
+
+rm -f /tmp/cc-benchmark-run.initial /tmp/cc-benchmark-run.patch /tmp/cc-benchmark-run.final /tmp/cc-benchmark-run.score-before /tmp/cc-benchmark-run.score-after
 
 printf '\n## Summary\n\n'
 printf 'passed=%s failed=%s\n' "$passed" "$failed"

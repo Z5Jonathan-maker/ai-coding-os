@@ -138,7 +138,9 @@ launch docs, and the documented 10/10 product contract.
 
 The benchmark suite currently covers code fix, cheap extraction, UI design,
 browser proof, security review, long-context review, refactor cleanup, failing
-test repair, image-to-UI handoff, and permission-denied trust behavior.
+test repair, image-to-UI handoff, and permission-denied trust behavior. The
+repair and refactor fixtures are graded broken-first benchmarks with expected
+patches and final verification.
 
 ## Cockpit Preview
 

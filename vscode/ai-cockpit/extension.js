@@ -741,16 +741,16 @@ class CockpitProvider {
       <h3 id="detailFocus">Building responsive pricing section</h3>
       <p id="detailFocusBody">Implementing UI and connecting it to CMS.</p>
     </div>
-    <div class="detail-card activity-card">
+    <div class="detail-card activity-card mission-feed">
       <div class="section-head">
-        <h3>Recent activity</h3>
+        <h3>Live mission feed</h3>
         <button class="ghost-button">View all</button>
       </div>
-      <div class="activity-item"><span class="ok-dot code"></span><div><strong>Updated PricingSection.tsx</strong><small>Codex - 2m ago</small></div><em>+142 -18</em></div>
-      <div class="activity-item"><span class="ok-dot globe"></span><div><strong>Rendered pricing page</strong><small>Kimi Browser - 4m ago</small></div><em>view</em></div>
-      <div class="activity-preview"><span>DoseCraft preview</span><strong>Simple, transparent pricing</strong><small>Responsive section rendered</small></div>
-      <div class="activity-item"><span class="ok-dot"></span><div><strong>Tests passed</strong><small>Codex - 6m ago</small></div><em>12 tests</em></div>
-      <div class="activity-item"><span class="ok-dot purple"></span><div><strong>Design reference applied</strong><small>Image 2.0 - 12m ago</small></div><em>routed</em></div>
+      <div class="mission-agent active"><span class="agent-orb codex">C</span><div><strong>Codex is shaping the pricing component.</strong><small>Editing layout, states, and CMS handoff.</small></div><em>now</em></div>
+      <div class="mission-agent"><span class="agent-orb kimi">K</span><div><strong>Kimi checked the responsive preview.</strong><small>Browser pass completed on desktop and mobile.</small></div><em>4m</em></div>
+      <div class="activity-preview live-stage"><span>DoseCraft preview</span><strong>Simple, transparent pricing</strong><small>Latest browser render is clean.</small></div>
+      <div class="mission-agent done"><span class="agent-orb image">I</span><div><strong>Image 2.0 reference was applied.</strong><small>Creative direction is locked for this section.</small></div><em>12m</em></div>
+      <div class="mission-agent done"><span class="agent-orb test">T</span><div><strong>Tests are green.</strong><small>12 checks passed after the last edit.</small></div><em>6m</em></div>
     </div>
     <div class="detail-card route-card">
       <span>Route</span><strong id="detailRoute">Codex - Kimi</strong>

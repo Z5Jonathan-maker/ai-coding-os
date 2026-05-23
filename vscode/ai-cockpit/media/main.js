@@ -234,6 +234,10 @@
       button.disabled = running;
       button.setAttribute('aria-busy', String(running));
     });
+    const activeAgent = document.querySelector('.mission-agent.active strong');
+    const activeAgentNote = document.querySelector('.mission-agent.active small');
+    if (activeAgent) activeAgent.textContent = running ? 'Codex is continuing this mission.' : 'Codex is shaping the pricing component.';
+    if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : 'Editing layout, states, and CMS handoff.';
   }
 
   function selectWorkstream(workstream) {

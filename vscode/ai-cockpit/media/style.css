@@ -1467,6 +1467,83 @@ body.panel-mode {
   border-top: 1px solid rgba(124, 92, 255, .12);
 }
 
+.mission-feed {
+  position: relative;
+}
+
+.mission-feed::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 64px;
+  bottom: 48px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(124, 92, 255, .28), rgba(66, 215, 199, .08));
+}
+
+.mission-agent {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.mission-agent strong,
+.mission-agent small {
+  display: block;
+}
+
+.mission-agent strong {
+  color: #17141f;
+  font-size: 12.5px;
+  line-height: 1.25;
+}
+
+.mission-agent small,
+.mission-agent em {
+  color: #667085;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.mission-agent.active strong {
+  color: #2f24b8;
+}
+
+.agent-orb {
+  position: relative;
+  z-index: 1;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, .92);
+  border-radius: 999px;
+  color: #ffffff;
+  background: #111827;
+  box-shadow: 0 7px 18px rgba(17, 24, 39, .12);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.agent-orb.codex {
+  background: linear-gradient(135deg, #111827, #6b59ee);
+}
+
+.agent-orb.kimi {
+  background: linear-gradient(135deg, #2563eb, #42d7c7);
+}
+
+.agent-orb.image {
+  background: linear-gradient(135deg, #7c5cff, #e879f9);
+}
+
+.agent-orb.test {
+  background: linear-gradient(135deg, #0f766e, #22c55e);
+}
+
 .activity-preview {
   position: relative;
   min-height: 86px;
@@ -1483,6 +1560,10 @@ body.panel-mode {
     linear-gradient(135deg, rgba(17, 24, 39, .96), rgba(48, 37, 96, .96)),
     #17141f;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+.live-stage {
+  margin-left: 37px;
 }
 
 .activity-preview::before {

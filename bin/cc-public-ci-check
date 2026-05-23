@@ -50,6 +50,10 @@ node_syntax() {
   return "$bad"
 }
 
+cockpit_tests() {
+  node --test vscode/ai-cockpit/test/*.test.js
+}
+
 issue_template_yaml() {
   ruby -e 'require "yaml"; Dir[".github/ISSUE_TEMPLATE/*.{yml,yaml}"].each { |f| YAML.load_file(f); puts "ok #{f}" }'
 }
@@ -121,6 +125,7 @@ printf 'Root: %s\n' "$ROOT"
 run "Git whitespace" git diff --check
 run "Bash syntax" bash_syntax
 run "Node syntax and JSON" node_syntax
+run "Cockpit mission tests" cockpit_tests
 run "Issue template YAML" issue_template_yaml
 run "Required public docs" required_docs
 run "Command registry complete" command_registry_complete

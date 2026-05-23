@@ -16,6 +16,27 @@ function compact(value, max = 120) {
 }
 
 function matchingMission(payload, resolvedRepo) {
+  const kernel = parseJson(payload.missionKernel, {});
+  if (kernel && kernel.mission && kernel.mission.repo && !kernel.mission.stale) {
+    if (path.resolve(kernel.mission.repo) === resolvedRepo) {
+      return {
+        id: kernel.mission.id,
+        repo: kernel.mission.repo,
+        title: kernel.mission.title,
+        status: kernel.mission.status === 'passed' ? 'ready' : kernel.mission.status || 'ready',
+        next: kernel.mission.next_action,
+        summary: kernel.mission.task,
+        lane: kernel.mission.route,
+        progress: ({ planned: 18, running: 48, blocked: 36, verifying: 72, passed: 100, failed: 28 })[kernel.mission.status] || 42,
+        proof: kernel.proof && Array.isArray(kernel.proof.commands)
+          ? kernel.proof.commands.map((cmd) => cmd.command || cmd.name || String(cmd)).filter(Boolean)
+          : [],
+        updated_at: kernel.mission.updated_at,
+        stale: false,
+        kernel,
+      };
+    }
+  }
   const ledger = parseJson(payload.missionLedger, {});
   if (!Array.isArray(ledger.missions)) return null;
   return ledger.missions.find((mission) => {
@@ -25,6 +46,23 @@ function matchingMission(payload, resolvedRepo) {
 }
 
 function matchingEvents(payload, resolvedRepo) {
+  const kernel = parseJson(payload.missionKernel, {});
+  if (kernel && kernel.mission && kernel.timeline && Array.isArray(kernel.timeline.events)) {
+    if (kernel.mission.repo && path.resolve(kernel.mission.repo) === resolvedRepo) {
+      return kernel.timeline.events.slice(-4).reverse().map((event, index) => ({
+        type: 'event',
+        id: `${kernel.mission.id}:kernel:${index}`,
+        repo: kernel.mission.repo,
+        mission_id: kernel.mission.id,
+        stage: String(event.stage || 'act').toLowerCase(),
+        title: event.message || `${event.stage || 'mission'} event`,
+        body: Array.isArray(event.proof) && event.proof.length ? event.proof.join(', ') : event.agent || 'mission kernel',
+        proof: Array.isArray(event.proof) ? event.proof : [],
+        updated_at: event.ts || kernel.mission.updated_at,
+        stale: false,
+      }));
+    }
+  }
   const ledger = parseJson(payload.missionLedger, {});
   if (!Array.isArray(ledger.events)) return [];
   return ledger.events.filter((event) => {
@@ -97,7 +135,8 @@ function buildMissionState(payload, options = {}) {
   const tests = !diffKnown ? 'Check diagnostics' : clean ? 'Gates on demand' : 'Verify before ship';
   const safety = capacityDegraded ? 'Provider degraded' : !diffKnown ? 'Review state' : clean ? 'Safe to continue' : 'Review diff first';
   const progress = !diffKnown ? 36 : clean && ledgerMission && ledgerMission.progress ? Number(ledgerMission.progress) : clean ? 64 : 42;
-  const status = !diffKnown ? 'Needs review' : clean ? 'Ready' : 'In progress';
+  const activeKernel = Boolean(ledgerMission && ledgerMission.kernel && !['ready', 'passed'].includes(String(ledgerMission.status || '').toLowerCase()));
+  const status = !diffKnown ? 'Needs review' : activeKernel ? 'In progress' : clean ? 'Ready' : 'In progress';
   const prompt = !diffKnown
     ? `Continue ${missionTitle}. First recover the live diff state, then inspect route history and choose the smallest safe next action.`
     : clean

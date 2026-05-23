@@ -9,6 +9,8 @@ Browser automation mode boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
 Competitive proof against the top reference systems lives at
 `docs/SUPERIORITY-MATRIX.md`.
+Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
+artifact contract lives at `docs/MISSION-KERNEL.md`.
 
 ## Product Promise
 
@@ -45,6 +47,9 @@ trust tier, and safety boundary.
 - **Mission ledger:** `cc-mission-ledger` backs the cockpit continuation surface
   with repo-matched state and Plan/Act/Checkpoint/Resume events instead of
   static dashboard copy.
+- **Mission kernel:** `cc-mission-kernel` standardizes durable mission
+  artifacts: mission, route receipt, trust decision, cost ledger, proof bundle,
+  and agent timeline. The cockpit can read this before falling back to ledgers.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -212,6 +217,8 @@ Installed system is 100% when:
 18. `cc-superiority-check` proves competitive claims are documented against
     reference systems, tied to commands, and backed by at least three graded
     benchmark fixtures
+19. `cc-mission-kernel --check` proves mission artifacts have a documented,
+    schema-validated object model for cockpit continuity and proof bundles
 
 Daily-driver confidence is sampled by:
 
@@ -245,6 +252,8 @@ Sellable system is 100% when:
 14. `cc-superiority-check` keeps "better than the top projects" claims honest
     by requiring a dimension-by-dimension matrix, required proof commands, and
     graded benchmark depth
+15. the Mission Kernel exists as a concrete artifact contract so missions can
+    carry route, trust, cost, proof, timeline, blockers, and next action
 
 The strict gate is:
 

@@ -1,0 +1,376 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+
+const missionRoot = process.env.CC_MISSION_KERNEL_DIR || path.join(root, '.ai', 'missions');
+const args = process.argv.slice(2);
+const command = args[0] && !args[0].startsWith('--') ? args[0] : 'current';
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function slug(text) {
+  return String(text || 'mission')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64) || 'mission';
+}
+
+function now() {
+  return new Date().toISOString();
+}
+
+function repoRoot(cwd = process.cwd()) {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : cwd;
+}
+
+function run(cmd, options = {}) {
+  const res = spawnSync('/bin/zsh', ['-lc', cmd], {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    timeout: options.timeout || 20000,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status || 0,
+    text: `${res.stdout || ''}${res.stderr || ''}`.trim(),
+  };
+}
+
+function writeJson(file, data) {
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function routeReceipt(task) {
+  const script = path.join(os.homedir(), 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+  if (!fs.existsSync(script)) {
+    return {
+      schema: 'ai-coding-os.route-receipt.v1',
+      selected: 'Auto',
+      fallback_chain: [],
+      raw: `route script unavailable: ${script}`,
+    };
+  }
+  const res = run(`${script} --dry-run ${quote(task)}`, { timeout: 30000 });
+  const selected = (res.text.match(/Selected:\s+([^\n]+)/) || [])[1]?.trim() || 'Auto';
+  const fallback = (res.text.match(/Fallback:\s+([^\n]+)/) || [])[1]?.trim() || '';
+  return {
+    schema: 'ai-coding-os.route-receipt.v1',
+    selected,
+    fallback_chain: fallback ? fallback.split('→').map((item) => item.trim()) : [],
+    raw: res.text,
+  };
+}
+
+function trustDecision(task, mode) {
+  const res = run(`bin/cc-trust-gate --json --mode ${quote(mode)} --task ${quote(task)}`, { timeout: 15000 });
+  if (res.ok) {
+    try {
+      const parsed = JSON.parse(res.text);
+      return {
+        schema: 'ai-coding-os.trust-decision.v1',
+        decision: parsed.decision || 'allow',
+        mode: parsed.mode || mode,
+        hits: parsed.hits || [],
+        raw: parsed,
+      };
+    } catch (_) {}
+  }
+  return {
+    schema: 'ai-coding-os.trust-decision.v1',
+    decision: 'review',
+    mode,
+    hits: [{ id: 'trust_gate_unparsed', reason: res.text || `exit ${res.status}` }],
+    raw: res.text,
+  };
+}
+
+function costLedger() {
+  const res = run('bin/cc-token-ledger --check', { timeout: 15000 });
+  return {
+    schema: 'ai-coding-os.cost-ledger.v1',
+    source: 'cc-token-ledger',
+    calls: null,
+    estimated_cost_usd: null,
+    notes: res.ok ? ['token ledger ready'] : [res.text || 'token ledger unavailable'],
+  };
+}
+
+function quote(text) {
+  return `'${String(text).replace(/'/g, `'\\''`)}'`;
+}
+
+function requiredFiles(dir) {
+  return [
+    'mission.json',
+    'route.receipt.json',
+    'trust.decision.json',
+    'cost.ledger.json',
+    'proof.bundle.json',
+    'agent.timeline.json',
+  ].map((file) => path.join(dir, file));
+}
+
+function missionDirs(base = missionRoot) {
+  if (!fs.existsSync(base)) return [];
+  return fs.readdirSync(base)
+    .map((name) => path.join(base, name))
+    .filter((dir) => fs.statSync(dir).isDirectory())
+    .sort((a, b) => {
+      const am = fs.statSync(path.join(a, 'mission.json')).mtimeMs || 0;
+      const bm = fs.statSync(path.join(b, 'mission.json')).mtimeMs || 0;
+      return bm - am;
+    });
+}
+
+function validateDir(dir) {
+  const errors = [];
+  for (const file of requiredFiles(dir)) {
+    if (!fs.existsSync(file)) errors.push(`missing ${path.basename(file)}`);
+  }
+  if (errors.length) return errors;
+
+  const mission = readJson(path.join(dir, 'mission.json'));
+  const route = readJson(path.join(dir, 'route.receipt.json'));
+  const trust = readJson(path.join(dir, 'trust.decision.json'));
+  const cost = readJson(path.join(dir, 'cost.ledger.json'));
+  const proof = readJson(path.join(dir, 'proof.bundle.json'));
+  const timeline = readJson(path.join(dir, 'agent.timeline.json'));
+
+  if (mission.schema !== 'ai-coding-os.mission.v1') errors.push('mission schema mismatch');
+  for (const key of ['id', 'title', 'task', 'repo', 'status', 'route', 'permission_mode', 'created_at', 'updated_at', 'next_action', 'blockers']) {
+    if (mission[key] == null) errors.push(`mission missing ${key}`);
+  }
+  if (route.schema !== 'ai-coding-os.route-receipt.v1') errors.push('route schema mismatch');
+  if (trust.schema !== 'ai-coding-os.trust-decision.v1') errors.push('trust schema mismatch');
+  if (cost.schema !== 'ai-coding-os.cost-ledger.v1') errors.push('cost schema mismatch');
+  if (proof.schema !== 'ai-coding-os.proof-bundle.v1') errors.push('proof schema mismatch');
+  if (timeline.schema !== 'ai-coding-os.agent-timeline.v1') errors.push('timeline schema mismatch');
+  if (!Array.isArray(mission.blockers)) errors.push('mission blockers must be array');
+  if (!Array.isArray(proof.commands)) errors.push('proof commands must be array');
+  if (!Array.isArray(timeline.events)) errors.push('timeline events must be array');
+  return errors;
+}
+
+function init() {
+  const title = value('title', args.slice(1).filter((x) => !x.startsWith('--')).join(' ') || 'Current mission');
+  const task = value('task', title);
+  const mode = value('permission-mode', 'review');
+  const repo = repoRoot(value('repo', process.cwd()));
+  const id = value('id', `${new Date().toISOString().slice(0, 10)}-${slug(title)}`);
+  const dir = path.join(missionRoot, id);
+  fs.mkdirSync(dir, { recursive: true });
+
+  const route = routeReceipt(task);
+  const trust = trustDecision(task, mode);
+  const cost = costLedger();
+  const timestamp = now();
+  const mission = {
+    schema: 'ai-coding-os.mission.v1',
+    id,
+    title,
+    task,
+    repo,
+    status: value('status', 'planned'),
+    route: route.selected,
+    permission_mode: mode,
+    created_at: timestamp,
+    updated_at: timestamp,
+    next_action: value('next-action', 'Continue the mission through the routed lane, then verify and update the proof bundle.'),
+    blockers: [],
+  };
+  const proof = {
+    schema: 'ai-coding-os.proof-bundle.v1',
+    mission_id: id,
+    changed_files: [],
+    commands: [],
+    screenshots: [],
+    artifacts: [],
+    verdict: 'pending',
+  };
+  const timeline = {
+    schema: 'ai-coding-os.agent-timeline.v1',
+    mission_id: id,
+    events: [{
+      ts: timestamp,
+      agent: 'codex',
+      stage: 'init',
+      message: `Mission kernel initialized: ${title}`,
+      proof: [],
+    }],
+  };
+
+  writeJson(path.join(dir, 'mission.json'), mission);
+  writeJson(path.join(dir, 'route.receipt.json'), { ...route, mission_id: id });
+  writeJson(path.join(dir, 'trust.decision.json'), { ...trust, mission_id: id });
+  writeJson(path.join(dir, 'cost.ledger.json'), { ...cost, mission_id: id });
+  writeJson(path.join(dir, 'proof.bundle.json'), proof);
+  writeJson(path.join(dir, 'agent.timeline.json'), timeline);
+
+  if (has('json')) printMission(dir);
+  else {
+    console.log(`Status: mission-kernel-created`);
+    console.log(`id=${id}`);
+    console.log(`dir=${dir}`);
+  }
+}
+
+function printMission(dir) {
+  const payload = {
+    dir,
+    mission: readJson(path.join(dir, 'mission.json')),
+    route: readJson(path.join(dir, 'route.receipt.json')),
+    trust: readJson(path.join(dir, 'trust.decision.json')),
+    cost: readJson(path.join(dir, 'cost.ledger.json')),
+    proof: readJson(path.join(dir, 'proof.bundle.json')),
+    timeline: readJson(path.join(dir, 'agent.timeline.json')),
+  };
+  console.log(JSON.stringify(payload, null, 2));
+}
+
+function current() {
+  const dir = missionDirs()[0];
+  if (!dir) {
+    const empty = { dir: null, mission: null, route: null, trust: null, cost: null, proof: null, timeline: null };
+    if (has('json')) console.log(JSON.stringify(empty, null, 2));
+    else console.log('No mission kernel found.');
+    return;
+  }
+  if (has('json')) printMission(dir);
+  else {
+    const mission = readJson(path.join(dir, 'mission.json'));
+    console.log('# Mission Kernel\n');
+    console.log(`id=${mission.id}`);
+    console.log(`title=${mission.title}`);
+    console.log(`status=${mission.status}`);
+    console.log(`route=${mission.route}`);
+    console.log(`next=${mission.next_action}`);
+  }
+}
+
+function list() {
+  const dirs = missionDirs();
+  if (has('json')) {
+    console.log(JSON.stringify({
+      root: missionRoot,
+      missions: dirs.map((dir) => ({ dir, mission: readJson(path.join(dir, 'mission.json')) })),
+    }, null, 2));
+    return;
+  }
+  console.log('# Mission Kernels\n');
+  console.log(`Root: ${missionRoot}`);
+  for (const dir of dirs) {
+    const m = readJson(path.join(dir, 'mission.json'));
+    console.log(`- ${m.id}: ${m.title} (${m.status}, ${m.route})`);
+  }
+}
+
+function check() {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-mission-kernel.'));
+  const originalDir = process.env.CC_MISSION_KERNEL_DIR;
+  process.env.CC_MISSION_KERNEL_DIR = temp;
+  const id = 'check-mission';
+  const dir = path.join(temp, id);
+  fs.mkdirSync(dir, { recursive: true });
+  const timestamp = now();
+  writeJson(path.join(dir, 'mission.json'), {
+    schema: 'ai-coding-os.mission.v1',
+    id,
+    title: 'Check mission',
+    task: 'Validate mission kernel contract',
+    repo: root,
+    status: 'planned',
+    route: 'codex',
+    permission_mode: 'review',
+    created_at: timestamp,
+    updated_at: timestamp,
+    next_action: 'Validate schema',
+    blockers: [],
+  });
+  writeJson(path.join(dir, 'route.receipt.json'), {
+    schema: 'ai-coding-os.route-receipt.v1',
+    mission_id: id,
+    selected: 'codex',
+    fallback_chain: ['codex/codex', 'precision/claude'],
+    raw: 'fixture',
+  });
+  writeJson(path.join(dir, 'trust.decision.json'), {
+    schema: 'ai-coding-os.trust-decision.v1',
+    mission_id: id,
+    decision: 'allow',
+    mode: 'review',
+    hits: [],
+  });
+  writeJson(path.join(dir, 'cost.ledger.json'), {
+    schema: 'ai-coding-os.cost-ledger.v1',
+    mission_id: id,
+    source: 'fixture',
+    calls: 0,
+    estimated_cost_usd: 0,
+    notes: [],
+  });
+  writeJson(path.join(dir, 'proof.bundle.json'), {
+    schema: 'ai-coding-os.proof-bundle.v1',
+    mission_id: id,
+    changed_files: [],
+    commands: [],
+    screenshots: [],
+    artifacts: [],
+    verdict: 'pending',
+  });
+  writeJson(path.join(dir, 'agent.timeline.json'), {
+    schema: 'ai-coding-os.agent-timeline.v1',
+    mission_id: id,
+    events: [{ ts: timestamp, agent: 'codex', stage: 'check', message: 'fixture valid', proof: [] }],
+  });
+  const errors = validateDir(dir);
+  if (originalDir == null) delete process.env.CC_MISSION_KERNEL_DIR;
+  else process.env.CC_MISSION_KERNEL_DIR = originalDir;
+  fs.rmSync(temp, { recursive: true, force: true });
+  if (errors.length) {
+    console.error(errors.join('\n'));
+    process.exit(1);
+  }
+  if (!fs.existsSync(path.join(root, 'docs', 'MISSION-KERNEL.md'))) {
+    console.error('missing docs/MISSION-KERNEL.md');
+    process.exit(1);
+  }
+  console.log('Status: mission-kernel-ready');
+}
+
+try {
+  if (has('check')) check();
+  else if (command === 'init') init();
+  else if (command === 'current') current();
+  else if (command === 'list') list();
+  else {
+    console.error(`cc-mission-kernel: unknown command: ${command}`);
+    process.exit(2);
+  }
+} catch (err) {
+  console.error(`cc-mission-kernel: ${err.message}`);
+  process.exit(1);
+}

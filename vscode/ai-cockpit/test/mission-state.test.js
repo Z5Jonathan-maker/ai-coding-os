@@ -122,6 +122,60 @@ test('matching mission ledger enriches clean current repo continuation state', (
   assert.equal(mission.feed[0].title, 'Mission memory loaded.');
 });
 
+test('mission kernel overrides ledger for current repo continuation state', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: '/tmp/project',
+      clean: true,
+      fileCount: 0,
+      totalAdded: 0,
+      totalRemoved: 0,
+    }),
+    contextMeterJson: JSON.stringify({ repo: '/tmp/project', statusText: 'Context healthy', availableTokens: 120000 }),
+    missionKernel: JSON.stringify({
+      mission: {
+        id: 'kernel-1',
+        repo: '/tmp/project',
+        title: 'Mission Kernel buildout',
+        task: 'Create route, trust, cost, proof, and timeline artifacts.',
+        status: 'running',
+        route: 'codex -> claude',
+        next_action: 'Render mission proof in the cockpit.',
+        updated_at: '2026-05-23T19:30:00Z',
+      },
+      proof: { commands: [{ command: 'cc-mission-kernel --check' }] },
+      timeline: {
+        events: [{
+          ts: '2026-05-23T19:31:00Z',
+          agent: 'codex',
+          stage: 'act',
+          message: 'Mission artifacts created.',
+          proof: ['docs/MISSION-KERNEL.md'],
+        }],
+      },
+    }),
+    missionLedger: JSON.stringify({
+      missions: [{
+        repo: '/tmp/project',
+        title: 'Old ledger mission',
+        updated_at: '2026-05-23T19:00:00Z',
+      }],
+    }),
+    sessions: '{}',
+    route: '',
+    kimi: '',
+    providerCapacity: '',
+  }, { cwd: '/tmp/project' });
+
+  assert.equal(mission.title, 'Mission Kernel buildout');
+  assert.equal(mission.route, 'codex -> claude');
+  assert.equal(mission.status, 'In progress');
+  assert.equal(mission.progress, 48);
+  assert.match(mission.nextStep, /Render mission proof/);
+  assert.equal(mission.feed[0].title, 'Mission artifacts created.');
+  assert.doesNotMatch(mission.lastSession, /Old ledger mission/);
+});
+
 test('mission ledger events become the first live feed items', () => {
   const mission = buildMissionState({
     diffSummary: JSON.stringify({

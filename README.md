@@ -37,6 +37,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
 - Competitive proof matrix: `docs/SUPERIORITY-MATRIX.md`
+- Extraction tracks: `docs/EXTRACTION-TRACKS.md`
+- Mission kernel: `docs/MISSION-KERNEL.md`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
 - Contribution guide: `CONTRIBUTING.md`
@@ -111,6 +113,7 @@ For focused checks:
 cc-ten-readiness
 cc-ai-checks
 cc-superiority-check
+cc-mission-kernel --check
 cc-cockpit-webview-smoke
 cc-benchmark-fixtures
 cc-fresh-clone-check
@@ -136,6 +139,8 @@ comprehension while active development is in progress.
 `cc-superiority-check` keeps competitive claims against OpenHands, Claude Code,
 Cursor, Cline, OpenCode, Kimi, Codex, Windsurf, Devin, Octagents-style swarms,
 and token-router stacks tied to explicit proof commands and known gaps.
+`cc-mission-kernel` is the new mission object spine: mission, route receipt,
+trust decision, cost ledger, proof bundle, and agent timeline.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

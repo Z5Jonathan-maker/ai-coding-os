@@ -23,6 +23,7 @@ const COMMANDS = {
   contextMeterJson: 'cc-context-meter --json --include-diff',
   contextSnapshot: 'cc-context-snapshot --json',
   sessionLedger: 'cc-session-ledger list 10 --json',
+  missionKernel: 'cc-mission-kernel current --json',
   missionLedger: 'cc-mission-ledger list 10 --json',
   pulseStatus: 'cc-pulse-status',
   nativeAppStatus: 'cc-native-app-status',
@@ -361,7 +362,7 @@ class CockpitProvider {
     const nonce = ++this.refreshNonce;
     this.view.webview.postMessage({ type: 'loading' });
     const deferred = 'Not loaded on startup. Open this report to run the full check.';
-    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi, sessions, missionLedger, repoMap, contextSnapshot] = await Promise.all([
+    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi, sessions, missionKernel, missionLedger, repoMap, contextSnapshot] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
@@ -370,6 +371,7 @@ class CockpitProvider {
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
       shellExec(COMMANDS.sessionLedger, { timeout: 12000 }),
+      shellExec(COMMANDS.missionKernel, { timeout: 12000 }),
       shellExec(COMMANDS.missionLedger, { timeout: 12000 }),
       shellExec(COMMANDS.repoMap, { timeout: 12000 }),
       shellExec(COMMANDS.contextSnapshot, { timeout: 12000 }),
@@ -391,6 +393,7 @@ class CockpitProvider {
       contextSnapshot: contextSnapshot.text || '{}',
       diffSummary: diffSummary.text,
       sessions: sessions.text || '{}',
+      missionKernel: missionKernel.text || '{}',
       missionLedger: missionLedger.text || '{}',
       pulse: deferred,
       nativeApps: deferred,

@@ -8,6 +8,7 @@ dist/*.tar.gz.sha256
 claude/skills/prompt-master/
 .venv/
 claude/tel/.venv/
+.ai/missions/
 
 # Mega-brain learnings: transcripts/articles stay local-only.
 # Keep _README.md, _INDEX.md, _COMPOUND_INDEX.md, manifests committed.

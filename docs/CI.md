@@ -21,17 +21,17 @@ passed=10 failed=0
 The workflow file exists at `.github/workflows/public-ci.yml` and supports both
 push and manual `workflow_dispatch` runs.
 
-The workflow defaults to GitHub-hosted Ubuntu runners, but `runs-on` is
-configurable through the repo variable `PUBLIC_CI_RUNNER`. On this maintainer
-repo, the variable is set to:
+The workflow currently runs on the default GitHub-hosted Ubuntu runner. The
+latest hosted proof run is:
 
-```json
-["self-hosted","macOS","ARM64"]
+```text
+https://github.com/Z5Jonathan-maker/dotfiles/actions/runs/26336821207
 ```
 
-That keeps CI available when GitHub-hosted private-repo minutes are blocked by
-account billing or spending limits. The local runner is registered as
-`imac-dotfiles`.
+`runs-on` remains configurable through the repo variable `PUBLIC_CI_RUNNER`.
+Leave that variable unset for GitHub-hosted Ubuntu. Set it to
+`["self-hosted","macOS","ARM64"]` only when the maintainer-local
+`imac-dotfiles` runner is intentionally used as a backup.
 
 Trigger a run:
 
@@ -39,7 +39,7 @@ Trigger a run:
 gh workflow run public-ci.yml --repo Z5Jonathan-maker/dotfiles
 ```
 
-Check runner status:
+Check backup runner status:
 
 ```sh
 gh api repos/Z5Jonathan-maker/dotfiles/actions/runners \

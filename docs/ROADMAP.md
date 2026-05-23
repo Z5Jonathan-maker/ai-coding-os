@@ -14,8 +14,8 @@ developer-grade public launch.
 - Keep `cc-public-ci-check` green in GitHub Actions for portable contributor
   validation.
 - Keep `.github/workflows/public-ci.yml` runnable through the configurable
-  `PUBLIC_CI_RUNNER` path. Done 2026-05-23: maintainer repo uses the
-  `imac-dotfiles` self-hosted runner while GitHub-hosted billing is blocked.
+  `PUBLIC_CI_RUNNER` path. Done 2026-05-23: hosted Ubuntu is the primary path,
+  with `imac-dotfiles` retained as backup.
 - Attach the `cc-release-bundle` tarball and checksum to the public GitHub
   release. Done 2026-05-22 for `v0.1.0-rc7`.
 

@@ -79,7 +79,7 @@
       } else if (action === 'clear') {
         activePrompt = '';
         setRunning(false);
-        $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Work Stream' : 'Result';
+        $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Momentum' : 'Result';
         renderTranscript('Ready', '');
       } else if (action === 'stop') {
         vscode.postMessage({ command: 'stopRun' });
@@ -238,7 +238,7 @@
   window.addEventListener('message', (event) => {
     const message = event.data;
     if (message.type !== 'result') return;
-    $('resultTitle').textContent = message.payload.title || 'Last Result';
+    $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Momentum' : message.payload.title || 'Last Result';
     renderTranscript(message.payload.title, message.payload.body);
     setRunning(Boolean(message.payload.running));
   });
@@ -247,7 +247,7 @@
     activePrompt = String(prompt || '').trim();
     if (!activePrompt) return;
     setRunning(true);
-    $('resultTitle').textContent = 'Working';
+    $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'In motion' : 'Working';
     renderTranscript(modeLabel(mode), 'Running...');
   }
 
@@ -418,12 +418,13 @@
       return;
     }
 
+    const panelMode = document.body.classList.contains('panel-mode');
     if (activePrompt) {
-      result.appendChild(messageNode('You', activePrompt, 'user'));
+      result.appendChild(messageNode(panelMode ? 'Intent' : 'You', activePrompt, 'user'));
     }
 
     const cleaned = cleanOutput(title, body);
-    result.appendChild(messageNode(title || 'AI', cleaned, 'assistant'));
+    result.appendChild(messageNode(panelMode ? 'Momentum' : title || 'AI', cleaned, 'assistant'));
     result.scrollTop = result.scrollHeight;
   }
 
@@ -456,11 +457,14 @@
   function cleanOutput(title, body) {
     const text = String(body || '').trim();
     if (!text) return '(no output)';
-    return text
+    const diagnostic = /route|receipt|health|status|capacity|metrics/i.test(String(title || ''));
+    const cleaned = text
       .split('\n')
       .map(line => formatRouterNotice(title, line))
+      .filter(line => diagnostic || !/^(Route selected|Fallback|Provider capacity|Receipt:)/i.test(line.trim()))
       .filter(Boolean)
       .join('\n');
+    return cleaned || 'Momentum captured. Detailed route mechanics are available in diagnostics.';
   }
 
   function formatRouterNotice(title, line) {

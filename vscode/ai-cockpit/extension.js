@@ -727,12 +727,12 @@ class CockpitProvider {
 
   <section class="result-panel">
     <div class="panel-head">
-      <h2 id="resultTitle">${variant === 'panel' ? 'Work Stream' : 'Result'}</h2>
-      <div class="result-actions" aria-label="Work stream actions">
-        <button class="mini-button" data-result-action="copy" title="Copy work stream" aria-label="Copy work stream">
+      <h2 id="resultTitle">${variant === 'panel' ? 'Momentum' : 'Result'}</h2>
+      <div class="result-actions" aria-label="Momentum actions">
+        <button class="mini-button" data-result-action="copy" title="Copy momentum" aria-label="Copy momentum">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v12H8z"/><path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
-        <button class="mini-button" data-result-action="clear" title="Clear work stream" aria-label="Clear work stream">
+        <button class="mini-button" data-result-action="clear" title="Clear momentum" aria-label="Clear momentum">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>
         </button>
         <button class="mini-button stop-button" id="stopRun" data-result-action="stop" title="Stop current run" aria-label="Stop current run" disabled>

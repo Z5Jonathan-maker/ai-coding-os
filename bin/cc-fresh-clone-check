@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+set -u
+
+source_repo="${CC_FRESH_CLONE_SOURCE:-https://github.com/Z5Jonathan-maker/dotfiles.git}"
+tmp_root="${CC_FRESH_CLONE_TMP:-$(mktemp -d "${TMPDIR:-/tmp}/cc-fresh-clone.XXXXXX")}"
+clone="$tmp_root/dotfiles"
+home="$tmp_root/home"
+log_dir="$tmp_root/logs"
+pass=0
+fail=0
+
+cleanup() {
+  if [ "${CC_FRESH_CLONE_KEEP:-0}" != 1 ]; then
+    rm -rf "$tmp_root"
+  fi
+}
+trap cleanup EXIT
+
+slug() {
+  printf '%s' "$1" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-'
+}
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$log_dir/$(slug "$name").log"
+  ok=0
+
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    ok=1
+  fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then
+    ok=0
+  fi
+
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+}
+
+clone_repo() {
+  if [ -d "$source_repo/.git" ]; then
+    git clone "$source_repo" "$clone"
+  else
+    git clone --depth=1 "$source_repo" "$clone"
+  fi
+}
+
+public_ci() {
+  (cd "$clone" && DOTFILES="$clone" "$clone/bin/cc-public-ci-check")
+}
+
+first_run_dry_run() {
+  HOME="$home" DOTFILES_DIR="$clone" DOTFILES="$clone" "$clone/install.sh" --dry-run
+}
+
+cockpit_package() {
+  DOTFILES="$clone" "$clone/bin/cc-package-cockpit"
+}
+
+fixture_demo() {
+  (
+    cd "$clone" &&
+      HOME="$home" PATH="$clone/bin:$PATH" DOTFILES="$clone" \
+        npm_config_cache="$tmp_root/npm-cache" CC_WORKFLOW_PROOF_SKIP_READINESS=1 \
+        "$clone/bin/cc-demo-fixture"
+  )
+}
+
+temp_home_clean() {
+  ! find "$home" -mindepth 1 -maxdepth 5 -print -quit | grep -q .
+}
+
+mkdir -p "$home" "$log_dir"
+
+printf '# Fresh Clone Check\n\n'
+printf 'Source: %s\n' "$source_repo"
+printf 'Temp root: %s\n' "$tmp_root"
+
+run "Clone repository" '' clone_repo
+run "Public CI in fresh clone" '^passed=9 failed=0$' public_ci
+run "First-run dry-run in temp home" '^Status: first-run-ready$' first_run_dry_run
+run "Cockpit package in fresh clone" 'Packaged|\.vsix' cockpit_package
+run "Public fixture demo in fresh clone" '^Fixture:' fixture_demo
+run "Temp home stayed clean" '' temp_home_clean
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: fresh-clone-ready\n'
+else
+  printf 'Status: fresh-clone-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

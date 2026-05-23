@@ -2,6 +2,7 @@
 set -euo pipefail
 
 prompt="${*:-debug this repo and verify the safest next step}"
+route_script="${AI_SYSTEM_ROUTE_SCRIPT:-${AI_SYSTEM_V2:-$HOME/AI-SYSTEM-V2}/scripts/intent-route.sh}"
 
 printf '# Workflow Proof\n\n'
 
@@ -14,7 +15,11 @@ else
 fi
 
 printf '## Route Preview\n\n```text\n'
-"$HOME/AI-SYSTEM-V2/scripts/intent-route.sh" --dry-run "$prompt" | sed -n '1,34p'
+if [ -x "$route_script" ]; then
+  "$route_script" --dry-run "$prompt" | sed -n '1,34p'
+else
+  printf 'route preview unavailable: missing %s\n' "$route_script"
+fi
 printf '```\n\n'
 
 printf '## Repo Index\n\n'

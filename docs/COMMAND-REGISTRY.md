@@ -44,6 +44,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review; supports `--json`.
 - `cc-evaluator-check` — external evaluator check for fresh clones and public review.
 - `cc-first-run` — non-mutating public setup doctor for required, optional, and personal prerequisites.
+- `cc-fresh-clone-check` — fresh public clone gate: temp clone, temp home, dry-run install, cockpit package, fixture demo, and no temp-home writes.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.

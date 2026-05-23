@@ -55,6 +55,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 ```sh
 cc-evaluator-check
 cc-ten-readiness
+cc-fresh-clone-check
 cc-release-check
 cc-public-ci-check
 cc-product-readiness
@@ -71,8 +72,10 @@ runs against a harmless public repo, workflow proof shows route/readiness/repo
 map/diff context, and browser proof returns bounded page content.
 
 `cc-product-readiness` proves the local machine is ready. `cc-release-check`
-proves the distributable release path. `cc-ten-readiness` is stricter: it layers
-public CI, evaluator checks, developer-day dogfood, product/release gates,
+proves the distributable release path. `cc-fresh-clone-check` proves a clean
+clone can dry-run install, package, and run the public fixture without mutating a
+temp home. `cc-ten-readiness` is stricter: it layers public CI, evaluator
+checks, fresh-clone validation, developer-day dogfood, product/release gates,
 portable launch docs, and the documented 10/10 product contract.
 
 ## Cockpit Preview

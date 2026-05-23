@@ -1,27 +1,36 @@
 # FRESH-CLONE-VERIFY.md
 
-Fresh-clone verification proves the public setup doctor works outside the active
-checkout and does not mutate a new home directory.
+Fresh-clone verification proves the public setup works outside the active
+checkout and does not mutate a new home directory during dry-run evaluation.
 
-## Command Shape
+## Command
 
 ```sh
-tmp_root=$(mktemp -d)
-git clone --depth=1 https://github.com/Z5Jonathan-maker/dotfiles.git "$tmp_root/dotfiles"
-HOME="$tmp_root/home" DOTFILES_DIR="$tmp_root/dotfiles" "$tmp_root/dotfiles/install.sh" --dry-run
-find "$tmp_root/home" -maxdepth 4 -mindepth 1 -print
-rm -rf "$tmp_root"
+cc-fresh-clone-check
 ```
+
+To test a local checkout instead of GitHub:
+
+```sh
+CC_FRESH_CLONE_SOURCE="$PWD" cc-fresh-clone-check
+```
+
+The command creates a temporary clone and temporary home, then verifies:
+
+1. public CI passes in the clone
+2. `install.sh --dry-run` reports first-run readiness
+3. the VS Code cockpit packages as a VSIX
+4. the public fixture demo runs from the clone
+5. the temporary home remains empty
 
 ## Verified Result
 
-Date: 2026-05-21
+Date: 2026-05-23
 
 ```text
-fresh_clone_rc=0
-required_missing=0 optional_missing=1 personal_missing=1
+passed=6 failed=0
 Status: first-run-ready
-Temp root writes: none
+Status: fresh-clone-ready
 ```
 
 Expected optional misses in a clean temp home:

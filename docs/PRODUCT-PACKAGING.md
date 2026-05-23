@@ -160,6 +160,8 @@ Installed system is 100% when:
 6. one real workflow has run end-to-end: route -> edit -> verify -> browser/UI check -> final review
 7. `cc-workflow-proof` produces a readable proof packet
 8. `cc-demo-fixture` proves the route/repo-map/diff flow on a public fixture
+9. `cc-fresh-clone-check` proves a clean clone can dry-run install, package,
+   run the fixture demo, and leave a temporary home untouched
 
 Daily-driver confidence is sampled by:
 
@@ -195,8 +197,9 @@ cc-ten-readiness
 ```
 
 It is intentionally harsher than `cc-product-readiness`. It requires public CI,
-external evaluator readiness, dogfood proof, product readiness, release
-readiness, portable launch docs, and this documented 10/10 contract.
+external evaluator readiness, fresh-clone validation, dogfood proof, product
+readiness, release readiness, portable launch docs, and this documented 10/10
+contract.
 
 ## Packaging Rule
 

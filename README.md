@@ -40,6 +40,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Extraction tracks: `docs/EXTRACTION-TRACKS.md`
 - Mission kernel: `docs/MISSION-KERNEL.md`
 - Mission events: `docs/MISSION-EVENTS.md`
+- Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
 - Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
@@ -115,6 +116,7 @@ For focused checks:
 cc-ten-readiness
 cc-ai-checks
 cc-superiority-check
+cc-dogfood-session --check
 cc-agent-runtime --check
 cc-mission-events --check
 cc-mission-kernel --check
@@ -150,6 +152,9 @@ mission can write route, trust, cost, proof, result, and normalized timeline
 artifacts.
 `cc-mission-events` validates the normalized runtime event language so cockpit
 state is based on durable events, not provider-specific logs.
+`cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
+Kernel cycles, validate Mission Events, capture logs, and finish with product
+gates.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

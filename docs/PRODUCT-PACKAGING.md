@@ -55,6 +55,9 @@ trust tier, and safety boundary.
   normalized timeline events.
 - **Mission event contract:** `cc-mission-events` validates the runtime event
   language before the cockpit renders continuity from it.
+- **Sustained dogfood runner:** `cc-dogfood-session` runs multi-cycle timed
+  sessions with Mission Kernel runs, event validation, provider/context/router
+  logs, and final product gates.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -229,6 +232,8 @@ Installed system is 100% when:
 21. `cc-mission-events --check` proves the runtime emits normalized lifecycle
     events for preflight, trust, route, context, runtime, permission, tool,
     verification, proof, and completion
+22. `cc-dogfood-session --check` proves the sustained dogfood runner and its
+    dependencies are installed before a six-hour run
 
 Daily-driver confidence is sampled by:
 
@@ -269,6 +274,9 @@ Sellable system is 100% when:
     without bespoke per-tool state
 17. the Mission Event contract exists so provider-specific logs adapt into one
     cockpit-safe event ontology
+18. the timed dogfood runner can execute a real sustained working window and
+    leave durable cycle logs, mission artifacts, event validation, and final
+    readiness proof
 
 The strict gate is:
 

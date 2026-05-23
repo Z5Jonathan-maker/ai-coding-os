@@ -45,6 +45,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-demo-fixture` — run workflow proof against a temporary public fixture repo with tests and an intentional diff.
 - `cc-demo-quick` — 90-second human-facing proof: routing, public workflow, benchmarks, cockpit smoke, trust gate, and mission continuity.
 - `cc-dogfood-day` — non-mutating developer-day proof across routing, workflow proof, context, diff, browser, package, and cockpit mission tests.
+- `cc-dogfood-session` — timed multi-cycle dogfood runner for sustained developer-session proof with Mission Kernel runs, event validation, logs, and final product gates.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review; supports `--json`.
 - `cc-evaluator-check` — external evaluator check for fresh clones and public review.

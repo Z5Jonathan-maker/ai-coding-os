@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+duration_minutes=360
+interval_minutes=30
+max_cycles=0
+prompt="${CC_DOGFOOD_SESSION_PROMPT:-real developer session: route, inspect, verify, prove, and resume}"
+session_id="dogfood-$(date -u +%Y%m%dT%H%M%SZ)"
+session_root="${CC_DOGFOOD_SESSION_ROOT:-$HOME/.Codex/dogfood-sessions}"
+detached=0
+skip_final_gates=0
+
+usage() {
+  cat <<'EOF'
+cc-dogfood-session — timed AI Coding OS developer-session dogfood runner
+
+Usage:
+  cc-dogfood-session [--duration-minutes N] [--interval-minutes N] [--max-cycles N]
+                     [--prompt TEXT] [--session-id ID] [--output-dir DIR] [--detached]
+                     [--skip-final-gates]
+  cc-dogfood-session --check
+
+Default run is six hours: 360 minutes, one cycle every 30 minutes.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --duration-minutes) duration_minutes="$2"; shift 2 ;;
+    --interval-minutes) interval_minutes="$2"; shift 2 ;;
+    --max-cycles) max_cycles="$2"; shift 2 ;;
+    --prompt) prompt="$2"; shift 2 ;;
+    --session-id) session_id="$2"; shift 2 ;;
+    --output-dir) session_root="$2"; shift 2 ;;
+    --detached) detached=1; shift ;;
+    --skip-final-gates) skip_final_gates=1; shift ;;
+    --check)
+      missing=0
+      for cmd in cc-agent-runtime cc-dogfood-day cc-mission-events cc-ai-checks cc-provider-capacity cc-context-meter; do
+        if ! command -v "$cmd" >/dev/null 2>&1 && [ ! -x "$DOTFILES/bin/$cmd" ]; then
+          printf 'missing %s\n' "$cmd"
+          missing=$((missing + 1))
+        fi
+      done
+      if [ "$missing" -eq 0 ]; then
+        printf 'Status: dogfood-session-ready\n'
+        exit 0
+      fi
+      exit 1
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'cc-dogfood-session: unknown arg: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+case "$duration_minutes:$interval_minutes:$max_cycles" in
+  *[!0-9:]*)
+    printf 'cc-dogfood-session: duration, interval, and max-cycles must be integers\n' >&2
+    exit 2
+    ;;
+esac
+
+session_dir="$session_root/$session_id"
+mkdir -p "$session_dir"
+
+if [ "$detached" -eq 1 ]; then
+  args=(--duration-minutes "$duration_minutes" --interval-minutes "$interval_minutes" --max-cycles "$max_cycles" --prompt "$prompt" --session-id "$session_id" --output-dir "$session_root")
+  [ "$skip_final_gates" -eq 1 ] && args+=(--skip-final-gates)
+  nohup "$DOTFILES/bin/cc-dogfood-session" "${args[@]}" >"$session_dir/session.log" 2>&1 &
+  pid=$!
+  printf '%s\n' "$pid" >"$session_dir/pid"
+  printf 'Status: dogfood-session-started\n'
+  printf 'session_id=%s\n' "$session_id"
+  printf 'pid=%s\n' "$pid"
+  printf 'dir=%s\n' "$session_dir"
+  exit 0
+fi
+
+cd "$DOTFILES" || exit 1
+
+start_epoch=$(date +%s)
+end_epoch=$((start_epoch + duration_minutes * 60))
+interval_seconds=$((interval_minutes * 60))
+[ "$interval_seconds" -lt 1 ] && interval_seconds=1
+
+{
+  printf '{\n'
+  printf '  "schema": "ai-coding-os.dogfood-session.v1",\n'
+  printf '  "session_id": "%s",\n' "$session_id"
+  printf '  "started_at": "%s",\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '  "duration_minutes": %s,\n' "$duration_minutes"
+  printf '  "interval_minutes": %s,\n' "$interval_minutes"
+  printf '  "prompt": %s\n' "$(node -e 'process.stdout.write(JSON.stringify(process.argv[1]))' "$prompt")"
+  printf '}\n'
+} >"$session_dir/session.json"
+
+printf '# AI Coding OS Dogfood Session\n\n' | tee "$session_dir/summary.md"
+printf 'session_id=%s\n' "$session_id" | tee -a "$session_dir/summary.md"
+printf 'duration_minutes=%s\n' "$duration_minutes" | tee -a "$session_dir/summary.md"
+printf 'interval_minutes=%s\n' "$interval_minutes" | tee -a "$session_dir/summary.md"
+printf 'prompt=%s\n\n' "$prompt" | tee -a "$session_dir/summary.md"
+printf 'cycle\tstarted_at\tmission_id\truntime\tevents\tstatus\n' >"$session_dir/cycles.tsv"
+
+cycle=0
+pass=0
+fail=0
+
+run_cycle() {
+  cycle=$((cycle + 1))
+  local ts mission_id cycle_dir runtime_status event_status status command verify
+  ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  mission_id="$session_id-cycle-$cycle"
+  cycle_dir="$session_dir/cycle-$cycle"
+  mkdir -p "$cycle_dir"
+
+  printf '\n## Cycle %s — %s\n' "$cycle" "$ts" | tee -a "$session_dir/summary.md"
+
+  command="mkdir -p '$cycle_dir'; bin/cc-dogfood-day > '$cycle_dir/dogfood-day.log' 2>&1; bin/cc-provider-capacity > '$cycle_dir/provider-capacity.log' 2>&1; bin/cc-context-meter --json --include-diff > '$cycle_dir/context-meter.json' 2>&1; bin/cc-router-metrics > '$cycle_dir/router-metrics.log' 2>&1; git status --short > '$cycle_dir/git-status.txt'"
+  verify="test -s '$cycle_dir/dogfood-day.log' && grep -q 'passed=7 failed=0' '$cycle_dir/dogfood-day.log'"
+
+  "$DOTFILES/bin/cc-agent-runtime" run \
+    --mission-id "$mission_id" \
+    --title "Six-hour dogfood cycle $cycle" \
+    --task "$prompt" \
+    --context "session=$session_id cycle=$cycle duration=${duration_minutes}m" \
+    --command "$command" \
+    --verify-command "$verify" \
+    --timeout-ms 300000 \
+    >"$cycle_dir/agent-runtime.log" 2>&1
+  runtime_status=$?
+
+  "$DOTFILES/bin/cc-mission-events" validate \
+    --mission-dir "$DOTFILES/.ai/missions/$mission_id" \
+    --complete-run \
+    >"$cycle_dir/mission-events.log" 2>&1
+  event_status=$?
+
+  if [ "$runtime_status" -eq 0 ] && [ "$event_status" -eq 0 ]; then
+    status=passed
+    pass=$((pass + 1))
+  else
+    status=failed
+    fail=$((fail + 1))
+  fi
+
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$cycle" "$ts" "$mission_id" "$runtime_status" "$event_status" "$status" >>"$session_dir/cycles.tsv"
+  printf 'mission_id=%s\nstatus=%s\nruntime_exit=%s\nevents_exit=%s\n' "$mission_id" "$status" "$runtime_status" "$event_status" | tee -a "$session_dir/summary.md"
+}
+
+while [ "$(date +%s)" -lt "$end_epoch" ]; do
+  if [ "$max_cycles" -gt 0 ] && [ "$cycle" -ge "$max_cycles" ]; then
+    break
+  fi
+  run_cycle
+  now_epoch=$(date +%s)
+  if [ "$now_epoch" -ge "$end_epoch" ]; then
+    break
+  fi
+  if [ "$max_cycles" -gt 0 ] && [ "$cycle" -ge "$max_cycles" ]; then
+    break
+  fi
+  sleep_until=$((now_epoch + interval_seconds))
+  [ "$sleep_until" -gt "$end_epoch" ] && sleep_until="$end_epoch"
+  sleep_for=$((sleep_until - now_epoch))
+  [ "$sleep_for" -gt 0 ] && sleep "$sleep_for"
+done
+
+if [ "$skip_final_gates" -eq 1 ]; then
+  printf '\n## Final Gates\n' | tee -a "$session_dir/summary.md"
+  printf 'skipped=true\n' | tee -a "$session_dir/summary.md"
+else
+  printf '\n## Final Gates\n' | tee -a "$session_dir/summary.md"
+  if "$DOTFILES/bin/cc-verify-product" >"$session_dir/verify-product.log" 2>&1; then
+    printf 'cc-verify-product=passed\n' | tee -a "$session_dir/summary.md"
+  else
+    printf 'cc-verify-product=failed\n' | tee -a "$session_dir/summary.md"
+    fail=$((fail + 1))
+  fi
+
+  if "$DOTFILES/bin/cc-ten-readiness" >"$session_dir/ten-readiness.log" 2>&1; then
+    printf 'cc-ten-readiness=passed\n' | tee -a "$session_dir/summary.md"
+  else
+    printf 'cc-ten-readiness=failed\n' | tee -a "$session_dir/summary.md"
+    fail=$((fail + 1))
+  fi
+fi
+
+printf '\n## Summary\n' | tee -a "$session_dir/summary.md"
+printf 'cycles=%s passed=%s failed=%s\n' "$cycle" "$pass" "$fail" | tee -a "$session_dir/summary.md"
+printf 'finished_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$session_dir/summary.md"
+printf 'Status: %s\n' "$([ "$fail" -eq 0 ] && printf dogfood-session-passed || printf dogfood-session-failed)" | tee -a "$session_dir/summary.md"
+
+[ "$fail" -eq 0 ]

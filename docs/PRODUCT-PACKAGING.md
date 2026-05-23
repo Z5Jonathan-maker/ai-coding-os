@@ -65,6 +65,16 @@ trust tier, and safety boundary.
 
 ## Acceptance Demo
 
+Fast human-facing demo:
+
+```sh
+cc-demo-quick
+```
+
+Expected proof: representative routing, public fixture workflow, 10-scenario
+benchmarks, cockpit smoke, trust gate, and mission ledger are green without
+requiring a clean tree.
+
 Run:
 
 ```sh
@@ -219,6 +229,8 @@ Sellable system is 100% when:
 10. route, repo context, diff review, and readiness can run inside the cockpit
 11. native app status and Pulse status are visible without terminal spelunking
 12. source-controlled AI checks and workspace trust policy are executable
+13. `cc-demo-quick` gives a cold reviewer the product thesis and proof in one
+    short terminal run without requiring a clean tree
 
 The strict gate is:
 

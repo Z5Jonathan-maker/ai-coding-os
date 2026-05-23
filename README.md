@@ -49,8 +49,27 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
 - Provider accounts: `docs/PROVIDER-ACCOUNTS.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
+- Quick demo: `docs/QUICK-DEMO.md`
 - Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
 - Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`
+
+## Evaluate In 90 Seconds
+
+For a quick human-facing proof, run:
+
+```sh
+bin/cc-demo-quick
+```
+
+Expected result:
+
+```text
+Status: quick-demo-ready
+```
+
+This shows representative routing, a public workflow fixture, benchmark proof,
+cockpit smoke, trust gate, and mission continuity without requiring a clean
+working tree.
 
 ## Evaluate In 5 Minutes
 
@@ -108,6 +127,8 @@ continuation state used by the cockpit mission surface.
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
 single external-facing proof command that wraps first-run, source checks,
 10-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
+`cc-demo-quick` is the human-facing proof command for fast product
+comprehension while active development is in progress.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

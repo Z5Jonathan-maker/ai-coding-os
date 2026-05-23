@@ -25,6 +25,7 @@ git status --short
 
 Required result:
 
+- quick demo exits `Status: quick-demo-ready`
 - first-run doctor exits `Status: first-run-ready`
 - product readiness exits `Status: product-ready`
 - five-minute demo exits with `passed=4 failed=0`

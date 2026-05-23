@@ -45,6 +45,7 @@ printf 'Dotfiles: %s\n' "$DOTFILES"
 printf 'Platform: %s %s\n' "$(uname -s 2>/dev/null || true)" "$(uname -m 2>/dev/null || true)"
 
 run_required "Portable public gate" "$DOTFILES/bin/cc-public-ci-check"
+run_required "Quick demo" "$DOTFILES/bin/cc-demo-quick"
 
 if [ "$(uname -s 2>/dev/null)" = Darwin ]; then
   run_required "macOS first-run doctor" "$DOTFILES/install.sh" --dry-run

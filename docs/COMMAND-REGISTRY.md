@@ -42,6 +42,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.
 - `cc-demo-fixture` — run workflow proof against a temporary public fixture repo with tests and an intentional diff.
+- `cc-demo-quick` — 90-second human-facing proof: routing, public workflow, benchmarks, cockpit smoke, trust gate, and mission continuity.
 - `cc-dogfood-day` — non-mutating developer-day proof across routing, workflow proof, context, diff, browser, package, and cockpit mission tests.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review; supports `--json`.

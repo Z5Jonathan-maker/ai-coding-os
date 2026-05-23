@@ -1,0 +1,10 @@
+{
+  "name": "deepseek-extract-fixture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node src/extract.test.js",
+    "lint": "node src/extract.test.js"
+  }
+}

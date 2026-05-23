@@ -1,0 +1,9 @@
+{
+  "name": "codex-code-fix-fixture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node src/pricing.test.js"
+  }
+}

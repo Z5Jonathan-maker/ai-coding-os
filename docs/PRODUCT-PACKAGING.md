@@ -48,6 +48,9 @@ trust tier, and safety boundary.
 - **Code-density discipline:** Pulse is present as a generation/cleanup protocol, not another lane.
 - **Token ledger:** `cc-token-ledger` reports lane mix, estimated token usage,
   fallback count, cost, and premium-spend avoidance from existing router logs.
+- **Benchmark fixtures:** `cc-benchmark-fixtures` runs tiny public coding,
+  extraction, and design-routing fixtures with tests, route expectations,
+  repo-map proof, and diff-surface proof.
 - **Feedback-law discipline:** Mega Cycle anti-pattern laws are executable through
   autonomy preflight, `ai depth-check`, `ai evolve`, and `cc-feedback-law-check`.
 - **Safe credentials:** TEL handles credentialed actions; free/lab lanes do not.
@@ -176,7 +179,8 @@ Installed system is 100% when:
 11. `cc-trust-profile --check` proves repo-local autonomy policy is valid
 12. `cc-token-ledger --check` proves token/cost telemetry is readable
 13. `cc-mission-ledger --check` proves persistent continuation state is readable
-14. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+14. `cc-benchmark-fixtures --check` proves repeatable fixture coverage is green
+15. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 

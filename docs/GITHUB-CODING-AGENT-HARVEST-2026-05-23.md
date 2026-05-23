@@ -217,12 +217,15 @@ is either already covered, nice-but-noisy, or belongs after daily-driver proof.
 - 2026-05-23: `.ai/trust.json` and `cc-trust-profile` added.
 - 2026-05-23: `cc-token-ledger` added and wired into source-controlled checks.
 - 2026-05-23: `cc-mission-ledger` added and wired into cockpit mission state.
+- 2026-05-23: `cc-benchmark-fixtures` added with three tiny public fixtures for
+  coding, extraction, and design-route regression proof.
 
 The implementation is intentionally small: committed markdown checks call
 existing local proof commands, the trust profile is a machine-readable policy
 contract, token economics read from existing router telemetry, and continuation
-state is an append-only local ledger. No new model lane, daemon, UI shell, or
-provider marketplace was added.
+state is an append-only local ledger. Benchmark discipline is covered by tiny
+public fixtures, not a full SWE-bench clone. No new model lane, daemon, UI
+shell, or provider marketplace was added.
 
 ## Sources
 

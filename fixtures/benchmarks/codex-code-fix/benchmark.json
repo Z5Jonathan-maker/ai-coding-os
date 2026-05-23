@@ -1,0 +1,6 @@
+{
+  "id": "codex-code-fix",
+  "title": "Codex code-fix fixture",
+  "prompt": "implement a safe fix in this JavaScript pricing helper and verify npm test",
+  "expectSelectedRegex": "Selected:\\s+codex|Selected:\\s+precision"
+}

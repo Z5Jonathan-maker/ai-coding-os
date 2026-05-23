@@ -56,6 +56,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 cc-evaluator-check
 cc-ten-readiness
 cc-ai-checks
+cc-benchmark-fixtures
 cc-fresh-clone-check
 cc-feedback-law-check
 cc-trust-profile
@@ -87,8 +88,8 @@ economics from existing usage telemetry. `cc-mission-ledger` provides the
 append-only continuation state used by the cockpit mission surface.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
-developer-day dogfood, product/release gates, portable launch docs, and the
-documented 10/10 product contract.
+benchmark fixtures, developer-day dogfood, product/release gates, portable
+launch docs, and the documented 10/10 product contract.
 
 ## Cockpit Preview
 

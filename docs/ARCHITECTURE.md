@@ -37,6 +37,7 @@ Developer
 | Product readiness gate | `bin/cc-product-readiness` |
 | Five-minute demo | `bin/cc-demo-five-minute` |
 | Browser proof | `bin/cc-browser-proof` |
+| Benchmark fixtures | `fixtures/benchmarks/` via `bin/cc-benchmark-fixtures` |
 | Packaging contract | `docs/PRODUCT-PACKAGING.md` |
 | Master plan | `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md` |
 

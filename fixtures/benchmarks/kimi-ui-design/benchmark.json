@@ -1,0 +1,6 @@
+{
+  "id": "kimi-ui-design",
+  "title": "Kimi UI design fixture",
+  "prompt": "design a polished responsive pricing hero for this fixture and verify the browser layout",
+  "expectSelectedRegex": "Selected:\\s+design|Selected:\\s+codex"
+}

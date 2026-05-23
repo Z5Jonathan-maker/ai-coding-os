@@ -1,0 +1,122 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturesDir = process.env.CC_BENCHMARK_FIXTURES_DIR || path.join(root, 'fixtures', 'benchmarks');
+const routeScript = process.env.AI_SYSTEM_ROUTE_SCRIPT || path.join(process.env.HOME || os.homedir(), 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+const args = process.argv.slice(2);
+const json = args.includes('--json');
+const checkOnly = args.includes('--check');
+
+function run(cmd, argv, options = {}) {
+  const res = cp.spawnSync(cmd, argv, {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    shell: false,
+    env: { ...process.env, DOTFILES: root },
+  });
+  return {
+    ok: res.status === 0,
+    code: res.status,
+    text: `${res.stdout || ''}${res.stderr || ''}`,
+  };
+}
+
+function readManifest(dir) {
+  const file = path.join(dir, 'benchmark.json');
+  if (!fs.existsSync(file)) throw new Error(`${dir}: missing benchmark.json`);
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (!data.id || !data.prompt || !data.expectSelectedRegex) {
+    throw new Error(`${file}: requires id, prompt, expectSelectedRegex`);
+  }
+  return data;
+}
+
+function copyFixture(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  fs.cpSync(src, dest, {
+    recursive: true,
+    filter: (item) => !item.endsWith('/node_modules') && !item.includes(`${path.sep}.git${path.sep}`),
+  });
+}
+
+function fixtureDirs() {
+  if (!fs.existsSync(fixturesDir)) throw new Error(`missing fixtures dir: ${fixturesDir}`);
+  return fs.readdirSync(fixturesDir)
+    .map((name) => path.join(fixturesDir, name))
+    .filter((dir) => fs.statSync(dir).isDirectory())
+    .sort();
+}
+
+function evaluate(dir) {
+  const manifest = readManifest(dir);
+  const work = fs.mkdtempSync(path.join(os.tmpdir(), `cc-benchmark-${manifest.id}.`));
+  copyFixture(dir, work);
+  const steps = [];
+  const step = (name, ok, text = '') => steps.push({ name, ok, text: String(text || '').slice(0, 1200) });
+
+  let res = run('git', ['init', '-q'], { cwd: work });
+  step('git init', res.ok, res.text);
+  run('git', ['config', 'user.email', 'benchmark@example.local'], { cwd: work });
+  run('git', ['config', 'user.name', 'AI Benchmark Fixture'], { cwd: work });
+  run('git', ['add', '.'], { cwd: work });
+  run('git', ['commit', '-qm', 'Initial benchmark fixture'], { cwd: work });
+
+  if (fs.existsSync(path.join(work, 'package.json'))) {
+    res = run('npm', ['test'], { cwd: work });
+    step('npm test', res.ok, res.text);
+  }
+
+  fs.appendFileSync(path.join(work, 'README.md'), `\n\nBenchmark note: ${manifest.prompt}\n`);
+
+  res = run(routeScript, ['--dry-run', manifest.prompt], { cwd: work });
+  const routeOk = res.ok && new RegExp(manifest.expectSelectedRegex).test(res.text);
+  step('route expectation', routeOk, res.text);
+
+  res = run(path.join(root, 'bin', 'cc-repo-map'), ['8'], { cwd: work });
+  step('repo map', res.ok && /Repo Map|Top files|Symbols/i.test(res.text), res.text);
+
+  res = run(path.join(root, 'bin', 'cc-diff-hunks'), ['--json'], { cwd: work });
+  step('diff surface', res.ok && /"clean":false/.test(res.text), res.text);
+
+  const ok = steps.every((s) => s.ok);
+  return { id: manifest.id, title: manifest.title || manifest.id, work, ok, steps };
+}
+
+function main() {
+  const results = fixtureDirs().map(evaluate);
+  if (json) {
+    console.log(JSON.stringify({ fixturesDir, results }, null, 2));
+  } else {
+    console.log('# Benchmark Fixtures\n');
+    console.log(`Fixtures: ${fixturesDir}`);
+    for (const result of results) {
+      console.log(`\n## ${result.title}`);
+      console.log(`${result.ok ? 'ok' : 'fail'}  ${result.id}`);
+      for (const s of result.steps) console.log(`${s.ok ? 'ok  ' : 'fail'} ${s.name}`);
+      if (!result.ok) {
+        const failed = result.steps.find((s) => !s.ok);
+        if (failed) console.log(failed.text.split('\n').slice(0, 40).map((l) => `     ${l}`).join('\n'));
+      }
+    }
+    const pass = results.filter((r) => r.ok).length;
+    const fail = results.length - pass;
+    console.log('\n## Summary\n');
+    console.log(`passed=${pass} failed=${fail}`);
+    console.log(fail ? 'Status: benchmark-fixtures-blocked' : 'Status: benchmark-fixtures-ready');
+  }
+  process.exit(results.every((r) => r.ok) ? 0 : 1);
+}
+
+try {
+  main();
+} catch (err) {
+  if (json) console.log(JSON.stringify({ error: err.message }, null, 2));
+  else console.error(`cc-benchmark-fixtures: ${err.message}`);
+  process.exit(checkOnly ? 1 : 2);
+}

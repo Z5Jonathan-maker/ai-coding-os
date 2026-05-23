@@ -7,6 +7,8 @@ The current four-week plan to make it sellable open-source quality lives at
 `.ai/ISA-sellable-open-source-ai-coding-system.md`.
 Browser automation mode boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
+Competitive proof against the top reference systems lives at
+`docs/SUPERIORITY-MATRIX.md`.
 
 ## Product Promise
 
@@ -56,6 +58,10 @@ trust tier, and safety boundary.
   proof, and diff-surface proof. `cc-benchmark-run` scores broken-first repair
   and refactor fixtures with an expected patch, baseline probe, and final test
   verification. Long-context fixtures include citation and top-risk scoring.
+- **Competitive proof matrix:** `cc-superiority-check` keeps claims against
+  OpenHands, Claude Code, Cursor, Cline, OpenCode, Kimi, Codex, Windsurf,
+  Devin, Octagents-style swarms, and token-router stacks tied to explicit
+  proof commands and known gaps.
 - **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
   cockpit surface still contains the continuation UI, result stream, assets,
   startup-safe activation contract, and clean npm audit.
@@ -203,6 +209,9 @@ Installed system is 100% when:
 17. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
+18. `cc-superiority-check` proves competitive claims are documented against
+    reference systems, tied to commands, and backed by at least three graded
+    benchmark fixtures
 
 Daily-driver confidence is sampled by:
 
@@ -233,6 +242,9 @@ Sellable system is 100% when:
 12. source-controlled AI checks and workspace trust policy are executable
 13. `cc-demo-quick` gives a cold reviewer the product thesis and proof in one
     short terminal run without requiring a clean tree
+14. `cc-superiority-check` keeps "better than the top projects" claims honest
+    by requiring a dimension-by-dimension matrix, required proof commands, and
+    graded benchmark depth
 
 The strict gate is:
 

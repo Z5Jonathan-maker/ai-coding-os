@@ -36,6 +36,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Master plan: `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`
 - Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
 - Product contract: `docs/PRODUCT-PACKAGING.md`
+- Competitive proof matrix: `docs/SUPERIORITY-MATRIX.md`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
 - Contribution guide: `CONTRIBUTING.md`
@@ -109,6 +110,7 @@ For focused checks:
 ```sh
 cc-ten-readiness
 cc-ai-checks
+cc-superiority-check
 cc-cockpit-webview-smoke
 cc-benchmark-fixtures
 cc-fresh-clone-check
@@ -131,6 +133,9 @@ single external-facing proof command that wraps first-run, source checks,
 10-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
 `cc-demo-quick` is the human-facing proof command for fast product
 comprehension while active development is in progress.
+`cc-superiority-check` keeps competitive claims against OpenHands, Claude Code,
+Cursor, Cline, OpenCode, Kimi, Codex, Windsurf, Devin, Octagents-style swarms,
+and token-router stacks tied to explicit proof commands and known gaps.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

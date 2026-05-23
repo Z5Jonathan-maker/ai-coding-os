@@ -7,6 +7,7 @@ useful, delete it or move it out of `bin/`.
 ## Primary interface
 
 - `cc-ask` — direct router wrapper for one-shot model calls.
+- `cc-ai-checks` — run source-controlled AI checks from `.ai/checks/`.
 - `cc-browse` — autonomous browser-use lane with persistent profile.
 - `cc-image` — image client wrapper through the router project.
 - `cc-lane` — inspect the AI lane registry and capability fallback chain.
@@ -68,6 +69,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
+- `cc-trust-profile` — validate and print the repo-local `.ai/trust.json` workspace autonomy policy.
 - `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
 - `code-stable` — launch VS Code through the verified `--disable-gpu` renderer-crash recovery path.
 

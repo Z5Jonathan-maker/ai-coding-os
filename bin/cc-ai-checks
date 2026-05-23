@@ -1,0 +1,83 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || process.cwd();
+const checksDir = process.env.CC_AI_CHECKS_DIR || path.join(root, '.ai', 'checks');
+const args = process.argv.slice(2);
+
+function parse(file) {
+  const raw = fs.readFileSync(file, 'utf8');
+  const m = raw.match(/^---\n([\s\S]*?)\n---/);
+  if (!m) throw new Error(`${file}: missing frontmatter`);
+  const meta = {};
+  for (const line of m[1].split('\n')) {
+    const kv = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (kv) meta[kv[1]] = kv[2].trim();
+  }
+  if (!meta.name) meta.name = path.basename(file, '.md');
+  if (!meta.command) throw new Error(`${file}: missing command`);
+  return { file, ...meta };
+}
+
+function loadChecks() {
+  if (!fs.existsSync(checksDir)) throw new Error(`missing checks dir: ${checksDir}`);
+  return fs.readdirSync(checksDir)
+    .filter((f) => f.endsWith('.md'))
+    .sort()
+    .map((f) => parse(path.join(checksDir, f)));
+}
+
+function run(check) {
+  const started = Date.now();
+  const res = spawnSync(check.command, {
+    cwd: root,
+    shell: true,
+    encoding: 'utf8',
+    env: { ...process.env, DOTFILES: root },
+  });
+  const out = `${res.stdout || ''}${res.stderr || ''}`;
+  const expectOk = check.expect ? new RegExp(check.expect).test(out) : true;
+  const ok = res.status === 0 && expectOk;
+  return { ...check, ok, status: res.status, ms: Date.now() - started, out };
+}
+
+function printResult(r) {
+  console.log(`\n## ${r.name}`);
+  if (r.ok) {
+    console.log(`ok   ${r.name} (${r.ms}ms)`);
+  } else {
+    console.log(`fail ${r.name} (${r.ms}ms, exit=${r.status})`);
+    console.log(r.out.split('\n').slice(0, 80).map((l) => `     ${l}`).join('\n'));
+  }
+}
+
+let checks;
+try {
+  checks = loadChecks();
+} catch (err) {
+  console.error(`cc-ai-checks: ${err.message}`);
+  process.exit(2);
+}
+
+if (args.includes('--list')) {
+  for (const c of checks) console.log(`${c.name}\t${path.relative(root, c.file)}\t${c.command}`);
+  process.exit(0);
+}
+
+console.log('# Source-Controlled AI Checks\n');
+console.log(`Root: ${root}`);
+console.log(`Checks: ${checksDir}`);
+
+const results = checks.map(run);
+results.forEach(printResult);
+
+const pass = results.filter((r) => r.ok).length;
+const fail = results.length - pass;
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: ai-checks-blocked' : 'Status: ai-checks-ready');
+process.exit(fail ? 1 : 0);

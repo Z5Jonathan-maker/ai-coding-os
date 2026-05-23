@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "workspace": "trusted-local",
+  "allow_shell": true,
+  "allow_network": "ask",
+  "allow_browser_profile": "ask",
+  "allow_secrets": false,
+  "destructive_actions": "deny",
+  "public_publish": "review",
+  "paid_actions": "review",
+  "credentialed_actions": "tel-only"
+}

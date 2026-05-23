@@ -211,6 +211,15 @@ impressions.
 This is the smallest set that materially levels up the system. Everything else
 is either already covered, nice-but-noisy, or belongs after daily-driver proof.
 
+## Implemented
+
+- 2026-05-23: `cc-ai-checks` and `.ai/checks/` added.
+- 2026-05-23: `.ai/trust.json` and `cc-trust-profile` added.
+
+The implementation is intentionally small: committed markdown checks call
+existing local proof commands, and the trust profile is a machine-readable policy
+contract. No new model lane, daemon, UI shell, or provider marketplace was added.
+
 ## Sources
 
 - `https://github.com/google-gemini/gemini-cli`

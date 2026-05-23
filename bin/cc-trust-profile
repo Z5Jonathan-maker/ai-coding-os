@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || process.cwd();
+const file = process.env.CC_TRUST_PROFILE || path.join(root, '.ai', 'trust.json');
+const checkOnly = process.argv.includes('--check');
+
+function fail(msg) {
+  console.error(msg);
+  process.exit(1);
+}
+
+let trust;
+try {
+  trust = JSON.parse(fs.readFileSync(file, 'utf8'));
+} catch (err) {
+  fail(`cc-trust-profile: cannot read ${file}: ${err.message}`);
+}
+
+const enums = {
+  workspace: ['trusted-local', 'limited', 'untrusted'],
+  allow_network: ['yes', 'ask', 'no'],
+  allow_browser_profile: ['yes', 'ask', 'no'],
+  destructive_actions: ['deny', 'review'],
+  public_publish: ['deny', 'review', 'allow'],
+  paid_actions: ['deny', 'review'],
+  credentialed_actions: ['deny', 'tel-only', 'review'],
+};
+
+const errors = [];
+if (trust.version !== 1) errors.push('version must be 1');
+if (typeof trust.allow_shell !== 'boolean') errors.push('allow_shell must be boolean');
+if (trust.allow_secrets !== false) errors.push('allow_secrets must be false');
+for (const [key, values] of Object.entries(enums)) {
+  if (!values.includes(trust[key])) errors.push(`${key} must be one of: ${values.join(', ')}`);
+}
+if (trust.workspace === 'untrusted' && trust.allow_shell) errors.push('untrusted workspaces cannot allow shell by default');
+if (trust.credentialed_actions !== 'tel-only') errors.push('credentialed_actions must route through TEL for this system');
+
+if (errors.length) {
+  for (const e of errors) console.error(`fail ${e}`);
+  console.log('Status: trust-profile-blocked');
+  process.exit(1);
+}
+
+if (!checkOnly) {
+  console.log('# Workspace Trust Profile\n');
+  console.log(`File: ${file}`);
+  console.log(`Workspace: ${trust.workspace}`);
+  console.log(`Shell: ${trust.allow_shell ? 'allow' : 'deny'}`);
+  console.log(`Network: ${trust.allow_network}`);
+  console.log(`Browser profile: ${trust.allow_browser_profile}`);
+  console.log(`Secrets: ${trust.allow_secrets ? 'allow' : 'deny'}`);
+  console.log(`Destructive actions: ${trust.destructive_actions}`);
+  console.log(`Public publish: ${trust.public_publish}`);
+  console.log(`Paid actions: ${trust.paid_actions}`);
+  console.log(`Credentialed actions: ${trust.credentialed_actions}`);
+}
+console.log('Status: trust-profile-ready');

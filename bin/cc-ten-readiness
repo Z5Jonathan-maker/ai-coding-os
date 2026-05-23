@@ -63,6 +63,7 @@ cd "$DOTFILES" || exit 1
 run "Public CI" '^passed=9 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
 run "External evaluator" '^Status: evaluator-ready$' "$DOTFILES/bin/cc-evaluator-check"
 run "Fresh clone validation" '^Status: fresh-clone-ready$' "$DOTFILES/bin/cc-fresh-clone-check"
+run "Source-controlled AI checks" '^Status: ai-checks-ready$' "$DOTFILES/bin/cc-ai-checks"
 run "Feedback law gate" '^Status: feedback-laws-ready$' "$DOTFILES/bin/cc-feedback-law-check"
 run "Developer-day dogfood" '^passed=7 failed=0$' "$DOTFILES/bin/cc-dogfood-day"
 run "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product-readiness"

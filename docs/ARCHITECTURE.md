@@ -30,6 +30,8 @@ Developer
 | Lane registry | `ai-lanes.json` |
 | Router implementation | `~/code/projects/cc-router` |
 | VS Code cockpit | `vscode/ai-cockpit/` |
+| Source-controlled AI checks | `.ai/checks/` |
+| Workspace trust profile | `.ai/trust.json` |
 | Public setup doctor | `bin/cc-first-run` |
 | Product readiness gate | `bin/cc-product-readiness` |
 | Five-minute demo | `bin/cc-demo-five-minute` |

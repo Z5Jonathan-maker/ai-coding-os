@@ -55,8 +55,10 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 ```sh
 cc-evaluator-check
 cc-ten-readiness
+cc-ai-checks
 cc-fresh-clone-check
 cc-feedback-law-check
+cc-trust-profile
 cc-release-check
 cc-public-ci-check
 cc-product-readiness
@@ -76,10 +78,12 @@ map/diff context, and browser proof returns bounded page content.
 proves the distributable release path. `cc-fresh-clone-check` proves a clean
 clone can dry-run install, package, and run the public fixture without mutating a
 temp home. `cc-feedback-law-check` proves Mega Cycle feedback laws are loaded by
-autonomy preflight and exposed through the control plane. `cc-ten-readiness` is
-stricter: it layers public CI, evaluator checks, fresh-clone validation,
-feedback-law validation, developer-day dogfood, product/release gates, portable
-launch docs, and the documented 10/10 product contract.
+autonomy preflight and exposed through the control plane. `cc-ai-checks` runs
+the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
+repo-local autonomy policy in `.ai/trust.json`. `cc-ten-readiness` is stricter:
+it layers public CI, evaluator checks, fresh-clone validation, source-controlled
+AI checks, feedback-law validation, developer-day dogfood, product/release
+gates, portable launch docs, and the documented 10/10 product contract.
 
 ## Cockpit Preview
 

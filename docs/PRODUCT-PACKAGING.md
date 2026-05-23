@@ -36,6 +36,10 @@ trust tier, and safety boundary.
 - **Creative-reference loop:** Image 2.0 creates approved visual direction;
   Kimi converts that reference into functional UI.
 - **Executable routing:** `ai-lanes.json`, `cc-lane`, and router smoke tests.
+- **Source-controlled checks:** `.ai/checks/` turns launch, routing, security,
+  trust, and feedback-law expectations into committed runnable policy.
+- **Workspace trust profile:** `.ai/trust.json` defines shell, network, browser,
+  publish, paid-action, destructive-action, and TEL boundaries per repo.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -164,7 +168,9 @@ Installed system is 100% when:
 8. `cc-demo-fixture` proves the route/repo-map/diff flow on a public fixture
 9. `cc-fresh-clone-check` proves a clean clone can dry-run install, package,
    run the fixture demo, and leave a temporary home untouched
-10. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+10. `cc-ai-checks` proves source-controlled checks in `.ai/checks/` pass
+11. `cc-trust-profile --check` proves repo-local autonomy policy is valid
+12. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 
@@ -194,6 +200,7 @@ Sellable system is 100% when:
 9. the cockpit extension can be distributed as a VSIX
 10. route, repo context, diff review, and readiness can run inside the cockpit
 11. native app status and Pulse status are visible without terminal spelunking
+12. source-controlled AI checks and workspace trust policy are executable
 
 The strict gate is:
 
@@ -202,9 +209,9 @@ cc-ten-readiness
 ```
 
 It is intentionally harsher than `cc-product-readiness`. It requires public CI,
-external evaluator readiness, fresh-clone validation, feedback-law validation,
-dogfood proof, product readiness, release readiness, portable launch docs, and
-this documented 10/10 contract.
+external evaluator readiness, fresh-clone validation, source-controlled AI
+checks, feedback-law validation, dogfood proof, product readiness, release
+readiness, portable launch docs, and this documented 10/10 contract.
 
 ## Packaging Rule
 

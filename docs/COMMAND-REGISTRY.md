@@ -54,7 +54,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
-- `cc-mission-ledger` — append-only current-mission ledger for cockpit continuation state; supports `record`, `list --json`, and `--check`.
+- `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
 - `cc-native-app-status` — installed native AI app versions and role map.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-provider-capacity` — live provider capacity check across Claude, Codex, Kimi, and DeepSeek; separates installed/healthy from quota-exhausted/degraded.

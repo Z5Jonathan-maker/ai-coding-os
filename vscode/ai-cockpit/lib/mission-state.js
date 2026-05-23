@@ -24,6 +24,15 @@ function matchingMission(payload, resolvedRepo) {
   }) || null;
 }
 
+function matchingEvents(payload, resolvedRepo) {
+  const ledger = parseJson(payload.missionLedger, {});
+  if (!Array.isArray(ledger.events)) return [];
+  return ledger.events.filter((event) => {
+    if (event.stale || typeof event.repo !== 'string' || !event.repo) return false;
+    return path.resolve(event.repo) === resolvedRepo;
+  }).slice(0, 4);
+}
+
 function buildMissionState(payload, options = {}) {
   const currentCwd = options.cwd || process.cwd();
   const diff = parseJson(payload.diffSummary, {});
@@ -39,6 +48,7 @@ function buildMissionState(payload, options = {}) {
   const removed = Number(diff.totalRemoved || 0);
   const resolvedRepo = path.resolve(repoPath || currentCwd);
   const ledgerMission = matchingMission(payload, resolvedRepo);
+  const ledgerEvents = matchingEvents(payload, resolvedRepo);
   const latestSession = Array.isArray(sessions.sessions)
     ? sessions.sessions.find((session) => {
       if (session.stale || typeof session.cwd !== 'string' || !session.cwd) return false;
@@ -109,6 +119,13 @@ function buildMissionState(payload, options = {}) {
     prompt,
     started: ledgerMission && ledgerMission.updated_at ? ledgerMission.updated_at : latestSession && latestSession.last_ts ? latestSession.last_ts : 'Now',
     feed: [
+      ...ledgerEvents.map((event) => ({
+        icon: ({ plan: 'P', act: 'A', checkpoint: 'C', resume: 'R' })[event.stage] || 'M',
+        state: event.stage === 'checkpoint' ? 'done' : event.stage === 'act' ? 'active' : '',
+        title: compact(event.title, 90),
+        body: compact(event.body || (event.proof || []).join(', ') || event.stage, 150),
+        time: event.updated_at || 'now',
+      })),
       ...(ledgerMission ? [{
         icon: 'M',
         state: 'done',

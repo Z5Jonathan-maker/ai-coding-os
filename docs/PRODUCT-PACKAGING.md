@@ -41,7 +41,8 @@ trust tier, and safety boundary.
 - **Workspace trust profile:** `.ai/trust.json` defines shell, network, browser,
   publish, paid-action, destructive-action, and TEL boundaries per repo.
 - **Mission ledger:** `cc-mission-ledger` backs the cockpit continuation surface
-  with repo-matched state instead of static dashboard copy.
+  with repo-matched state and Plan/Act/Checkpoint/Resume events instead of
+  static dashboard copy.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.

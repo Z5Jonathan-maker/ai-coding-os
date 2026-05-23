@@ -122,6 +122,54 @@ test('matching mission ledger enriches clean current repo continuation state', (
   assert.equal(mission.feed[0].title, 'Mission memory loaded.');
 });
 
+test('mission ledger events become the first live feed items', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: cwd,
+      branch: 'main',
+      clean: true,
+    }),
+    contextMeterJson: '{}',
+    sessions: '{}',
+    missionLedger: JSON.stringify({
+      missions: [{
+        stale: false,
+        repo: cwd,
+        title: 'AI cockpit polish',
+        next: 'Continue from event trail.',
+        updated_at: '2026-05-23T12:00:00Z',
+      }],
+      events: [
+        {
+          type: 'event',
+          stale: false,
+          repo: cwd,
+          stage: 'checkpoint',
+          title: 'Trust gate shipped.',
+          body: 'Policy now blocks denied tasks before routing.',
+          updated_at: '2026-05-23T13:00:00Z',
+        },
+        {
+          type: 'event',
+          stale: false,
+          repo: '/tmp/other-repo',
+          stage: 'act',
+          title: 'Wrong repo event.',
+          updated_at: '2026-05-23T13:01:00Z',
+        },
+      ],
+    }),
+    route: '',
+    kimi: '',
+    providerCapacity: 'ok',
+  }, { cwd });
+
+  assert.equal(mission.feed[0].title, 'Trust gate shipped.');
+  assert.equal(mission.feed[0].icon, 'C');
+  assert.equal(mission.feed[0].state, 'done');
+  assert.doesNotMatch(JSON.stringify(mission.feed), /Wrong repo event/);
+});
+
 test('mission ledger ignores other repos and cannot make dirty repo look safe', () => {
   const mission = buildMissionState({
     diffSummary: JSON.stringify({

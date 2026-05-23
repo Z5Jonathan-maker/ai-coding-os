@@ -1,0 +1,14 @@
+{
+  "topSeverity": "critical",
+  "topRiskId": "AUTH-1",
+  "requiredCitations": [
+    "lib/auth/session.ts#AUTH-1",
+    "lib/router/fallback.ts#ROUTE-1",
+    "app/api/export/route.ts#EXPORT-1"
+  ],
+  "files": [
+    "lib/auth/session.ts",
+    "lib/router/fallback.ts",
+    "app/api/export/route.ts"
+  ]
+}

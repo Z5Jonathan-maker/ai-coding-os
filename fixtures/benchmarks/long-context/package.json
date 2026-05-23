@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node src/risks.test.js"
+    "test": "node src/risks.test.js",
+    "score": "node src/score.test.js"
   }
 }

@@ -140,7 +140,8 @@ The benchmark suite currently covers code fix, cheap extraction, UI design,
 browser proof, security review, long-context review, refactor cleanup, failing
 test repair, image-to-UI handoff, and permission-denied trust behavior. The
 repair and refactor fixtures are graded broken-first benchmarks with expected
-patches and final verification.
+patches and final verification. The long-context fixture grades citation and
+top-risk reasoning across multiple files.
 
 ## Cockpit Preview
 

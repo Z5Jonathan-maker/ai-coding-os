@@ -142,6 +142,25 @@ else
   printf '## Initial test\n'
 fi
 
+if json_has scoreBefore && [ "$expect_fail" != "true" ]; then
+  printf '\n## Baseline score probe\n'
+  score_before_fail="$(json_get expectScoreBeforeFail)"
+  if run_script scoreBefore >/tmp/cc-benchmark-run.score-before 2>&1; then
+    score_before_status=0
+  else
+    score_before_status=1
+  fi
+  if { [ "$score_before_fail" = "true" ] && [ "$score_before_status" = 1 ]; } || { [ "$score_before_fail" != "true" ] && [ "$score_before_status" = 0 ]; }; then
+    printf 'ok   baseline score probe\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.score-before | sed -n '1,20p'
+    passed=$((passed + 1))
+  else
+    printf 'fail baseline score probe\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.score-before | sed -n '1,40p'
+    failed=$((failed + 1))
+  fi
+fi
+
 printf '\n## Final verification\n'
 if run_test >/tmp/cc-benchmark-run.final 2>&1; then
   printf 'ok   final tests pass\n'

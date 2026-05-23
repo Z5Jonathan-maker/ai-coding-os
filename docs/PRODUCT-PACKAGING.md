@@ -55,7 +55,7 @@ trust tier, and safety boundary.
   trust behavior. Each fixture includes tests, route expectations, repo-map
   proof, and diff-surface proof. `cc-benchmark-run` scores broken-first repair
   and refactor fixtures with an expected patch, baseline probe, and final test
-  verification.
+  verification. Long-context fixtures include citation and top-risk scoring.
 - **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
   cockpit surface still contains the continuation UI, result stream, assets,
   startup-safe activation contract, and clean npm audit.

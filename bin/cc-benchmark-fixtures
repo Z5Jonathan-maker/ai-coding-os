@@ -90,6 +90,9 @@ function evaluate(dir) {
     if (manifest.expectInitialFail && manifest.expectedPatch) {
       res = run(path.join(root, 'bin', 'cc-benchmark-run'), [manifest.id], { cwd: root });
       step('expected repair benchmark', res.ok, res.text);
+    } else if (manifest.scoreBefore || manifest.scoreAfter) {
+      res = run(path.join(root, 'bin', 'cc-benchmark-run'), [manifest.id], { cwd: root });
+      step('scored benchmark', res.ok, res.text);
     }
   }
 

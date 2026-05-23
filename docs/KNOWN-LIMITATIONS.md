@@ -17,7 +17,7 @@ named directly instead of hidden behind successful-looking demos.
 | Windows/Linux | Not supported as a launch target | Future work only |
 | Hosted/team mode | Not implemented | Sellable path is local product plus support/workflow packaging first |
 | Screenshots/GIFs | Deterministic preview media exists; real unlocked VS Code screenshots are still better for final marketing | `cc-cockpit-capture` writes `docs/media/cockpit/` |
-| Benchmarks | Fixture suite is lightweight and not a SWE-bench replacement | `cc-benchmark-fixtures --check` covers 10 public scenarios; `cc-benchmark-run failing-test-repair` and `cc-benchmark-run refactor-cleanup` prove broken-first fixtures with expected patches |
+| Benchmarks | Fixture suite is lightweight and not a SWE-bench replacement | `cc-benchmark-fixtures --check` covers 10 public scenarios; `cc-benchmark-run failing-test-repair`, `cc-benchmark-run refactor-cleanup`, and `cc-benchmark-run long-context` now include graded scoring |
 
 ## Not Bugs
 

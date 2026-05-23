@@ -37,6 +37,23 @@ function readManifest(dir) {
   return data;
 }
 
+function routeMatches(text, manifest) {
+  if (new RegExp(manifest.expectSelectedRegex).test(text)) return true;
+  const line = text.split('\n').find((item) => item.trim().startsWith('Receipt:'));
+  if (!line) return false;
+  try {
+    const receipt = JSON.parse(line.replace(/^.*Receipt:\s*/, ''));
+    const expected = manifest.expectClassifier || '';
+    return Boolean(
+      expected &&
+      receipt.quota_rebalanced &&
+      (receipt.quota_from === expected || receipt.classifier_output === expected)
+    );
+  } catch (_) {
+    return false;
+  }
+}
+
 function copyFixture(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   fs.cpSync(src, dest, {
@@ -75,7 +92,7 @@ function evaluate(dir) {
   fs.appendFileSync(path.join(work, 'README.md'), `\n\nBenchmark note: ${manifest.prompt}\n`);
 
   res = run(routeScript, ['--dry-run', manifest.prompt], { cwd: work });
-  const routeOk = res.ok && new RegExp(manifest.expectSelectedRegex).test(res.text);
+  const routeOk = res.ok && routeMatches(res.text, manifest);
   step('route expectation', routeOk, res.text);
 
   res = run(path.join(root, 'bin', 'cc-repo-map'), ['8'], { cwd: work });

@@ -2,5 +2,6 @@
   "id": "deepseek-extract",
   "title": "DeepSeek extraction fixture",
   "prompt": "extract the package scripts and summarize them as compact JSON",
+  "expectClassifier": "cheap",
   "expectSelectedRegex": "Selected:\\s+cheap|Selected:\\s+codex"
 }

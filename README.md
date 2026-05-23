@@ -60,6 +60,7 @@ cc-fresh-clone-check
 cc-feedback-law-check
 cc-trust-profile
 cc-token-ledger
+cc-mission-ledger --check
 cc-release-check
 cc-public-ci-check
 cc-product-readiness
@@ -82,10 +83,12 @@ temp home. `cc-feedback-law-check` proves Mega Cycle feedback laws are loaded by
 autonomy preflight and exposed through the control plane. `cc-ai-checks` runs
 the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
 repo-local autonomy policy in `.ai/trust.json`. `cc-token-ledger` reports router
-economics from existing usage telemetry. `cc-ten-readiness` is stricter: it
-layers public CI, evaluator checks, fresh-clone validation, source-controlled AI
-checks, feedback-law validation, developer-day dogfood, product/release gates,
-portable launch docs, and the documented 10/10 product contract.
+economics from existing usage telemetry. `cc-mission-ledger` provides the
+append-only continuation state used by the cockpit mission surface.
+`cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
+fresh-clone validation, source-controlled AI checks, feedback-law validation,
+developer-day dogfood, product/release gates, portable launch docs, and the
+documented 10/10 product contract.
 
 ## Cockpit Preview
 

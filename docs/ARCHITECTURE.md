@@ -32,6 +32,7 @@ Developer
 | VS Code cockpit | `vscode/ai-cockpit/` |
 | Source-controlled AI checks | `.ai/checks/` |
 | Workspace trust profile | `.ai/trust.json` |
+| Mission continuation ledger | `~/.Codex/state/missions.jsonl` via `bin/cc-mission-ledger` |
 | Public setup doctor | `bin/cc-first-run` |
 | Product readiness gate | `bin/cc-product-readiness` |
 | Five-minute demo | `bin/cc-demo-five-minute` |
@@ -71,6 +72,7 @@ The cockpit should show:
 - checkpoint visibility
 - context pressure
 - session ledger
+- mission continuation state
 - browser mode
 - native app status
 - demo mode

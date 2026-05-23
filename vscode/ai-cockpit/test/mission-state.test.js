@@ -86,3 +86,87 @@ test('matching fresh sessions are used for the current repo only', () => {
   assert.match(mission.lastSession, /continue cockpit polish/);
   assert.match(mission.summary, /browser bridge ready/);
 });
+
+test('matching mission ledger enriches clean current repo continuation state', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: cwd,
+      branch: 'main',
+      clean: true,
+    }),
+    contextMeterJson: '{}',
+    sessions: '{}',
+    missionLedger: JSON.stringify({
+      missions: [{
+        stale: false,
+        repo: cwd,
+        title: 'AI cockpit polish',
+        summary: 'Reduced dashboard controls and moved toward continuation state.',
+        next: 'Refine responsive behavior and verify cockpit tests.',
+        lane: 'codex -> kimi',
+        progress: 82,
+        updated_at: '2026-05-23T12:00:00Z',
+      }],
+    }),
+    route: 'Latest: precision/claude | ok',
+    kimi: 'mode=official-extension',
+    providerCapacity: 'ok',
+  }, { cwd });
+
+  assert.equal(mission.title, 'AI cockpit polish');
+  assert.equal(mission.route, 'codex -> kimi');
+  assert.equal(mission.progress, 82);
+  assert.equal(mission.started, '2026-05-23T12:00:00Z');
+  assert.match(mission.lastSession, /Mission memory/);
+  assert.match(mission.nextStep, /Refine responsive behavior/);
+  assert.equal(mission.feed[0].title, 'Mission memory loaded.');
+});
+
+test('mission ledger ignores other repos and cannot make dirty repo look safe', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: cwd,
+      branch: 'main',
+      clean: false,
+      fileCount: 3,
+      totalAdded: 20,
+      totalRemoved: 4,
+    }),
+    contextMeterJson: '{}',
+    sessions: '{}',
+    missionLedger: JSON.stringify({
+      missions: [
+        {
+          stale: false,
+          repo: '/tmp/other-repo',
+          title: 'Wrong mission',
+          next: 'Ship without checking anything.',
+          lane: 'kimi',
+          progress: 100,
+          updated_at: '2026-05-23T12:00:00Z',
+        },
+        {
+          stale: false,
+          repo: cwd,
+          title: 'Router reliability pass',
+          summary: 'Circuit breaker behavior is under review.',
+          next: 'Review fallback tests before continuing.',
+          lane: 'codex',
+          progress: 90,
+          updated_at: '2026-05-23T12:01:00Z',
+        },
+      ],
+    }),
+    route: 'Latest: precision/claude | ok',
+    kimi: '',
+    providerCapacity: 'ok',
+  }, { cwd });
+
+  assert.equal(mission.title, 'Router reliability pass');
+  assert.equal(mission.status, 'In progress');
+  assert.equal(mission.changes, '3 files changed');
+  assert.equal(mission.safety, 'Review diff first');
+  assert.equal(mission.progress, 42);
+  assert.match(mission.lastSession, /Uncommitted work detected: 3 files, \+20 -4/);
+  assert.doesNotMatch(mission.prompt, /Ship without checking/);
+});

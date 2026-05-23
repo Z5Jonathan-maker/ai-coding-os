@@ -40,6 +40,8 @@ trust tier, and safety boundary.
   trust, and feedback-law expectations into committed runnable policy.
 - **Workspace trust profile:** `.ai/trust.json` defines shell, network, browser,
   publish, paid-action, destructive-action, and TEL boundaries per repo.
+- **Mission ledger:** `cc-mission-ledger` backs the cockpit continuation surface
+  with repo-matched state instead of static dashboard copy.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -173,7 +175,8 @@ Installed system is 100% when:
 10. `cc-ai-checks` proves source-controlled checks in `.ai/checks/` pass
 11. `cc-trust-profile --check` proves repo-local autonomy policy is valid
 12. `cc-token-ledger --check` proves token/cost telemetry is readable
-13. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+13. `cc-mission-ledger --check` proves persistent continuation state is readable
+14. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
 

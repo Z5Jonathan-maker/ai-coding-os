@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const stateDir = process.env.CC_MISSION_LEDGER_DIR || path.join(os.homedir(), '.Codex', 'state');
+const stateFile = process.env.CC_MISSION_LEDGER_FILE || path.join(stateDir, 'missions.jsonl');
+const args = process.argv.slice(2);
+const command = args[0] && !args[0].startsWith('--') ? args[0] : 'list';
+
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function slug(text) {
+  return String(text || 'mission')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'mission';
+}
+
+function gitRoot() {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+  });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+}
+
+function readRows(strict = false) {
+  if (!fs.existsSync(stateFile)) return [];
+  const rows = [];
+  fs.readFileSync(stateFile, 'utf8').split('\n').forEach((line, idx) => {
+    if (!line.trim()) return;
+    try {
+      rows.push(JSON.parse(line));
+    } catch (err) {
+      if (strict) throw new Error(`${stateFile}:${idx + 1}: invalid JSON`);
+    }
+  });
+  return rows;
+}
+
+function normalized(row) {
+  const updatedAt = row.updated_at || row.ts || row.timestamp || new Date(0).toISOString();
+  const updatedMs = Date.parse(updatedAt) || 0;
+  const title = String(row.title || row.name || 'Current mission').trim();
+  const repo = row.repo ? path.resolve(String(row.repo)) : '';
+  return {
+    id: String(row.id || `${repo}:${slug(title)}`),
+    repo,
+    title,
+    status: String(row.status || 'ready'),
+    next: String(row.next || row.next_step || row.nextStep || ''),
+    summary: String(row.summary || row.last_session || row.lastSession || ''),
+    lane: String(row.lane || row.route || 'Auto'),
+    progress: Math.max(0, Math.min(100, Number(row.progress || 0) || 0)),
+    proof: Array.isArray(row.proof) ? row.proof : String(row.proof || '').split(',').map(s => s.trim()).filter(Boolean),
+    updated_at: new Date(updatedMs || Date.now()).toISOString(),
+    stale: updatedMs ? Date.now() - updatedMs > 14 * 24 * 60 * 60 * 1000 : true,
+  };
+}
+
+function latestMissions() {
+  const latest = new Map();
+  for (const row of readRows()) {
+    const mission = normalized(row);
+    const key = mission.id || `${mission.repo}:${slug(mission.title)}`;
+    const prior = latest.get(key);
+    if (!prior || Date.parse(mission.updated_at) >= Date.parse(prior.updated_at)) latest.set(key, mission);
+  }
+  return Array.from(latest.values()).sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+}
+
+function printJson(missions) {
+  console.log(JSON.stringify({ file: stateFile, missions }, null, 2));
+}
+
+function list() {
+  let missions = latestMissions();
+  const repo = value('repo');
+  if (repo) {
+    const resolved = path.resolve(repo);
+    missions = missions.filter((m) => m.repo === resolved);
+  }
+  const positionalLimit = command === 'list' ? Number.parseInt(args[1] || '', 10) : NaN;
+  const limit = Number.parseInt(value('limit', Number.isFinite(positionalLimit) ? String(positionalLimit) : '10'), 10);
+  missions = missions.slice(0, Number.isFinite(limit) && limit > 0 ? limit : 10);
+  if (has('json')) return printJson(missions);
+  console.log('# Mission Ledger\n');
+  console.log(`File: ${stateFile}`);
+  if (!missions.length) {
+    console.log('No missions recorded.');
+    return;
+  }
+  for (const m of missions) {
+    console.log(`\n## ${m.title}`);
+    console.log(`status=${m.status} repo=${m.repo || 'global'} lane=${m.lane} updated=${m.updated_at}`);
+    if (m.next) console.log(`next=${m.next}`);
+    if (m.summary) console.log(`summary=${m.summary}`);
+    if (m.proof.length) console.log(`proof=${m.proof.join(', ')}`);
+  }
+}
+
+function record() {
+  const positional = [];
+  for (let i = 1; i < args.length; i++) {
+    if (args[i].startsWith('--')) {
+      if (args[i + 1] && !args[i + 1].startsWith('--')) i++;
+      continue;
+    }
+    positional.push(args[i]);
+  }
+  const positionalTitle = positional.join(' ');
+  const title = value('title', positionalTitle || '').trim();
+  if (!title) {
+    console.error('cc-mission-ledger: record requires a title or --title');
+    process.exit(2);
+  }
+  fs.mkdirSync(stateDir, { recursive: true });
+  const repo = path.resolve(value('repo', gitRoot()));
+  const row = {
+    id: value('id', `${repo}:${slug(title)}`),
+    repo,
+    title,
+    status: value('status', 'in_progress'),
+    next: value('next'),
+    summary: value('summary'),
+    lane: value('lane', value('route', 'Auto')),
+    progress: Math.max(0, Math.min(100, Number(value('progress', '0')) || 0)),
+    proof: value('proof').split(',').map(s => s.trim()).filter(Boolean),
+    updated_at: new Date().toISOString(),
+  };
+  fs.appendFileSync(stateFile, `${JSON.stringify(row)}\n`);
+  if (has('json')) printJson([normalized(row)]);
+  else console.log(`Status: mission-recorded\nid=${row.id}`);
+}
+
+function check() {
+  fs.mkdirSync(stateDir, { recursive: true });
+  readRows(true);
+  console.log('Status: mission-ledger-ready');
+}
+
+try {
+  if (has('check')) check();
+  else if (command === 'record') record();
+  else if (command === 'list') list();
+  else {
+    console.error(`cc-mission-ledger: unknown command: ${command}`);
+    process.exit(2);
+  }
+} catch (err) {
+  console.error(`cc-mission-ledger: ${err.message}`);
+  process.exit(1);
+}

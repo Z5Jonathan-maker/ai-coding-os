@@ -60,6 +60,10 @@ write_page() {
 HTML
     cat "$CSS"
     cat <<HTML
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
     body.panel-mode { max-width: none; margin: 0; }
   </style>
 </head>

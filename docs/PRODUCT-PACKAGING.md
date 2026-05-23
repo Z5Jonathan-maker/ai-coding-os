@@ -53,6 +53,8 @@ trust tier, and safety boundary.
 - **Agent runtime adapter:** `cc-agent-runtime` turns a typed `AgentRunInput`
   into Mission Kernel route, trust, cost, proof, `AgentRunResult`, and
   normalized timeline events.
+- **Mission event contract:** `cc-mission-events` validates the runtime event
+  language before the cockpit renders continuity from it.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -224,6 +226,9 @@ Installed system is 100% when:
     schema-validated object model for cockpit continuity and proof bundles
 20. `cc-agent-runtime --check` proves a harmless typed runtime run can create
     route, trust, cost, proof, result, and timeline artifacts
+21. `cc-mission-events --check` proves the runtime emits normalized lifecycle
+    events for preflight, trust, route, context, runtime, permission, tool,
+    verification, proof, and completion
 
 Daily-driver confidence is sampled by:
 
@@ -262,6 +267,8 @@ Sellable system is 100% when:
 16. the Agent Runtime Adapter exists so a mission can move through preflight,
     trust, route, context, launch, tool execution, verification, and proof
     without bespoke per-tool state
+17. the Mission Event contract exists so provider-specific logs adapt into one
+    cockpit-safe event ontology
 
 The strict gate is:
 

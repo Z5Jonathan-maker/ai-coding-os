@@ -66,6 +66,10 @@ function now() {
   return new Date().toISOString();
 }
 
+function eventKind(stage) {
+  return String(stage || '').split('.')[0] || 'mission';
+}
+
 function quote(text) {
   return `'${String(text).replace(/'/g, `'\\''`)}'`;
 }
@@ -247,7 +251,18 @@ function runAdapter(input) {
   const runtimeErrors = [];
 
   function event(stage, message, proof = []) {
-    timeline.push({ ts: now(), agent: input.agent, stage, message, proof });
+    timeline.push({
+      schema: 'ai-coding-os.timeline-event.v1',
+      mission_id: input.mission_id,
+      ts: now(),
+      agent: input.agent,
+      stage,
+      kind: eventKind(stage),
+      message,
+      proof,
+      data: {},
+      severity: stage.endsWith('.failed') ? 'error' : 'info',
+    });
   }
 
   function missionPatch(patch) {

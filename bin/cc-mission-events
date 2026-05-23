@@ -1,0 +1,180 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+
+const args = process.argv.slice(2);
+const command = args[0] && !args[0].startsWith('--') ? args[0] : 'validate';
+const requiredRunStages = [
+  'preflight.started',
+  'trust.decided',
+  'route.selected',
+  'context.attached',
+  'runtime.started',
+  'tool.requested',
+  'permission.requested',
+  'permission.replied',
+  'tool.completed',
+  'verification.started',
+  'verification.completed',
+  'proof.bundle.updated',
+  'mission.completed',
+];
+
+const optionalStages = [
+  'checkpoint.created',
+  'cost.updated',
+  'file.changed',
+  'screenshot.captured',
+  'benchmark.completed',
+  'runtime.paused',
+  'runtime.failed',
+];
+
+const allowedStages = new Set([...requiredRunStages, ...optionalStages]);
+const severities = new Set(['info', 'warn', 'error']);
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function writeJson(file, data) {
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+function run(cmd, options = {}) {
+  const res = spawnSync('/bin/zsh', ['-lc', cmd], {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    timeout: options.timeout || 30000,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root, ...(options.env || {}) },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status == null ? 124 : res.status,
+    text: `${res.stdout || ''}${res.stderr || ''}`.trim(),
+  };
+}
+
+function eventKind(stage) {
+  return String(stage || '').split('.')[0] || 'mission';
+}
+
+function timelinePath() {
+  const explicit = value('file', '');
+  if (explicit) return path.resolve(explicit);
+  const dir = value('mission-dir', '');
+  if (dir) return path.join(path.resolve(dir), 'agent.timeline.json');
+  return path.join(root, '.ai', 'missions', value('mission-id', ''), 'agent.timeline.json');
+}
+
+function validateTimeline(timeline, options = {}) {
+  const errors = [];
+  if (timeline.schema !== 'ai-coding-os.agent-timeline.v1') errors.push('timeline schema mismatch');
+  if (!timeline.mission_id) errors.push('timeline missing mission_id');
+  if (!Array.isArray(timeline.events)) errors.push('timeline events must be array');
+  if (errors.length) return errors;
+
+  const seen = new Set();
+  timeline.events.forEach((event, index) => {
+    const where = `events[${index}]`;
+    for (const key of ['schema', 'mission_id', 'ts', 'agent', 'stage', 'kind', 'message', 'proof', 'data', 'severity']) {
+      if (event[key] == null) errors.push(`${where} missing ${key}`);
+    }
+    if (event.schema !== 'ai-coding-os.timeline-event.v1') errors.push(`${where} schema mismatch`);
+    if (event.mission_id !== timeline.mission_id) errors.push(`${where} mission_id mismatch`);
+    if (Number.isNaN(Date.parse(event.ts || ''))) errors.push(`${where} invalid ts`);
+    if (!allowedStages.has(event.stage)) errors.push(`${where} unknown stage ${event.stage}`);
+    if (event.kind !== eventKind(event.stage)) errors.push(`${where} kind must match stage prefix`);
+    if (!Array.isArray(event.proof)) errors.push(`${where} proof must be array`);
+    if (!event.data || typeof event.data !== 'object' || Array.isArray(event.data)) errors.push(`${where} data must be object`);
+    if (!severities.has(event.severity)) errors.push(`${where} invalid severity`);
+    seen.add(event.stage);
+  });
+
+  if (options.completeRun) {
+    for (const stage of requiredRunStages) {
+      if (!seen.has(stage)) errors.push(`missing required run stage ${stage}`);
+    }
+  }
+  return errors;
+}
+
+function validate() {
+  const file = timelinePath();
+  if (!file || !fs.existsSync(file)) {
+    console.error(`missing timeline: ${file}`);
+    process.exit(1);
+  }
+  const errors = validateTimeline(readJson(file), { completeRun: has('complete-run') });
+  if (errors.length) {
+    console.error(errors.join('\n'));
+    process.exit(1);
+  }
+  console.log('Status: mission-events-valid');
+}
+
+function check() {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-mission-events.'));
+  try {
+    const res = run('bin/cc-agent-runtime run --mission-id event-check --title "Event check" --task "Validate normalized mission events" --command "printf event-check" --verify-command true', {
+      env: { CC_MISSION_KERNEL_DIR: temp },
+      timeout: 60000,
+    });
+    if (!res.ok) {
+      console.error(res.text);
+      process.exit(1);
+    }
+    const file = path.join(temp, 'event-check', 'agent.timeline.json');
+    const errors = validateTimeline(readJson(file), { completeRun: true });
+    if (errors.length) {
+      console.error(errors.join('\n'));
+      process.exit(1);
+    }
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+  console.log('Status: mission-events-ready');
+}
+
+function printSchema() {
+  console.log(JSON.stringify({
+    schema: 'ai-coding-os.timeline-event.contract.v1',
+    event_schema: 'ai-coding-os.timeline-event.v1',
+    required_run_stages: requiredRunStages,
+    optional_stages: optionalStages,
+    required_fields: ['schema', 'mission_id', 'ts', 'agent', 'stage', 'kind', 'message', 'proof', 'data', 'severity'],
+    severities: [...severities],
+  }, null, 2));
+}
+
+try {
+  if (has('check')) check();
+  else if (command === 'validate') validate();
+  else if (command === 'schema') printSchema();
+  else {
+    console.error(`cc-mission-events: unknown command: ${command}`);
+    process.exit(2);
+  }
+} catch (err) {
+  console.error(`cc-mission-events: ${err.message}`);
+  process.exit(1);
+}

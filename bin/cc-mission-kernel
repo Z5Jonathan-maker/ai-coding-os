@@ -36,6 +36,21 @@ function now() {
   return new Date().toISOString();
 }
 
+function event(stage, message, proof = [], agent = 'codex', missionId = '') {
+  return {
+    schema: 'ai-coding-os.timeline-event.v1',
+    mission_id: missionId,
+    ts: now(),
+    agent,
+    stage,
+    kind: String(stage || '').split('.')[0] || 'mission',
+    message,
+    proof,
+    data: {},
+    severity: 'info',
+  };
+}
+
 function repoRoot(cwd = process.cwd()) {
   const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd, encoding: 'utf8' });
   return res.status === 0 ? res.stdout.trim() : cwd;
@@ -176,6 +191,14 @@ function validateDir(dir) {
   if (!Array.isArray(mission.blockers)) errors.push('mission blockers must be array');
   if (!Array.isArray(proof.commands)) errors.push('proof commands must be array');
   if (!Array.isArray(timeline.events)) errors.push('timeline events must be array');
+  for (const [index, item] of (timeline.events || []).entries()) {
+    if (item.schema !== 'ai-coding-os.timeline-event.v1') errors.push(`timeline event ${index} schema mismatch`);
+    if (item.mission_id !== mission.id) errors.push(`timeline event ${index} mission_id mismatch`);
+    if (!item.kind) errors.push(`timeline event ${index} missing kind`);
+    if (!Array.isArray(item.proof)) errors.push(`timeline event ${index} proof must be array`);
+    if (!item.data || typeof item.data !== 'object' || Array.isArray(item.data)) errors.push(`timeline event ${index} data must be object`);
+    if (!['info', 'warn', 'error'].includes(item.severity)) errors.push(`timeline event ${index} invalid severity`);
+  }
   return errors;
 }
 
@@ -222,13 +245,7 @@ function init() {
   const timeline = {
     schema: 'ai-coding-os.agent-timeline.v1',
     mission_id: id,
-    events: [{
-      ts: timestamp,
-      agent: 'codex',
-      stage: 'preflight.started',
-      message: `Mission kernel initialized: ${title}`,
-      proof: [],
-    }],
+    events: [event('preflight.started', `Mission kernel initialized: ${title}`, [], 'codex', id)],
   };
 
   writeJson(path.join(dir, 'mission.json'), mission);
@@ -356,7 +373,7 @@ function check() {
   writeJson(path.join(dir, 'agent.timeline.json'), {
     schema: 'ai-coding-os.agent-timeline.v1',
     mission_id: id,
-    events: [{ ts: timestamp, agent: 'codex', stage: 'preflight.started', message: 'fixture valid', proof: [] }],
+    events: [event('preflight.started', 'fixture valid', [], 'codex', id)],
   });
   const errors = validateDir(dir);
   if (originalDir == null) delete process.env.CC_MISSION_KERNEL_DIR;

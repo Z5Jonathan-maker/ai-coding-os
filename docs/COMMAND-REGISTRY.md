@@ -57,6 +57,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-agent-runtime` — thin mission runtime adapter that turns a typed `AgentRunInput` into Mission Kernel route, trust, cost, proof, result, and timeline artifacts.
+- `cc-mission-events` — validate normalized Mission Kernel timeline events and complete runtime run stages.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).
 - `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
 - `cc-native-app-status` — installed native AI app versions and role map.

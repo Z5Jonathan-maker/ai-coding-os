@@ -109,13 +109,20 @@ Required fields:
 
 Each event has:
 
+- `schema`: `ai-coding-os.timeline-event.v1`
+- `mission_id`
 - `ts`
 - `agent`
 - `stage`
+- `kind`
 - `message`
 - `proof`
+- `data`
+- `severity`
 
-Normalized runtime stages:
+The full event contract lives at `docs/MISSION-EVENTS.md`.
+
+Normalized complete-run stages:
 
 - `preflight.started`
 - `trust.decided`
@@ -161,6 +168,12 @@ Validate the runtime adapter contract:
 
 ```sh
 cc-agent-runtime --check
+```
+
+Validate the event contract:
+
+```sh
+cc-mission-events --check
 ```
 
 ## Runtime Adapter

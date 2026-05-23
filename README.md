@@ -39,6 +39,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Competitive proof matrix: `docs/SUPERIORITY-MATRIX.md`
 - Extraction tracks: `docs/EXTRACTION-TRACKS.md`
 - Mission kernel: `docs/MISSION-KERNEL.md`
+- Mission events: `docs/MISSION-EVENTS.md`
 - Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
@@ -115,6 +116,7 @@ cc-ten-readiness
 cc-ai-checks
 cc-superiority-check
 cc-agent-runtime --check
+cc-mission-events --check
 cc-mission-kernel --check
 cc-cockpit-webview-smoke
 cc-benchmark-fixtures
@@ -146,6 +148,8 @@ trust decision, cost ledger, proof bundle, and agent timeline.
 `cc-agent-runtime` drives that spine from a typed runtime adapter and proves a
 mission can write route, trust, cost, proof, result, and normalized timeline
 artifacts.
+`cc-mission-events` validates the normalized runtime event language so cockpit
+state is based on durable events, not provider-specific logs.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

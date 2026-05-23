@@ -8,7 +8,7 @@ on:
 
 jobs:
   portable-checks:
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.PUBLIC_CI_RUNNER || '["ubuntu-latest"]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

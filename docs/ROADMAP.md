@@ -36,7 +36,7 @@ developer-grade public launch.
 
 ## v1.0.0
 
-- Support a clean bootstrap path for a new developer without Jonathan-specific
+- Support a clean bootstrap path for a new developer without maintainer-specific
   accounts.
 - Publish a stable cockpit extension install path.
 - Document provider-cost profiles and fallback policy as product contracts.

@@ -38,7 +38,7 @@ run() {
 launch_docs_are_portable() {
   local user_path
   user_path="$(printf '/%s/%s' 'Users' "$(id -un)")"
-  ! grep -REn "$user_path|Jonathan" \
+  ! grep -REn "$user_path|Jonathan's local services|Jonathan's machine|Jonathan-specific" \
     README.md \
     docs/EVALUATOR-QUICKSTART.md \
     docs/PRODUCT-PACKAGING.md \

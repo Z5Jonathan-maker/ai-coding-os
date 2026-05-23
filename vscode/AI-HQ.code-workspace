@@ -2,47 +2,47 @@
   "folders": [
     {
       "name": "AI-HQ",
-      "path": "/Users/leonardofibonacci/AI-HQ"
+      "path": "${env:HOME}/AI-HQ"
     },
     {
       "name": "AI-SYSTEM-V2",
-      "path": "/Users/leonardofibonacci/AI-SYSTEM-V2"
+      "path": "${env:HOME}/AI-SYSTEM-V2"
     },
     {
       "name": "ROUTER",
-      "path": "/Users/leonardofibonacci/code/projects/cc-router"
+      "path": "${env:HOME}/code/projects/cc-router"
     },
     {
       "name": "DOTFILES",
-      "path": "/Users/leonardofibonacci/dotfiles"
+      "path": "${env:HOME}/dotfiles"
     },
     {
       "name": "AUREX",
-      "path": "/Users/leonardofibonacci/code/projects/aurex-bio"
+      "path": "${env:HOME}/code/projects/aurex-bio"
     },
     {
       "name": "DOSECRAFT",
-      "path": "/Users/leonardofibonacci/code/projects/dosecraft"
+      "path": "${env:HOME}/code/projects/dosecraft"
     },
     {
       "name": "DOSECRAFT-COMPANION",
-      "path": "/Users/leonardofibonacci/code/projects/dosecraft-companion"
+      "path": "${env:HOME}/code/projects/dosecraft-companion"
     },
     {
       "name": "CLAIMS-WEB",
-      "path": "/Users/leonardofibonacci/code/projects/careclaimsadjusting-website"
+      "path": "${env:HOME}/code/projects/careclaimsadjusting-website"
     },
     {
       "name": "CLAIMPILOT",
-      "path": "/Users/leonardofibonacci/code/projects/ClaimPilot"
+      "path": "${env:HOME}/code/projects/ClaimPilot"
     },
     {
       "name": "OPEN-DESIGN",
-      "path": "/Users/leonardofibonacci/code/projects/open-design"
+      "path": "${env:HOME}/code/projects/open-design"
     },
     {
       "name": "AI-SYSTEM-V2-PANEL",
-      "path": "/Users/leonardofibonacci/code/projects/ai-system-v2-panel"
+      "path": "${env:HOME}/code/projects/ai-system-v2-panel"
     }
   ],
   "settings": {

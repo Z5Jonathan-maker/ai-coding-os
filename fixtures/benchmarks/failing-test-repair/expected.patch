@@ -1,0 +1,6 @@
+*** Begin Patch
+*** Update File: src/retry.js
+@@
+-const RETRYABLE_STATUSES = new Set([408, 500, 502, 503, 504]);
++const RETRYABLE_STATUSES = new Set([408, 429, 500, 502, 503, 504]);
+*** End Patch

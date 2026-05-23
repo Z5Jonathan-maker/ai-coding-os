@@ -10,7 +10,7 @@ developer-grade public launch.
   macOS UI access is available.
 - Raise local disk headroom from the 25GB minimum to the 50GB preferred target.
 - Validate install on one fresh macOS Apple Silicon account.
-- Publish GitHub release notes from `docs/RELEASE-NOTES-v0.1.0-rc7.md`.
+- Publish GitHub release notes from `docs/RELEASE-NOTES.md`.
 - Keep `cc-public-ci-check` green in GitHub Actions for portable contributor
   validation.
 - Keep `cc-benchmark-fixtures --check` green across 10 public scenarios. Done

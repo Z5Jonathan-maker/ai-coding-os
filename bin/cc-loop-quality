@@ -2,7 +2,8 @@
 set -euo pipefail
 
 state="${CLAUDE_STATE_DIR:-$HOME/.claude/state}"
-project_mem="${CLAUDE_PROJECT_MEMORY:-$HOME/.claude/projects/-Users-leonardofibonacci-Claude-Code/memory}"
+project_slug="${CLAUDE_PROJECT_SLUG:--Users-$(id -un)-Claude-Code}"
+project_mem="${CLAUDE_PROJECT_MEMORY:-$HOME/.claude/projects/$project_slug/memory}"
 loop_status="$state/loop-status.md"
 
 printf '# Loop Quality\n\n'

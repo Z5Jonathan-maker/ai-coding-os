@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+fixture="${1:-}"
+
+usage() {
+  printf 'Usage: cc-benchmark-run <fixture-id>\n'
+  printf 'Example: cc-benchmark-run failing-test-repair\n'
+}
+
+[ -n "$fixture" ] || {
+  usage >&2
+  exit 2
+}
+
+src="$DOTFILES/fixtures/benchmarks/$fixture"
+manifest="$src/benchmark.json"
+[ -f "$manifest" ] || {
+  printf 'cc-benchmark-run: missing fixture: %s\n' "$fixture" >&2
+  exit 2
+}
+
+work="$(mktemp -d "${TMPDIR:-/tmp}/cc-benchmark-run.${fixture}.XXXXXX")"
+cleanup() {
+  rm -rf "$work"
+}
+trap cleanup EXIT
+
+json_get() {
+  node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); const v=m[process.argv[2]]; process.stdout.write(v == null ? '' : String(v));" "$manifest" "$1"
+}
+
+copy_fixture() {
+  mkdir -p "$work"
+  cp -R "$src"/. "$work"/
+}
+
+run_test() {
+  (cd "$work" && npm test)
+}
+
+apply_expected_patch() {
+  local patch_file
+  patch_file="$work/$(json_get expectedPatch)"
+  [ -f "$patch_file" ] || {
+    printf 'missing expected patch: %s\n' "$patch_file" >&2
+    return 1
+  }
+  (cd "$work" && python3 - "$patch_file" <<'PY')
+import pathlib
+import sys
+
+patch = pathlib.Path(sys.argv[1]).read_text().splitlines()
+i = 0
+while i < len(patch):
+    if patch[i].startswith('*** Update File: '):
+        target = pathlib.Path(patch[i].split(': ', 1)[1])
+        text = target.read_text()
+        i += 1
+        while i < len(patch) and not patch[i].startswith('*** '):
+            if patch[i].startswith('-') and not patch[i].startswith('---'):
+                old = patch[i][1:]
+                new_line = patch[i + 1] if i + 1 < len(patch) else ''
+                if not new_line.startswith('+'):
+                    raise SystemExit(f'expected replacement after {old!r}')
+                new = new_line[1:]
+                if old not in text:
+                    raise SystemExit(f'old text not found in {target}: {old}')
+                text = text.replace(old, new, 1)
+                i += 2
+            else:
+                i += 1
+        target.write_text(text)
+    else:
+        i += 1
+PY
+}
+
+copy_fixture
+expect_fail="$(json_get expectInitialFail)"
+
+printf '# Benchmark Run\n\n'
+printf 'Fixture: %s\n' "$fixture"
+printf 'Work: %s\n\n' "$work"
+
+passed=0
+failed=0
+
+if [ "$expect_fail" = "true" ]; then
+  printf '## Initial failing test\n'
+  if run_test >/tmp/cc-benchmark-run.initial 2>&1; then
+    printf 'fail initial test unexpectedly passed\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.initial | sed -n '1,40p'
+    failed=$((failed + 1))
+  else
+    printf 'ok   initial test fails before repair\n'
+    passed=$((passed + 1))
+  fi
+
+  printf '\n## Expected repair patch\n'
+  if apply_expected_patch >/tmp/cc-benchmark-run.patch 2>&1; then
+    printf 'ok   expected patch applied\n'
+    passed=$((passed + 1))
+  else
+    printf 'fail expected patch\n'
+    sed 's/^/     /' /tmp/cc-benchmark-run.patch | sed -n '1,40p'
+    failed=$((failed + 1))
+  fi
+else
+  printf '## Initial test\n'
+fi
+
+printf '\n## Final verification\n'
+if run_test >/tmp/cc-benchmark-run.final 2>&1; then
+  printf 'ok   final tests pass\n'
+  passed=$((passed + 1))
+else
+  printf 'fail final tests\n'
+  sed 's/^/     /' /tmp/cc-benchmark-run.final | sed -n '1,80p'
+  failed=$((failed + 1))
+fi
+
+rm -f /tmp/cc-benchmark-run.initial /tmp/cc-benchmark-run.patch /tmp/cc-benchmark-run.final
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$passed" "$failed"
+if [ "$failed" -eq 0 ]; then
+  printf 'Status: benchmark-run-ready\n'
+else
+  printf 'Status: benchmark-run-blocked\n'
+fi
+
+[ "$failed" -eq 0 ]

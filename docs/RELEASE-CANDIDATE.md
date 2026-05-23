@@ -1,4 +1,4 @@
-# RELEASE-CANDIDATE-v0.1.0-rc8.md
+# RELEASE-CANDIDATE.md
 
 Date: 2026-05-22
 Commit target: current `main`

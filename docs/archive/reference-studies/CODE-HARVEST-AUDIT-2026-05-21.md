@@ -9,7 +9,7 @@ adding shiny noise.
 Local docs/history:
 
 - `~/dotfiles/docs/*REFERENCE*`
-- `~/dotfiles/docs/CODE-HARVEST-WORKFLOW.md`
+- `~/dotfiles/docs/archive/reference-studies/CODE-HARVEST-WORKFLOW.md`
 - `~/dotfiles/claude/audits/`
 - `~/dotfiles/claude/wiki/`
 - `~/dotfiles/claude/memory/`

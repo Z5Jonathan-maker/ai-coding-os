@@ -44,8 +44,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Known limitations: `docs/KNOWN-LIMITATIONS.md`
 - Roadmap: `docs/ROADMAP.md`
 - Release checklist: `docs/RELEASE-CHECKLIST.md`
-- Release notes: `docs/RELEASE-NOTES-v0.1.0-rc8.md`
-- Release manifest: `docs/RELEASE-MANIFEST-v0.1.0-rc8.md`
+- Release notes: `docs/RELEASE-NOTES.md`
+- Release manifest: `docs/RELEASE-MANIFEST.md`
 - Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
 - Provider accounts: `docs/PROVIDER-ACCOUNTS.md`
 - Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
@@ -220,7 +220,7 @@ The routing architecture study lives at `docs/ROUTER-WIRING-STUDY.md`.
 The executable lane contract lives in `ai-lanes.json` and is checked by
 `cc-lane-registry-check`.
 Video-derived reference notes live at
-`docs/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
+`docs/archive/reference-studies/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
 The product packaging contract lives at `docs/PRODUCT-PACKAGING.md`.
 The four-week open-source/product launch plan lives at
 `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`.
@@ -228,8 +228,8 @@ Browser automation boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
 Disk readiness notes live at `docs/DISK-READINESS-AUDIT-2026-05-21.md`.
 VS Code cockpit notes live at `docs/VS-CODE-COCKPIT.md`.
-Cursor reference notes live at `docs/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
-Cline reference notes live at `docs/CLINE-REFERENCE-STUDY-2026-05-21.md`.
+Cursor reference notes live at `docs/archive/reference-studies/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
+Cline reference notes live at `docs/archive/reference-studies/CLINE-REFERENCE-STUDY-2026-05-21.md`.
 The cockpit now exposes Cline/Cursor-inspired control surfaces through
 `cc-permission-matrix`, `cc-checkpoints`, and `cc-router-receipt`.
 

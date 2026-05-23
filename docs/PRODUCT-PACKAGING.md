@@ -53,7 +53,8 @@ trust tier, and safety boundary.
   coding, extraction, design, browser proof, security review, long context,
   refactor, failing test repair, image-to-UI handoff, and permission-denied
   trust behavior. Each fixture includes tests, route expectations, repo-map
-  proof, and diff-surface proof.
+  proof, and diff-surface proof. `cc-benchmark-run` scores broken-first repair
+  fixtures with an expected patch and final test verification.
 - **Cockpit webview smoke:** `cc-cockpit-webview-smoke` proves the packaged
   cockpit surface still contains the continuation UI, result stream, assets,
   startup-safe activation contract, and clean npm audit.
@@ -279,6 +280,6 @@ Prebuilt code can be harvested only when all of these are true:
 If a reference project has a strong idea but the code would distort the system,
 we rebuild the capability natively instead of importing the project.
 
-Code-level harvesting follows `docs/CODE-HARVEST-WORKFLOW.md`: named gap first,
+Code-level harvesting follows `docs/archive/reference-studies/CODE-HARVEST-WORKFLOW.md`: named gap first,
 license/maintenance/fit gate second, import or adaptation third, cockpit-visible
 verification last.

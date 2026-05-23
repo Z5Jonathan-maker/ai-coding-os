@@ -35,8 +35,13 @@ mkdir -p "$dist" "$root/docs" "$root/media/cockpit"
 CC_RELEASE_MANIFEST_OUT="$root/docs/RELEASE-MANIFEST-${version}.md" "$DOTFILES/bin/cc-release-manifest" "$version" >/dev/null
 
 copy_required "$dist/ai-system-cockpit-0.1.0.vsix" "$root/ai-system-cockpit-0.1.0.vsix"
-copy_required "$DOTFILES/docs/RELEASE-NOTES-${version}.md" "$root/docs/RELEASE-NOTES-${version}.md"
-copy_required "$DOTFILES/docs/RELEASE-CANDIDATE-${version}.md" "$root/docs/RELEASE-CANDIDATE-${version}.md"
+release_notes="$DOTFILES/docs/RELEASE-NOTES-${version}.md"
+release_candidate="$DOTFILES/docs/RELEASE-CANDIDATE-${version}.md"
+[ -s "$release_notes" ] || release_notes="$DOTFILES/docs/RELEASE-NOTES.md"
+[ -s "$release_candidate" ] || release_candidate="$DOTFILES/docs/RELEASE-CANDIDATE.md"
+
+copy_required "$release_notes" "$root/docs/RELEASE-NOTES.md"
+copy_required "$release_candidate" "$root/docs/RELEASE-CANDIDATE.md"
 copy_required "$DOTFILES/docs/EVALUATOR-QUICKSTART.md" "$root/docs/EVALUATOR-QUICKSTART.md"
 copy_required "$DOTFILES/docs/CI.md" "$root/docs/CI.md"
 copy_required "$DOTFILES/README.md" "$root/README.md"

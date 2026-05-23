@@ -69,8 +69,8 @@ required_docs() {
     docs/EVALUATOR-QUICKSTART.md \
     docs/KNOWN-LIMITATIONS.md \
     docs/RELEASE-CHECKLIST.md \
-    docs/RELEASE-NOTES-v0.1.0-rc4.md \
-    docs/RELEASE-MANIFEST-v0.1.0-rc4.md \
+    docs/RELEASE-NOTES.md \
+    docs/RELEASE-MANIFEST.md \
     docs/ROADMAP.md; do
     if [ ! -s "$file" ]; then
       printf 'missing %s\n' "$file"
@@ -117,6 +117,22 @@ media_artifacts() {
   return "$missing"
 }
 
+personal_path_leaks() {
+  local bad=0 users_path user_name pattern
+  users_path="$(printf '/%s/' Users)"
+  user_name="$(id -un 2>/dev/null || true)"
+  pattern="${users_path}[A-Za-z0-9._-]+"
+  [ -n "$user_name" ] && pattern="$pattern|$user_name"
+  if rg -n "$pattern" \
+    bin vscode docs .github README.md .ai \
+    -g '!docs/archive/**' >/tmp/cc-public-ci-paths.out 2>/dev/null; then
+    cat /tmp/cc-public-ci-paths.out
+    bad=1
+  fi
+  rm -f /tmp/cc-public-ci-paths.out
+  return "$bad"
+}
+
 cd "$ROOT" || exit 1
 
 printf '# Public CI Check\n\n'
@@ -132,6 +148,7 @@ run "Required public docs" required_docs
 run "Command registry complete" command_registry_complete
 run "License alignment" license_alignment
 run "Launch media present" media_artifacts
+run "No personal path leaks" personal_path_leaks
 
 printf '\n## Summary\n\n'
 printf 'passed=%s failed=%s\n' "$pass" "$fail"

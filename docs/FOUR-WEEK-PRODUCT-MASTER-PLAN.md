@@ -134,7 +134,7 @@ itself without terminal narration.
 - Contribution guide. Done 2026-05-21: `CONTRIBUTING.md`.
 - Security/credentials policy. Done 2026-05-21: `SECURITY.md`.
 - GitHub issue templates for install bug, provider bug, cockpit bug. Done 2026-05-21.
-- Release notes and roadmap. Done 2026-05-21: `docs/RELEASE-NOTES-v0.1.0-rc1.md` and `docs/ROADMAP.md`.
+- Release notes and roadmap. Done 2026-05-21: `docs/archive/release-history/RELEASE-NOTES-v0.1.0-rc1.md` and `docs/ROADMAP.md`.
 
 ### Gate
 

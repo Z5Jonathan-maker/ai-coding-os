@@ -29,6 +29,7 @@ useful, delete it or move it out of `bin/`.
 
 - `cc-backup` — restic backup of operational state.
 - `cc-backup-verify` — quarterly restore verification.
+- `cc-benchmark-run` — score one benchmark fixture, including broken-first repair fixtures with expected patches.
 - `cc-benchmark-fixtures` — run tiny public benchmark fixtures for route expectation, npm test, repo-map, and diff-surface regression proof.
 - `cc-bootstrap` — one-shot platform bootstrapper.
 - `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output; `--json` returns nonce boundaries, origin, truncation metadata, and proof content.

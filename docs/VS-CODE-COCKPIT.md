@@ -111,34 +111,34 @@ create a second router, model menu, or hidden agent runtime.
 | `AI: Claude Direct` | Direct Claude escape hatch |
 | `AI: Codex Direct` | Direct Codex escape hatch |
 
-Cursor reference study lives at `docs/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
+Cursor reference study lives at `docs/archive/reference-studies/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
 The main lesson is to expose intent modes, context visibility, review flow, and
 background job status inside the cockpit without adopting Cursor as the IDE.
 
-Cline reference study lives at `docs/CLINE-REFERENCE-STUDY-2026-05-21.md`.
+Cline reference study lives at `docs/archive/reference-studies/CLINE-REFERENCE-STUDY-2026-05-21.md`.
 The main lesson is visible control: approval matrix, checkpoints, cost, and
 rollback need to be obvious before autonomy feels safe.
 
 Kimi Desktop reference study lives at
-`docs/KIMI-DESKTOP-REFERENCE-STUDY-2026-05-21.md`. The main lesson is that
+`docs/archive/reference-studies/KIMI-DESKTOP-REFERENCE-STUDY-2026-05-21.md`. The main lesson is that
 tool connectivity, sessions, context pressure, file attachments, and outcome
 modes need to be visible product state.
 
 Reference component harvest lives at
-`docs/REFERENCE-COMPONENT-HARVEST-2026-05-21.md`. It maps remaining product
+`docs/archive/reference-studies/REFERENCE-COMPONENT-HARVEST-2026-05-21.md`. It maps remaining product
 gaps to prebuilt patterns and records which pieces we harvested locally.
 
 Autonomous-loop reference study lives at
-`docs/AUTONOMOUS-LOOP-REFERENCE-STUDY-2026-05-21.md`. It keeps the useful loop
+`docs/archive/reference-studies/AUTONOMOUS-LOOP-REFERENCE-STUDY-2026-05-21.md`. It keeps the useful loop
 discipline while avoiding duplicate scheduler/runtime noise.
 
 Pulse/native-app reference study lives at
-`docs/PULSE-NATIVE-APP-REFERENCE-STUDY-2026-05-21.md`. It keeps Pulse as a
+`docs/archive/reference-studies/PULSE-NATIVE-APP-REFERENCE-STUDY-2026-05-21.md`. It keeps Pulse as a
 code-density discipline and treats native AI apps as dependency/status surfaces,
 not duplicate lanes.
 
 Code-level reference harvesting is governed by
-`docs/CODE-HARVEST-WORKFLOW.md`: named gap, best-in-class source, license gate,
+`docs/archive/reference-studies/CODE-HARVEST-WORKFLOW.md`: named gap, best-in-class source, license gate,
 clean fit, small surface, and cockpit-visible verification.
 
 `AI: Permission Matrix` is the first Cline-inspired control surface. It shows

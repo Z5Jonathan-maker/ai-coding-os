@@ -48,7 +48,7 @@ for entry in "${WATCHED[@]}"; do
   fi
 
   # Run the watcher
-  /Users/leonardofibonacci/dotfiles/bin/cc-deploy-watch "$REPO" "$DOMAIN" >/dev/null 2>&1
+  "$HOME/dotfiles/bin/cc-deploy-watch" "$REPO" "$DOMAIN" >/dev/null 2>&1
   EXIT=$?
 
   # Read NEW state

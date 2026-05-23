@@ -5,7 +5,20 @@ const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
 const WebSocket = require('/Applications/Kimi.app/Contents/Resources/resources/gateway/node_modules/ws');
-const { chromium } = require('/Users/leonardofibonacci/code/projects/cc-router/lib/node_modules/playwright');
+const routerRoot = process.env.CC_ROUTER_ROOT || process.env.ROUTER_ROOT || path.join(process.env.HOME, 'code/projects/cc-router');
+function requirePlaywright() {
+  for (const candidate of [
+    process.env.PLAYWRIGHT_MODULE,
+    path.join(routerRoot, 'lib/node_modules/playwright'),
+    'playwright',
+  ].filter(Boolean)) {
+    try {
+      return require(candidate);
+    } catch (_) {}
+  }
+  throw new Error('Playwright not found. Install it locally or set PLAYWRIGHT_MODULE.');
+}
+const { chromium } = requirePlaywright();
 
 const ROOT = path.join(process.env.HOME, '.kimi-webbridge');
 const PID = path.join(ROOT, 'shim.pid');

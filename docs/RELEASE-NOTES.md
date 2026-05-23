@@ -1,4 +1,4 @@
-# RELEASE-NOTES-v0.1.0-rc8.md
+# RELEASE-NOTES.md
 
 Date: 2026-05-22
 Tag: `v0.1.0-rc8`
@@ -42,4 +42,4 @@ local portable gate passes.
 
 ## Integrity
 
-See `docs/RELEASE-MANIFEST-v0.1.0-rc8.md` for artifact checksums.
+See `docs/RELEASE-MANIFEST.md` for artifact checksums.

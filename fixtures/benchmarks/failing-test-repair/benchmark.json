@@ -2,5 +2,7 @@
   "id": "failing-test-repair",
   "title": "Failing test repair fixture",
   "prompt": "fix the failing unit test by patching the implementation and verify npm test",
-  "expectSelectedRegex": "Selected:\\s+codex|Selected:\\s+precision"
+  "expectSelectedRegex": "Selected:\\s+codex|Selected:\\s+precision",
+  "expectInitialFail": true,
+  "expectedPatch": "expected.patch"
 }

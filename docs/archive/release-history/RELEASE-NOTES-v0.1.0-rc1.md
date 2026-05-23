@@ -49,6 +49,6 @@ Last local gate:
 cc-release-check: passed=9 failed=0
 ```
 
-See `docs/RELEASE-CANDIDATE-v0.1.0-rc1.md` for the detailed gate record.
+See `docs/archive/release-history/RELEASE-CANDIDATE-v0.1.0-rc1.md` for the detailed gate record.
 
 Superseded by `docs/RELEASE-NOTES-v0.1.0-rc2.md`.

@@ -36,7 +36,9 @@ run() {
 }
 
 launch_docs_are_portable() {
-  ! grep -REn '/Users/leonardofibonacci|Jonathan'\''s local services|Jonathan'\''s machine' \
+  local user_path
+  user_path="$(printf '/%s/%s' 'Users' "$(id -un)")"
+  ! grep -REn "$user_path|Jonathan" \
     README.md \
     docs/EVALUATOR-QUICKSTART.md \
     docs/PRODUCT-PACKAGING.md \
@@ -60,7 +62,7 @@ printf 'Logs: %s\n' "$log_dir"
 
 cd "$DOTFILES" || exit 1
 
-run "Public CI" '^passed=10 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
+run "Public CI" '^passed=11 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
 run "External evaluator" '^Status: evaluator-ready$' "$DOTFILES/bin/cc-evaluator-check"
 run "Fresh clone validation" '^Status: fresh-clone-ready$' "$DOTFILES/bin/cc-fresh-clone-check"
 run "Source-controlled AI checks" '^Status: ai-checks-ready$' "$DOTFILES/bin/cc-ai-checks"

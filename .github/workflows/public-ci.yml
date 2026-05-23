@@ -18,3 +18,38 @@ jobs:
           node-version: "22"
       - name: Public repo validation
         run: bin/cc-public-ci-check
+
+  benchmark-fixture-tests:
+    runs-on: ${{ fromJSON(vars.PUBLIC_CI_RUNNER || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          set-safe-directory: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Fixture npm tests
+        run: |
+          set -euo pipefail
+          for pkg in fixtures/benchmarks/*/package.json; do
+            dir="$(dirname "$pkg")"
+            echo "::group::$dir"
+            if node -e 'const fs=require("fs"); const m=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.exit(m.expectInitialFail ? 0 : 1)' "$dir/benchmark.json"; then
+              bin/cc-benchmark-run "$(basename "$dir")"
+            else
+              (cd "$dir" && npm test)
+            fi
+            echo "::endgroup::"
+          done
+
+  cockpit-smoke:
+    runs-on: ${{ fromJSON(vars.PUBLIC_CI_RUNNER || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          set-safe-directory: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Cockpit webview smoke
+        run: bin/cc-cockpit-webview-smoke

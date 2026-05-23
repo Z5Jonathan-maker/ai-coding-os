@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CLIENT="$HOME/code/projects/cc-router/lib/openai-image-client.cjs"
+router_root="${CC_ROUTER_ROOT:-${ROUTER_ROOT:-$HOME/code/projects/cc-router}}"
+CLIENT="$router_root/lib/openai-image-client.cjs"
 
 [ -f "$CLIENT" ] || {
   echo "cc-image: missing client at $CLIENT" >&2

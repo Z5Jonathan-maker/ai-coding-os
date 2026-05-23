@@ -12,7 +12,7 @@ Sources studied:
 - Charmbracelet Crush repo/readme: <https://github.com/charmbracelet/crush>
 - Crush AGENTS architecture notes:
   <https://github.com/charmbracelet/crush/blob/main/AGENTS.md>
-- Video reference study: `docs/VIDEO-REFERENCE-STUDY-2026-05-20.md`
+- Video reference study: `docs/archive/reference-studies/VIDEO-REFERENCE-STUDY-2026-05-20.md`
 - Attached 95% token-reduction, triple-router, autonomous-loop, mega-cycle,
   desktop/live-preview, and historical global-config audit bundle.
 

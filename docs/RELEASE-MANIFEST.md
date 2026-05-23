@@ -1,4 +1,4 @@
-# RELEASE-MANIFEST-v0.1.0-rc8.md
+# RELEASE-MANIFEST.md
 
 Generated: 2026-05-22T12:56:06Z
 Release: `v0.1.0-rc8`

@@ -51,12 +51,14 @@ fi
 # 2. Restore-test (latest snapshot, ~/.zprofile only)
 log "── restore-test ──"
 TARGET=$(mktemp -d -t cc-backup-test.XXXXXX)
+RESTORE_INCLUDE="${CC_BACKUP_VERIFY_INCLUDE:-$HOME/dotfiles/zprofile}"
+RESTORED_FILE="$TARGET$RESTORE_INCLUDE"
 trap 'rm -rf "$TARGET"' EXIT
 
 if [ ${#issues[@]} -eq 0 ]; then
-  if "$HOME/dotfiles/bin/cc-backup" restore latest --target "$TARGET" --include "/Users/leonardofibonacci/dotfiles/zprofile" >>"$LOG" 2>&1; then
-    if [ -f "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" ]; then
-      if cmp -s "$TARGET/Users/leonardofibonacci/dotfiles/zprofile" "$HOME/dotfiles/zprofile"; then
+  if "$HOME/dotfiles/bin/cc-backup" restore latest --target "$TARGET" --include "$RESTORE_INCLUDE" >>"$LOG" 2>&1; then
+    if [ -f "$RESTORED_FILE" ]; then
+      if cmp -s "$RESTORED_FILE" "$HOME/dotfiles/zprofile"; then
         log "  ✓ restored zprofile matches current"
       else
         log "  ⚠ restored zprofile differs from current (expected if local changes since backup)"

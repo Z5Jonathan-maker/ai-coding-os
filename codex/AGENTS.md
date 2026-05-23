@@ -7,7 +7,7 @@ This file is the **central routing layer**. Every session loads it. Keep it dens
 - macOS Apple Silicon, zsh, VS Code (`code` in PATH)
 - Tools live under `~/local/bin` + Homebrew
 - Real name: Jonathan Cimadevilla (macOS handle says "leonardofibonacci" — ignore it)
-- GitHub: `Z5Jonathan-maker`. Dotfiles: `github.com/Z5Jonathan-maker/dotfiles`
+- GitHub: `Z5Jonathan-maker`. Dotfiles: `github.com/Z5Jonathan-maker/ai-coding-os`
 - Anthropic access: Codex Max subscription. Wire third-party tools via `CLAUDE_CODE_OAUTH_TOKEN`, NOT `ANTHROPIC_API_KEY`. **Exception:** `autobrowse` skill needs raw `ANTHROPIC_API_KEY` (separate billing); store at `op://Personal/Anthropic-API/credential`.
 - Stripe is BANNED (RUO peptide vendor risk). Card processing = NMI Direct Post. Crypto = BTCPay.
 

@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Architecture overview
-    url: https://github.com/Z5Jonathan-maker/dotfiles/blob/main/docs/ARCHITECTURE.md
+    url: https://github.com/Z5Jonathan-maker/ai-coding-os/blob/main/docs/ARCHITECTURE.md
     about: Read the system map before proposing routing or cockpit changes.
   - name: Known limitations
-    url: https://github.com/Z5Jonathan-maker/dotfiles/blob/main/docs/KNOWN-LIMITATIONS.md
+    url: https://github.com/Z5Jonathan-maker/ai-coding-os/blob/main/docs/KNOWN-LIMITATIONS.md
     about: Check current browser-mode and setup boundaries before filing a bug.

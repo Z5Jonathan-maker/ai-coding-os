@@ -25,7 +25,7 @@ The workflow currently runs on the default GitHub-hosted Ubuntu runner. The
 latest hosted proof run is:
 
 ```text
-https://github.com/Z5Jonathan-maker/dotfiles/actions/runs/26336821207
+https://github.com/Z5Jonathan-maker/ai-coding-os/actions/runs/26336821207
 ```
 
 `runs-on` remains configurable through the repo variable `PUBLIC_CI_RUNNER`.
@@ -36,12 +36,12 @@ Leave that variable unset for GitHub-hosted Ubuntu. Set it to
 Trigger a run:
 
 ```sh
-gh workflow run public-ci.yml --repo Z5Jonathan-maker/dotfiles
+gh workflow run public-ci.yml --repo Z5Jonathan-maker/ai-coding-os
 ```
 
 Check backup runner status:
 
 ```sh
-gh api repos/Z5Jonathan-maker/dotfiles/actions/runners \
+gh api repos/Z5Jonathan-maker/ai-coding-os/actions/runners \
   --jq '.runners[] | {name,status,busy,labels:[.labels[].name]}'
 ```

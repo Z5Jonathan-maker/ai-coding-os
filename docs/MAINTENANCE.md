@@ -93,7 +93,7 @@ cc-backup-verify --full           # full restic check (100% data) + restore-test
 | 1P macOS password rotated | Update the 1P "macOS" item so askpass keeps working | when triggered |
 | Tailscale auth expired (rare) | Re-run `cc-tailscale-qr`, scan with phone | yearly |
 | Want to add a new project to /maintain Tier-2 | Edit MIGRATION-DISCIPLINE.md + run /onboard then schedule the cloud Routine | per project |
-| New Mac | `git clone github.com/Z5Jonathan-maker/dotfiles && ./install.sh && cc-bootstrap all` (~30 min) | when triggered |
+| New Mac | `git clone github.com/Z5Jonathan-maker/ai-coding-os && ./install.sh && cc-bootstrap all` (~30 min) | when triggered |
 
 ## What rots if you ignore everything for 6 months
 

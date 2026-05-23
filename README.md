@@ -1,5 +1,7 @@
 # AI Coding Operating System
 
+[![Public CI](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml/badge.svg)](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml)
+
 This repo is the local control plane for a multi-model AI coding system: a VS
 Code cockpit, deterministic router, model/tool lanes, health gates, permission
 surfaces, browser proof, and rebuildable macOS dotfiles.
@@ -151,7 +153,7 @@ Current install is optimized for macOS Apple Silicon while the public packaging
 is being hardened.
 
 ```sh
-git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
+git clone git@github.com:Z5Jonathan-maker/ai-coding-os.git ~/dotfiles
 ~/dotfiles/install.sh --dry-run
 ~/dotfiles/install.sh
 brew bundle install --file=~/dotfiles/Brewfile
@@ -199,7 +201,7 @@ macOS dotfiles and AI-system config are symlinked into `$HOME` via
 
 ```sh
 # Fresh Mac
-git clone git@github.com:Z5Jonathan-maker/dotfiles.git ~/dotfiles
+git clone git@github.com:Z5Jonathan-maker/ai-coding-os.git ~/dotfiles
 ~/dotfiles/install.sh
 brew bundle install --file=~/dotfiles/Brewfile   # restore brew packages
 ~/dotfiles/install.sh                            # restore links + npm globals

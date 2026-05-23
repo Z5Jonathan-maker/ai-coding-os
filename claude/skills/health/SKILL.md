@@ -93,7 +93,7 @@ Run these checks in parallel:
 
 13. **Git signing** — last dotfiles commit shows verified:
    ```sh
-   gh api repos/Z5Jonathan-maker/dotfiles/commits/HEAD --jq '.commit.verification.verified' | grep -q true || echo "signing broken"
+   gh api repos/Z5Jonathan-maker/ai-coding-os/commits/HEAD --jq '.commit.verification.verified' | grep -q true || echo "signing broken"
    ```
 
 14. **Routing-table drift** — use the canonical drift checker:

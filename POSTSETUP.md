@@ -18,7 +18,7 @@ Stuff that needs human attention because it's interactive, sensitive, or UI-only
 - ✅ `gh auth login` (device flow with scopes: repo, read:org, workflow, gist, admin:public_key, admin:ssh_signing_key)
 - ✅ SSH key (`~/.ssh/id_ed25519`) generated, added to Apple Keychain agent, registered on GitHub for both authentication AND signing
 - ✅ Git commit signing enabled (SSH-based) — commits show ✅ Verified on GitHub
-- ✅ Dotfiles repo at `git@github.com:Z5Jonathan-maker/dotfiles.git` (private, SSH remote)
+- ✅ AI Coding OS repo at `git@github.com:Z5Jonathan-maker/ai-coding-os.git` (public, SSH remote)
 - ✅ `gh extension` installed: `gh-dash` (terminal dashboard for PRs/issues — try `gh dash`)
 - ✅ gh aliases: `gh co <#>` (PR checkout), `gh prs`, `gh prv`, `gh issues`, `gh runs`, `gh repos`
 

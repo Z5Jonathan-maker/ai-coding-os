@@ -7,10 +7,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Z5Jonathan-maker/dotfiles.git",
+    "url": "https://github.com/Z5Jonathan-maker/ai-coding-os.git",
     "directory": "vscode/ai-cockpit"
   },
-  "homepage": "https://github.com/Z5Jonathan-maker/dotfiles/tree/main/vscode/ai-cockpit",
+  "homepage": "https://github.com/Z5Jonathan-maker/ai-coding-os/tree/main/vscode/ai-cockpit",
   "engines": {
     "vscode": "^1.96.0"
   },

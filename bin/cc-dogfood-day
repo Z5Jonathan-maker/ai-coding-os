@@ -46,7 +46,7 @@ run "Context pressure proof" '"availableTokens":' "$DOTFILES/bin/cc-context-mete
 run "Diff surface proof" '"clean":' "$DOTFILES/bin/cc-diff-hunks" --json
 run "Browser proof" 'Browser mode:|BROWSER_PROOF_CONTENT|Readiness' "$DOTFILES/bin/cc-browser-proof" --url "$browser_url" --max-chars "$max_chars"
 run "Cockpit package proof" 'Packaged|\.vsix' "$DOTFILES/bin/cc-package-cockpit"
-run "Cockpit mission tests" '^# pass 3$' node --test "$DOTFILES"/vscode/ai-cockpit/test/*.test.js
+run "Cockpit mission tests" '^# fail 0$' node --test "$DOTFILES"/vscode/ai-cockpit/test/*.test.js
 
 printf '\n## Summary\n\n'
 printf 'passed=%s failed=%s\n' "$pass" "$fail"

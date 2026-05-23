@@ -202,9 +202,10 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap } = message.payload;
+    const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, mission } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity);
     contextBlock = context && context.block ? context.block : '';
+    renderMissionState(mission);
     $('readinessTitle').textContent = health.title;
     $('readinessBody').textContent = health.body;
     const railLabel = $('railStatusLabel');
@@ -265,6 +266,95 @@
     const activeAgentNote = document.querySelector('.mission-agent.active small');
     if (activeAgent) activeAgent.textContent = running ? 'Workspace is continuing this mission.' : `Workspace is handling ${focus.toLowerCase()}.`;
     if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : focusBody;
+  }
+
+  function renderMissionState(mission) {
+    if (!mission || typeof mission !== 'object') return;
+    setText('continueTitle', mission.title);
+    setText('continueLast', mission.lastSession);
+    setText('continueBody', mission.nextStep);
+    setText('continueChanges', mission.changes);
+    setText('continueTests', mission.tests);
+    setText('continueSafety', mission.safety);
+    setText('detailTitle', mission.title);
+    setText('detailDescription', mission.summary);
+    setText('detailFocus', mission.status === 'Ready' ? 'Ready to continue' : 'Active work in progress');
+    setText('detailFocusBody', mission.nextStep);
+    setText('detailRoute', mission.route);
+    setText('detailStarted', mission.started);
+    setText('detailProgress', `${Number(mission.progress || 0)}%`);
+
+    const progressBar = $('detailProgressBar');
+    if (progressBar) progressBar.style.width = `${clamp(Number(mission.progress || 0), 0, 100)}%`;
+
+    document.querySelectorAll('.home-intro h2, .workstream.active .stream-title strong').forEach((node) => {
+      node.textContent = mission.title || 'Current workspace';
+    });
+    document.querySelectorAll('.home-intro p, .workstream.active .stream-main p').forEach((node) => {
+      node.textContent = mission.nextStep || mission.summary || 'Continue the current workspace.';
+    });
+
+    const active = document.querySelector('.workstream.active[data-workstream]');
+    if (active) {
+      active.dataset.workstream = mission.title || 'Current workspace';
+      active.dataset.summary = mission.summary || '';
+      active.dataset.lastSession = mission.lastSession || '';
+      active.dataset.focus = mission.status || 'Ready';
+      active.dataset.focusBody = mission.nextStep || '';
+      active.dataset.progress = String(mission.progress || 0);
+      active.dataset.route = mission.route || 'Auto';
+      active.dataset.started = mission.started || 'Now';
+      const status = active.querySelector('.stream-status');
+      if (status) {
+        status.textContent = mission.status || 'Ready';
+        status.className = `stream-status ${mission.status === 'Ready' ? 'in-progress' : 'review'}`;
+      }
+      const promptButton = active.querySelector('button[data-workstream-prompt]');
+      if (promptButton) promptButton.dataset.workstreamPrompt = mission.prompt || '';
+      const meta = active.querySelectorAll('.stream-meta strong');
+      if (meta[0]) meta[0].textContent = mission.changes || 'Unknown';
+      if (meta[1]) {
+        meta[1].textContent = mission.tests || 'On demand';
+        meta[1].className = /degraded|review|verify/i.test(mission.tests || mission.safety || '') ? 'warn' : 'ok';
+      }
+      if (meta[2]) meta[2].textContent = mission.route || 'Auto';
+    }
+
+    document.querySelectorAll('.workstream:not(.active)').forEach((node) => {
+      node.style.display = 'none';
+    });
+
+    renderMissionFeed(mission.feed);
+  }
+
+  function renderMissionFeed(feed) {
+    const container = document.querySelector('.mission-feed');
+    if (!container || !Array.isArray(feed) || !feed.length) return;
+    container.querySelectorAll('.mission-agent').forEach((node) => node.remove());
+    const preview = container.querySelector('.activity-preview');
+    feed.slice(0, 5).forEach((event) => {
+      const node = document.createElement('div');
+      node.className = `mission-agent ${event.state || ''}`.trim();
+      const orb = document.createElement('span');
+      orb.className = 'agent-orb codex';
+      orb.textContent = event.icon || 'W';
+      const body = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = event.title || 'Workspace updated.';
+      const small = document.createElement('small');
+      small.textContent = event.body || '';
+      body.append(title, small);
+      const time = document.createElement('em');
+      time.textContent = event.time || 'now';
+      node.append(orb, body, time);
+      container.insertBefore(node, preview || null);
+    });
+    if (preview) {
+      const first = feed[0] || {};
+      preview.querySelector('span').textContent = 'Workspace state';
+      preview.querySelector('strong').textContent = first.title || 'Live state loaded';
+      preview.querySelector('small').textContent = first.body || 'Mission state is derived from local signals.';
+    }
   }
 
   function selectWorkstream(workstream) {

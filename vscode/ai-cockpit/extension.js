@@ -238,7 +238,7 @@ class CockpitProvider {
     const nonce = ++this.refreshNonce;
     this.view.webview.postMessage({ type: 'loading' });
     const deferred = 'Not loaded on startup. Open this report to run the full check.';
-    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi] = await Promise.all([
+    const [status, receipt, firstRun, contextMeter, contextMeterJson, diffSummary, kimi, sessions, repoMap, contextSnapshot] = await Promise.all([
       shellExec('cc-cockpit-status | sed -n "1,26p"', { timeout: 20000 }),
       shellExec('cc-router-receipt --summary', { timeout: 12000 }),
       shellExec('cc-first-run | sed -n "1,70p"', { timeout: 20000 }),
@@ -246,6 +246,9 @@ class CockpitProvider {
       shellExec(COMMANDS.contextMeterJson, { timeout: 12000 }),
       shellExec(COMMANDS.diffHunksJson, { timeout: 12000 }),
       shellExec('cc-kimi-status | sed -n "1,22p"', { timeout: 12000 }),
+      shellExec(COMMANDS.sessionLedger, { timeout: 12000 }),
+      shellExec(COMMANDS.repoMap, { timeout: 12000 }),
+      shellExec(COMMANDS.contextSnapshot, { timeout: 12000 }),
     ]);
 
     const payload = {
@@ -261,16 +264,17 @@ class CockpitProvider {
       firstRun: firstRun.text,
       contextMeter: contextMeter.text,
       contextMeterJson: contextMeterJson.text,
-      contextSnapshot: '{}',
+      contextSnapshot: contextSnapshot.text || '{}',
       diffSummary: diffSummary.text,
-      sessions: '{}',
+      sessions: sessions.text || '{}',
       pulse: deferred,
       nativeApps: deferred,
       kimi: kimi.text,
-      repoMap: '{}',
+      repoMap: repoMap.text || '{}',
       jobs: deferred,
       lanes: deferred,
     };
+    payload.mission = buildMissionState(payload);
 
     this.view.webview.postMessage({
       type: 'state',
@@ -283,6 +287,10 @@ class CockpitProvider {
         payload: {
           ...payload,
           providerCapacity: providerCapacity.text || 'Provider capacity unavailable.',
+          mission: buildMissionState({
+            ...payload,
+            providerCapacity: providerCapacity.text || 'Provider capacity unavailable.',
+          }),
         },
       });
     });
@@ -583,8 +591,8 @@ class CockpitProvider {
   <section class="home-intro">
     <div>
       <span class="mission-kicker">Current mission</span>
-      <h2>DoseCraft landing page</h2>
-      <p>Continue the responsive pricing section. Routing, files, browser context, and design references are already staged.</p>
+      <h2>Current workspace</h2>
+      <p>Loading live repo state, recent route history, browser readiness, and next action.</p>
     </div>
     <div class="home-actions">
       <button class="focus-button">Focus</button>
@@ -601,22 +609,22 @@ class CockpitProvider {
     </div>
     <div class="continuation-copy">
       <span>Continue current work</span>
-      <h3 id="continueTitle">DoseCraft landing page</h3>
+      <h3 id="continueTitle">Current workspace</h3>
       <div class="continuation-memory" aria-label="Mission memory">
         <div>
           <span>Last session</span>
-          <p id="continueLast">Implemented the landing page direction and staged the pricing section handoff.</p>
+          <p id="continueLast">Loading the last known workspace state.</p>
         </div>
         <div>
           <span>Next best step</span>
-          <p id="continueBody">Implement the responsive pricing section and connect it to CMS.</p>
+          <p id="continueBody">Loading the next best step.</p>
         </div>
       </div>
     </div>
     <div class="continuation-signals" aria-label="Continuation signals">
-      <span id="continueChanges">8 files changed</span>
-      <span id="continueTests">Tests passing</span>
-      <span id="continueSafety">Safe to continue</span>
+      <span id="continueChanges">Checking changes</span>
+      <span id="continueTests">Checking gates</span>
+      <span id="continueSafety">Checking safety</span>
     </div>
     <textarea id="prompt" rows="5" placeholder="Add a detail, or just Continue."></textarea>
     <div class="chips" id="chips"></div>
@@ -665,70 +673,18 @@ class CockpitProvider {
       <h2>Mission threads</h2>
       <button class="ghost-button">New workspace</button>
     </div>
-    <article class="workstream active" data-workstream="DoseCraft landing page" data-summary="Modern landing page for DoseCraft with pricing, FAQ, and marketing sections." data-last-session="Implemented the landing page direction and staged the pricing section handoff." data-focus="Building responsive pricing section" data-focus-body="Implement the responsive pricing section and connect it to CMS." data-progress="72" data-route="Codex - Kimi" data-started="Today, 9:41 AM">
+    <article class="workstream active" data-workstream="Current workspace" data-summary="Live repo state is loading." data-last-session="Loading recent workspace state." data-focus="Continue the current mission" data-focus-body="Inspect live repo state and continue the next best step." data-progress="50" data-route="Auto" data-started="Now">
       <div class="stream-icon dose"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 1.5 5.4 4.2 5.7 8.2l2.3 2.3-3.2 1.1-1.1 3.2-2.3-2.3C9.4 15.2 6.7 13.3 5.2 9.8L12 3Z"/><path d="M9 15l-3 3M14.5 8.5h.01"/></svg></div>
       <div class="stream-main">
-        <div class="stream-title"><strong>DoseCraft landing page</strong><span>Building - Last active 2m ago</span></div>
-        <p>Next up: implement responsive pricing section and connect to CMS.</p>
+        <div class="stream-title"><strong>Current workspace</strong><span>Loading live state</span></div>
+        <p>Next up: inspect repo state and continue the safest useful action.</p>
       </div>
-      <div class="stream-status in-progress">In progress</div>
+      <div class="stream-status in-progress">Ready</div>
       <div class="avatar-stack"><span>J</span><span>K</span><span>I</span><span>+2</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>8 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Codex - Kimi</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue DoseCraft landing page. Implement the responsive pricing section and connect it to CMS.">Continue</button>
-    </article>
-    <article class="workstream" data-workstream="AI cockpit polish" data-summary="Premium VS Code workspace cockpit with routing hidden under one primary Continue action." data-last-session="Reduced visible routing controls and moved execution into a continuation surface." data-focus="Polish installed panel details" data-focus-body="Simplify workspace transitions and make the panel feel like one continuous environment." data-progress="81" data-route="Claude - Kimi" data-started="Today, 11:08 AM">
-      <div class="stream-icon polish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg></div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>AI cockpit polish</strong><span>Reviewing - Last active now</span></div>
-        <p>Next up: polish animation, empty states, and installed panel details.</p>
-      </div>
-      <div class="stream-status review">Review</div>
-      <div class="avatar-stack"><span>J</span><span>K</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>5 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="warn">Warnings</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Claude - Kimi</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue AI cockpit polish. Convert the cockpit into a persistent workspace home and verify the release gates.">Continue</button>
-    </article>
-    <article class="workstream" data-workstream="Router reliability pass" data-summary="Regression coverage and fallback hardening for the multimodal routing layer." data-last-session="Verified fallback chains and documented the creative-direction handoff boundary." data-focus="Stabilize creative handoff routes" data-focus-body="Add regression examples for creative direction and implementation handoff." data-progress="58" data-route="Claude - Codex" data-started="Yesterday, 7:32 PM">
-      <div class="stream-icon router"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5l2 3h7"/><path d="M5 17h5l2-3h7"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg></div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>Router reliability pass</strong><span>Building - Last active 34m ago</span></div>
-        <p>Next up: add regression examples for creative direction and implementation handoff.</p>
-      </div>
-      <div class="stream-status in-progress">In progress</div>
-      <div class="avatar-stack"><span>C</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>12 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="bad">Failing (2)</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Claude - Codex</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue the router reliability pass. Add regression coverage for creative direction and implementation handoff.">Continue</button>
-    </article>
-    <article class="workstream blocked" data-workstream="Review failing tests" data-summary="Failure triage workspace for release and integration gates." data-last-session="Captured the failing release gate and separated product failures from sync failures." data-focus="Isolate integration failure" data-focus-body="Find the smallest broken path, rerun the gate, then patch without broad refactors." data-progress="31" data-route="Codex" data-started="Yesterday, 4:18 PM">
-      <div class="stream-icon tests"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4h8v3"/><path d="M6 11h12"/><path d="M7 7h10v12H7z"/><path d="M4 15h3M17 15h3M9 19l-2 2M15 19l2 2"/></svg></div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>Review failing tests</strong><span>Investigating - Last active 5h ago</span></div>
-        <p>Next up: isolate integration failure and rerun release gate.</p>
-      </div>
-      <div class="stream-status blocked">Blocked</div>
-      <div class="avatar-stack"><span>C</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>2 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="bad">Failing</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Codex</strong></div>
-      <button class="stream-action" data-workstream-prompt="Review failing tests. Isolate the integration failure, rerun the relevant gate, and report the safest fix.">Continue</button>
-    </article>
-    <article class="workstream" data-workstream="Browser auth setup" data-summary="Official logged-in Chrome bridge configuration for authenticated browser tasks." data-last-session="Confirmed the browser lane needs the official extension session, not an isolated shim profile." data-focus="Complete OAuth session storage" data-focus-body="Verify the extension-backed session before browser-dependent automations run." data-progress="64" data-route="Kimi Web" data-started="May 21, 2:16 PM">
-      <div class="stream-icon browser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/><path d="M9 15h6"/></svg></div>
-      <div class="stream-main">
-        <div class="stream-title"><strong>Browser auth setup</strong><span>Building - Last active 1d ago</span></div>
-        <p>Next up: complete Google OAuth flow and session storage.</p>
-      </div>
-      <div class="stream-status in-progress">In progress</div>
-      <div class="avatar-stack"><span>K</span></div>
-      <div class="stream-meta"><span>Changes</span><strong>6 files</strong></div>
-      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
-      <div class="stream-meta"><span>Route</span><strong>Kimi Web</strong></div>
-      <button class="stream-action" data-workstream-prompt="Continue browser auth setup. Verify official Kimi WebBridge extension session before browser tasks.">Continue</button>
+      <div class="stream-meta"><span>Changes</span><strong>Checking</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="warn">On demand</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Auto</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue the current workspace. Inspect live repo state, identify the next best step, and verify before reporting done.">Continue</button>
     </article>
   </section>
 
@@ -737,34 +693,34 @@ class CockpitProvider {
       <div class="detail-head">
         <div>
           <span class="detail-kicker">Mission state</span>
-          <h2 id="detailTitle">DoseCraft landing page</h2>
+          <h2 id="detailTitle">Current workspace</h2>
         </div>
         <button class="mini-button">...</button>
       </div>
-      <p id="detailDescription">Modern landing page for DoseCraft with pricing, FAQ, and marketing sections.</p>
-      <div class="progress-row"><span>Overall progress</span><strong id="detailProgress">72%</strong></div>
-      <div class="progress"><span id="detailProgressBar" style="width:72%"></span></div>
+      <p id="detailDescription">Live mission state is loading from the current repo.</p>
+      <div class="progress-row"><span>Overall readiness</span><strong id="detailProgress">50%</strong></div>
+      <div class="progress"><span id="detailProgressBar" style="width:50%"></span></div>
     </div>
     <div class="detail-card">
       <span class="detail-kicker">Next best move</span>
-      <h3 id="detailFocus">Building responsive pricing section</h3>
-      <p id="detailFocusBody">Implementing UI and connecting it to CMS.</p>
+      <h3 id="detailFocus">Continue the current mission</h3>
+      <p id="detailFocusBody">Inspect live repo state and continue the next best step.</p>
     </div>
     <div class="detail-card activity-card mission-feed">
       <div class="section-head">
         <h3>Live mission feed</h3>
         <button class="ghost-button">View all</button>
       </div>
-      <div class="mission-agent active"><span class="agent-orb codex">W</span><div><strong>Workspace is shaping the pricing component.</strong><small>Editing layout, states, and CMS handoff.</small></div><em>now</em></div>
-      <div class="mission-agent"><span class="agent-orb kimi">P</span><div><strong>Responsive preview was verified.</strong><small>Browser pass completed on desktop and mobile.</small></div><em>4m</em></div>
-      <div class="activity-preview live-stage"><span>DoseCraft preview</span><strong>Simple, transparent pricing</strong><small>Latest browser render is clean.</small></div>
-      <div class="mission-agent done"><span class="agent-orb image">R</span><div><strong>Creative reference was applied.</strong><small>Direction is locked for this section.</small></div><em>12m</em></div>
-      <div class="mission-agent done"><span class="agent-orb test">T</span><div><strong>Tests are green.</strong><small>12 checks passed after the last edit.</small></div><em>6m</em></div>
+      <div class="mission-agent active"><span class="agent-orb codex">R</span><div><strong>Reading live workspace state.</strong><small>Repo, route, context, and browser readiness.</small></div><em>now</em></div>
+      <div class="mission-agent"><span class="agent-orb kimi">C</span><div><strong>Checking context pressure.</strong><small>Token room and diff size are being measured.</small></div><em>now</em></div>
+      <div class="activity-preview live-stage"><span>Workspace preview</span><strong>Live state loading</strong><small>No static project claims are used.</small></div>
+      <div class="mission-agent done"><span class="agent-orb image">B</span><div><strong>Checking browser bridge.</strong><small>Official extension status will appear here.</small></div><em>now</em></div>
+      <div class="mission-agent done"><span class="agent-orb test">G</span><div><strong>Gates available on demand.</strong><small>Run release/product checks before shipping.</small></div><em>now</em></div>
     </div>
     <div class="detail-card route-card">
-      <span>Route</span><strong id="detailRoute">Codex - Kimi</strong>
-      <span>Models used</span><strong class="model-stack"><i>K</i><i>C</i><i>G</i></strong>
-      <span>Started</span><strong id="detailStarted">Today, 9:41 AM</strong>
+      <span>Route</span><strong id="detailRoute">Auto</strong>
+      <span>Models used</span><strong class="model-stack"><i>C</i><i>K</i><i>D</i></strong>
+      <span>Started</span><strong id="detailStarted">Now</strong>
     </div>
   </aside>
 
@@ -930,6 +886,121 @@ function summarizeReadiness(text) {
     title: failed ? 'Attention needed' : 'System ready',
     body: lines.slice(5, 14).join('\n') || text,
   };
+}
+
+function parseJson(text, fallback = {}) {
+  try {
+    return JSON.parse(text || '');
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function buildMissionState(payload) {
+  const diff = parseJson(payload.diffSummary, {});
+  const context = parseJson(payload.contextMeterJson, {});
+  const sessions = parseJson(payload.sessions, {});
+  const repoPath = diff.repo || context.repo || cwd();
+  const repo = path.basename(repoPath || cwd());
+  const branch = diff.branch || context.branch || '';
+  const diffKnown = Object.prototype.hasOwnProperty.call(diff, 'clean');
+  const clean = diff.clean === true;
+  const fileCount = Number(diff.fileCount || 0);
+  const added = Number(diff.totalAdded || 0);
+  const removed = Number(diff.totalRemoved || 0);
+  const resolvedRepo = path.resolve(repoPath || cwd());
+  const latestSession = Array.isArray(sessions.sessions)
+    ? sessions.sessions.find((session) => {
+      if (session.stale || !session.cwd) return false;
+      return path.resolve(session.cwd) === resolvedRepo;
+    }) || null
+    : null;
+  const routeLine = String(payload.route || '').split('\n').find(line => line.startsWith('Latest:')) || '';
+  const route = routeLine.replace(/^Latest:\s*/, '').split('|')[0].trim() || 'Auto';
+  const capacity = String(payload.providerCapacity || '');
+  const kimi = String(payload.kimi || '');
+  const contextStatus = context.statusText || 'Context pressure unavailable.';
+  const capacityDegraded = /quota_exhausted|status=degraded|warn/i.test(capacity);
+  const browserReady = /official-extension/i.test(kimi);
+  const title = `${repo} workspace`;
+  const summary = [
+    branch ? `Branch ${branch}` : 'Current repository',
+    diffKnown ? clean ? 'working tree clean' : `${fileCount} changed file${fileCount === 1 ? '' : 's'}` : 'diff unavailable',
+    browserReady ? 'browser bridge ready' : 'browser bridge unchecked',
+  ].join(' - ');
+  const lastSession = latestSession && latestSession.last_prompt
+    ? `Last routed task: ${compact(latestSession.last_prompt, 150)}`
+    : !diffKnown
+      ? 'Diff state is unavailable. Refresh cockpit diagnostics before continuing.'
+      : clean
+      ? 'No active diff. The workspace is ready for the next focused task.'
+      : `Uncommitted work detected: ${fileCount} file${fileCount === 1 ? '' : 's'}, +${added} -${removed}.`;
+  const nextStep = !diffKnown
+    ? 'Run cockpit refresh or cc-diff-hunks, then continue only after the workspace state is known.'
+    : clean
+    ? 'Choose the next mission, or ask the cockpit to inspect the repo and propose the safest useful action.'
+    : 'Review the current diff, run the relevant verification, then continue the smallest safe change.';
+  const changes = !diffKnown ? 'Diff unavailable' : clean ? 'Working tree clean' : `${fileCount} file${fileCount === 1 ? '' : 's'} changed`;
+  const tests = !diffKnown ? 'Check diagnostics' : clean ? 'Gates on demand' : 'Verify before ship';
+  const safety = capacityDegraded ? 'Provider degraded' : !diffKnown ? 'Review state' : clean ? 'Safe to continue' : 'Review diff first';
+  const progress = !diffKnown ? 36 : clean ? 64 : 42;
+  const status = !diffKnown ? 'Needs review' : clean ? 'Ready' : 'In progress';
+  const prompt = !diffKnown
+    ? `Continue ${title}. First recover the live diff state, then inspect route history and choose the smallest safe next action.`
+    : clean
+    ? `Continue ${title}. Inspect the current repo state, recent route history, and docs. Propose or execute the safest next useful action, then verify.`
+    : `Continue ${title}. Review the current ${fileCount}-file diff, identify the smallest safe next step, run relevant verification, and report blockers.`;
+
+  return {
+    title,
+    summary,
+    status,
+    branch,
+    lastSession,
+    nextStep,
+    changes,
+    tests,
+    safety,
+    route,
+    progress,
+    prompt,
+    started: latestSession && latestSession.last_ts ? latestSession.last_ts : 'Now',
+    feed: [
+      {
+        icon: 'R',
+        state: 'active',
+        title: !diffKnown ? 'Workspace diff state is unavailable.' : clean ? 'Workspace tree is clean.' : 'Workspace has uncommitted changes.',
+        body: !diffKnown ? 'Refresh diagnostics before treating the workspace as safe.' : clean ? 'No local diff is waiting.' : `${fileCount} files, +${added} -${removed}.`,
+        time: 'now',
+      },
+      {
+        icon: 'C',
+        state: '',
+        title: contextStatus,
+        body: `${Number(context.availableTokens || 0).toLocaleString()} tokens available.`,
+        time: 'now',
+      },
+      {
+        icon: 'B',
+        state: browserReady ? 'done' : '',
+        title: browserReady ? 'Browser bridge is official-extension ready.' : 'Browser bridge needs attention.',
+        body: browserReady ? 'Authenticated browser work can use the real Chrome extension.' : 'Check Kimi WebBridge before browser tasks.',
+        time: 'now',
+      },
+      {
+        icon: capacityDegraded ? '!' : 'G',
+        state: capacityDegraded ? '' : 'done',
+        title: capacityDegraded ? 'Provider capacity is degraded.' : 'Provider capacity is ready.',
+        body: capacityDegraded ? compact(capacity.replace(/\s+/g, ' '), 150) : 'Primary lanes are available.',
+        time: 'now',
+      },
+    ],
+  };
+}
+
+function compact(value, max = 120) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  return text.length > max ? `${text.slice(0, max - 1)}...` : text;
 }
 
 function editorContext() {

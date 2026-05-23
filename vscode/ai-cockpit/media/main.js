@@ -26,6 +26,27 @@
     return [contextBlock].concat(attached.map(item => item.block)).filter(Boolean).join('');
   }
 
+  function activeMissionPrompt() {
+    const active = document.querySelector('.workstream.active[data-workstream]');
+    if (!active) return '';
+    const promptButton = active.querySelector('button[data-workstream-prompt]');
+    if (promptButton?.dataset.workstreamPrompt) return promptButton.dataset.workstreamPrompt;
+    const title = active.dataset.workstream || $('continueTitle')?.textContent || 'current mission';
+    const focus = active.dataset.focusBody || active.dataset.focus || $('continueBody')?.textContent || 'continue the next best step';
+    return `Continue ${title}. ${focus}`;
+  }
+
+  function promptForRun() {
+    const typed = String($('prompt')?.value || '').trim();
+    const prompt = typed || activeMissionPrompt();
+    if (prompt && !typed && $('prompt')) $('prompt').value = prompt;
+    return prompt;
+  }
+
+  function includeContextChecked() {
+    return Boolean($('includeContext')?.checked);
+  }
+
   document.addEventListener('click', (event) => {
     const modeButton = event.target.closest('button[data-mode]');
     if (modeButton) {
@@ -99,13 +120,14 @@
 
     const runButton = event.target.closest('button[data-run]');
     if (runButton) {
-      startTranscript(runButton.dataset.run, $('prompt').value);
+      const prompt = promptForRun();
+      startTranscript(runButton.dataset.run, prompt);
       vscode.postMessage({
         command: 'runPrompt',
         mode: runButton.dataset.run,
-        prompt: $('prompt').value,
+        prompt,
         permissionMode,
-        includeContext: $('includeContext').checked,
+        includeContext: includeContextChecked(),
         contextBlock: fullContext(),
       });
       return;
@@ -113,13 +135,14 @@
 
     const selectedRun = event.target.closest('button[data-run-selected]');
     if (selectedRun) {
-      startTranscript(selectedMode, $('prompt').value);
+      const prompt = promptForRun();
+      startTranscript(selectedMode, prompt);
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
-        prompt: $('prompt').value,
+        prompt,
         permissionMode,
-        includeContext: $('includeContext').checked,
+        includeContext: includeContextChecked(),
         contextBlock: fullContext(),
       });
       return;
@@ -142,13 +165,14 @@
   document.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
-      startTranscript(selectedMode, $('prompt').value);
+      const prompt = promptForRun();
+      startTranscript(selectedMode, prompt);
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
-        prompt: $('prompt').value,
+        prompt,
         permissionMode,
-        includeContext: $('includeContext').checked,
+        includeContext: includeContextChecked(),
         contextBlock: fullContext(),
       });
     }

@@ -1837,9 +1837,55 @@ body.panel-mode {
 }
 
 .panel-mode details,
-.panel-mode .result-panel,
 .panel-mode footer {
   display: none;
+}
+
+.panel-mode .result-panel {
+  grid-area: result;
+  position: fixed;
+  right: 34px;
+  bottom: 28px;
+  z-index: 8;
+  width: min(560px, calc(100vw - 148px));
+  max-height: 44vh;
+  padding: 14px;
+  border-radius: 24px;
+  color: rgba(244, 247, 255, .9);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(124, 92, 255, .18), transparent 30%),
+    linear-gradient(145deg, rgba(16, 22, 44, .86), rgba(7, 12, 26, .9));
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, .34),
+    inset 0 0 0 1px rgba(255, 255, 255, .075);
+  backdrop-filter: blur(22px);
+}
+
+.panel-mode .result-panel .panel-head {
+  display: flex;
+  align-items: center;
+}
+
+.panel-mode .result-panel h2 {
+  color: rgba(249, 250, 255, .95);
+}
+
+.panel-mode .result-actions {
+  display: inline-flex;
+}
+
+.panel-mode .transcript {
+  min-height: 110px;
+  max-height: 31vh;
+  border: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.panel-mode .message-body {
+  border-color: rgba(255, 255, 255, .07);
+  color: rgba(244, 247, 255, .9);
+  background: rgba(255, 255, 255, .06);
 }
 
 .panel-mode h1 {
@@ -2242,10 +2288,11 @@ body.panel-mode {
 @media (max-width: 760px) {
   body.panel-mode {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     grid-template-areas:
       "composer"
       "detail"
+      "result"
       "streams";
     padding: 18px;
   }
@@ -2314,6 +2361,17 @@ body.panel-mode {
 
   .panel-mode .workstream:nth-of-type(n+4) {
     display: grid;
+  }
+
+  .panel-mode .result-panel {
+    position: static;
+    width: auto;
+    max-height: none;
+    margin-top: 18px;
+  }
+
+  .panel-mode .transcript {
+    max-height: 300px;
   }
 }
 

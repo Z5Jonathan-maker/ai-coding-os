@@ -6,7 +6,7 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 
 - Composer-first interface with one primary Run path and Auto as the default mode.
 - Optional modes for Code, Browser, Extract, and Route preview are tucked behind a mode drawer.
-- Startup-safe by default: the cockpit does not activate or auto-open until opened, and the first refresh loads only daily health.
+- Startup-safe by default: the cockpit does not activate or auto-open until opened.
 - Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
 - Inline streaming route/output, diff review, repo index, and inspection reports.
 - Deeper diagnostics collapsed under Overview, Context, System, and Advanced.
@@ -28,9 +28,10 @@ Local development install is managed by:
 ~/dotfiles/install.sh
 ```
 
-Packaged install:
+Packaged install after generating the VSIX locally:
 
 ```sh
+cc-package-cockpit
 code --install-extension dist/ai-system-cockpit-0.1.0.vsix
 ```
 

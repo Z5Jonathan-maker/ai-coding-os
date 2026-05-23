@@ -47,7 +47,7 @@ printf 'Platform: %s %s\n' "$(uname -s 2>/dev/null || true)" "$(uname -m 2>/dev/
 run_required "Portable public gate" "$DOTFILES/bin/cc-public-ci-check"
 
 if [ "$(uname -s 2>/dev/null)" = Darwin ]; then
-  run_optional "macOS first-run doctor" "$DOTFILES/install.sh" --dry-run
+  run_required "macOS first-run doctor" "$DOTFILES/install.sh" --dry-run
 else
   printf '\n## macOS first-run doctor\n'
   printf 'skip macOS first-run doctor\n'
@@ -56,13 +56,13 @@ else
 fi
 
 if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-  run_optional "Cockpit package" "$DOTFILES/bin/cc-package-cockpit"
-  run_optional "Public fixture demo" env CC_WORKFLOW_PROOF_SKIP_READINESS=1 "$DOTFILES/bin/cc-demo-fixture"
+  run_required "Cockpit package" "$DOTFILES/bin/cc-package-cockpit"
+  run_required "Public fixture demo" env CC_WORKFLOW_PROOF_SKIP_READINESS=1 "$DOTFILES/bin/cc-demo-fixture"
 else
   printf '\n## Cockpit package\n'
-  printf 'skip Cockpit package\n'
+  printf 'fail Cockpit package\n'
   printf '     node/npm unavailable.\n'
-  skip=$((skip + 1))
+  fail=$((fail + 1))
 fi
 
 printf '\n## Summary\n\n'

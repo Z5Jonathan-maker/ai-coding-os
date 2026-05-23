@@ -1016,15 +1016,16 @@ body.panel-mode {
   grid-area: composer;
   align-self: start;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 190px;
-  row-gap: 14px;
-  column-gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  row-gap: 16px;
+  column-gap: 24px;
   margin-bottom: 0;
-  padding: 20px 24px;
+  padding: 24px 26px;
   border: 1px solid rgba(124, 92, 255, .16);
-  border-radius: 24px;
+  border-radius: 28px;
   background:
-    radial-gradient(circle at 4% 0%, rgba(66, 215, 199, .12), transparent 28%),
+    radial-gradient(circle at 3% 0%, rgba(66, 215, 199, .16), transparent 30%),
+    radial-gradient(circle at 100% 0%, rgba(124, 92, 255, .12), transparent 34%),
     linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(248, 246, 255, .86));
   box-shadow: 0 24px 70px rgba(68, 50, 160, .12);
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
@@ -1042,6 +1043,7 @@ body.panel-mode {
 }
 
 .panel-mode .composer-head,
+.panel-mode .continuation-copy,
 .panel-mode textarea,
 .panel-mode .chips,
 .panel-mode .composer-pills,
@@ -1055,16 +1057,68 @@ body.panel-mode {
   display: none;
 }
 
-.panel-mode textarea {
-  grid-column: 1 / -1;
-  height: 38px;
-  min-height: 38px;
-  max-height: 38px;
-  border: 0;
-  padding: 0;
+.continuation-copy span,
+.continuation-copy h3,
+.continuation-copy p {
+  display: block;
+}
+
+.continuation-copy span {
+  color: #6b5ce7;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.continuation-copy h3 {
+  max-width: 640px;
+  margin: 6px 0 0;
   color: #111827;
-  background: transparent;
-  font-size: 19px;
+  font-family: ui-serif, Georgia, serif;
+  font-size: 25px;
+  line-height: 1.12;
+}
+
+.continuation-copy p {
+  max-width: 660px;
+  margin: 8px 0 0;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+.continuation-signals {
+  grid-column: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.continuation-signals span {
+  min-height: 27px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(124, 92, 255, .1);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: #5b6478;
+  background: rgba(255, 255, 255, .64);
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.panel-mode textarea {
+  grid-column: 1;
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  border: 1px solid rgba(124, 92, 255, .1);
+  border-radius: 14px;
+  padding: 8px 12px;
+  color: #111827;
+  background: rgba(255, 255, 255, .56);
+  font-size: 13px;
   line-height: 1.35;
   resize: none;
 }
@@ -1079,8 +1133,10 @@ body.panel-mode {
 
 .panel-mode .runrow {
   grid-column: 2;
-  width: 184px;
+  grid-row: 1 / span 3;
+  width: 198px;
   justify-self: end;
+  align-self: center;
   grid-template-columns: 1fr;
   align-items: center;
 }
@@ -1090,8 +1146,8 @@ body.panel-mode {
 }
 
 .panel-mode .runrow .primary {
-  min-height: 42px;
-  border-radius: 11px;
+  min-height: 50px;
+  border-radius: 16px;
 }
 
 .panel-mode .composer-pills {
@@ -1101,7 +1157,7 @@ body.panel-mode {
 
 .panel-mode .pill {
   display: inline-flex;
-  min-height: 36px;
+  min-height: 31px;
   align-items: center;
   gap: 6px;
   border: 1px solid rgba(124, 92, 255, .1);
@@ -1127,8 +1183,7 @@ body.panel-mode {
 }
 
 .panel-mode .pill small {
-  color: #8a819e;
-  font-size: 11px;
+  display: none;
 }
 
 .panel-mode .pill.active {
@@ -1712,15 +1767,15 @@ body.panel-mode {
 
 @media (min-width: 1100px) {
   .panel-mode .composer {
-    grid-template-columns: minmax(0, 1fr) 190px;
+    grid-template-columns: minmax(0, 1fr) 198px;
   }
 
-  .panel-mode .runrow,
   .panel-mode .toolrow {
     grid-column: auto;
   }
 
   .panel-mode .runrow {
+    grid-column: 2;
     min-width: 0;
   }
 
@@ -1800,6 +1855,7 @@ body.panel-mode {
 
   .panel-mode .runrow {
     width: auto;
+    grid-row: auto;
     grid-column: 1 / -1;
     justify-self: stretch;
   }

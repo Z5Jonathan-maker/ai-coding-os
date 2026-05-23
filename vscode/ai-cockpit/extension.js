@@ -609,7 +609,17 @@ class CockpitProvider {
       <label for="prompt">Command</label>
       <span id="context">No active editor</span>
     </div>
-    <textarea id="prompt" rows="5" placeholder="Ask, adjust, or continue this mission."></textarea>
+    <div class="continuation-copy">
+      <span>Ready to continue</span>
+      <h3 id="continueTitle">Build the responsive pricing section.</h3>
+      <p id="continueBody">Codex will edit the component, Kimi will verify the browser preview, and the gate will run after changes settle.</p>
+    </div>
+    <div class="continuation-signals" aria-label="Continuation signals">
+      <span id="continueChanges">8 files staged</span>
+      <span id="continueTests">Tests passing</span>
+      <span id="continueRoute">Codex - Kimi</span>
+    </div>
+    <textarea id="prompt" rows="5" placeholder="Add a direction, or press Continue mission."></textarea>
     <div class="chips" id="chips"></div>
     <div class="composer-pills" aria-label="Primary context controls">
       <button class="pill active" data-mode="autoRun" aria-pressed="true"><span>Auto</span><small>Intelligent</small></button>
@@ -617,7 +627,7 @@ class CockpitProvider {
       <button class="pill" data-command="attachDiff"><span>Context</span><small>Diff + file</small></button>
     </div>
     <div class="runrow">
-      <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Continue work</span></button>
+      <button class="primary command-button" data-run-selected="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Continue mission</span></button>
       <button class="secondary command-button" data-run="explainRoute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h5l2 3h9"/><path d="M4 17h5l2-3h9"/><path d="M17 7l3 3-3 3"/><path d="M17 11l3 3-3 3"/></svg><span>Preview Route</span></button>
     </div>
     <section class="control-deck" aria-label="Cockpit controls">

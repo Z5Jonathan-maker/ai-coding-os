@@ -234,10 +234,13 @@
       button.disabled = running;
       button.setAttribute('aria-busy', String(running));
     });
+    const activeWorkstream = document.querySelector('.workstream.active');
+    const focus = activeWorkstream?.dataset.focus || 'current mission';
+    const focusBody = activeWorkstream?.dataset.focusBody || 'Routing context, files, and next action.';
     const activeAgent = document.querySelector('.mission-agent.active strong');
     const activeAgentNote = document.querySelector('.mission-agent.active small');
-    if (activeAgent) activeAgent.textContent = running ? 'Codex is continuing this mission.' : 'Codex is shaping the pricing component.';
-    if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : 'Editing layout, states, and CMS handoff.';
+    if (activeAgent) activeAgent.textContent = running ? 'Codex is continuing this mission.' : `Codex is handling ${focus.toLowerCase()}.`;
+    if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : focusBody;
   }
 
   function selectWorkstream(workstream) {
@@ -253,6 +256,11 @@
     setText('detailFocusBody', workstream.dataset.focusBody);
     setText('detailRoute', workstream.dataset.route);
     setText('detailStarted', workstream.dataset.started);
+    setText('continueTitle', workstream.dataset.focus);
+    setText('continueBody', workstream.dataset.focusBody);
+    setText('continueChanges', streamMeta(workstream, 'Changes'));
+    setText('continueTests', streamMeta(workstream, 'Tests'));
+    setText('continueRoute', workstream.dataset.route);
 
     const progress = clamp(Number(workstream.dataset.progress || 0), 0, 100);
     setText('detailProgress', `${progress}%`);
@@ -263,6 +271,13 @@
   function setText(id, value) {
     const node = $(id);
     if (node && value) node.textContent = value;
+  }
+
+  function streamMeta(workstream, label) {
+    const meta = Array.from(workstream.querySelectorAll('.stream-meta')).find((item) => {
+      return item.querySelector('span')?.textContent.trim() === label;
+    });
+    return meta?.querySelector('strong')?.textContent.trim() || '';
   }
 
   function clearTranscriptPrompt() {

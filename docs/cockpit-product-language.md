@@ -181,3 +181,12 @@ Default desktop hierarchy:
 5. Proof/details hidden until requested
 
 If a future layout makes the eye land on navigation, widgets, metrics, route proof, or task rows before the current mission, it violates this document.
+
+## Current North Star
+
+- Composition brief: `docs/cockpit-cinematic-composition-brief.md`
+- Prototype: `.design-mocks/cockpit-environment-v1.html`
+- Desktop proof: `docs/media/cockpit/composition/environment-v1-desktop.png`
+- Mobile proof: `docs/media/cockpit/composition/environment-v1-mobile.png`
+
+Production layout work should migrate toward this composition system instead of continuing to polish the older dashboard shell.

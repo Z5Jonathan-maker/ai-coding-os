@@ -165,3 +165,19 @@ Never ship:
 - Excessive labels
 - Dashboard rows
 - Anything that says "look what the system can do" instead of "just continue"
+
+## Architecture Rule
+
+The cockpit is not a dashboard with a hero. The cockpit is the hero.
+
+Navigation, activity, threads, proof, and context are supporting atmosphere. They must never visually compete with the continuation surface.
+
+Default desktop hierarchy:
+
+1. Ambient sidebar, icon-first and quiet
+2. Continuation surface occupying most of the viewport
+3. Momentum layer, faint and secondary
+4. Mission threads as living continuation links
+5. Proof/details hidden until requested
+
+If a future layout makes the eye land on navigation, widgets, metrics, route proof, or task rows before the current mission, it violates this document.

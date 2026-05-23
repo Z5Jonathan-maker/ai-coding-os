@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -u
+
+AI_ROOT="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+AI="${AI_ROOT}/scripts/ai"
+CONTROL="${AI_ROOT}/scripts/ai-control.sh"
+LAWS="${AI_ROOT}/memory/feedback-laws.md"
+PREFLIGHT="${AI_ROOT}/scripts/autonomy-preflight.sh"
+DEPTH="${AI_ROOT}/scripts/depth-check.cjs"
+EVOLVE="${AI_ROOT}/scripts/evolve.cjs"
+pass=0
+fail=0
+
+run() {
+  local name="$1" tmp
+  shift
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-feedback-law.XXXXXX")"
+  printf '\n## %s\n' "$name"
+  if "$@" >"$tmp" 2>&1; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    sed 's/^/     /' "$tmp" | sed -n '1,80p'
+    fail=$((fail + 1))
+  fi
+  rm -f "$tmp"
+}
+
+has_core_laws() {
+  local missing=0 law
+  for law in \
+    "Action Law" \
+    "Diagnostic First" \
+    "Diagnose Before Remediate" \
+    "Dump Keys" \
+    "Silent Skip Counter" \
+    "Incremental Save" \
+    "Speculative Write Ban" \
+    "Atomic Shared State" \
+    "Failure Cache Tiering" \
+    "Pressure Gate" \
+    "Exit-Code Discipline" \
+    "No Held Cycles" \
+    "Depth Compounds" \
+    "Stop Asking"; do
+    grep -Fq "| $law |" "$LAWS" || { printf 'missing law: %s\n' "$law"; missing=1; }
+  done
+  return "$missing"
+}
+
+preflight_loads_laws() {
+  grep -Fq 'feedback-laws.md' "$PREFLIGHT" &&
+    grep -Fq 'depth-check.cjs' "$PREFLIGHT" &&
+    grep -Fq 'hard stop' "$PREFLIGHT"
+}
+
+control_plane_exposes_laws() {
+  "$AI" feedback-laws | grep -Fq 'Feedback Laws' &&
+    "$AI" depth-check | grep -Eq 'Trend:|Next-deeper candidate:' &&
+    grep -Fq 'feedback-laws)' "$CONTROL" &&
+    grep -Fq 'depth-check)' "$CONTROL" &&
+    grep -Fq 'evolve)' "$CONTROL"
+}
+
+evolve_is_guarded() {
+  grep -Eq 'secret|credential|rm -rf|destructive' "$EVOLVE" &&
+    grep -Fq 'memory/feedback-laws.md' "$EVOLVE" &&
+    grep -Fq 'capabilities.jsonl' "$EVOLVE"
+}
+
+depth_check_is_actionable() {
+  node "$DEPTH" | grep -Eq 'DEPTH AUDIT|Next-deeper candidate:|Capability log:'
+}
+
+packaging_mentions_feedback_laws() {
+  grep -R "feedback laws" -n \
+    "$AI_ROOT/packaging" \
+    "$AI_ROOT/CONFIG-PACK.md" \
+    "$AI_ROOT/README.md" |
+    grep -Eq 'feedback laws'
+}
+
+printf '# Feedback Law Check\n\n'
+printf 'AI root: %s\n' "$AI_ROOT"
+printf 'Laws: %s\n' "$LAWS"
+
+run "AI system root present" test -d "$AI_ROOT"
+run "Feedback law file present" test -s "$LAWS"
+run "All core laws present" has_core_laws
+run "Autonomy preflight loads laws and depth" preflight_loads_laws
+run "Control plane exposes law commands" control_plane_exposes_laws
+run "Depth check emits actionable next move" depth_check_is_actionable
+run "Evolve command is guarded and logged" evolve_is_guarded
+run "Packaging documents feedback laws" packaging_mentions_feedback_laws
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: feedback-laws-ready\n'
+else
+  printf 'Status: feedback-laws-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

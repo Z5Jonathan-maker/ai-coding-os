@@ -4,6 +4,9 @@ This is the extraction plan for reference systems. It is not a casual research
 dump. Every reference is reduced to a track, a native AI Coding OS capability,
 and a verification gate.
 
+Code-level study before Agent Runtime Adapter implementation:
+`docs/CODE-EXTRACTION-STUDY-2026-05-23.md`.
+
 ## Rule
 
 Extract primitives, not product clutter.

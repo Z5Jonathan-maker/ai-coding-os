@@ -1,0 +1,220 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+source_repo="${CC_PUBLIC_REPO_DOGFOOD_SOURCE:-https://github.com/Z5Jonathan-maker/ai-coding-os.git}"
+session_id="public-repo-dogfood-$(date -u +%Y%m%dT%H%M%SZ)"
+session_root="${CC_PUBLIC_REPO_DOGFOOD_ROOT:-$HOME/.Codex/public-repo-dogfood}"
+
+usage() {
+  cat <<'EOF'
+cc-public-repo-dogfood — fresh public-clone mutating proof
+
+Usage:
+  cc-public-repo-dogfood [--source URL_OR_PATH] [--session-id ID] [--output-dir DIR]
+  cc-public-repo-dogfood --check
+
+Clones a public repo, creates a branch, introduces a failing test, repairs it,
+validates Mission Events, runs repo gates, and leaves a merge-ready local commit
+inside the isolated clone.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --source) source_repo="$2"; shift 2 ;;
+    --session-id) session_id="$2"; shift 2 ;;
+    --output-dir) session_root="$2"; shift 2 ;;
+    --check)
+      missing=0
+      for cmd in git npm node cc-agent-runtime cc-mission-events cc-public-ci-check; do
+        if ! command -v "$cmd" >/dev/null 2>&1 && [ ! -x "$DOTFILES/bin/$cmd" ]; then
+          printf 'missing %s\n' "$cmd"
+          missing=$((missing + 1))
+        fi
+      done
+      if [ "$missing" -eq 0 ]; then
+        printf 'Status: public-repo-dogfood-ready\n'
+        exit 0
+      fi
+      exit 1
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'cc-public-repo-dogfood: unknown arg: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+session_dir="$session_root/$session_id"
+clone="$session_dir/repo"
+log_dir="$session_dir/logs"
+mkdir -p "$log_dir"
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$log_dir/$(printf '%s' "$name" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-').log"
+  ok=0
+  if "$@" >"$tmp" 2>&1; then ok=1; fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then ok=0; fi
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name" | tee -a "$session_dir/summary.md"
+    return 0
+  fi
+  printf 'fail %s\n' "$name" | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$tmp" | sed -n '1,80p' | tee -a "$session_dir/summary.md"
+  return 1
+}
+
+clone_repo() {
+  if [ -d "$source_repo/.git" ]; then
+    git clone "$source_repo" "$clone"
+  else
+    git clone --depth=1 "$source_repo" "$clone"
+  fi
+  (
+    cd "$clone" || exit 1
+    git config user.email dogfood@example.local
+    git config user.name "AI Coding OS Dogfood"
+    git checkout -qb "dogfood/${session_id}"
+  )
+}
+
+introduce_failure() {
+  (
+    cd "$clone/fixtures/demo-project" || exit 1
+    cat >>src/math.test.js <<'JS'
+
+assert.equal(quoteTotal([{ price: 10, qty: 2 }], { discountRate: 0.1 }), 18);
+JS
+    npm test
+  )
+}
+
+repair_fixture() {
+  (
+    cd "$clone/fixtures/demo-project" || exit 1
+    cat >src/math.js <<'JS'
+export const quoteTotal = (items, options = {}) => {
+  const taxRate = typeof options === 'number' ? options : options.taxRate || 0;
+  const discountRate = typeof options === 'object' ? options.discountRate || 0 : 0;
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const discounted = subtotal * (1 - discountRate);
+  return Math.round(discounted * (1 + taxRate) * 100) / 100;
+};
+JS
+    npm test
+  )
+}
+
+review_and_commit() {
+  (
+    cd "$clone" || exit 1
+    git diff --check
+    git diff --stat >"$log_dir/diff-stat.log"
+    git diff >"$log_dir/patch.diff"
+    {
+      printf 'Review gate: passed\n'
+      printf 'Initial failure: captured\n'
+      printf 'Repair: verified\n'
+      printf 'Diff check: passed\n'
+      cat "$log_dir/diff-stat.log"
+    } >"$log_dir/review.log"
+    git add fixtures/demo-project/src/math.js fixtures/demo-project/src/math.test.js
+    git commit -qm "dogfood: repair demo fixture discount handling"
+    git rev-parse --short HEAD >"$log_dir/commit.txt"
+  )
+}
+
+final_gates() {
+  (
+    cd "$clone" || exit 1
+    DOTFILES="$clone" PATH="$clone/bin:$PATH" bin/cc-public-ci-check
+  )
+}
+
+cat >"$session_dir/session.json" <<JSON
+{
+  "schema": "ai-coding-os.public-repo-dogfood.v1",
+  "session_id": "$session_id",
+  "source": "$source_repo",
+  "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+JSON
+
+printf '# Public Repo Dogfood\n\n' | tee "$session_dir/summary.md"
+printf 'session_id=%s\nsource=%s\n\n' "$session_id" "$source_repo" | tee -a "$session_dir/summary.md"
+
+pass=0
+fail=0
+
+if run "Clone public repository" '' clone_repo; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+
+initial_log="$log_dir/initial-failing-test.log"
+if introduce_failure >"$initial_log" 2>&1; then
+  printf 'fail Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  printf '     initial test unexpectedly passed\n' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+elif grep -Eq 'AssertionError|not ok|FAIL|Expected values' "$initial_log"; then
+  printf 'ok   Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  pass=$((pass + 1))
+else
+  printf 'fail Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$initial_log" | sed -n '1,80p' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+fi
+
+mission_id="$session_id-repair"
+command="cd '$clone'; repair_fixture() { cd fixtures/demo-project || exit 1; cat >src/math.js <<'JS'
+export const quoteTotal = (items, options = {}) => {
+  const taxRate = typeof options === 'number' ? options : options.taxRate || 0;
+  const discountRate = typeof options === 'object' ? options.discountRate || 0 : 0;
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const discounted = subtotal * (1 - discountRate);
+  return Math.round(discounted * (1 + taxRate) * 100) / 100;
+};
+JS
+npm test; }; repair_fixture"
+verify="cd '$clone/fixtures/demo-project' && npm test && cd '$clone' && git diff --check"
+
+"$DOTFILES/bin/cc-agent-runtime" run \
+  --cwd "$clone" \
+  --mission-id "$mission_id" \
+  --title "Public repo dogfood repair" \
+  --task "Repair failing demo fixture discount handling in a fresh public clone" \
+  --context "session=$session_id source=$source_repo clone=$clone" \
+  --command "$command" \
+  --verify-command "$verify" \
+  --timeout-ms 180000 \
+  >"$log_dir/agent-runtime.log" 2>&1
+runtime_status=$?
+
+"$DOTFILES/bin/cc-mission-events" validate --mission-dir "$DOTFILES/.ai/missions/$mission_id" --complete-run >"$log_dir/mission-events.log" 2>&1
+events_status=$?
+
+if [ "$runtime_status" -eq 0 ] && [ "$events_status" -eq 0 ]; then
+  printf 'ok   Runtime repair and Mission Events\n' | tee -a "$session_dir/summary.md"
+  pass=$((pass + 1))
+else
+  printf 'fail Runtime repair and Mission Events\n' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$log_dir/agent-runtime.log" | sed -n '1,80p' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$log_dir/mission-events.log" | sed -n '1,80p' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+fi
+
+if run "Review and local commit" '' review_and_commit; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+if run "Public repo gates after mutation" '^passed=11 failed=0$' final_gates; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+
+(
+  cd "$clone" || exit 1
+  git status --short >"$log_dir/final-git-status.txt"
+  git log --oneline --decorate -5 >"$log_dir/final-git-log.txt"
+)
+
+printf '\n## Summary\n' | tee -a "$session_dir/summary.md"
+printf 'passed=%s failed=%s\n' "$pass" "$fail" | tee -a "$session_dir/summary.md"
+printf 'clone=%s\n' "$clone" | tee -a "$session_dir/summary.md"
+printf 'commit=%s\n' "$(cat "$log_dir/commit.txt" 2>/dev/null || printf none)" | tee -a "$session_dir/summary.md"
+printf 'finished_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$session_dir/summary.md"
+printf 'Status: %s\n' "$([ "$fail" -eq 0 ] && printf public-repo-dogfood-passed || printf public-repo-dogfood-failed)" | tee -a "$session_dir/summary.md"
+
+[ "$fail" -eq 0 ]

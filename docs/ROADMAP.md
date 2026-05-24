@@ -41,6 +41,8 @@ developer-grade public launch.
 - Add a larger public-repo mutating dogfood with failing CI, repair, review,
   and merge-ready diff. The isolated fixture version is done:
   `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
+- Add a third-party public-repo dogfood. The first public-clone version against
+  AI Coding OS itself is done: `docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`.
 
 ## v1.0.0
 

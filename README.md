@@ -44,6 +44,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
 - Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
 - Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
+- Public-repo dogfood: `docs/PUBLIC-REPO-DOGFOOD.md`
+- Public-repo dogfood report: `docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`
 - Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
@@ -121,6 +123,7 @@ cc-ai-checks
 cc-superiority-check
 cc-dogfood-session --check
 cc-mutating-dogfood --check
+cc-public-repo-dogfood --check
 cc-agent-runtime --check
 cc-mission-events --check
 cc-mission-kernel --check
@@ -161,6 +164,9 @@ Kernel cycles, validate Mission Events, capture logs, and finish with product
 gates.
 `cc-mutating-dogfood` proves the isolated mutating path: failing tests, real
 edits, recovery, review evidence, Mission Events, and commits.
+`cc-public-repo-dogfood` raises that proof to a fresh public clone with a local
+branch, failing test, runtime repair, Mission Events, local commit, and public
+CI gate.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

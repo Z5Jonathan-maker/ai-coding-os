@@ -118,18 +118,19 @@ media_artifacts() {
 }
 
 personal_path_leaks() {
-  local bad=0 users_path user_name pattern
+  local bad=0 users_path user_name pattern tmp files
   users_path="$(printf '/%s/' Users)"
   user_name="$(id -un 2>/dev/null || true)"
   pattern="${users_path}[A-Za-z0-9._-]+"
   [ -n "$user_name" ] && pattern="$pattern|$user_name"
-  if rg -n "$pattern" \
-    bin vscode docs .github README.md .ai \
-    -g '!docs/archive/**' >/tmp/cc-public-ci-paths.out 2>/dev/null; then
-    cat /tmp/cc-public-ci-paths.out
+  tmp="$(mktemp "${TMPDIR:-/tmp}/cc-public-ci-paths.XXXXXX")"
+  files="$(mktemp "${TMPDIR:-/tmp}/cc-public-ci-files.XXXXXX")"
+  git ls-files -z -- bin vscode docs .github README.md .ai >"$files"
+  if xargs -0 rg -n "$pattern" <"$files" >"$tmp" 2>/dev/null; then
+    cat "$tmp"
     bad=1
   fi
-  rm -f /tmp/cc-public-ci-paths.out
+  rm -f "$tmp" "$files"
   return "$bad"
 }
 

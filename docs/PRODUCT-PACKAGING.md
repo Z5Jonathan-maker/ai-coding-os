@@ -13,6 +13,8 @@ The first sustained six-hour dogfood proof lives at
 `docs/DOGFOOD-REPORT-2026-05-24.md`.
 The first isolated mutating coding proof lives at
 `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
+The first larger public-clone coding proof lives at
+`docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`.
 Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
 artifact contract lives at `docs/MISSION-KERNEL.md`.
 
@@ -65,6 +67,8 @@ trust tier, and safety boundary.
 - **Mutating dogfood runner:** `cc-mutating-dogfood` proves real isolated code
   edits with failing tests, recovery, review evidence, Mission Events, and
   commits.
+- **Public-repo dogfood runner:** `cc-public-repo-dogfood` proves the same
+  path in a fresh public clone with a branch, local commit, and public CI gate.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -243,6 +247,8 @@ Installed system is 100% when:
     dependencies are installed before a six-hour run
 23. `cc-mutating-dogfood --check` proves the isolated mutating coding-session
     runner and dependencies are installed
+24. `cc-public-repo-dogfood --check` proves the larger public-clone dogfood
+    runner and dependencies are installed
 
 Daily-driver confidence is sampled by:
 
@@ -289,6 +295,8 @@ Sellable system is 100% when:
 19. the mutating dogfood runner can prove the code-edit path with failing
     tests, recovery edits, review evidence, event validation, and commits in an
     isolated workspace
+20. the public-repo dogfood runner can prove a fresh public clone, branch,
+    failing test, runtime repair, review, local commit, and public CI gate
 
 The strict gate is:
 

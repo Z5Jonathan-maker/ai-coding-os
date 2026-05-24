@@ -55,14 +55,18 @@ else
 fi
 
 section "Permission"
-if command -v cc-permission-matrix >/dev/null 2>&1; then
+if [ -x "$DOTFILES/bin/cc-permission-matrix" ]; then
+  "$DOTFILES/bin/cc-permission-matrix" --summary
+elif command -v cc-permission-matrix >/dev/null 2>&1; then
   cc-permission-matrix --summary
 else
   printf 'cc-permission-matrix unavailable\n'
 fi
 
 section "Checkpoints"
-if command -v cc-checkpoints >/dev/null 2>&1; then
+if [ -x "$DOTFILES/bin/cc-checkpoints" ]; then
+  "$DOTFILES/bin/cc-checkpoints" summary
+elif command -v cc-checkpoints >/dev/null 2>&1; then
   cc-checkpoints summary
 else
   printf 'cc-checkpoints unavailable\n'
@@ -78,10 +82,12 @@ else
 fi
 
 section "Jobs"
-if command -v cc-jobs >/dev/null 2>&1; then
+if [ -x "$DOTFILES/bin/cc-jobs" ]; then
+  "$DOTFILES/bin/cc-jobs" | sed -n '1,12p'
+elif command -v cc-jobs >/dev/null 2>&1; then
   cc-jobs | sed -n '1,12p'
 else
-  printf 'cc-jobs unavailable\n'
+  printf 'Source: no local job runner installed; no detached jobs to show.\n'
 fi
 
 section "Router Usage"
@@ -95,7 +101,7 @@ fi
 
 section "Core Commands"
 for cmd in codex claude kimi deepseek router-ask cc-system-demo; do
-  if command -v "$cmd" >/dev/null 2>&1; then
+  if [ -x "$DOTFILES/bin/$cmd" ] || command -v "$cmd" >/dev/null 2>&1; then
     printf -- '- %s: present\n' "$cmd"
   else
     printf -- '- %s: missing\n' "$cmd"

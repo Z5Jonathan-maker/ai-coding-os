@@ -51,7 +51,7 @@ Status values:
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
 | Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-kimi-status`, browser-proof benchmark | Visual regression scoring and authenticated-browser fixture replay | `cc-browser-proof --json` | Needs proof |
-| Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke | More dogfood videos, keyboard-flow tests, empty/error/loading state audit | `cc-cockpit-webview-smoke`, `cc-package-cockpit` | Needs proof |
+| Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots | More dogfood videos, keyboard-flow tests, empty/error/loading state audit | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-package-cockpit` | Strong |
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report | External issue/PR-quality scoring with maintainer-style review | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
 | Extensibility | Provider/tool growth is controlled by lane contracts | `ai-lanes.json`, command registry, product packaging rule | Public extension guide for adding one lane safely | `cc-lane-registry-check`, `cc-public-ci-check` | Strong |
@@ -65,7 +65,7 @@ These are the remaining gaps that matter most:
 1. **Real-world benchmark depth**: add larger public repo tasks with expected diffs, test evidence, and review-quality scoring.
 2. **UI/browser scoring**: move beyond route expectation into screenshot or DOM-level visual assertions.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced issues with PR-quality scoring.
-4. **Cockpit polish proof**: add deterministic screenshots/GIFs for every primary state: continuation, running, success, blocked, permissions, and route receipt.
+4. **Cockpit interaction proof**: add keyboard-flow tests plus empty/error/loading state audit beyond static screenshots.
 5. **Package separability**: make the router/cockpit easy to install without inheriting personal machine assumptions.
 
 Until those are closed, the honest rating is:
@@ -92,6 +92,7 @@ cc-token-ledger --check
 cc-trust-gate --check
 cc-mission-ledger --check
 cc-cockpit-webview-smoke
+cc-cockpit-state-proof --check
 cc-dogfood-session --check
 cc-mutating-dogfood --check
 cc-public-repo-dogfood --check

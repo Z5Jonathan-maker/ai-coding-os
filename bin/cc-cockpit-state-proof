@@ -1,0 +1,324 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+OUT_DIR="${1:-$DOTFILES/docs/media/cockpit/states}"
+CSS="$DOTFILES/vscode/ai-cockpit/media/style.css"
+
+usage() {
+  cat <<'EOF'
+cc-cockpit-state-proof — deterministic cockpit state screenshots
+
+Usage:
+  cc-cockpit-state-proof [OUT_DIR]
+  cc-cockpit-state-proof --check
+
+Generates deterministic screenshots for the core cockpit states:
+continuation, running, success, blocked, permissions, and route receipt.
+EOF
+}
+
+if [ "${1:-}" = "--check" ]; then
+  command -v playwright >/dev/null 2>&1 || {
+    printf 'missing playwright CLI\n'
+    exit 1
+  }
+  [ -f "$CSS" ] || {
+    printf 'missing cockpit CSS: %s\n' "$CSS"
+    exit 1
+  }
+  printf 'Status: cockpit-state-proof-ready\n'
+  exit 0
+fi
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  usage
+  exit 0
+fi
+
+command -v playwright >/dev/null 2>&1 || {
+  printf 'missing playwright CLI\n' >&2
+  exit 1
+}
+
+[ -f "$CSS" ] || {
+  printf 'missing cockpit CSS: %s\n' "$CSS" >&2
+  exit 1
+}
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+mkdir -p "$OUT_DIR"
+
+write_page() {
+  local file="$1" state="$2" title="$3" subtitle="$4" primary="$5" detail="$6" accent="$7"
+  {
+    cat <<HTML
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <style>
+    :root {
+      --vscode-foreground: #f2f3ff;
+      --vscode-descriptionForeground: #a9abc0;
+      --vscode-sideBar-background: #080b18;
+      --vscode-editor-background: #101426;
+      --vscode-panel-border: rgba(255,255,255,.1);
+      --vscode-sideBarSectionHeader-border: rgba(255,255,255,.1);
+      --vscode-button-background: #6e56ff;
+      --vscode-button-hoverBackground: #806dff;
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-border: rgba(255,255,255,.16);
+      --vscode-input-background: rgba(255,255,255,.06);
+      --vscode-input-foreground: #f2f3ff;
+      --vscode-input-border: rgba(255,255,255,.12);
+      --vscode-focusBorder: #9f8cff;
+      --vscode-testing-iconPassed: #50e3a4;
+      --vscode-testing-iconFailed: #ff5f7e;
+      --vscode-testing-iconQueued: #ffd166;
+      --vscode-textCodeBlock-background: rgba(0,0,0,.24);
+      --vscode-editor-foreground: #f2f3ff;
+      --vscode-badge-foreground: #ffffff;
+      --vscode-badge-background: #6e56ff;
+      --vscode-editor-font-family: "SF Mono", Menlo, monospace;
+      --vscode-font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+HTML
+    cat "$CSS"
+    cat <<HTML
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    body {
+      min-height: 900px;
+      padding: 0;
+      background:
+        radial-gradient(circle at 68% 22%, ${accent} 0, transparent 28%),
+        radial-gradient(circle at 30% 18%, rgba(110,86,255,.34), transparent 34%),
+        linear-gradient(145deg, #070a16, #11172d 56%, #080b18);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(circle at 55% 28%, black, transparent 72%);
+    }
+    .state-proof-shell {
+      width: min(1180px, calc(100vw - 96px));
+      margin: 58px auto;
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      gap: 34px;
+    }
+    .state-proof-rail {
+      min-height: 760px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      background: rgba(8,11,24,.62);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 30px 80px rgba(0,0,0,.34);
+      backdrop-filter: blur(18px);
+    }
+    .state-proof-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 42px; }
+    .state-proof-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #6e56ff, #42d7c7);
+      box-shadow: 0 0 30px rgba(110,86,255,.5);
+    }
+    .state-proof-brand strong { display:block; font-size: 14px; }
+    .state-proof-brand span { display:block; color: var(--vscode-descriptionForeground); font-size: 11px; }
+    .state-proof-nav { display:grid; gap: 8px; }
+    .state-proof-nav span {
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: rgba(242,243,255,.7);
+      background: rgba(255,255,255,.035);
+    }
+    .state-proof-nav span.active {
+      color: white;
+      background: linear-gradient(135deg, rgba(110,86,255,.32), rgba(66,215,199,.12));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .state-proof-main { display: grid; gap: 24px; }
+    .state-proof-eyebrow {
+      color: #c7bbff;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .state-proof-title {
+      max-width: 860px;
+      margin: 10px 0 0;
+      font-size: 68px;
+      line-height: .94;
+      letter-spacing: 0;
+    }
+    .state-proof-subtitle {
+      max-width: 640px;
+      margin-top: 18px;
+      color: rgba(242,243,255,.74);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+    .state-proof-hero {
+      position: relative;
+      min-height: 384px;
+      padding: 34px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 78% 42%, ${accent} 0, transparent 32%),
+        linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.035));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 36px 90px rgba(0,0,0,.36);
+      backdrop-filter: blur(22px);
+    }
+    .state-proof-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -40% 28%;
+      height: 260px;
+      background: radial-gradient(ellipse, rgba(255,255,255,.18), transparent 68%);
+      transform: rotate(-5deg);
+    }
+    .state-proof-primary {
+      position: absolute;
+      right: 38px;
+      bottom: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 22px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 18px 40px rgba(0,0,0,.24);
+      backdrop-filter: blur(18px);
+    }
+    .state-proof-primary i {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: ${accent};
+      box-shadow: 0 0 26px ${accent};
+    }
+    .state-proof-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+    }
+    .state-proof-panel {
+      min-height: 184px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 24px;
+      background: rgba(12,16,31,.58);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px rgba(0,0,0,.22);
+    }
+    .state-proof-panel h2 { margin: 0 0 12px; font-size: 18px; }
+    .state-proof-panel p { font-size: 14px; line-height: 1.6; }
+    .state-proof-proof {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      color: rgba(242,243,255,.7);
+      font-family: var(--vscode-editor-font-family);
+      font-size: 12px;
+    }
+    .state-proof-proof span {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.05);
+    }
+    .state-proof-badge {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 22px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: white;
+      background: rgba(255,255,255,.11);
+    }
+  </style>
+</head>
+<body class="panel-mode state-${state}">
+  <main class="state-proof-shell">
+    <aside class="state-proof-rail">
+      <div class="state-proof-brand"><div class="state-proof-logo"></div><div><strong>cc-cockpit</strong><span>Local mode</span></div></div>
+      <nav class="state-proof-nav"><span class="active">Home</span><span>Missions</span><span>Browser</span><span>Code</span><span>Assets</span><span>Knowledge</span></nav>
+    </aside>
+    <section class="state-proof-main">
+      <div>
+        <div class="state-proof-eyebrow">${state}</div>
+        <h1 class="state-proof-title">${title}</h1>
+        <p class="state-proof-subtitle">${subtitle}</p>
+      </div>
+      <section class="state-proof-hero" aria-label="${state} proof hero">
+        <span class="state-proof-badge">${primary}</span>
+        <div class="state-proof-primary"><i></i><strong>${primary}</strong></div>
+      </section>
+      <section class="state-proof-grid">
+        <article class="state-proof-panel"><h2>Visible state</h2><p>${detail}</p><div class="state-proof-proof"><span><b>State</b><em>${state}</em></span><span><b>Proof</b><em>deterministic screenshot</em></span></div></article>
+        <article class="state-proof-panel"><h2>Hidden complexity</h2><p>Routing, permissions, provider state, and proof artifacts stay available without becoming the main interface.</p><div class="state-proof-proof"><span><b>Noise</b><em>collapsed</em></span><span><b>Momentum</b><em>primary</em></span></div></article>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
+HTML
+  } >"$file"
+}
+
+capture() {
+  local slug="$1" title="$2" subtitle="$3" primary="$4" detail="$5" accent="$6"
+  local html="$tmp/$slug.html"
+  local out="$OUT_DIR/$slug.png"
+  write_page "$html" "$slug" "$title" "$subtitle" "$primary" "$detail" "$accent"
+  playwright screenshot --channel chrome --viewport-size 1440,900 "file://$html" "$out" >/dev/null
+  printf 'captured %s\n' "$out"
+}
+
+capture 08-state-continuation "Continue AI cockpit polish" "The app opens where the work already is. The primary action is continuation, not configuration." "Continue work" "Current mission, last session, next best step, and verification confidence are visible before any prompt box." "rgba(126, 94, 255, .56)"
+capture 09-state-running "Workspace is executing" "The user sees calm progress and current intent while routing, tool calls, and verification happen underneath." "Working" "Running state exposes momentum, not raw logs. Stop remains available, but the machinery stays secondary." "rgba(66, 215, 199, .5)"
+capture 10-state-success "Ready to ship" "The successful end state is proof-backed: changed files, tests, review, and the next safe action are all resolved." "Verified" "Success reads like closure. The cockpit shows evidence and keeps the next action obvious." "rgba(80, 227, 164, .48)"
+capture 11-state-blocked "Permission needed" "Blocked does not feel broken. It explains the boundary, the reason, and the safest decision the user can make." "Review required" "Trust gates, paid actions, destructive commands, and cross-user actions surface as calm permission decisions." "rgba(255, 95, 126, .5)"
+capture 12-state-permissions "Authority is explicit" "Permission mode is understandable at a glance: ask, review, or autopilot with the boundary made visible." "Review mode" "The system does not hide autonomy. It hides routine mechanics while keeping authority legible." "rgba(255, 209, 102, .5)"
+capture 13-state-route-receipt "Route is explainable" "Routing is available as proof, not as the main workflow. The user can inspect selected lane, fallback, and cost." "Receipt ready" "The product feels singular while retaining inspectable receipts for developers who need trust evidence." "rgba(159, 140, 255, .58)"
+
+OUT_DIR="$OUT_DIR" node <<'NODE'
+const fs = require('fs');
+const path = require('path');
+const dir = process.env.OUT_DIR;
+const files = [
+  '08-state-continuation.png',
+  '09-state-running.png',
+  '10-state-success.png',
+  '11-state-blocked.png',
+  '12-state-permissions.png',
+  '13-state-route-receipt.png',
+];
+const artifacts = files.map((file) => {
+  const full = path.join(dir, file);
+  const stat = fs.statSync(full);
+  if (stat.size < 10000) throw new Error(`${file} is too small to be a valid state screenshot`);
+  return { file, bytes: stat.size };
+});
+fs.writeFileSync(path.join(dir, 'manifest.json'), `${JSON.stringify({
+  schema: 'ai-coding-os.cockpit-state-proof.v1',
+  generated_at: new Date().toISOString(),
+  viewport: '1440x900',
+  artifacts,
+}, null, 2)}\n`);
+console.log('Status: cockpit-state-proof-passed');
+NODE

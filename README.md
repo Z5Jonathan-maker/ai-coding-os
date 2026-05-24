@@ -41,6 +41,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Mission kernel: `docs/MISSION-KERNEL.md`
 - Mission events: `docs/MISSION-EVENTS.md`
 - Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
+- Cockpit state proof: `docs/media/cockpit/states/manifest.json`
 - Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
 - Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
 - Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
@@ -131,6 +132,7 @@ cc-agent-runtime --check
 cc-mission-events --check
 cc-mission-kernel --check
 cc-cockpit-webview-smoke
+cc-cockpit-state-proof --check
 cc-benchmark-fixtures
 cc-fresh-clone-check
 cc-public-ci-check
@@ -162,6 +164,8 @@ mission can write route, trust, cost, proof, result, and normalized timeline
 artifacts.
 `cc-mission-events` validates the normalized runtime event language so cockpit
 state is based on durable events, not provider-specific logs.
+`cc-cockpit-state-proof` regenerates deterministic screenshots for
+continuation, running, success, blocked, permissions, and route-receipt states.
 `cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
 Kernel cycles, validate Mission Events, capture logs, and finish with product
 gates.
@@ -191,7 +195,9 @@ top-risk reasoning across multiple files.
 ![AI Cockpit readiness preview](docs/media/cockpit/01-readiness.png)
 
 More launch media lives in `docs/media/cockpit/` and is regenerated with
-`cc-cockpit-capture`.
+`cc-cockpit-capture`. Primary cockpit state proofs live in
+`docs/media/cockpit/states/` and are regenerated with
+`cc-cockpit-state-proof`.
 
 ## Local Install
 

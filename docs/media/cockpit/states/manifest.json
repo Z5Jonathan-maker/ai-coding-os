@@ -1,0 +1,31 @@
+{
+  "schema": "ai-coding-os.cockpit-state-proof.v1",
+  "generated_at": "2026-05-24T12:32:42.718Z",
+  "viewport": "1440x900",
+  "artifacts": [
+    {
+      "file": "08-state-continuation.png",
+      "bytes": 614360
+    },
+    {
+      "file": "09-state-running.png",
+      "bytes": 614591
+    },
+    {
+      "file": "10-state-success.png",
+      "bytes": 613911
+    },
+    {
+      "file": "11-state-blocked.png",
+      "bytes": 616643
+    },
+    {
+      "file": "12-state-permissions.png",
+      "bytes": 615488
+    },
+    {
+      "file": "13-state-route-receipt.png",
+      "bytes": 615913
+    }
+  ]
+}

@@ -37,6 +37,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
 - `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.
+- `cc-cockpit-state-proof` — deterministic cockpit state screenshots for continuation, running, success, blocked, permissions, and route receipt.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.

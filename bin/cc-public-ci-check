@@ -108,7 +108,14 @@ media_artifacts() {
     docs/media/cockpit/05-composer.png \
     docs/media/cockpit/05-composer.gif \
     docs/media/cockpit/06-full-panel.png \
-    docs/media/cockpit/06-package.png; do
+    docs/media/cockpit/06-package.png \
+    docs/media/cockpit/states/08-state-continuation.png \
+    docs/media/cockpit/states/09-state-running.png \
+    docs/media/cockpit/states/10-state-success.png \
+    docs/media/cockpit/states/11-state-blocked.png \
+    docs/media/cockpit/states/12-state-permissions.png \
+    docs/media/cockpit/states/13-state-route-receipt.png \
+    docs/media/cockpit/states/manifest.json; do
     if [ ! -s "$file" ]; then
       printf 'missing media artifact: %s\n' "$file"
       missing=1

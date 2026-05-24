@@ -15,6 +15,12 @@ surface, not a terminal command list.
 | 05-composer | Sidebar composer with mode selector, context chips, prompt, and streamed result | `AI: Ask / Plan` from the cockpit |
 | 06-full-panel | Full editor-panel cockpit with large Work Stream and bottom composer | `AI Cockpit: Open Full Cockpit` |
 | 06-package | VSIX package proof for the extension | `cc-package-cockpit` |
+| 08-state-continuation | Primary continuation state | `cc-cockpit-state-proof` |
+| 09-state-running | Calm in-progress execution state | `cc-cockpit-state-proof` |
+| 10-state-success | Proof-backed completed state | `cc-cockpit-state-proof` |
+| 11-state-blocked | Permission/trust blocked state | `cc-cockpit-state-proof` |
+| 12-state-permissions | Authority selector/state explanation | `cc-cockpit-state-proof` |
+| 13-state-route-receipt | Inspectable routing proof | `cc-cockpit-state-proof` |
 
 ## Capture Standards
 
@@ -36,6 +42,13 @@ docs/media/cockpit/04-browser-proof.png
 docs/media/cockpit/05-composer.gif
 docs/media/cockpit/06-full-panel.png
 docs/media/cockpit/06-package.png
+docs/media/cockpit/states/08-state-continuation.png
+docs/media/cockpit/states/09-state-running.png
+docs/media/cockpit/states/10-state-success.png
+docs/media/cockpit/states/11-state-blocked.png
+docs/media/cockpit/states/12-state-permissions.png
+docs/media/cockpit/states/13-state-route-receipt.png
+docs/media/cockpit/states/manifest.json
 ```
 
 ## Launch README Placement
@@ -60,6 +73,15 @@ This writes the required media files under `docs/media/cockpit/` from the real
 cockpit CSS and representative product states. It is the fallback when macOS is
 locked or real VS Code GUI capture is unavailable.
 
+Deterministic state proof is available through:
+
+```sh
+cc-cockpit-state-proof
+```
+
+This writes the primary state screenshots under `docs/media/cockpit/states/`
+and emits a manifest with file sizes and viewport metadata.
+
 ## Attempt Log
 
 - 2026-05-21: CLI/package proof is ready, but unattended GUI capture hit macOS
@@ -68,3 +90,5 @@ locked or real VS Code GUI capture is unavailable.
   VS Code render harness.
 - 2026-05-21: Added scripted render harness via `cc-cockpit-capture` so launch
   media can be regenerated without an unlocked desktop.
+- 2026-05-24: Added `cc-cockpit-state-proof` for deterministic continuation,
+  running, success, blocked, permissions, and route-receipt state screenshots.

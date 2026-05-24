@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 
 app_path() {
   local name="$1"
@@ -47,7 +49,9 @@ print_app 'Kimi Desktop' 'Kimi' 'design/browser/operator lane, WebBridge, Kimi C
 print_app 'Perplexity Desktop' 'Perplexity' 'reference only unless installed; research/search/native app-control patterns'
 
 printf '## Kimi WebBridge\n\n'
-if command -v cc-kimi-status >/dev/null 2>&1; then
+if [ -x "$DOTFILES/bin/cc-kimi-status" ]; then
+  "$DOTFILES/bin/cc-kimi-status" | sed -n '1,18p'
+elif command -v cc-kimi-status >/dev/null 2>&1; then
   cc-kimi-status | sed -n '1,18p'
 else
   printf 'cc-kimi-status: missing\n'
@@ -55,3 +59,4 @@ fi
 
 printf '\n## Fit\n\n'
 printf 'Native apps are dependency/status surfaces, not extra cockpit lanes. The cockpit should expose what is installed, what is connected, and which external app owns each role.\n'
+printf '\nStatus: native-app-status-ready\n'

@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const demoRel = 'demos/frontend-wedge/ai-coding-os/index.html';
+const demoPath = path.join(root, demoRel);
+const tasteBenchmarkPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'taste.benchmark.json');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message, detail = '') {
+  console.log(`fail ${message}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 20).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function expect(cond, message, detail = '') {
+  cond ? ok(message) : bad(message, detail);
+}
+
+function weightedScore(dimensions) {
+  const entries = Object.entries(dimensions || {});
+  const totalWeight = entries.reduce((sum, [, item]) => sum + Number(item.weight || 0), 0);
+  const totalScore = entries.reduce((sum, [, item]) => sum + Number(item.weight || 0) * Number(item.score || 0), 0);
+  return totalWeight ? totalScore / totalWeight : 0;
+}
+
+function collectAssetRefs(html) {
+  const refs = new Set();
+  for (const re of [/url\("([^"]+)"\)/g, /<img[^>]+src="([^"]+)"/g]) {
+    let match;
+    while ((match = re.exec(html))) {
+      const ref = match[1];
+      if (ref && !ref.startsWith('http') && !ref.startsWith('data:')) refs.add(ref);
+    }
+  }
+  return [...refs];
+}
+
+console.log('# Frontend Demo Check\n');
+console.log(`Root: ${root}`);
+console.log(`Demo: ${demoRel}\n`);
+
+expect(fs.existsSync(demoPath), 'demo HTML exists');
+const html = fs.existsSync(demoPath) ? fs.readFileSync(demoPath, 'utf8') : '';
+
+for (const id of ['hero', 'proof', 'features', 'showcase', 'cta']) {
+  expect(new RegExp(`<section[^>]+id="${id}"`).test(html), `section exists: ${id}`);
+}
+expect(/<footer[\s>]/.test(html), 'footer exists');
+expect(/Creative direction becomes[\s\S]*production software\./.test(html), 'headline states the product wedge');
+expect(html.includes('Taste-first AI software creation'), 'taste-first positioning present');
+expect(/creative kernel/i.test(html), 'creative kernel explained');
+expect(html.includes('design DNA'), 'design DNA explained');
+expect(/proof bundle/i.test(html), 'proof bundle explained');
+expect(html.includes('92.3/100'), 'taste benchmark metric visible');
+expect(html.includes('56/56'), 'AI checks metric visible');
+expect(html.includes('80/80'), 'superiority proof metric visible');
+expect(!/trusted by|testimonial|customers love|fortune 500/i.test(html), 'no fake social proof language');
+expect(/@media \(max-width: 940px\)/.test(html) && /@media \(max-width: 640px\)/.test(html), 'responsive breakpoints present');
+expect(/prefers-reduced-motion/.test(html), 'reduced-motion support present');
+expect(/<meta name="description"/.test(html), 'meta description present');
+expect(/<nav[^>]+aria-label="Primary navigation"/.test(html), 'accessible primary nav present');
+
+const refs = collectAssetRefs(html);
+expect(refs.length >= 4, `visual asset references present (${refs.length})`);
+for (const ref of refs) {
+  const abs = path.resolve(path.dirname(demoPath), ref);
+  expect(fs.existsSync(abs), `asset exists: ${ref}`);
+}
+
+expect(fs.existsSync(tasteBenchmarkPath), 'taste benchmark fixture exists');
+if (fs.existsSync(tasteBenchmarkPath)) {
+  const benchmark = JSON.parse(fs.readFileSync(tasteBenchmarkPath, 'utf8'));
+  const score = weightedScore(benchmark.dimensions);
+  expect(score >= 90, `taste benchmark clears 90 (${score.toFixed(1)})`);
+}
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: frontend-demo-blocked' : 'Status: frontend-demo-ready');
+process.exit(fail ? 1 : 0);

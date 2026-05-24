@@ -50,3 +50,5 @@ The workflow is only real when it produces:
 
 The gate for this wedge is `cc-frontend-wedge-check`.
 The taste scoring gate is `cc-taste-benchmark-check`.
+The human-visible flagship demo is `demos/frontend-wedge/ai-coding-os/index.html`.
+Its portability and proof-language gate is `cc-frontend-demo`.

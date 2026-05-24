@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Coding OS | Taste-driven software creation</title>
+  <meta name="description" content="AI Coding OS turns creative direction into premium production software through routed cognition, proof bundles, and taste validation.">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f2ff;
+      --muted: #a9a4ba;
+      --bg: #03040a;
+      --panel: rgba(15, 18, 33, 0.58);
+      --violet: #8d6dff;
+      --cyan: #70e1ff;
+      --green: #70f5b1;
+      --rose: #ff8aa6;
+      --gold: #ffd27a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 72% 12%, rgba(141, 109, 255, 0.27), transparent 26rem),
+        radial-gradient(circle at 24% 18%, rgba(112, 225, 255, 0.12), transparent 24rem),
+        radial-gradient(circle at 68% 72%, rgba(255, 138, 166, 0.13), transparent 28rem),
+        linear-gradient(145deg, #03040a 0%, #080a16 42%, #050612 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::before {
+      opacity: 0.42;
+      background:
+        linear-gradient(120deg, transparent 0 28%, rgba(255, 255, 255, 0.08) 48%, transparent 70%),
+        radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.07), transparent 38rem);
+      filter: blur(28px);
+      animation: atmosphere 18s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      opacity: 0.17;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, transparent, black 16%, black 72%, transparent);
+    }
+
+    @keyframes atmosphere {
+      from { transform: translate3d(-2%, -1%, 0) scale(1); }
+      to { transform: translate3d(2%, 1%, 0) scale(1.04); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 26px 0;
+      color: var(--muted);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(141, 109, 255, 0.9), rgba(112, 225, 255, 0.58)),
+        #15172b;
+      box-shadow: 0 0 34px rgba(141, 109, 255, 0.42);
+    }
+
+    .mark svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: rgba(247, 242, 255, 0.68);
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+    }
+
+    .hero {
+      min-height: 760px;
+      display: grid;
+      align-items: center;
+      padding: 54px 0 84px;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 430px;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: rgba(247, 242, 255, 0.72);
+      font-size: 13px;
+      line-height: 1;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 22px rgba(112, 245, 177, 0.82);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 780px;
+      font-size: clamp(58px, 8vw, 112px);
+      line-height: 0.9;
+      letter-spacing: 0;
+      font-weight: 720;
+    }
+
+    .gradient-text {
+      display: block;
+      color: transparent;
+      background: linear-gradient(110deg, var(--cyan), var(--violet) 48%, var(--rose));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 650px;
+      margin: 30px 0 0;
+      color: rgba(247, 242, 255, 0.72);
+      font-size: clamp(19px, 2vw, 24px);
+      line-height: 1.45;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 42px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-weight: 680;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+
+    .primary {
+      color: #080916;
+      background: linear-gradient(110deg, #f8f3ff, #b9a7ff 54%, #70e1ff);
+      box-shadow: 0 18px 48px rgba(141, 109, 255, 0.32);
+    }
+
+    .secondary {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .proof-strip {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 44px;
+      color: rgba(247, 242, 255, 0.7);
+      font-size: 13px;
+    }
+
+    .metric {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .metric strong {
+      color: var(--ink);
+      margin-right: 7px;
+    }
+
+    .mission-card {
+      position: relative;
+      min-height: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+        radial-gradient(circle at 72% 18%, rgba(112, 225, 255, 0.16), transparent 16rem),
+        var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 40px 110px rgba(0, 0, 0, 0.5);
+      isolation: isolate;
+    }
+
+    .mission-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(112, 225, 255, 0.24), transparent 14rem),
+        radial-gradient(circle at 30% 74%, rgba(255, 138, 166, 0.24), transparent 14rem);
+      filter: blur(10px);
+      z-index: -1;
+    }
+
+    .mission-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 18px;
+      opacity: 0.78;
+      filter: saturate(1.1) contrast(1.02);
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .mission-content {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      padding: 18px;
+      border-radius: 8px;
+      background: rgba(5, 7, 16, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      backdrop-filter: blur(18px);
+    }
+
+    .mission-label {
+      color: rgba(247, 242, 255, 0.72);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .mission-card h2 {
+      margin: 14px 0 0;
+      max-width: 330px;
+      font-size: 25px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .mission-card p {
+      margin: 10px 0 0;
+      max-width: 340px;
+      color: rgba(247, 242, 255, 0.72);
+      line-height: 1.6;
+    }
+
+    .play {
+      position: absolute;
+      top: 26px;
+      right: 26px;
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      background: rgba(141, 109, 255, 0.64);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 48px rgba(141, 109, 255, 0.5);
+    }
+
+    .play::before {
+      content: "";
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 15px solid white;
+      transform: translateX(2px);
+    }
+
+    .section { padding: 86px 0; }
+
+    .section-kicker {
+      color: var(--violet);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 12px;
+      font-weight: 760;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(38px, 5vw, 68px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .section-copy {
+      max-width: 680px;
+      margin: 22px 0 0;
+      color: rgba(247, 242, 255, 0.68);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 36px;
+    }
+
+    .proof-cell {
+      min-height: 134px;
+      padding: 18px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .proof-cell b {
+      display: block;
+      font-size: 30px;
+      letter-spacing: 0;
+    }
+
+    .proof-cell span {
+      display: block;
+      margin-top: 10px;
+      color: rgba(247, 242, 255, 0.66);
+      line-height: 1.45;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 44px;
+    }
+
+    .feature {
+      min-height: 250px;
+      padding: 24px;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.078), rgba(255, 255, 255, 0.035)),
+        rgba(12, 14, 28, 0.66);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .feature .icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 34px;
+      background: rgba(141, 109, 255, 0.15);
+      color: var(--cyan);
+    }
+
+    .feature h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .feature p {
+      margin: 14px 0 0;
+      color: rgba(247, 242, 255, 0.64);
+      line-height: 1.62;
+    }
+
+    .showcase {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-top: 44px;
+    }
+
+    .showcase-frame,
+    .momentum {
+      border-radius: 8px;
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    .showcase-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .momentum {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 440px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 22px;
+      margin-top: 26px;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 13px;
+      align-items: start;
+      color: rgba(247, 242, 255, 0.68);
+    }
+
+    .event-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: rgba(112, 225, 255, 0.12);
+      color: var(--cyan);
+      font-weight: 750;
+    }
+
+    .event strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .capture-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .capture-grid img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0.88;
+    }
+
+    .cta {
+      margin: 86px 0;
+      padding: clamp(34px, 7vw, 78px);
+      border-radius: 8px;
+      min-height: 420px;
+      display: grid;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 74% 30%, rgba(112, 225, 255, 0.22), transparent 18rem),
+        radial-gradient(circle at 24% 78%, rgba(255, 210, 122, 0.14), transparent 20rem),
+        linear-gradient(135deg, rgba(24, 26, 49, 0.92), rgba(8, 9, 21, 0.92));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 44px 120px rgba(0, 0, 0, 0.44);
+    }
+
+    .cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("../../../docs/media/cockpit/06-full-panel.png");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.2;
+      mix-blend-mode: screen;
+    }
+
+    .cta > div {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .cta h2 {
+      margin: 0;
+      font-size: clamp(42px, 6vw, 86px);
+      line-height: 0.94;
+      letter-spacing: 0;
+    }
+
+    .cta p {
+      margin: 24px 0 0;
+      max-width: 620px;
+      color: rgba(247, 242, 255, 0.7);
+      font-size: 19px;
+      line-height: 1.62;
+    }
+
+    footer {
+      padding: 34px 0 52px;
+      color: rgba(247, 242, 255, 0.54);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 940px) {
+      .hero {
+        min-height: auto;
+        padding-top: 32px;
+      }
+
+      .hero-grid,
+      .showcase {
+        grid-template-columns: 1fr;
+      }
+
+      .mission-card { min-height: 480px; }
+
+      .proof-grid,
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 28px, 1180px); }
+      .nav-links { display: none; }
+      .hero { padding-bottom: 52px; }
+      h1 { font-size: clamp(52px, 16vw, 72px); }
+
+      .proof-grid,
+      .feature-grid,
+      .capture-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mission-card { min-height: 430px; }
+      .play { width: 58px; height: 58px; }
+      .section { padding: 58px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell nav">
+    <a class="brand" href="#hero" aria-label="AI Coding OS home">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4l8-4.6Z" stroke="white" stroke-width="1.8"/>
+          <path d="M8.2 12h7.6M12 8.2v7.6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span>AI Coding OS</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#proof">Proof</a>
+      <a href="#features">System</a>
+      <a href="#showcase">Showcase</a>
+      <a class="nav-cta" href="#cta">Open demo</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero" class="hero shell">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> Taste-first AI software creation</div>
+          <h1>Creative direction becomes <span class="gradient-text">production software.</span></h1>
+          <p class="hero-copy">AI Coding OS routes taste, architecture, implementation, verification, and proof through the right intelligence lane, then preserves the approved visual intent all the way to shippable code.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#showcase">See the proof</a>
+            <a class="button secondary" href="#features">Understand the system</a>
+          </div>
+          <div class="proof-strip" aria-label="Current proof metrics">
+            <span class="metric"><strong>92.3/100</strong> taste benchmark</span>
+            <span class="metric"><strong>56/56</strong> AI checks</span>
+            <span class="metric"><strong>80/80</strong> superiority proof</span>
+          </div>
+        </div>
+
+        <aside class="mission-card" aria-label="Continuation surface preview">
+          <img src="../../../docs/media/cockpit/06-full-panel.png" alt="AI Coding OS full cockpit composition">
+          <span class="play" aria-hidden="true"></span>
+          <div class="mission-content">
+            <div class="mission-label">Current mission</div>
+            <h2>Preserve aesthetic intent through execution.</h2>
+            <p>The workspace resumes with the next best action, proof state, and validation trail already prepared.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="proof" class="section shell">
+      <div class="section-kicker">Proof signals</div>
+      <h2 class="section-title">Not another prompt box. A verified execution pipeline.</h2>
+      <p class="section-copy">The landing page is a visual demo, but the repo enforces the deeper product claim through source-controlled gates and benchmark fixtures.</p>
+      <div class="proof-grid" aria-label="Verification metrics">
+        <div class="proof-cell"><b>22/22</b><span>Portable public CI checks before this demo gate is added.</span></div>
+        <div class="proof-cell"><b>7/7</b><span>External product verification across first-run, fixtures, package, and fresh clone.</span></div>
+        <div class="proof-cell"><b>15/15</b><span>Paid-product readiness gate for cockpit, router, sync, and packaging.</span></div>
+        <div class="proof-cell"><b>0</b><span>Invented reviews, fake customer logos, or unverifiable launch claims.</span></div>
+      </div>
+    </section>
+
+    <section id="features" class="section shell">
+      <div class="section-kicker">System</div>
+      <h2 class="section-title">Taste is treated as infrastructure, not decoration.</h2>
+      <p class="section-copy">The core product wedge is simple: use Image 2.0 as creative cognition, extract design DNA, implement with the frontend lane, verify in the browser, then score whether the result still feels premium.</p>
+      <div class="feature-grid">
+        <article class="feature">
+          <div class="icon">01</div>
+          <h3>Creative kernel</h3>
+          <p>Static visual direction becomes a formal artifact instead of a vague instruction that drifts during implementation.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">02</div>
+          <h3>Routed cognition</h3>
+          <p>Design, code, research, verification, and cost-sensitive work are routed by role so one model does not own every decision.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">03</div>
+          <h3>Proof bundle</h3>
+          <p>Every serious run ends with files changed, commands run, browser evidence, taste score, and a pass/fail verdict.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">04</div>
+          <h3>Mission continuity</h3>
+          <p>The cockpit opens on the active mission and next best action instead of forcing the user to restart context.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">05</div>
+          <h3>Trust boundaries</h3>
+          <p>Permissions and credentialed actions are enforced as policy, keeping autonomy useful without making it reckless.</p>
+        </article>
+        <article class="feature">
+          <div class="icon">06</div>
+          <h3>Taste benchmark</h3>
+          <p>Creative fidelity, hierarchy, rhythm, motion, accessibility, and implementation realism are measured directly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="showcase" class="section shell">
+      <div class="section-kicker">Showcase</div>
+      <h2 class="section-title">A calm workspace over a complex machine.</h2>
+      <p class="section-copy">The interface hides routing mechanics by default. What stays visible is momentum: what changed, what passed, what needs attention, and what to continue next.</p>
+      <div class="showcase">
+        <figure class="showcase-frame">
+          <img src="../../../docs/media/cockpit/06-full-panel.png" alt="Full AI Coding OS cockpit panel">
+        </figure>
+        <aside class="momentum" aria-label="Momentum narrative">
+          <div>
+            <div class="section-kicker">Momentum stream</div>
+            <div class="timeline">
+              <div class="event"><span class="event-dot">1</span><p><strong>Creative reference applied</strong>Approved visual direction becomes the source of truth.</p></div>
+              <div class="event"><span class="event-dot">2</span><p><strong>Design DNA extracted</strong>Spacing, hierarchy, material quality, and motion intent are made explicit.</p></div>
+              <div class="event"><span class="event-dot">3</span><p><strong>Browser proof captured</strong>Visual implementation is checked through real rendered artifacts.</p></div>
+              <div class="event"><span class="event-dot">4</span><p><strong>Release proof sealed</strong>The mission ends with a verdict, not a hopeful summary.</p></div>
+            </div>
+          </div>
+          <div class="capture-grid" aria-label="Cockpit state captures">
+            <img src="../../../docs/media/cockpit/states/08-state-continuation.png" alt="Continuation state">
+            <img src="../../../docs/media/cockpit/states/10-state-success.png" alt="Success state">
+            <img src="../../../docs/media/cockpit/interaction/interaction-proof.png" alt="Interaction proof">
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="cta" class="cta shell">
+      <div>
+        <div class="section-kicker">Flagship proof</div>
+        <h2>Describe the outcome. Keep the taste. Ship the interface.</h2>
+        <p>This is the first focused commercial wedge: premium frontend generation from creative direction, enforced by repo-native checks instead of taste claims.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#hero">Return to top</a>
+          <a class="button secondary" href="../../../docs/TASTE-DRIVEN-FRONTEND-WEDGE.md">Read the wedge doctrine</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>AI Coding OS. Taste-first routing for production software.</span>
+      <span>Creative kernel -> design DNA -> implementation -> proof.</span>
+    </div>
+  </footer>
+</body>
+</html>

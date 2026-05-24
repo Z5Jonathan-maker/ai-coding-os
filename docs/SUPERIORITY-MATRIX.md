@@ -50,7 +50,7 @@ Status values:
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
-| Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-kimi-status`, browser-proof benchmark | Visual regression scoring and authenticated-browser fixture replay | `cc-browser-proof --json` | Needs proof |
+| Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Authenticated-browser fixture replay still depends on local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-visual-proof --check` | Strong |
 | Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots, headless interaction proof, visual-diff gate | More dogfood videos and richer pixel-diff scoring | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-cockpit-interaction-proof`, `cc-cockpit-visual-diff`, `cc-package-cockpit` | Strong |
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report | External issue/PR-quality scoring with maintainer-style review | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
@@ -63,7 +63,7 @@ Status values:
 These are the remaining gaps that matter most:
 
 1. **Real-world benchmark depth**: add larger public repo tasks with expected diffs, test evidence, and review-quality scoring.
-2. **UI/browser scoring**: move beyond route expectation into screenshot or DOM-level visual assertions.
+2. **Authenticated browser replay**: convert local Kimi/WebBridge session proof into a reusable fixture replay that can verify logged-in workflows without exposing credentials.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced issues with PR-quality scoring.
 4. **Cockpit pixel-diff scoring**: move from strict hash/byte visual gates to perceptual or pixel-level delta scoring.
 5. **Package separability**: make the router/cockpit easy to install without inheriting personal machine assumptions.
@@ -91,6 +91,7 @@ cc-benchmark-run long-context
 cc-token-ledger --check
 cc-trust-gate --check
 cc-mission-ledger --check
+cc-browser-visual-proof --check
 cc-cockpit-webview-smoke
 cc-cockpit-state-proof --check
 cc-cockpit-interaction-proof --check

@@ -1,0 +1,150 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+
+const fixtureRoot = path.join(root, 'fixtures', 'benchmarks', 'browser-proof');
+const pageJs = path.join(fixtureRoot, 'src', 'page.js');
+const contractPath = path.join(fixtureRoot, 'visual-contract.json');
+const browserProof = path.join(root, 'bin', 'cc-browser-proof');
+const args = process.argv.slice(2);
+
+function usage() {
+  console.log(`cc-browser-visual-proof — deterministic browser/UI proof gate
+
+Usage:
+  cc-browser-visual-proof
+  cc-browser-visual-proof --check
+
+Proves the browser lane has source-controlled DOM/layout assertions and that
+cc-browser-proof emits bounded, nonce-delimited proof packets. This is a public
+clone-safe gate; authenticated Kimi/WebBridge replay remains a local runtime
+proof because it depends on the user's logged-in browser.`);
+}
+
+if (args.includes('-h') || args.includes('--help')) {
+  usage();
+  process.exit(0);
+}
+
+if (args.length > 1 || (args[0] && args[0] !== '--check')) {
+  console.error(`cc-browser-visual-proof: unknown args: ${args.join(' ')}`);
+  usage();
+  process.exit(2);
+}
+
+function fail(message) {
+  console.error(`fail ${message}`);
+  failures += 1;
+}
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  passes += 1;
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function importViewportMode() {
+  const source = fs.readFileSync(pageJs, 'utf8');
+  const match = source.match(/export function viewportMode\(width\) \{\n([\s\S]*?)\n\}/);
+  if (!match) throw new Error('viewportMode export not found');
+  const body = match[1];
+  return new Function('width', `${body}\nthrow new Error("unhandled width");`);
+}
+
+function runBrowserProofSchemaCheck() {
+  const res = spawnSync(browserProof, ['--json', '--url', 'https://example.com', '--max-chars', '512'], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, DOTFILES: root },
+  });
+  if (res.status !== 0) {
+    fail(`cc-browser-proof --json exits 0 (got ${res.status})`);
+    return;
+  }
+  let packet;
+  try {
+    packet = JSON.parse(res.stdout);
+  } catch (err) {
+    fail(`cc-browser-proof --json returns JSON (${err.message})`);
+    return;
+  }
+  ok('cc-browser-proof --json returns JSON');
+
+  const proof = packet.proof || {};
+  const required = [
+    ['proof.nonce', proof.nonce],
+    ['proof.boundary_start', proof.boundary_start],
+    ['proof.boundary_end', proof.boundary_end],
+    ['proof.max_chars', proof.max_chars],
+    ['proof.returned_chars', proof.returned_chars],
+    ['proof.content', proof.content],
+  ];
+  for (const [label, value] of required) {
+    value !== undefined && value !== null && value !== '' ? ok(`${label} present`) : fail(`${label} present`);
+  }
+  if (proof.boundary_start && proof.nonce && proof.boundary_start.includes(proof.nonce)) ok('start boundary includes nonce');
+  else fail('start boundary includes nonce');
+  if (proof.boundary_end && proof.nonce && proof.boundary_end.includes(proof.nonce)) ok('end boundary includes nonce');
+  else fail('end boundary includes nonce');
+  if (Number(proof.returned_chars) <= Number(proof.max_chars)) ok('proof content respects max chars');
+  else fail('proof content respects max chars');
+}
+
+function checkVisualContract() {
+  const contract = readJson(contractPath);
+  const viewportMode = importViewportMode();
+
+  for (const [width, expected] of Object.entries(contract.viewports || {})) {
+    const actual = viewportMode(Number(width));
+    actual === expected ? ok(`viewport ${width} => ${expected}`) : fail(`viewport ${width} expected ${expected}, got ${actual}`);
+  }
+
+  const layout = contract.layout || {};
+  const minTarget = Number(layout.minTouchTargetPx || 0);
+  minTarget >= 44 ? ok(`min touch target >= 44px (${minTarget})`) : fail(`min touch target >= 44px (${minTarget})`);
+
+  const maxLine = Number(layout.maxPrimaryLineChars || 0);
+  maxLine > 0 && maxLine <= 72 ? ok(`primary line length bounded (${maxLine})`) : fail(`primary line length bounded (${maxLine})`);
+
+  const landmarks = contract.requiredLandmarks || [];
+  landmarks.includes('main') && landmarks.includes('navigation') ? ok('required landmarks include main and navigation') : fail('required landmarks include main and navigation');
+
+  const proofTexts = contract.requiredProofTexts || [];
+  proofTexts.length >= 3 ? ok(`required proof texts >= 3 (${proofTexts.length})`) : fail(`required proof texts >= 3 (${proofTexts.length})`);
+  for (const text of proofTexts) {
+    text.length >= 4 ? ok(`proof text usable: ${text}`) : fail(`proof text usable: ${text}`);
+  }
+}
+
+let passes = 0;
+let failures = 0;
+
+console.log('# Browser Visual Proof\n');
+console.log(`Root: ${root}`);
+console.log(`Fixture: ${path.relative(root, fixtureRoot)}\n`);
+
+if (!fs.existsSync(pageJs)) fail(`fixture exists: ${path.relative(root, pageJs)}`);
+else ok(`fixture exists: ${path.relative(root, pageJs)}`);
+
+if (!fs.existsSync(contractPath)) fail(`contract exists: ${path.relative(root, contractPath)}`);
+else ok(`contract exists: ${path.relative(root, contractPath)}`);
+
+if (fs.existsSync(pageJs) && fs.existsSync(contractPath)) checkVisualContract();
+if (fs.existsSync(browserProof)) runBrowserProofSchemaCheck();
+else fail(`browser proof command exists: ${path.relative(root, browserProof)}`);
+
+console.log('\n## Summary\n');
+console.log(`passed=${passes} failed=${failures}`);
+console.log(failures ? 'Status: browser-visual-proof-blocked' : 'Status: browser-visual-proof-ready');
+process.exit(failures ? 1 : 0);

@@ -1,0 +1,20 @@
+{
+  "schema": "ai-coding-os.browser-visual-contract.v1",
+  "requiredLandmarks": ["navigation", "main"],
+  "requiredProofTexts": [
+    "Continue mission",
+    "Browser proof",
+    "Visual assertions"
+  ],
+  "viewports": {
+    "390": "mobile",
+    "820": "tablet",
+    "1440": "desktop"
+  },
+  "layout": {
+    "minTouchTargetPx": 44,
+    "maxPrimaryLineChars": 68,
+    "requiresReducedMotionFallback": true,
+    "requiresVisibleFocusState": true
+  }
+}

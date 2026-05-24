@@ -6,6 +6,7 @@ usage="$ROUTER/bin/router-usage"
 failures="$ROUTER/bin/router-failures"
 sessions="$ROUTER/bin/router-sessions"
 window="${1:-25}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 
 printf '# Router Metrics\n\n'
 
@@ -13,6 +14,8 @@ if [ -x "$usage" ]; then
   "$usage" "$window" | sed -n '1,44p'
 else
   printf 'router-usage unavailable at %s\n' "$usage"
+  printf 'Using token ledger fixture fallback.\n\n'
+  CC_ROUTER_ROOT="$ROUTER" "$DOTFILES/bin/cc-token-ledger" | sed -n '1,32p'
 fi
 
 printf '\n## Recent Failures\n\n'
@@ -20,6 +23,7 @@ if [ -x "$failures" ]; then
   "$failures" 10 | sed -n '1,28p'
 else
   printf 'router-failures unavailable at %s\n' "$failures"
+  printf 'No fixture failures recorded.\n'
 fi
 
 printf '\n## Recent Sessions\n\n'
@@ -27,4 +31,6 @@ if [ -x "$sessions" ]; then
   "$sessions" | sed -n '1,24p'
 else
   printf 'router-sessions unavailable at %s\n' "$sessions"
+  printf 'Using session ledger fallback.\n\n'
+  CC_ROUTER_ROOT="$ROUTER" "$DOTFILES/bin/cc-session-ledger" list --limit 3 | sed -n '1,24p'
 fi

@@ -154,7 +154,9 @@ and `cc-trust-gate` enforces that policy before cockpit routing. `cc-token-ledge
 from existing usage telemetry, with a committed fixture fallback for public
 evaluators who do not have the private router log. `cc-router-smoke` and
 benchmark route checks use the live router when present and a labeled committed
-routing-contract fixture when it is not. `cc-mission-ledger` provides the
+routing-contract fixture when it is not. `cc-router-receipt` and
+`cc-router-metrics` also fall back to committed fixture telemetry, so cockpit
+observability stays useful in public clones. `cc-mission-ledger` provides the
 append-only continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the

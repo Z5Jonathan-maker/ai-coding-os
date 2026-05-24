@@ -6,19 +6,23 @@ const path = require('path');
 
 const routerRoot = process.env.CC_ROUTER_ROOT || path.join(process.env.HOME, 'code/projects/cc-router');
 const logPath = process.env.CC_ROUTER_USAGE_LOG || path.join(routerRoot, 'memory/tier-usage.jsonl');
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixtureLog = process.env.CC_ROUTER_RECEIPT_FIXTURE || path.join(root, 'fixtures/router/tier-usage.jsonl');
 const windowSize = Number.parseInt(process.env.CC_ROUTER_RECEIPT_WINDOW || '25', 10);
 const mode = process.argv[2] || 'latest';
 const targets = { chat: 0.30, cheap: 0.40, precision: 0.30 };
 
 function readRows() {
-  if (!fs.existsSync(logPath)) return [];
-  return fs.readFileSync(logPath, 'utf8')
+  const source = fs.existsSync(logPath) ? logPath : fixtureLog;
+  if (!fs.existsSync(source)) return { rows: [], source: logPath, fixture: false };
+  const rows = fs.readFileSync(source, 'utf8')
     .split('\n')
     .filter(Boolean)
     .map(line => {
       try { return JSON.parse(line); } catch (_) { return null; }
     })
     .filter(Boolean);
+  return { rows, source, fixture: source === fixtureLog };
 }
 
 function pct(value) {
@@ -113,7 +117,7 @@ function printLatest(row) {
   }
 }
 
-const rows = readRows();
+const { rows, source, fixture } = readRows();
 if (rows.length === 0) {
   console.log('Router receipt: no tier usage log found.');
   process.exit(0);
@@ -124,6 +128,7 @@ const summary = summarize(rows);
 if (mode === '--summary' || mode === 'summary') {
   const latest = rows[rows.length - 1];
   const receipt = latest.route_receipt || {};
+  if (fixture) console.log(`Source: fixture telemetry (${source})`);
   console.log(`Latest: ${receipt.served_class || latest.class || 'unknown'} / ${receipt.served_platform || latest.tier || 'unknown'} / ${receipt.served_model || latest.model || 'unknown'} | fallback=${Boolean(latest.fallback || receipt.fallback_used)} | latency=${latest.latency_ms || 0}ms`);
   console.log(`Window: last ${summary.recent.length} | fallbacks=${summary.fallbacks} | flags=${summary.flagged} | tokens=${summary.tokens || 'not logged'}`);
   console.log(`Quota classes: ${summary.quotaTotal}/${summary.recent.length} calls | ${summary.quota.join(' | ')}`);
@@ -134,6 +139,7 @@ if (mode === '--summary' || mode === 'summary') {
 }
 
 printLatest(rows[rows.length - 1]);
+if (fixture) console.log(`Source: fixture telemetry (${source})`);
 console.log('');
 console.log('## Window Summary');
 console.log('');

@@ -41,6 +41,8 @@ Expected optional misses in a clean temp home:
   routing-contract fixture when `AI-SYSTEM-V2` is not installed.
 - Token-ledger proof falls back to committed fixture telemetry when live router
   usage logs are not present.
+- Router receipt and metrics surfaces fall back to the same committed telemetry
+  fixture when the private router checkout is absent.
 - Feedback-law proof falls back to `fixtures/feedback-laws` when the full local
   `AI-SYSTEM-V2` control plane is not installed.
 - VS Code extensions are optional until the real installer is run.

@@ -1,0 +1,64 @@
+*** Update File: src/route-intent.js
+-export function classifyIntent(prompt) {
+-  const text = prompt.toLowerCase();
+-  if (/debug|security|architecture/.test(text)) return 'precision';
+-  if (/summarize|extract|json/.test(text)) return 'cheap';
+-  if (/browser|screenshot|ui/.test(text)) return 'codex';
+-  if (/image|hero|visual|creative/.test(text)) return 'design';
+-  return 'codex';
+-}
+-
+-export function routeForClass(intentClass) {
+-  const routes = {
+-    precision: { platform: 'claude', fallbackChain: ['claude', 'codex'] },
+-    cheap: { platform: 'deepseek', fallbackChain: ['deepseek', 'codex'] },
+-    design: { platform: 'kimi', fallbackChain: ['kimi', 'codex'] },
+-    codex: { platform: 'codex', fallbackChain: ['codex'] }
+-  };
+-  return routes[intentClass] || routes.codex;
+-}
+-
+-export function buildRouteReceipt(prompt) {
+-  const intentClass = classifyIntent(prompt);
+-  const route = routeForClass(intentClass);
+-  return {
+-    prompt,
+-    intentClass,
+-    platform: route.platform,
+-    fallbackChain: route.fallbackChain
+-  };
+-}
++export function classifyIntent(prompt) {
++  const text = prompt.toLowerCase();
++  if (/image 2\.0|visual direction|creative|hero|brand|style reference/.test(text)) return 'image';
++  if (/browser|screenshot|logged-in|ui|responsive/.test(text)) return 'design';
++  if (/debug|security|architecture|race condition|final qa/.test(text)) return 'precision';
++  if (/summarize|extract|json|metadata|dedupe/.test(text)) return 'cheap';
++  return 'codex';
++}
++
++export function routeForClass(intentClass) {
++  const routes = {
++    image: { platform: 'chatgpt', fallbackChain: ['chatgpt', 'claude'] },
++    design: { platform: 'kimi', fallbackChain: ['kimi', 'codex'] },
++    precision: { platform: 'claude', fallbackChain: ['claude', 'codex'] },
++    cheap: { platform: 'deepseek', fallbackChain: ['deepseek', 'codex'] },
++    codex: { platform: 'codex', fallbackChain: ['codex', 'claude'] }
++  };
++  return routes[intentClass] || routes.codex;
++}
++
++export function buildRouteReceipt(prompt) {
++  const intentClass = classifyIntent(prompt);
++  const route = routeForClass(intentClass);
++  return {
++    prompt,
++    intentClass,
++    platform: route.platform,
++    fallbackChain: [...route.fallbackChain],
++    proof: {
++      classified: true,
++      primaryMatchesFallbackHead: route.fallbackChain[0] === route.platform
++    }
++  };
++}

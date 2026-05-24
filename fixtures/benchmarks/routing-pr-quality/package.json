@@ -1,0 +1,10 @@
+{
+  "name": "routing-pr-quality-fixture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/router.test.js",
+    "review-score": "node test/review-score.test.js"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "routing-pr-quality",
+  "title": "Routing PR quality fixture",
+  "prompt": "repair a multi-intent routing module so creative direction, browser work, precision debugging, bulk extraction, and code execution route to the correct cognitive lanes with review-quality receipts",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex",
+  "expectInitialFail": true,
+  "expectedPatch": "expected.patch",
+  "expectScoreBeforeFail": true,
+  "scoreBefore": "npm run review-score",
+  "scoreAfter": "npm run review-score"
+}

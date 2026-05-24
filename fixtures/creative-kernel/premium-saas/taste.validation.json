@@ -1,0 +1,18 @@
+{
+  "schema": "ai-coding-os.taste-validation.v1",
+  "scores": {
+    "coherence": 94,
+    "premium_feel": 91,
+    "hierarchy_integrity": 95,
+    "spacing_discipline": 92,
+    "visual_noise": 88,
+    "emotional_alignment": 94
+  },
+  "threshold": 88,
+  "verdict": "pass",
+  "notes": [
+    "continuation action dominates",
+    "routing mechanics are hidden",
+    "visual density stays low"
+  ]
+}

@@ -6,7 +6,7 @@
       "id": "kimi-webbridge",
       "role": "Primary browser, screenshot, web, UI/UX implementation, and visual-operator lane.",
       "status": "active",
-      "capabilities": ["browser_control", "screenshots", "web_crawling", "ui_analysis", "responsive_check", "design_review"],
+      "capabilities": ["browser_control", "screenshots", "web_crawling", "ui_analysis", "responsive_check", "design_review", "design_dna_implementation"],
       "health": {
         "kind": "command",
         "command": "~/.kimi-webbridge/bin/kimi-webbridge status",
@@ -38,7 +38,7 @@
       "id": "codex",
       "role": "Local engineering execution, code edits, verification, and system integration.",
       "status": "active",
-      "capabilities": ["code_edit", "local_verification", "system_integration", "repo_cleanup"],
+      "capabilities": ["code_edit", "local_verification", "system_integration", "repo_cleanup", "proof_bundle_validation"],
       "health": {
         "kind": "command",
         "command": "command -v codex",
@@ -54,7 +54,7 @@
       "id": "claude",
       "role": "Precision reasoning, architecture, high-stakes review, and final QA.",
       "status": "active",
-      "capabilities": ["architecture", "security_review", "compliance_review", "hard_debugging", "final_qa"],
+      "capabilities": ["architecture", "security_review", "compliance_review", "hard_debugging", "final_qa", "taste_validation"],
       "health": {
         "kind": "command",
         "command": "command -v claude",
@@ -86,7 +86,7 @@
       "id": "chatgpt-image",
       "role": "Image generation/editing, canonical brand assets, and creative direction.",
       "status": "active",
-      "capabilities": ["image_generation", "image_editing", "creative_direction", "visual_concept", "style_reference", "canonical_brand_asset", "hero_asset", "product_mockup"],
+      "capabilities": ["image_generation", "image_editing", "creative_direction", "taste_direction", "design_dna_extraction", "visual_concept", "style_reference", "canonical_brand_asset", "hero_asset", "product_mockup"],
       "health": {
         "kind": "external",
         "reason": "Provided by Codex image tool or ChatGPT Desktop session."
@@ -134,6 +134,11 @@
     "screenshots": { "primary": "kimi-webbridge", "fallbacks": ["playwright", "codex"] },
     "ui_analysis": { "primary": "kimi-webbridge", "fallbacks": ["claude"] },
     "creative_direction": { "primary": "chatgpt-image", "noFallbackReason": "Image 2.0 is the creative reference lane; text-only lanes may critique but should not replace it." },
+    "taste_direction": { "primary": "chatgpt-image", "noFallbackReason": "Taste requires a visual reference lane, not a text-only implementation lane." },
+    "design_dna_extraction": { "primary": "chatgpt-image", "fallbacks": ["claude"] },
+    "design_dna_implementation": { "primary": "kimi-webbridge", "fallbacks": ["codex"] },
+    "taste_validation": { "primary": "claude", "fallbacks": ["codex"] },
+    "proof_bundle_validation": { "primary": "codex", "fallbacks": ["claude"] },
     "style_reference": { "primary": "chatgpt-image", "noFallbackReason": "Style continuity depends on canonical generated/reference images." },
     "architecture": { "primary": "claude", "fallbacks": ["codex"] },
     "hard_debugging": { "primary": "claude", "fallbacks": ["codex"] },

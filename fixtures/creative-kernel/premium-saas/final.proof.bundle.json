@@ -1,0 +1,12 @@
+{
+  "schema": "ai-coding-os.final-proof-bundle.v1",
+  "changed_files": [],
+  "commands": [
+    "cc-creative-kernel-check",
+    "cc-browser-visual-proof --check",
+    "cc-cockpit-visual-diff"
+  ],
+  "screenshots": [],
+  "taste_validation": "taste.validation.json",
+  "verdict": "fixture-ready"
+}

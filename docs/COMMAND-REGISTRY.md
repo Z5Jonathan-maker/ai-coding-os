@@ -46,6 +46,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
+- `cc-creative-kernel-check` — verifies the Creative Direction Kernel, cognitive design routes, design DNA fields, and taste validation scores.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.

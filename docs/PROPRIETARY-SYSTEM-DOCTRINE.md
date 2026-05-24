@@ -51,6 +51,9 @@ Image 2.0 is not only an asset generator. It is the creative-reference lane.
   assets, native text, accessible buttons, responsive layout, and browser proof.
 - Do not ask text-only coding/design lanes to invent the visual direction when
   Image 2.0 can produce the reference directly.
+- For reusable design-first work, capture the result as a Creative Direction
+  Kernel: creative brief, visual target, design DNA, implementation plan, taste
+  validation, and final proof bundle.
 
 ## Interface Standard
 

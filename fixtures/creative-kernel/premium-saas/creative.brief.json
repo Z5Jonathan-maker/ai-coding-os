@@ -1,0 +1,22 @@
+{
+  "schema": "ai-coding-os.creative-brief.v1",
+  "mission": "Create a premium continuation-first AI workspace hero",
+  "audience": "developer-founders evaluating an AI coding operating system",
+  "primary_emotion": "calm momentum",
+  "constraints": [
+    "one dominant continuation action",
+    "no dashboard control density",
+    "native text and buttons in implementation",
+    "complex routing hidden below the surface"
+  ],
+  "anti_goals": [
+    "generic SaaS dashboard",
+    "visible model picker as the main experience",
+    "Tailwind template feel"
+  ],
+  "visual_target": {
+    "path": "visual.target.png",
+    "status": "external_reference_required",
+    "owner_lane": "chatgpt-image"
+  }
+}

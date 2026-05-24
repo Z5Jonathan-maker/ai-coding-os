@@ -1,0 +1,98 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+
+const fixture = path.join(root, 'fixtures', 'creative-kernel', 'premium-saas');
+const required = [
+  'creative.brief.json',
+  'design.dna.json',
+  'implementation.plan.json',
+  'taste.validation.json',
+  'final.proof.bundle.json',
+];
+const dnaFields = [
+  'visual_density',
+  'section_pacing',
+  'typography_rhythm',
+  'surface_language',
+  'shadow_language',
+  'motion_energy',
+  'emotional_frame',
+  'visual_noise_budget',
+];
+const tasteScores = [
+  'coherence',
+  'premium_feel',
+  'hierarchy_integrity',
+  'spacing_discipline',
+  'visual_noise',
+  'emotional_alignment',
+];
+
+let pass = 0;
+let fail = 0;
+
+function ok(msg) {
+  console.log(`ok   ${msg}`);
+  pass += 1;
+}
+
+function bad(msg) {
+  console.log(`fail ${msg}`);
+  fail += 1;
+}
+
+function json(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function expect(cond, msg) {
+  cond ? ok(msg) : bad(msg);
+}
+
+console.log('# Creative Direction Kernel Check\n');
+console.log(`Root: ${root}`);
+console.log(`Fixture: ${path.relative(root, fixture)}\n`);
+
+expect(fs.existsSync(path.join(root, 'docs', 'CREATIVE-DIRECTION-KERNEL.md')), 'kernel doctrine exists');
+
+for (const file of required) {
+  const target = path.join(fixture, file);
+  expect(fs.existsSync(target), `${file} exists`);
+  if (fs.existsSync(target)) {
+    const parsed = json(target);
+    expect(typeof parsed.schema === 'string' && parsed.schema.startsWith('ai-coding-os.'), `${file} has schema`);
+  }
+}
+
+const lanes = json(path.join(root, 'ai-lanes.json'));
+const capabilities = lanes.capabilities || {};
+expect(capabilities.creative_direction?.primary === 'chatgpt-image', 'creative direction routes to Image 2.0');
+expect(capabilities.taste_direction?.primary === 'chatgpt-image', 'taste direction routes to Image 2.0');
+expect(capabilities.design_dna_extraction?.primary === 'chatgpt-image', 'design DNA extraction starts in Image 2.0');
+expect(capabilities.design_dna_implementation?.primary === 'kimi-webbridge', 'design DNA implementation routes to Kimi');
+expect(capabilities.taste_validation?.primary === 'claude', 'taste validation routes to precision lane');
+expect(capabilities.proof_bundle_validation?.primary === 'codex', 'proof bundle validation routes to Codex');
+
+const dna = json(path.join(fixture, 'design.dna.json'));
+for (const field of dnaFields) expect(Boolean(dna[field]), `design DNA field: ${field}`);
+
+const validation = json(path.join(fixture, 'taste.validation.json'));
+for (const field of tasteScores) {
+  const score = validation.scores?.[field];
+  expect(Number.isFinite(score) && score >= 0 && score <= 100, `taste score valid: ${field}`);
+}
+expect(Object.values(validation.scores || {}).every((score) => score >= validation.threshold), 'taste scores meet threshold');
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: creative-kernel-blocked' : 'Status: creative-kernel-ready');
+process.exit(fail ? 1 : 0);

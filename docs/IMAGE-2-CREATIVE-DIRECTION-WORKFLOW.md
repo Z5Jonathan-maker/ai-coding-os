@@ -6,6 +6,10 @@ Source: attached `HOW-TO.pdf` plus the May 2026 brand-image workflow.
 
 Image 2.0 is the creative-reference lane. Kimi is the implementation lane.
 
+For design-first missions that need original art direction, use the Creative
+Direction Kernel in `docs/CREATIVE-DIRECTION-KERNEL.md`. The executable proof is
+`cc-creative-kernel-check`.
+
 Use Image 2.0 when the user needs to discover or lock a visual direction:
 
 - landing-page example

@@ -47,6 +47,8 @@ trust tier, and safety boundary.
 - **Opinionated lanes:** each AI has a specific job.
 - **Creative-reference loop:** Image 2.0 creates approved visual direction;
   Kimi converts that reference into functional UI.
+- **Creative Direction Kernel:** `cc-creative-kernel-check` proves taste is a
+  routable artifact contract with design DNA and taste validation.
 - **Executable routing:** `ai-lanes.json`, `cc-lane`, and router smoke tests.
 - **Source-controlled checks:** `.ai/checks/` turns launch, routing, security,
   trust, and feedback-law expectations into committed runnable policy.

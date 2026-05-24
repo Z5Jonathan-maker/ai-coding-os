@@ -1,0 +1,20 @@
+{
+  "schema": "ai-coding-os.implementation-plan.v1",
+  "owner_lane": "kimi-webbridge",
+  "components": [
+    "continuation hero",
+    "mission thread list",
+    "proof-of-momentum rail"
+  ],
+  "native_ui_requirements": [
+    "text remains selectable HTML",
+    "buttons are accessible controls",
+    "responsive layout preserves hierarchy"
+  ],
+  "browser_checks": [
+    "desktop screenshot",
+    "mobile screenshot",
+    "keyboard focus path",
+    "visual noise review"
+  ]
+}

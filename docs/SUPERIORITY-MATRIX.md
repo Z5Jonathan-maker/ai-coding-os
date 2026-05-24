@@ -46,7 +46,7 @@ Status values:
 | Dimension | We Must Win By | Current Proof | Missing Proof | Gate / Command | Status |
 |---|---|---|---|---|---|
 | Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics` | More live degraded-provider replay fixtures | `cc-router-smoke`, `cc-lane-registry-check` | Strong |
-| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 11 benchmark fixtures; graded repair, refactor, long-context, and routing PR-quality scoring; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
+| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 12 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and a source-linked upstream issue replay; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
@@ -63,7 +63,7 @@ Status values:
 
 These are the remaining gaps that matter most:
 
-1. **Real-world benchmark depth**: add more externally sourced tasks beyond the larger routing PR-quality fixture.
+1. **Real-world benchmark depth**: expand beyond the first source-linked upstream issue replay into more real public issues across frontend, backend, and agent-runtime work.
 2. **Authenticated browser replay**: execute the credential-free replay fixture live through official Kimi/WebBridge on a prepared machine.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced upstream issues scored by the PR-quality gate.
 4. **Cockpit real-use evidence**: add short dogfood videos on top of the replay bundle.
@@ -90,6 +90,7 @@ cc-benchmark-run failing-test-repair
 cc-benchmark-run refactor-cleanup
 cc-benchmark-run long-context
 cc-benchmark-run routing-pr-quality
+cc-benchmark-run upstream-issue-replay
 cc-token-ledger --check
 cc-trust-gate --check
 cc-mission-ledger --check

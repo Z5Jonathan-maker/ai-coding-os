@@ -1,0 +1,12 @@
+*** Update File: src/duration-format.js
+-export function formatDecimalHours(hours) {
+-  const wholeHours = Math.trunc(hours);
+-  const minutes = Math.floor((hours - wholeHours) * 60);
+-  return `${pad(wholeHours)}:${pad(minutes)}`;
+-}
++export function formatDecimalHours(hours) {
++  const totalMinutes = Math.round(hours * 60);
++  const wholeHours = Math.trunc(totalMinutes / 60);
++  const minutes = totalMinutes % 60;
++  return `${pad(wholeHours)}:${pad(minutes)}`;
++}

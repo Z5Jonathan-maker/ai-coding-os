@@ -1,0 +1,14 @@
+{
+  "id": "upstream-issue-replay",
+  "title": "Upstream issue replay: decimal duration formatting",
+  "source": {
+    "repo": "moment/luxon",
+    "issue": 1070,
+    "url": "https://github.com/moment/luxon/issues/1070",
+    "reportedBehavior": "Duration.fromObject({ hour: 2.4 }).toFormat('hh:mm') returned 02:23 instead of 02:24; 5.3 returned 05:17 instead of 05:18."
+  },
+  "prompt": "repair an upstream issue replay for decimal hour duration formatting so 2.4 hours renders 02:24 and 5.3 hours renders 05:18 without regressing whole-hour formatting",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex",
+  "expectInitialFail": true,
+  "expectedPatch": "expected.patch"
+}

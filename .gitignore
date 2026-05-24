@@ -10,6 +10,7 @@ claude/skills/prompt-master/
 claude/tel/.venv/
 .ai/missions/
 .ai/plans/
+memory/
 
 # Mega-brain learnings: transcripts/articles stay local-only.
 # Keep _README.md, _INDEX.md, _COMPOUND_INDEX.md, manifests committed.

@@ -13,7 +13,7 @@
 
 set -u
 
-LOG_DIR="${HOME}/.claude/state"
+LOG_DIR="${CODEX_STATE_DIR:-${HOME}/.Codex/state}"
 mkdir -p "$LOG_DIR"
 LOG="${LOG_DIR}/deploy-watch-cron.log"
 
@@ -66,14 +66,14 @@ for entry in "${WATCHED[@]}"; do
     # pushing cycles into the void. Enable with CC_DEPLOY_WATCH_PAUSE_EVOLVE=1.
     if [ "${CC_DEPLOY_WATCH_PAUSE_EVOLVE:-0}" = "1" ] && launchctl list com.claude-code.evolve >/dev/null 2>&1; then
       launchctl stop com.claude-code.evolve 2>&1 || true
-      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) PAUSED com.claude-code.evolve (drift on $REPO)" >>"${HOME}/.claude/state/evolve-paused-by-drift.log"
+      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) PAUSED com.claude-code.evolve (drift on $REPO)" >>"${LOG_DIR}/evolve-paused-by-drift.log"
     fi
   elif [ "$NEW_STATE" = "ok" ] && [ "$PRIOR_STATE" = "drift" ]; then
     notify "✅ Deploy recovered: $DOMAIN" "CI passing again on $REPO"
     # Opt-in: resume the evolve loop if we were the one who paused it.
     if [ "${CC_DEPLOY_WATCH_PAUSE_EVOLVE:-0}" = "1" ] && launchctl list com.claude-code.evolve >/dev/null 2>&1; then
       launchctl start com.claude-code.evolve 2>&1 || true
-      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) RESUMED com.claude-code.evolve ($REPO recovered)" >>"${HOME}/.claude/state/evolve-paused-by-drift.log"
+      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) RESUMED com.claude-code.evolve ($REPO recovered)" >>"${LOG_DIR}/evolve-paused-by-drift.log"
     fi
   fi
 done

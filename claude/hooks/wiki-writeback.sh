@@ -6,7 +6,8 @@
 # session via Edit on the log files. This hook captures unprompted heartbeats.
 set -u
 
-WIKI="${HOME}/.claude/wiki"
+WIKI="${CODEX_WIKI_DIR:-${HOME}/.Codex/wiki}"
+[ -d "$WIKI" ] || WIKI="${CLAUDE_WIKI_DIR:-${HOME}/.claude/wiki}"
 [ -d "$WIKI" ] || exit 0
 
 HEARTBEAT="$WIKI/logs/.session-heartbeat"
@@ -38,8 +39,12 @@ fi
 # This is the closed-loop path: sessions (and autonomous cycles) push
 # JSONL entries during work; the Stop hook flushes them to the wiki logs
 # at session end, then truncates the queue.
-QUEUE="${HOME}/.claude/state/reflection-queue.jsonl"
-if [ -s "$QUEUE" ]; then
+QUEUES=(
+  "${CODEX_REFLECTION_QUEUE:-${HOME}/.Codex/state/reflection-queue.jsonl}"
+  "${CLAUDE_REFLECTION_QUEUE:-${HOME}/.claude/state/reflection-queue.jsonl}"
+)
+for QUEUE in "${QUEUES[@]}"; do
+  [ -s "$QUEUE" ] || continue
   python3 - "$QUEUE" "$WIKI/logs/optimization-log.md" "$WIKI/logs/failure-log.md" <<'PY' || true
 import json, sys, os, datetime
 queue_path, opt_log, fail_log = sys.argv[1:4]
@@ -87,7 +92,7 @@ if fail_buf:
 # Truncate the queue only after a successful flush
 open(queue_path, "w").close()
 PY
-fi
+done
 
 # Cap heartbeat at 1000 lines (rotate)
 if [ -f "$HEARTBEAT" ] && [ "$(wc -l <"$HEARTBEAT")" -gt 1000 ]; then

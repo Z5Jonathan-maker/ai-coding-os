@@ -21,7 +21,7 @@
 #   cc-deploy-watch Z5Jonathan-maker/aurex-bio aurex.bio
 #
 # Exit codes: 0 (live + fresh), 1 (drifted but live), 2 (broken)
-# Writes alerts to ~/.claude/state/deploy-alerts.log
+# Writes alerts to ~/.Codex/state/deploy-alerts.log
 
 set -u
 
@@ -32,7 +32,7 @@ if [ -z "$REPO" ] || [ -z "$DOMAIN" ]; then
   exit 64
 fi
 
-LOG_DIR="${HOME}/.claude/state"
+LOG_DIR="${CODEX_STATE_DIR:-${HOME}/.Codex/state}"
 mkdir -p "$LOG_DIR"
 LOG="${LOG_DIR}/deploy-alerts.log"
 STATE="${LOG_DIR}/deploy-watch.${REPO//\//_}.json"

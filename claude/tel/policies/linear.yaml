@@ -4,17 +4,19 @@ notes: |
   Linear via GraphQL API. Personal API key at op://Personal/Linear/api_key.
   Linear is GraphQL-only — endpoints below all POST to the same /graphql url
   with different `query` bodies. The TEL passes args through as the GraphQL
-  variables payload. Add new actions by writing the query string in args.
+  variables payload. Actions that accept a query body must declare allowed
+  GraphQL prefixes so read-only actions cannot carry mutations.
 
 actions:
   query:
-    description: Execute an arbitrary GraphQL query/mutation against Linear
+    description: Execute a read-only GraphQL query against Linear
     method: POST
     endpoint: /
     required_args: [query]
     optional_args: [variables, operationName]
     reversible: false
     rate_limit_per_hour: 200
+    allowed_query_prefixes: [query]
     auth_op_path: op://Personal/Linear/api_key
     auth_keychain_service: cc.linear.api_key
     auth_header: Authorization
@@ -28,6 +30,7 @@ actions:
     optional_args: [variables]
     reversible: false
     rate_limit_per_hour: 200
+    allowed_query_prefixes: [query]
     auth_op_path: op://Personal/Linear/api_key
     auth_keychain_service: cc.linear.api_key
     auth_header: Authorization
@@ -41,6 +44,7 @@ actions:
     reversible: true
     undo_window_seconds: 600
     rate_limit_per_hour: 30
+    allowed_query_prefixes: [mutation]
     auth_op_path: op://Personal/Linear/api_key
     auth_keychain_service: cc.linear.api_key
     auth_header: Authorization

@@ -97,6 +97,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
+- `cc-tel-policy-check` — public-safe TEL proof for credentialed-action whitelists, redaction, audit hygiene, undo windows, and GraphQL query constraints.
 - `cc-token-ledger` — read-only router economics ledger: calls, token estimates, costs, fallbacks, and premium-spend avoidance.
 - `cc-trust-adversarial-check` — adversarial autonomy-boundary fixtures for paid, destructive, secret, force-push, cross-user, and credential-mutation tasks.
 - `cc-third-party-dogfood` — external public-repo mutating proof with pinned upstream source, failing test, runtime repair, Mission Events, review evidence, local commit, and third-party test gate.

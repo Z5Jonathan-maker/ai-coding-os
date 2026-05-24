@@ -1,0 +1,26 @@
+{
+  "schema": "ai-coding-os.tel-policy-public.v1",
+  "services": {
+    "gamma": ["create_presentation", "get_presentation", "list_presentations"],
+    "github": ["list_issues", "get_pr", "create_pr"],
+    "glif": ["run_workflow", "workflow_info"],
+    "gmail": ["search_threads", "get_message", "list_labels"],
+    "linear": ["query", "list_issues", "create_issue"],
+    "notion": ["search", "get_page", "get_block_children", "query_database", "create_page"],
+    "vercel": ["list_deployments", "get_deployment", "alias_deployment", "list_projects"]
+  },
+  "graphql": {
+    "linear": {
+      "query": ["query"],
+      "list_issues": ["query"],
+      "create_issue": ["mutation"]
+    }
+  },
+  "mutating_actions": [
+    "gamma.create_presentation",
+    "github.create_pr",
+    "linear.create_issue",
+    "notion.create_page",
+    "vercel.alias_deployment"
+  ]
+}

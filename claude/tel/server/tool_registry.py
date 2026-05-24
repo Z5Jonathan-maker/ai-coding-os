@@ -30,6 +30,7 @@ class ActionSpec:
     auth_keychain_service: str = ""
     auth_header: str = "Authorization"
     auth_prefix: str = "Bearer"
+    allowed_query_prefixes: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -93,5 +94,14 @@ class ToolRegistry:
         extra = provided - allowed
         if extra:
             errs.append(f"unknown args: {sorted(extra)}")
+
+        if action.allowed_query_prefixes and "query" in args:
+            query = str(args.get("query", "")).lstrip().lower()
+            prefixes = [p.lower() for p in action.allowed_query_prefixes]
+            if not any(query.startswith(prefix) for prefix in prefixes):
+                errs.append(
+                    "query must start with one of: "
+                    f"{sorted(action.allowed_query_prefixes)}"
+                )
 
         return errs

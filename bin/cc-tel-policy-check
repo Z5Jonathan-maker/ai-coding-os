@@ -1,0 +1,240 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturePath = path.join(root, 'fixtures', 'tel-policy-public.json');
+const telDir = path.join(root, 'claude', 'tel');
+const policiesDir = path.join(telDir, 'policies');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message, detail = '') {
+  console.log(`fail ${message}`);
+  if (detail) {
+    console.log(String(detail).split('\n').slice(0, 30).map((line) => `     ${line}`).join('\n'));
+  }
+  fail += 1;
+}
+
+function check(name, fn) {
+  try {
+    const detail = fn();
+    ok(`${name}${detail ? `: ${detail}` : ''}`);
+  } catch (err) {
+    bad(name, err.message || err);
+  }
+}
+
+function read(file) {
+  return fs.readFileSync(path.join(root, file), 'utf8');
+}
+
+function parseYaml(file) {
+  const res = cp.spawnSync('ruby', [
+    '-ryaml',
+    '-rjson',
+    '-e',
+    'puts JSON.generate(YAML.load_file(ARGV[0]))',
+    file,
+  ], { cwd: root, encoding: 'utf8' });
+  if (res.status !== 0) throw new Error(res.stderr || res.stdout);
+  return JSON.parse(res.stdout);
+}
+
+function listPolicyFiles() {
+  return fs.readdirSync(policiesDir)
+    .filter((name) => name.endsWith('.yaml'))
+    .sort()
+    .map((name) => path.join(policiesDir, name));
+}
+
+function unique(items) {
+  return [...new Set(items)];
+}
+
+function assertArray(value, label) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new Error(`${label} must be an array`);
+  return value;
+}
+
+function assertArgNames(args, label) {
+  const dupes = unique(args.filter((arg, i) => args.indexOf(arg) !== i));
+  if (dupes.length) throw new Error(`${label} has duplicate args: ${dupes.join(', ')}`);
+  for (const arg of args) {
+    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(arg)) throw new Error(`${label} has unsafe arg name: ${arg}`);
+  }
+}
+
+function assertNoSecretMaterial() {
+  const patterns = [
+    /sk-[A-Za-z0-9]{20,}/,
+    /gh[pousr]_[A-Za-z0-9_]{20,}/,
+    /xox[baprs]-[A-Za-z0-9-]{20,}/,
+    /AKIA[0-9A-Z]{16}/,
+    /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
+    /\bBearer\s+[A-Za-z0-9._-]{20,}/,
+  ];
+  const hits = [];
+  for (const file of listPolicyFiles()) {
+    const rel = path.relative(root, file);
+    const text = fs.readFileSync(file, 'utf8');
+    for (const line of text.split('\n')) {
+      if (patterns.some((pattern) => pattern.test(line))) hits.push(`${rel}: ${line.trim()}`);
+    }
+  }
+  if (hits.length) throw new Error(hits.join('\n'));
+  return `${listPolicyFiles().length} policy files scanned`;
+}
+
+function loadPolicies() {
+  return Object.fromEntries(listPolicyFiles().map((file) => {
+    const policy = parseYaml(file);
+    return [policy.service, { file, policy }];
+  }));
+}
+
+function assertPolicyShape() {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  if (fixture.schema !== 'ai-coding-os.tel-policy-public.v1') {
+    throw new Error(`invalid fixture schema: ${fixture.schema}`);
+  }
+
+  const policies = loadPolicies();
+  const expectedServices = Object.keys(fixture.services).sort();
+  const actualServices = Object.keys(policies).sort();
+  if (expectedServices.join(',') !== actualServices.join(',')) {
+    throw new Error(`services drifted. expected=${expectedServices.join(',')} actual=${actualServices.join(',')}`);
+  }
+
+  const mutating = new Set(fixture.mutating_actions || []);
+  for (const service of expectedServices) {
+    const { file, policy } = policies[service];
+    const base = path.basename(file, '.yaml');
+    if (policy.service !== base) throw new Error(`${base}: service must match filename`);
+    if (!/^https:\/\/[^*]+$/.test(policy.base_url || '')) throw new Error(`${service}: base_url must be explicit https`);
+    if (!policy.actions || typeof policy.actions !== 'object') throw new Error(`${service}: missing actions`);
+
+    const expectedActions = [...fixture.services[service]].sort();
+    const actualActions = Object.keys(policy.actions).sort();
+    if (expectedActions.join(',') !== actualActions.join(',')) {
+      throw new Error(`${service}: action drift. expected=${expectedActions.join(',')} actual=${actualActions.join(',')}`);
+    }
+
+    for (const actionName of actualActions) {
+      if (actionName === '*' || service === '*') throw new Error(`${service}.${actionName}: wildcard not allowed`);
+      const action = policy.actions[actionName];
+      const full = `${service}.${actionName}`;
+      if (!action.description || !String(action.description).trim()) throw new Error(`${full}: description required`);
+      if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(String(action.method || '').toUpperCase())) {
+        throw new Error(`${full}: invalid method ${action.method}`);
+      }
+      if (!action.endpoint || /[*\s]/.test(action.endpoint)) throw new Error(`${full}: endpoint must be explicit`);
+      if (!Number.isInteger(action.rate_limit_per_hour) || action.rate_limit_per_hour < 1 || action.rate_limit_per_hour > 500) {
+        throw new Error(`${full}: rate_limit_per_hour must be 1..500`);
+      }
+      if (!String(action.auth_op_path || '').startsWith('op://Personal/')) throw new Error(`${full}: auth_op_path must be 1Password reference`);
+      if (!String(action.auth_keychain_service || '').startsWith('cc.')) throw new Error(`${full}: auth_keychain_service must be cc.*`);
+      if (action.auth_header !== 'Authorization') throw new Error(`${full}: only Authorization auth_header is supported`);
+      if (!['Bearer', 'token', ''].includes(action.auth_prefix)) throw new Error(`${full}: auth_prefix is not allowed`);
+
+      const required = assertArray(action.required_args, `${full}.required_args`);
+      const optional = assertArray(action.optional_args, `${full}.optional_args`);
+      assertArgNames(required, `${full}.required_args`);
+      assertArgNames(optional, `${full}.optional_args`);
+      for (const arg of required) {
+        if (optional.includes(arg)) throw new Error(`${full}: arg is both required and optional: ${arg}`);
+      }
+
+      if (mutating.has(full)) {
+        if (action.reversible !== true) throw new Error(`${full}: mutating action must be reversible`);
+        if (!Number.isInteger(action.undo_window_seconds) || action.undo_window_seconds < 60 || action.undo_window_seconds > 3600) {
+          throw new Error(`${full}: mutating action needs 60..3600s undo window`);
+        }
+      }
+
+      if (required.includes('query')) {
+        const expectedPrefixes = ((fixture.graphql || {})[service] || {})[actionName] || [];
+        const actualPrefixes = assertArray(action.allowed_query_prefixes, `${full}.allowed_query_prefixes`);
+        if (!expectedPrefixes.length || expectedPrefixes.sort().join(',') !== actualPrefixes.sort().join(',')) {
+          throw new Error(`${full}: GraphQL query prefixes drifted`);
+        }
+      }
+    }
+  }
+
+  return `${actualServices.length} services, ${Object.values(fixture.services).flat().length} actions`;
+}
+
+function assertStaticRuntimeContract() {
+  const trust = JSON.parse(read('.ai/trust.json'));
+  if (trust.credentialed_actions !== 'tel-only') throw new Error('.ai/trust.json must set credentialed_actions=tel-only');
+  if (trust.allow_secrets !== false) throw new Error('.ai/trust.json must keep allow_secrets=false');
+
+  const audit = read('claude/tel/server/audit.py');
+  if (!audit.includes('args_redacted')) throw new Error('audit.py must write redacted args');
+  if (!audit.includes('result_hash')) throw new Error('audit.py must hash results instead of storing response bodies');
+
+  const policy = read('claude/tel/server/policy.py');
+  for (const key of ['password', 'token', 'secret', 'key', 'auth', 'cred', 'session', 'cookie']) {
+    if (!policy.includes(`"${key}"`)) throw new Error(`policy.py missing redaction pattern: ${key}`);
+  }
+
+  const registry = read('claude/tel/server/tool_registry.py');
+  if (!registry.includes('allowed_query_prefixes') || !registry.includes('query must start with one of')) {
+    throw new Error('tool_registry.py must enforce GraphQL query prefixes');
+  }
+
+  const server = read('claude/tel/server/server.py');
+  if (server.indexOf('registry.get_action') < 0 || server.indexOf('broker.get') < 0 || server.indexOf('registry.get_action') > server.indexOf('broker.get')) {
+    throw new Error('server.py must validate registry action before credential resolution');
+  }
+
+  const broker = read('claude/tel/server/auth_broker.py');
+  if (broker.indexOf('_get_from_keychain') > broker.indexOf('_get_from_1password')) {
+    throw new Error('auth broker must be Keychain-first');
+  }
+
+  const client = read('claude/tel/client/tel-call.sh');
+  if (client.includes('set -x')) throw new Error('tel-call.sh must not shell-trace envelopes');
+  for (const phrase of ['--dry-run', '/execute', 'REQUEST_ID=', 'jq .']) {
+    if (!client.includes(phrase)) throw new Error(`tel-call.sh missing ${phrase}`);
+  }
+
+  const ignored = read('claude/tel/audit/.gitignore');
+  if (!ignored.includes('*.jsonl') || !ignored.includes('*.log')) {
+    throw new Error('audit logs must stay ignored');
+  }
+
+  return 'trust, audit, registry, broker, and client contracts present';
+}
+
+function assertNoTrackedAuditLogs() {
+  const res = cp.spawnSync('git', ['ls-files', 'claude/tel/audit'], { cwd: root, encoding: 'utf8' });
+  if (res.status !== 0) throw new Error(res.stderr);
+  const tracked = res.stdout.trim().split('\n').filter(Boolean);
+  const unexpected = tracked.filter((file) => file !== 'claude/tel/audit/.gitignore');
+  if (unexpected.length) throw new Error(unexpected.join('\n'));
+  return 'only audit/.gitignore is tracked';
+}
+
+console.log('# TEL Policy Check\n');
+console.log(`Root: ${root}`);
+check('Policy fixture schema and whitelist', assertPolicyShape);
+check('No raw secret material in policies', assertNoSecretMaterial);
+check('Static runtime contract', assertStaticRuntimeContract);
+check('No tracked audit logs', assertNoTrackedAuditLogs);
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: tel-policy-blocked' : 'Status: tel-policy-ready');
+process.exit(fail ? 1 : 0);

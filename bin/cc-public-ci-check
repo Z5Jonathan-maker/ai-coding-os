@@ -204,6 +204,7 @@ run "Router degradation replay" "$ROOT/bin/cc-router-degradation-check"
 run "Browser replay live readiness" "$ROOT/bin/cc-browser-replay-live-check"
 run "Cockpit walkthrough media" "$ROOT/bin/cc-cockpit-walkthrough-check"
 run "Trust adversarial fixtures" "$ROOT/bin/cc-trust-adversarial-check"
+run "TEL policy proof" "$ROOT/bin/cc-tel-policy-check"
 run "License alignment" license_alignment
 run "Launch media present" media_artifacts
 run "No personal path leaks" personal_path_leaks

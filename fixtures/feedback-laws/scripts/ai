@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="${AI_SYSTEM_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+CONTROL="$ROOT/scripts/ai-control.sh"
+
+case "${1:-}" in
+feedback-laws)
+  sed -n '1,120p' "$ROOT/memory/feedback-laws.md"
+  ;;
+depth-check)
+  node "$ROOT/scripts/depth-check.cjs"
+  ;;
+evolve)
+  shift
+  node "$ROOT/scripts/evolve.cjs" "$@"
+  ;;
+*)
+  exec bash "$CONTROL" "$@"
+  ;;
+esac

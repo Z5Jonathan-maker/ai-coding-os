@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 set -u
 
-AI_ROOT="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+LIVE_ROOT="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+FIXTURE_ROOT="$DOTFILES/fixtures/feedback-laws"
+AI_ROOT="$LIVE_ROOT"
+source_kind="live"
+
+if [ ! -s "$LIVE_ROOT/memory/feedback-laws.md" ]; then
+  AI_ROOT="$FIXTURE_ROOT"
+  source_kind="fixture"
+fi
+
 AI="${AI_ROOT}/scripts/ai"
 CONTROL="${AI_ROOT}/scripts/ai-control.sh"
 LAWS="${AI_ROOT}/memory/feedback-laws.md"
@@ -56,8 +66,8 @@ preflight_loads_laws() {
 }
 
 control_plane_exposes_laws() {
-  "$AI" feedback-laws | grep -Fq 'Feedback Laws' &&
-    "$AI" depth-check | grep -Eq 'Trend:|Next-deeper candidate:' &&
+  AI_SYSTEM_ROOT="$AI_ROOT" bash "$AI" feedback-laws | grep -Fq 'Feedback Laws' &&
+    AI_SYSTEM_ROOT="$AI_ROOT" bash "$AI" depth-check | grep -Eq 'Trend:|Next-deeper candidate:' &&
     grep -Fq 'feedback-laws)' "$CONTROL" &&
     grep -Fq 'depth-check)' "$CONTROL" &&
     grep -Fq 'evolve)' "$CONTROL"
@@ -70,19 +80,17 @@ evolve_is_guarded() {
 }
 
 depth_check_is_actionable() {
-  node "$DEPTH" | grep -Eq 'DEPTH AUDIT|Next-deeper candidate:|Capability log:'
+  AI_SYSTEM_ROOT="$AI_ROOT" node "$DEPTH" | grep -Eq 'DEPTH AUDIT|Next-deeper candidate:|Capability log:'
 }
 
 packaging_mentions_feedback_laws() {
-  grep -R "feedback laws" -n \
-    "$AI_ROOT/packaging" \
-    "$AI_ROOT/CONFIG-PACK.md" \
-    "$AI_ROOT/README.md" |
+  grep -R "feedback laws" -n "$AI_ROOT/packaging" "$AI_ROOT/CONFIG-PACK.md" "$AI_ROOT/README.md" 2>/dev/null |
     grep -Eq 'feedback laws'
 }
 
 printf '# Feedback Law Check\n\n'
 printf 'AI root: %s\n' "$AI_ROOT"
+printf 'Source: %s\n' "$source_kind"
 printf 'Laws: %s\n' "$LAWS"
 
 run "AI system root present" test -d "$AI_ROOT"

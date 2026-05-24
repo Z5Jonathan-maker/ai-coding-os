@@ -256,7 +256,9 @@ Installed system is 100% when:
     committed baseline
 20. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
-    documented in the packaged system
+    documented in the packaged system. Fresh public clones use the committed
+    `fixtures/feedback-laws` fallback when the local `AI-SYSTEM-V2` install is
+    absent.
 21. `cc-superiority-check` proves competitive claims are documented against
     reference systems, tied to commands, and backed by at least three graded
     benchmark fixtures

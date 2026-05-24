@@ -146,10 +146,11 @@ cc-public-ci-check
 proves the distributable release path. `cc-fresh-clone-check` proves a clean
 clone can dry-run install, package, and run the public fixture without mutating a
 temp home. `cc-feedback-law-check` proves Mega Cycle feedback laws are loaded by
-autonomy preflight and exposed through the control plane. `cc-ai-checks` runs
-the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
-repo-local autonomy policy in `.ai/trust.json`, and `cc-trust-gate` enforces
-that policy before cockpit routing. `cc-token-ledger` reports router economics
+autonomy preflight and exposed through the control plane, using the live
+`AI-SYSTEM-V2` install when present and a committed fixture when evaluating a
+public clone. `cc-ai-checks` runs the source-controlled checks in `.ai/checks/`;
+`cc-trust-profile` validates the repo-local autonomy policy in `.ai/trust.json`,
+and `cc-trust-gate` enforces that policy before cockpit routing. `cc-token-ledger` reports router economics
 from existing usage telemetry, with a committed fixture fallback for public
 evaluators who do not have the private router log. `cc-router-smoke` and
 benchmark route checks use the live router when present and a labeled committed

@@ -1,16 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 prompt="${*:-debug this repo and verify the safest next step}"
 route_script="${AI_SYSTEM_ROUTE_SCRIPT:-${AI_SYSTEM_V2:-$HOME/AI-SYSTEM-V2}/scripts/intent-route.sh}"
+router_root="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+
+route_fixture() {
+  local final="codex" platform="codex" selected="codex -> codex" classifier="codex"
+  case "$prompt" in
+    *design*|*screenshot*|*browser*|*UI*|*hero*) final="design"; platform="kimi"; selected="design -> kimi"; classifier="design" ;;
+    *extract*|*summarize*|*JSON*|*metadata*) final="cheap"; platform="deepseek"; selected="cheap -> deepseek"; classifier="cheap" ;;
+    *security*|*audit*|*review*|*architecture*|*debug*) final="precision"; platform="claude"; selected="precision -> claude"; classifier="precision" ;;
+  esac
+  printf 'Source: committed routing contract fixture; live route script unavailable at %s\n' "$route_script"
+  printf 'Selected: %s\n' "$selected"
+  printf 'Receipt: {"classifier_output":"%s","final_class":"%s","platform":"%s","fallback_chain":["%s","design/kimi","cheap/deepseek"],"fixture":true}\n' "$classifier" "$final" "$platform" "$selected"
+}
 
 printf '# Workflow Proof\n\n'
 
 if [ "${CC_WORKFLOW_PROOF_SKIP_READINESS:-0}" = 1 ]; then
   printf "## Product Readiness\n\n\`\`\`text\nskipped by CC_WORKFLOW_PROOF_SKIP_READINESS=1\n\`\`\`\n\n"
+elif [ ! -x "$router_root/bin/cc-router-classifier-check" ]; then
+  printf '## Product Readiness\n\n```text\n'
+  printf 'portable evaluator mode\n'
+  printf 'private router and local VS Code readiness skipped\n'
+  "$DOTFILES/bin/cc-public-ci-check" | sed -n '1,28p'
+  printf '```\n\n'
 else
   printf '## Product Readiness\n\n```text\n'
-  cc-product-readiness | sed -n '1,28p'
+  "$DOTFILES/bin/cc-product-readiness" | sed -n '1,28p'
   printf '```\n\n'
 fi
 
@@ -18,15 +38,15 @@ printf '## Route Preview\n\n```text\n'
 if [ -x "$route_script" ]; then
   "$route_script" --dry-run "$prompt" | sed -n '1,34p'
 else
-  printf 'route preview unavailable: missing %s\n' "$route_script"
+  route_fixture
 fi
 printf '```\n\n'
 
 printf '## Repo Index\n\n'
-cc-repo-index | sed -n '1,54p'
+"$DOTFILES/bin/cc-repo-index" | sed -n '1,54p'
 
 printf '\n## Repo Map\n\n```text\n'
-cc-repo-map 18
+"$DOTFILES/bin/cc-repo-map" 18
 printf '```\n\n'
 
 printf '\n## Diff Review Surface\n\n```text\n'
@@ -36,3 +56,4 @@ else
   printf 'not inside a git repository\n'
 fi
 printf '```\n'
+printf '\nStatus: workflow-proof-ready\n'

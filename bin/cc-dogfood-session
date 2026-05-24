@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 duration_minutes=360
 interval_minutes=30
 max_cycles=0

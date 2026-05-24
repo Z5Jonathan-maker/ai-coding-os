@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+set -u
+
+ROOT="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+pass=0
+fail=0
+
+run() {
+  local name="$1"
+  shift
+  printf '\n## %s\n' "$name"
+  if "$@"; then
+    printf 'ok   %s\n' "$name"
+    pass=$((pass + 1))
+  else
+    printf 'fail %s\n' "$name"
+    fail=$((fail + 1))
+  fi
+}
+
+clone_root_defaults() {
+  local bad=0 file
+  for file in \
+    bin/cc-cockpit-capture \
+    bin/cc-cockpit-status \
+    bin/cc-demo-fixture \
+    bin/cc-demo-five-minute \
+    bin/cc-dogfood-day \
+    bin/cc-dogfood-session \
+    bin/cc-package-cockpit \
+    bin/cc-product-readiness \
+    bin/cc-release-manifest \
+    bin/cc-ten-readiness \
+    bin/cc-verify-product; do
+    if rg -n '\$\{DOTFILES:-\$HOME/dotfiles\}|\$\{DOTFILES:-\$\{DOTFILES_DIR:-\$HOME/dotfiles\}\}' "$file" >/tmp/cc-portability.$$ 2>/dev/null; then
+      cat /tmp/cc-portability.$$
+      bad=1
+    fi
+    if ! rg -n 'git rev-parse --show-toplevel' "$file" >/dev/null 2>&1; then
+      printf '%s: missing git-root fallback\n' "$file"
+      bad=1
+    fi
+  done
+  rm -f /tmp/cc-portability.$$
+  return "$bad"
+}
+
+maintainer_home_usage_is_classified() {
+  local bad=0 hit file
+  while IFS= read -r hit; do
+    file="${hit%%:*}"
+    case "$file" in
+      bin/cc-backup|bin/cc-backup-verify|bin/cc-bootstrap|bin/cc-deploy-watch-cron|bin/cc-first-run|bin/cc-health-weekly|bin/cc-portability-check|bin/cc-self-update|bin/cc-skill-register|bin/cc-sudoers-install|bin/sudo|bin/sync-dotfiles)
+        ;;
+      *)
+        printf '%s\n' "$hit"
+        bad=1
+        ;;
+    esac
+  done < <(rg -n '\$HOME/dotfiles|~/dotfiles' bin)
+  return "$bad"
+}
+
+public_files_have_no_absolute_user_paths() {
+  local files bad=0
+  files="$(mktemp "${TMPDIR:-/tmp}/cc-portability-files.XXXXXX")"
+  git ls-files -z -- README.md install.sh bin docs .github .ai/checks >"$files"
+  if xargs -0 rg -n '/Users/[A-Za-z0-9._-]+' <"$files"; then
+    bad=1
+  fi
+  rm -f "$files"
+  return "$bad"
+}
+
+tracked_symlinks_are_relative_or_home_agnostic() {
+  local links bad=0 target
+  links="$(mktemp "${TMPDIR:-/tmp}/cc-portability-links.XXXXXX")"
+  git ls-files -s |
+    awk '$1 == "120000" {print $4}' >"$links"
+  while IFS= read -r file; do
+    target="$(readlink "$file" 2>/dev/null || git cat-file -p ":$file")"
+    case "$target" in
+      /Users/*)
+        printf '%s -> %s\n' "$file" "$target"
+        bad=1
+        ;;
+    esac
+  done <"$links"
+  rm -f "$links"
+  return "$bad"
+}
+
+registry_includes_check() {
+  grep -Fq '`cc-portability-check`' docs/COMMAND-REGISTRY.md
+}
+
+check_manifest_exists() {
+  [ -s .ai/checks/portability.md ]
+}
+
+cd "$ROOT" || exit 1
+
+printf '# Package Portability Check\n\n'
+printf 'Root: %s\n' "$ROOT"
+
+run "Clone-root defaults for product/evaluator commands" clone_root_defaults
+run "Maintainer-home bin usage is classified" maintainer_home_usage_is_classified
+run "Public files have no absolute user paths" public_files_have_no_absolute_user_paths
+run "Tracked symlink targets are portable" tracked_symlinks_are_relative_or_home_agnostic
+run "Command registry includes portability gate" registry_includes_check
+run "Source-controlled check manifest exists" check_manifest_exists
+
+printf '\n## Summary\n\n'
+printf 'passed=%s failed=%s\n' "$pass" "$fail"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: portability-ready\n'
+else
+  printf 'Status: portability-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 OUT_DIR="${1:-$DOTFILES/docs/media/cockpit}"
 CSS="$DOTFILES/vscode/ai-cockpit/media/style.css"
 tmp="$(mktemp -d)"

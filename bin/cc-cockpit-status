@@ -2,7 +2,7 @@
 # cc-cockpit-status — concise cockpit snapshot for VS Code and terminal.
 set -u
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
 
 section() {

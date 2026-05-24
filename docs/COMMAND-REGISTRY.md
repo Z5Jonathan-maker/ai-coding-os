@@ -76,6 +76,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-mutating-dogfood` — isolated mutating coding-session proof with failing tests, real edits, recovery, review evidence, Mission Events, and commits.
 - `cc-native-app-status` — installed native AI app versions and role map.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
+- `cc-portability-check` — package separability gate for clone-root command defaults, public path hygiene, and classified maintainer-home assumptions.
 - `cc-provider-capacity` — live provider capacity check across Claude, Codex, Kimi, and DeepSeek; separates installed/healthy from quota-exhausted/degraded.
 - `cc-pulse-status` — Pulse code-density protocol source, skill, and fit status.
 - `cc-prune` — manual disk hygiene for `.claude`.

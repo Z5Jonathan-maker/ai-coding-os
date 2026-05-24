@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
 MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
 checks=0

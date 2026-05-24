@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # cc-loop — 24/7 unattended Claude runner with Ralph-style outcome gates.
 #
-# Per the design doc at ~/dotfiles/docs/cc-loop-design.md.
+# Per docs/cc-loop-design.md.
 #
 # Survives:
 #   - Hung sessions (per-cycle watchdog: SIGTERM at timeout, SIGKILL +30s)

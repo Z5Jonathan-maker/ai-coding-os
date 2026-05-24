@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-src="${DOTFILES:-$HOME/dotfiles}/fixtures/demo-project"
+src="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/fixtures/demo-project"
 [ -d "$src" ] || { echo "cc-demo-fixture: missing fixture at $src" >&2; exit 2; }
 work="$(mktemp -d "${TMPDIR:-/tmp}/cc-demo-fixture.XXXXXX")"
 cp -R "$src"/. "$work"/

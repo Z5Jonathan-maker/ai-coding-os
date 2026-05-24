@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 prompt="${CC_VERIFY_PROMPT:-debug this repo and verify the safest next step}"
 browser_url="${CC_VERIFY_BROWSER_URL:-data:text/html,<title>Product Verify</title><body>product verification proof</body>}"
 max_chars="${CC_VERIFY_BROWSER_MAX_CHARS:-900}"

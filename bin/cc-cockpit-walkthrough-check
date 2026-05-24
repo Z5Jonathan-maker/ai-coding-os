@@ -1,0 +1,69 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const dir = path.join(root, 'docs', 'media', 'cockpit', 'walkthrough');
+const manifestPath = path.join(dir, 'manifest.json');
+let pass = 0;
+let fail = 0;
+
+function ok(name, detail = '') {
+  console.log(`ok   ${name}${detail ? `: ${detail}` : ''}`);
+  pass += 1;
+}
+
+function bad(name, detail) {
+  console.log(`fail ${name}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 30).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function readProbe(video) {
+  const res = cp.spawnSync('ffprobe', [
+    '-v', 'error',
+    '-select_streams', 'v:0',
+    '-show_entries', 'stream=width,height,avg_frame_rate,duration,codec_name',
+    '-of', 'json',
+    video,
+  ], { encoding: 'utf8' });
+  if (res.status !== 0) throw new Error(res.stderr || `ffprobe exited ${res.status}`);
+  return JSON.parse(res.stdout).streams[0];
+}
+
+console.log('# Cockpit Walkthrough Check\n');
+console.log(`Root: ${root}`);
+
+try {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (manifest.schema !== 'ai-coding-os.cockpit-walkthrough.v1') throw new Error('invalid schema');
+  if (!Array.isArray(manifest.frames) || manifest.frames.length < 4) throw new Error('requires at least four frames');
+  for (const frame of manifest.frames) {
+    const source = path.resolve(dir, frame.source);
+    if (!fs.existsSync(source)) throw new Error(`missing frame source: ${frame.source}`);
+  }
+  if (manifest.proof?.credential_free !== true) throw new Error('walkthrough must be credential-free');
+  ok('manifest', `${manifest.frames.length} frames`);
+
+  const video = path.join(dir, manifest.video);
+  const stat = fs.statSync(video);
+  if (stat.size <= 0 || stat.size > manifest.proof.max_size_bytes) throw new Error(`video size ${stat.size}`);
+  const probe = readProbe(video);
+  const duration = Number(probe.duration);
+  if (probe.codec_name !== manifest.proof.codec) throw new Error(`codec ${probe.codec_name}`);
+  if (Number(probe.width) !== manifest.resolution.width || Number(probe.height) !== manifest.resolution.height) {
+    throw new Error(`resolution ${probe.width}x${probe.height}`);
+  }
+  if (!(duration >= 4 && duration <= 8)) throw new Error(`duration ${duration}`);
+  ok('video proof', `${probe.codec_name} ${probe.width}x${probe.height} ${duration.toFixed(2)}s ${stat.size} bytes`);
+} catch (err) {
+  bad('cockpit walkthrough', err.message);
+}
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: cockpit-walkthrough-blocked' : 'Status: cockpit-walkthrough-ready');
+process.exit(fail ? 1 : 0);

@@ -46,6 +46,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-replay-bundle-check` — validates cockpit real-use replay bundle across state screenshots and interaction assertions.
 - `cc-cockpit-state-proof` — deterministic cockpit state screenshots for continuation, running, success, blocked, permissions, and route receipt.
 - `cc-cockpit-visual-diff` — cockpit screenshot visual-regression gate with decoded PNG pixel samples, perceptual hash, luma scoring, and diagnostic file-hash/byte drift.
+- `cc-cockpit-walkthrough-check` — tracked cockpit walkthrough MP4 and source-frame manifest proof.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.

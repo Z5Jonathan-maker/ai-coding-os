@@ -51,7 +51,7 @@ Status values:
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
 | Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-replay-check`, `cc-browser-replay-live-check`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Real target authenticated replay still depends on approved local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-replay-check`, `cc-browser-replay-live-check`, `cc-browser-visual-proof --check` | Strong |
-| Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots, real-use replay bundle, headless interaction proof, pixel/perceptual visual-diff gate | More dogfood videos showing real daily use | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-cockpit-interaction-proof`, `cc-cockpit-replay-bundle-check`, `cc-cockpit-visual-diff`, `cc-package-cockpit` | Strong |
+| Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots, real-use replay bundle, headless interaction proof, pixel/perceptual visual-diff gate, tracked walkthrough MP4 | More live dogfood videos from real project sessions | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-cockpit-interaction-proof`, `cc-cockpit-replay-bundle-check`, `cc-cockpit-visual-diff`, `cc-cockpit-walkthrough-check`, `cc-package-cockpit` | Strong |
 | Creative direction kernel | Taste is routed as cognitive work, not treated as a generic image task | `cc-creative-kernel-check`, Creative Direction Kernel fixture, design DNA, taste validation | Real project proof bundles from shipped design missions | `cc-creative-kernel-check` | Strong |
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report, PR-quality scorer | Externally sourced issue replay with maintainer-style scoring | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood`, `cc-pr-quality-score --check` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
@@ -66,7 +66,7 @@ These are the remaining gaps that matter most:
 1. **Real-world benchmark depth**: expand beyond the first source-linked upstream issue replay into more real public issues across frontend, backend, and agent-runtime work.
 2. **Authenticated browser replay**: expand from live credential-free WebBridge readiness to real approved target replays on prepared machines.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced upstream issues scored by the PR-quality gate.
-4. **Cockpit real-use evidence**: add short dogfood videos on top of the replay bundle.
+4. **Cockpit real-use evidence**: expand from the tracked walkthrough MP4 into live dogfood videos from real project sessions.
 5. **Package separability**: expand from clone-root command defaults to more cold third-party installs on non-maintainer machines.
 
 Until those are closed, the honest rating is:
@@ -105,6 +105,7 @@ cc-cockpit-state-proof --check
 cc-cockpit-interaction-proof --check
 cc-cockpit-replay-bundle-check
 cc-cockpit-visual-diff
+cc-cockpit-walkthrough-check
 cc-dogfood-session --check
 cc-mutating-dogfood --check
 cc-public-repo-dogfood --check

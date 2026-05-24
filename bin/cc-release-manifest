@@ -44,7 +44,7 @@ mkdir -p "$(dirname "$out")"
   row "$package"
   while IFS= read -r file; do
     row "$file"
-  done < <(find "$DOTFILES/docs/media/cockpit" -maxdepth 1 -type f \( -name '*.png' -o -name '*.gif' \) | sort)
+  done < <(find "$DOTFILES/docs/media/cockpit" -type f \( -name '*.png' -o -name '*.gif' -o -name '*.mp4' -o -name 'manifest.json' \) | sort)
 
   printf '\n## Notes\n\n'
   printf '%s\n' '- The VSIX is generated under `dist/` by `cc-package-cockpit` and is not tracked.'

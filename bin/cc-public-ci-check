@@ -145,6 +145,8 @@ media_artifacts() {
     docs/media/cockpit/interaction/interaction-proof.png \
     docs/media/cockpit/interaction/manifest.json \
     docs/media/cockpit/replay/manifest.json \
+    docs/media/cockpit/walkthrough/ai-coding-os-walkthrough.mp4 \
+    docs/media/cockpit/walkthrough/manifest.json \
     docs/media/cockpit/visual-baseline.json; do
     if [ ! -s "$file" ]; then
       printf 'missing media artifact: %s\n' "$file"
@@ -200,6 +202,7 @@ run "Package portability" "$ROOT/bin/cc-portability-check"
 run "Lane extension guide" "$ROOT/bin/cc-lane-extension-check"
 run "Router degradation replay" "$ROOT/bin/cc-router-degradation-check"
 run "Browser replay live readiness" "$ROOT/bin/cc-browser-replay-live-check"
+run "Cockpit walkthrough media" "$ROOT/bin/cc-cockpit-walkthrough-check"
 run "License alignment" license_alignment
 run "Launch media present" media_artifacts
 run "No personal path leaks" personal_path_leaks

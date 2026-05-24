@@ -48,8 +48,9 @@ copy_required "$DOTFILES/README.md" "$root/README.md"
 copy_required "$DOTFILES/LICENSE" "$root/LICENSE"
 
 while IFS= read -r media; do
-  copy_required "$media" "$root/media/cockpit/$(basename "$media")"
-done < <(find "$DOTFILES/docs/media/cockpit" -maxdepth 1 -type f \( -name '*.png' -o -name '*.gif' \) | sort)
+  rel="${media#"$DOTFILES/docs/media/cockpit"/}"
+  copy_required "$media" "$root/media/cockpit/$rel"
+done < <(find "$DOTFILES/docs/media/cockpit" -type f \( -name '*.png' -o -name '*.gif' -o -name '*.mp4' -o -name 'manifest.json' \) | sort)
 
 {
   printf '# ai-coding-os-%s\n\n' "$version"

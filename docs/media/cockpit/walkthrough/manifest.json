@@ -1,0 +1,33 @@
+{
+  "schema": "ai-coding-os.cockpit-walkthrough.v1",
+  "video": "ai-coding-os-walkthrough.mp4",
+  "duration_seconds": 5.666667,
+  "resolution": {
+    "width": 1280,
+    "height": 800
+  },
+  "frames": [
+    {
+      "source": "../states/08-state-continuation.png",
+      "meaning": "Resume current mission"
+    },
+    {
+      "source": "../states/09-state-running.png",
+      "meaning": "Mission in progress"
+    },
+    {
+      "source": "../states/10-state-success.png",
+      "meaning": "Proof-backed success state"
+    },
+    {
+      "source": "../interaction/interaction-proof.png",
+      "meaning": "Real interaction proof"
+    }
+  ],
+  "proof": {
+    "codec": "h264",
+    "fps": 24,
+    "max_size_bytes": 2000000,
+    "credential_free": true
+  }
+}

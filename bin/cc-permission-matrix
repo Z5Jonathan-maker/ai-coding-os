@@ -2,15 +2,19 @@
 # cc-permission-matrix — visible autonomy boundaries for the AI cockpit.
 set -u
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 ROOT="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
 POLICY="${AI_PERMISSION_POLICY:-$ROOT/configs/permission-policy.json}"
 MODE_FILE="${AI_PERMISSION_MODE_FILE:-$ROOT/configs/permission-mode.json}"
+TRUST="${CC_TRUST_PROFILE:-$DOTFILES/.ai/trust.json}"
+TRUST_GATE="$DOTFILES/bin/cc-trust-gate"
 
 section() {
   printf '\n## %s\n\n' "$1"
 }
 
-policy_value() {
+policy_json_value() {
   node -e "
 const fs=require('fs');
 try {
@@ -21,7 +25,34 @@ try {
   if (Array.isArray(v)) console.log(v.length);
   else if (v !== undefined) console.log(v);
 } catch (_) {}
-" "$POLICY" "$1"
+" "$1" "$2"
+}
+
+trust_value() {
+  policy_json_value "$TRUST" "$1"
+}
+
+trust_rule_count() {
+  node -e "
+const fs=require('fs');
+try {
+  const t=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+  const deny=[
+    t.allow_secrets === false,
+    t.destructive_actions === 'deny'
+  ].filter(Boolean).length;
+  const review=[
+    t.allow_network === 'ask',
+    t.allow_browser_profile === 'ask',
+    t.public_publish === 'review',
+    t.paid_actions === 'review',
+    t.credentialed_actions === 'tel-only'
+  ].filter(Boolean).length;
+  console.log(process.argv[2] === 'deny' ? deny : review);
+} catch (_) {
+  console.log('0');
+}
+" "$TRUST" "$1"
 }
 
 mode_json="$(node -e "
@@ -32,33 +63,48 @@ catch (_) { console.log(JSON.stringify({mode:'strict',source:'default'})); }
 
 mode="$(printf '%s' "$mode_json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const m=JSON.parse(s);console.log(m.mode||'strict')})")"
 updated="$(printf '%s' "$mode_json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const m=JSON.parse(s);console.log(m.updated_at||'default')})")"
-policy_version="$(policy_value version)"
-deny_count="$(policy_value deny)"
-review_count="$(policy_value review)"
 checker="$ROOT/scripts/permission-check.cjs"
+if [ -f "$POLICY" ]; then
+  policy_source="ai-system"
+  policy_version="$(policy_json_value "$POLICY" version)"
+  deny_count="$(policy_json_value "$POLICY" deny)"
+  review_count="$(policy_json_value "$POLICY" review)"
+elif [ -f "$TRUST" ]; then
+  policy_source="trust-profile"
+  policy_version="trust-v$(trust_value version)"
+  deny_count="$(trust_rule_count deny)"
+  review_count="$(trust_rule_count review)"
+else
+  policy_source="missing"
+  policy_version="missing"
+  deny_count="0"
+  review_count="0"
+fi
 
 probe_decision() {
-  AI_PERMISSION_LOG="${AI_PERMISSION_LOG:-/private/tmp/cc-permission-decisions.jsonl}" "$checker" --json "$1" 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{try{console.log(JSON.parse(s).decision.toUpperCase())}catch(_){console.log('UNKNOWN')}})"
+  if [ -x "$checker" ]; then
+    AI_PERMISSION_LOG="${AI_PERMISSION_LOG:-${TMPDIR:-/tmp}/cc-permission-decisions.jsonl}" "$checker" --json "$1" 2>/dev/null
+  elif [ -x "$TRUST_GATE" ]; then
+    DOTFILES="$DOTFILES" CC_TRUST_PROFILE="$TRUST" "$TRUST_GATE" --json --mode review --task "$1" 2>/dev/null
+  else
+    printf '{}'
+  fi | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{try{console.log(String(JSON.parse(s).decision||'unknown').toUpperCase())}catch(_){console.log('UNKNOWN')}})"
 }
 
 if [ "${1:-}" = "--summary" ]; then
-  printf 'Mode: %s | Policy: %s | Rules: %s deny, %s review\n' "$mode" "${policy_version:-missing}" "${deny_count:-0}" "${review_count:-0}"
-  if [ -x "$checker" ]; then
-    printf 'Probe: read=%s install=%s secret=%s deploy=%s\n' \
-      "$(probe_decision "read files and summarize the project")" \
-      "$(probe_decision "brew install a new global dependency")" \
-      "$(probe_decision "print my api key")" \
-      "$(probe_decision "deploy this to production")"
-  else
-    printf 'Probe: permission checker unavailable\n'
-  fi
+  printf 'Mode: %s | Policy: %s (%s) | Rules: %s deny, %s review\n' "$mode" "${policy_version:-missing}" "$policy_source" "${deny_count:-0}" "${review_count:-0}"
+  printf 'Probe: read=%s install=%s secret=%s deploy=%s\n' \
+    "$(probe_decision "read files and summarize the project")" \
+    "$(probe_decision "brew install a new global dependency")" \
+    "$(probe_decision "print my api key")" \
+    "$(probe_decision "deploy this to production")"
   exit 0
 fi
 
 printf '# AI Permission Matrix\n\n'
 printf 'Mode: %s\n' "$mode"
 printf 'Mode updated: %s\n' "$updated"
-printf 'Policy: %s\n' "${policy_version:-missing}"
+printf 'Policy: %s (%s)\n' "${policy_version:-missing}" "$policy_source"
 printf 'Policy rules: %s deny, %s review\n' "${deny_count:-0}" "${review_count:-0}"
 
 section "Allowed By Default"
@@ -102,20 +148,31 @@ for (const group of ['deny','review']) {
   for (const r of p[group] || []) console.log('- ' + r.id + ': ' + r.reason);
 }
 " "$POLICY"
+elif [ -f "$TRUST" ]; then
+  node -e "
+const fs=require('fs');
+const t=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+console.log('DENY');
+if (t.allow_secrets === false) console.log('- secrets: credentials must never be printed or exposed');
+if (t.destructive_actions === 'deny') console.log('- destructive_actions: destructive operations are hard-denied');
+console.log('REVIEW');
+if (t.allow_network === 'ask') console.log('- network: browser/network actions require review');
+if (t.allow_browser_profile === 'ask') console.log('- browser_profile: logged-in profile access requires review');
+if (t.public_publish === 'review') console.log('- public_publish: publishing and deploy actions require review');
+if (t.paid_actions === 'review') console.log('- paid_actions: billing or paid usage requires review');
+if (t.credentialed_actions === 'tel-only') console.log('- credentialed_actions: credentialed actions must use TEL');
+" "$TRUST"
 else
   printf 'Policy file missing: %s\n' "$POLICY"
+  printf 'Trust profile missing: %s\n' "$TRUST"
 fi
 
 section "Decision Probe"
-if [ -x "$checker" ]; then
-  for task in \
-    "read files and summarize the project" \
-    "brew install a new global dependency" \
-    "print my api key" \
-    "deploy this to production"; do
-    printf -- '- %s: ' "$task"
-    probe_decision "$task"
-  done
-else
-  printf 'Permission checker unavailable: %s\n' "$checker"
-fi
+for task in \
+  "read files and summarize the project" \
+  "brew install a new global dependency" \
+  "print my api key" \
+  "deploy this to production"; do
+  printf -- '- %s: ' "$task"
+  probe_decision "$task"
+done

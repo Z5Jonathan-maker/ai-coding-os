@@ -150,7 +150,9 @@ autonomy preflight and exposed through the control plane, using the live
 `AI-SYSTEM-V2` install when present and a committed fixture when evaluating a
 public clone. `cc-ai-checks` runs the source-controlled checks in `.ai/checks/`;
 `cc-trust-profile` validates the repo-local autonomy policy in `.ai/trust.json`,
-and `cc-trust-gate` enforces that policy before cockpit routing. `cc-token-ledger` reports router economics
+`cc-trust-gate` enforces that policy before cockpit routing, and
+`cc-permission-matrix` falls back to that trust profile when private local
+permission files are absent. `cc-token-ledger` reports router economics
 from existing usage telemetry, with a committed fixture fallback for public
 evaluators who do not have the private router log. `cc-router-smoke` and
 benchmark route checks use the live router when present and a labeled committed

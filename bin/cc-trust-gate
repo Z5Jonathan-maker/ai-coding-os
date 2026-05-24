@@ -88,7 +88,7 @@ function gate() {
     result.message = 'billing task requires explicit human review';
   }
   if (/print|show|dump|expose|reveal/i.test(task) && /api key|secret|token|password|credential/i.test(task)) {
-    fail('secret exposure is never allowed', 3, result);
+    fail('secret exposure is never allowed', 3, { ...result, decision: 'deny' });
   }
 
   if (has('json')) console.log(JSON.stringify(result, null, 2));

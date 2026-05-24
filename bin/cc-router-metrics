@@ -13,8 +13,7 @@ printf '# Router Metrics\n\n'
 if [ -x "$usage" ]; then
   "$usage" "$window" | sed -n '1,44p'
 else
-  printf 'router-usage unavailable at %s\n' "$usage"
-  printf 'Using token ledger fixture fallback.\n\n'
+  printf 'Source: committed token ledger fixture; live router usage probe not installed at %s\n\n' "$usage"
   CC_ROUTER_ROOT="$ROUTER" "$DOTFILES/bin/cc-token-ledger" | sed -n '1,32p'
 fi
 
@@ -22,7 +21,7 @@ printf '\n## Recent Failures\n\n'
 if [ -x "$failures" ]; then
   "$failures" 10 | sed -n '1,28p'
 else
-  printf 'router-failures unavailable at %s\n' "$failures"
+  printf 'Source: fixture mode; live router failure probe not installed at %s\n' "$failures"
   printf 'No fixture failures recorded.\n'
 fi
 
@@ -30,7 +29,6 @@ printf '\n## Recent Sessions\n\n'
 if [ -x "$sessions" ]; then
   "$sessions" | sed -n '1,24p'
 else
-  printf 'router-sessions unavailable at %s\n' "$sessions"
-  printf 'Using session ledger fallback.\n\n'
+  printf 'Source: session ledger fallback; live router session probe not installed at %s\n\n' "$sessions"
   CC_ROUTER_ROOT="$ROUTER" "$DOTFILES/bin/cc-session-ledger" list --limit 3 | sed -n '1,24p'
 fi

@@ -23,8 +23,7 @@ list | --json | '')
     DOTFILES="$ROOT" "$ROOT/bin/cc-mission-ledger" list --json
   else
     printf '# Session Ledger\n\n'
-    printf 'Router sessions unavailable: %s\n' "$ROUTER_SESSIONS"
-    printf 'Fallback: mission ledger\n\n'
+    printf 'Source: mission ledger fallback; live router session probe not installed at %s\n\n' "$ROUTER_SESSIONS"
     DOTFILES="$ROOT" "$ROOT/bin/cc-mission-ledger" list "${@:2}"
     printf '\nStatus: session-ledger-fallback\n'
   fi

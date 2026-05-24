@@ -1,8 +1,8 @@
 ---
 name: Session Ledger
 description: Cockpit session continuity command stays usable without a private router checkout.
-command: bin/cc-session-ledger --check
-expect: Status: session-ledger-ready
+command: bash -lc 'CC_ROUTER_ROOT=/tmp/no-router DOTFILES="$PWD" bin/cc-session-ledger list && CC_ROUTER_ROOT=/tmp/no-router DOTFILES="$PWD" bin/cc-session-ledger --check'
+expect: Source: mission ledger fallback
 ---
 
 This check keeps `AI: Session Ledger` portable for public evaluators. If the

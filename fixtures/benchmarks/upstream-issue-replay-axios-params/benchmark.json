@@ -1,0 +1,14 @@
+{
+  "id": "upstream-issue-replay-axios-params",
+  "title": "Upstream issue replay: nested empty params",
+  "source": {
+    "repo": "axios/axios",
+    "issue": 6189,
+    "url": "https://github.com/axios/axios/issues/6189",
+    "reportedBehavior": "axios.get('/url', { params: { limit: 100, address: { city: {} }, details: { name: {} } } }) omitted the nested empty object parameters from the transmitted request."
+  },
+  "prompt": "repair an upstream issue replay for Axios-style query serialization so nested empty object params are preserved as explicit empty assignments without regressing normal nested params or array params",
+  "expectSelectedRegex": "Selected:\\s+precision|Selected:\\s+codex",
+  "expectInitialFail": true,
+  "expectedPatch": "expected.patch"
+}

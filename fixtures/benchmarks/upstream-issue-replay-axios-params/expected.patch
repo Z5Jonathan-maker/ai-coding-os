@@ -1,0 +1,6 @@
+*** Update File: src/build-url.js
+-    if (keys.length === 0) return;
++    if (keys.length === 0) {
++      pairs.push(`${encodeKey(prefix)}=`);
++      return;
++    }

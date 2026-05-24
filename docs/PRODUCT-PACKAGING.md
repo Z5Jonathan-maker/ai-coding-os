@@ -85,13 +85,15 @@ trust tier, and safety boundary.
   If live router telemetry is absent, it falls back to the committed
   `fixtures/router/tier-usage.jsonl` sample and labels that output as fixture
   data.
-- **Benchmark fixtures:** `cc-benchmark-fixtures` runs 10 public scenarios:
+- **Benchmark fixtures:** `cc-benchmark-fixtures` runs 13 public scenarios:
   coding, extraction, design, browser proof, security review, long context,
   refactor, failing test repair, image-to-UI handoff, and permission-denied
-  trust behavior. Each fixture includes tests, route expectations, repo-map
-  proof, and diff-surface proof. `cc-benchmark-run` scores broken-first repair
-  and refactor fixtures with an expected patch, baseline probe, and final test
-  verification. Long-context fixtures include citation and top-risk scoring.
+  trust behavior, plus source-linked upstream issue replays. Each fixture
+  includes tests, route expectations, repo-map proof, and diff-surface proof.
+  `cc-benchmark-run` scores broken-first repair, refactor, routing-quality, and
+  upstream issue fixtures with an expected patch, baseline probe when present,
+  and final test verification. Long-context fixtures include citation and
+  top-risk scoring.
 - **Competitive proof matrix:** `cc-superiority-check` keeps claims against
   OpenHands, Claude Code, Cursor, Cline, OpenCode, Kimi, Codex, Windsurf,
   Devin, Octagents-style swarms, and token-router stacks tied to explicit

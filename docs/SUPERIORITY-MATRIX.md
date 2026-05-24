@@ -46,7 +46,7 @@ Status values:
 | Dimension | We Must Win By | Current Proof | Missing Proof | Gate / Command | Status |
 |---|---|---|---|---|---|
 | Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics`, degraded-provider replay fixture | More live degraded-provider replays across non-Claude lanes | `cc-router-smoke`, `cc-lane-registry-check`, `cc-router-degradation-check` | Strong |
-| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 12 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and a source-linked upstream issue replay; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
+| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 13 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and two source-linked upstream issue replays; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix, adversarial paid/destructive/secret/force-push/cross-user/credential fixtures | More real-world TEL dry-run fixtures | `cc-trust-gate --check`, `cc-trust-adversarial-check` | Strong |
 | Credentialed execution | Credentials stay behind policy, audit, redaction, and undo contracts | TEL policies, Keychain-first broker, ignored audit logs, GraphQL prefix constraints, mutation undo windows | Live approved dry-runs against each credentialed service | `cc-tel-policy-check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
@@ -64,7 +64,7 @@ Status values:
 
 These are the remaining gaps that matter most:
 
-1. **Real-world benchmark depth**: expand beyond the first source-linked upstream issue replay into more real public issues across frontend, backend, and agent-runtime work.
+1. **Real-world benchmark depth**: expand beyond the first two source-linked upstream issue replays into more real public issues across frontend, backend, and agent-runtime work.
 2. **Authenticated browser replay**: expand from live credential-free WebBridge readiness to real approved target replays on prepared machines.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced upstream issues scored by the PR-quality gate.
 4. **Cockpit real-use evidence**: expand from the tracked walkthrough MP4 into live dogfood videos from real project sessions.
@@ -93,6 +93,7 @@ cc-benchmark-run refactor-cleanup
 cc-benchmark-run long-context
 cc-benchmark-run routing-pr-quality
 cc-benchmark-run upstream-issue-replay
+cc-benchmark-run upstream-issue-replay-axios-params
 cc-token-ledger --check
 cc-trust-gate --check
 cc-trust-adversarial-check

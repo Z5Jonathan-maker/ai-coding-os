@@ -150,6 +150,7 @@ if (prove) {
     'bin/cc-benchmark-run long-context',
     'bin/cc-benchmark-run routing-pr-quality',
     'bin/cc-benchmark-run upstream-issue-replay',
+    'bin/cc-benchmark-run upstream-issue-replay-axios-params',
     'bin/cc-router-degradation-check',
     'bin/cc-token-ledger --check',
     'bin/cc-trust-gate --check',

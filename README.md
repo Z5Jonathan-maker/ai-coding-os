@@ -165,7 +165,7 @@ append-only continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
 single external-facing proof command that wraps first-run, source checks,
-10-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
+13-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
 `cc-demo-quick` is the human-facing proof command for fast product
 comprehension while active development is in progress.
 `cc-superiority-check` keeps competitive claims against OpenHands, Claude Code,
@@ -206,8 +206,9 @@ launch docs, and the documented 10/10 product contract.
 
 The benchmark suite currently covers code fix, cheap extraction, UI design,
 browser proof, security review, long-context review, refactor cleanup, failing
-test repair, image-to-UI handoff, and permission-denied trust behavior. The
-repair and refactor fixtures are graded broken-first benchmarks with expected
+test repair, image-to-UI handoff, permission-denied trust behavior, and
+source-linked upstream issue replays. The repair, refactor, routing quality,
+and upstream issue fixtures are graded broken-first benchmarks with expected
 patches and final verification. The long-context fixture grades citation and
 top-risk reasoning across multiple files.
 

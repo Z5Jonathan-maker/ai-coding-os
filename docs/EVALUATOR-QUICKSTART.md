@@ -43,7 +43,7 @@ Status: release-artifact-ready
 - cockpit webview/package smoke is green
 - source-controlled AI checks are green
 - quick demo is green
-- 10-scenario benchmark fixtures are green
+- 13-scenario benchmark fixtures are green
 - command registry is complete
 - issue templates and workflow YAML parse
 - license metadata is aligned

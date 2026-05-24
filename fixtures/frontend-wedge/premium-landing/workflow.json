@@ -1,0 +1,51 @@
+{
+  "schema": "ai-coding-os.frontend-wedge-workflow.v1",
+  "vertical": "taste-driven frontend generation",
+  "dominant_user_action": "describe the desired business outcome",
+  "success_outcome": "premium frontend keeps approved visual direction intact",
+  "phases": [
+    {
+      "id": "creative_reference",
+      "owner_lane": "chatgpt-image",
+      "artifact": "fixtures/creative-kernel/premium-saas/creative.brief.json"
+    },
+    {
+      "id": "design_dna",
+      "owner_lane": "chatgpt-image",
+      "artifact": "fixtures/creative-kernel/premium-saas/design.dna.json"
+    },
+    {
+      "id": "implementation_plan",
+      "owner_lane": "kimi-webbridge",
+      "artifact": "fixtures/creative-kernel/premium-saas/implementation.plan.json"
+    },
+    {
+      "id": "browser_proof",
+      "owner_lane": "codex",
+      "artifact": "fixtures/benchmarks/image-to-ui-handoff/benchmark.json"
+    },
+    {
+      "id": "taste_validation",
+      "owner_lane": "claude",
+      "artifact": "fixtures/creative-kernel/premium-saas/taste.validation.json"
+    },
+    {
+      "id": "release_proof",
+      "owner_lane": "codex",
+      "artifact": "fixtures/creative-kernel/premium-saas/final.proof.bundle.json"
+    }
+  ],
+  "hidden_complexity": [
+    "provider selection",
+    "token balancing",
+    "fallback mechanics",
+    "raw model logs",
+    "routing dashboards"
+  ],
+  "required_gates": [
+    "cc-creative-kernel-check",
+    "cc-benchmark-run image-to-ui-handoff",
+    "cc-browser-visual-proof --check",
+    "cc-cockpit-visual-diff"
+  ]
+}

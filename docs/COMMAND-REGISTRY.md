@@ -66,6 +66,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-feedback-law-check` — executable gate for Mega Cycle feedback laws, autonomy preflight, depth-check, evolve, and packaging exposure.
 - `cc-first-run` — non-mutating public setup doctor for required, optional, and personal prerequisites.
 - `cc-fresh-clone-check` — fresh public clone gate: temp clone, temp home, dry-run install, cockpit package, fixture demo, and no temp-home writes.
+- `cc-frontend-wedge-check` — verifies the focused taste-driven frontend workflow from Image 2.0 creative reference through design DNA, Kimi implementation, browser proof, taste validation, and release proof.
 - `cc-health-weekly` — weekly health sweep.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.

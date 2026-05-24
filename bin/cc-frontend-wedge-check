@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const workflowPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'workflow.json');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message, detail = '') {
+  console.log(`fail ${message}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 20).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function json(rel) {
+  return JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8'));
+}
+
+function exists(rel) {
+  return fs.existsSync(path.join(root, rel));
+}
+
+function expect(cond, message, detail = '') {
+  cond ? ok(message) : bad(message, detail);
+}
+
+console.log('# Frontend Wedge Check\n');
+console.log(`Root: ${root}`);
+
+expect(exists('docs/TASTE-DRIVEN-FRONTEND-WEDGE.md'), 'wedge doctrine exists');
+expect(exists('docs/CREATIVE-DIRECTION-KERNEL.md'), 'creative kernel doctrine exists');
+expect(exists('docs/IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md'), 'Image 2.0 workflow exists');
+expect(fs.existsSync(workflowPath), 'workflow fixture exists');
+
+const workflow = JSON.parse(fs.readFileSync(workflowPath, 'utf8'));
+expect(workflow.schema === 'ai-coding-os.frontend-wedge-workflow.v1', 'workflow schema valid');
+expect(workflow.vertical === 'taste-driven frontend generation', 'single vertical declared');
+expect(workflow.dominant_user_action === 'describe the desired business outcome', 'dominant user action is singular');
+
+const expectedPhases = [
+  ['creative_reference', 'chatgpt-image'],
+  ['design_dna', 'chatgpt-image'],
+  ['implementation_plan', 'kimi-webbridge'],
+  ['browser_proof', 'codex'],
+  ['taste_validation', 'claude'],
+  ['release_proof', 'codex'],
+];
+const phases = workflow.phases || [];
+expect(phases.length === expectedPhases.length, 'phase count stays focused');
+for (let i = 0; i < expectedPhases.length; i += 1) {
+  const phase = phases[i] || {};
+  const [id, lane] = expectedPhases[i];
+  expect(phase.id === id && phase.owner_lane === lane, `phase ${i + 1}: ${id} -> ${lane}`);
+  expect(Boolean(phase.artifact) && exists(phase.artifact), `phase artifact exists: ${id}`);
+}
+
+const hidden = workflow.hidden_complexity || [];
+for (const item of ['provider selection', 'token balancing', 'fallback mechanics', 'raw model logs', 'routing dashboards']) {
+  expect(hidden.includes(item), `hidden complexity: ${item}`);
+}
+
+const gates = workflow.required_gates || [];
+for (const gate of [
+  'cc-creative-kernel-check',
+  'cc-benchmark-run image-to-ui-handoff',
+  'cc-browser-visual-proof --check',
+  'cc-cockpit-visual-diff',
+]) {
+  expect(gates.includes(gate), `required gate: ${gate}`);
+}
+
+const validation = json('fixtures/creative-kernel/premium-saas/taste.validation.json');
+const scores = Object.values(validation.scores || {});
+expect(scores.length >= 6 && scores.every((score) => score >= validation.threshold), 'taste validation clears threshold');
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: frontend-wedge-blocked' : 'Status: frontend-wedge-ready');
+process.exit(fail ? 1 : 0);

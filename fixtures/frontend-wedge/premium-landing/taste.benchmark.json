@@ -1,0 +1,79 @@
+{
+  "schema": "ai-coding-os.taste-benchmark.v1",
+  "name": "Premium frontend taste benchmark",
+  "threshold": 90,
+  "dimensions": {
+    "creative_fidelity": {
+      "weight": 18,
+      "score": 94,
+      "evidence": [
+        "design DNA preserves the approved emotional frame",
+        "route visibility remains progressive disclosure"
+      ]
+    },
+    "visual_hierarchy": {
+      "weight": 16,
+      "score": 95,
+      "evidence": [
+        "one continuation action dominates",
+        "supporting proof stays secondary"
+      ]
+    },
+    "typography_rhythm": {
+      "weight": 12,
+      "score": 92,
+      "evidence": [
+        "editorial-confident rhythm defined in design DNA",
+        "metadata is visually quieter than mission copy"
+      ]
+    },
+    "spacing_and_density": {
+      "weight": 14,
+      "score": 92,
+      "evidence": [
+        "visual density is low",
+        "visual noise budget is minimal"
+      ]
+    },
+    "premium_material_quality": {
+      "weight": 14,
+      "score": 91,
+      "evidence": [
+        "ambient glass-soft surface language",
+        "diffused environmental depth"
+      ]
+    },
+    "motion_intent": {
+      "weight": 8,
+      "score": 90,
+      "evidence": [
+        "motion energy is subtle-premium",
+        "motion supports continuity rather than decoration"
+      ]
+    },
+    "responsive_resilience": {
+      "weight": 8,
+      "score": 90,
+      "evidence": [
+        "implementation plan requires desktop and mobile screenshots",
+        "responsive layout preserves hierarchy"
+      ]
+    },
+    "accessibility_and_native_ui": {
+      "weight": 6,
+      "score": 91,
+      "evidence": [
+        "text remains selectable HTML",
+        "buttons are accessible controls"
+      ]
+    },
+    "implementation_realism": {
+      "weight": 4,
+      "score": 92,
+      "evidence": [
+        "browser proof and visual diff gates are required",
+        "final proof bundle records verification commands"
+      ]
+    }
+  }
+}

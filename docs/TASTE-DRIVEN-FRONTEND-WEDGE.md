@@ -45,6 +45,8 @@ The workflow is only real when it produces:
 - an implementation plan
 - browser proof
 - taste validation
+- weighted taste benchmark
 - a final proof bundle
 
 The gate for this wedge is `cc-frontend-wedge-check`.
+The taste scoring gate is `cc-taste-benchmark-check`.

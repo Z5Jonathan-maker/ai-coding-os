@@ -44,6 +44,7 @@
   ],
   "required_gates": [
     "cc-creative-kernel-check",
+    "cc-taste-benchmark-check",
     "cc-benchmark-run image-to-ui-handoff",
     "cc-browser-visual-proof --check",
     "cc-cockpit-visual-diff"

@@ -201,6 +201,7 @@ run "Command registry complete" command_registry_complete
 run "Package portability" "$ROOT/bin/cc-portability-check"
 run "Benchmark source integrity" "$ROOT/bin/cc-benchmark-source-check"
 run "Frontend wedge" "$ROOT/bin/cc-frontend-wedge-check"
+run "Taste benchmark" "$ROOT/bin/cc-taste-benchmark-check"
 run "Lane extension guide" "$ROOT/bin/cc-lane-extension-check"
 run "Router degradation replay" "$ROOT/bin/cc-router-degradation-check"
 run "Browser replay live readiness" "$ROOT/bin/cc-browser-replay-live-check"

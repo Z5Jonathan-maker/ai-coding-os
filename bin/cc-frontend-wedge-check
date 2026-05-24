@@ -6,6 +6,7 @@ const path = require('path');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const workflowPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'workflow.json');
+const tasteBenchmarkPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'taste.benchmark.json');
 let pass = 0;
 let fail = 0;
 
@@ -39,6 +40,7 @@ expect(exists('docs/TASTE-DRIVEN-FRONTEND-WEDGE.md'), 'wedge doctrine exists');
 expect(exists('docs/CREATIVE-DIRECTION-KERNEL.md'), 'creative kernel doctrine exists');
 expect(exists('docs/IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md'), 'Image 2.0 workflow exists');
 expect(fs.existsSync(workflowPath), 'workflow fixture exists');
+expect(fs.existsSync(tasteBenchmarkPath), 'taste benchmark fixture exists');
 
 const workflow = JSON.parse(fs.readFileSync(workflowPath, 'utf8'));
 expect(workflow.schema === 'ai-coding-os.frontend-wedge-workflow.v1', 'workflow schema valid');
@@ -80,6 +82,10 @@ for (const gate of [
 const validation = json('fixtures/creative-kernel/premium-saas/taste.validation.json');
 const scores = Object.values(validation.scores || {});
 expect(scores.length >= 6 && scores.every((score) => score >= validation.threshold), 'taste validation clears threshold');
+
+const tasteBenchmark = JSON.parse(fs.readFileSync(tasteBenchmarkPath, 'utf8'));
+expect(tasteBenchmark.schema === 'ai-coding-os.taste-benchmark.v1', 'taste benchmark schema valid');
+expect(workflow.required_gates.includes('cc-taste-benchmark-check'), 'taste benchmark is a required wedge gate');
 
 console.log('\n## Summary\n');
 console.log(`passed=${pass} failed=${fail}`);

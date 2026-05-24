@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const benchmarkPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'taste.benchmark.json');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message, detail = '') {
+  console.log(`fail ${message}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 20).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function expect(cond, message, detail = '') {
+  cond ? ok(message) : bad(message, detail);
+}
+
+function weightedScore(dimensions) {
+  const entries = Object.entries(dimensions || {});
+  const totalWeight = entries.reduce((sum, [, item]) => sum + Number(item.weight || 0), 0);
+  const totalScore = entries.reduce((sum, [, item]) => sum + Number(item.weight || 0) * Number(item.score || 0), 0);
+  return { totalWeight, score: totalWeight ? totalScore / totalWeight : 0 };
+}
+
+console.log('# Taste Benchmark Check\n');
+console.log(`Root: ${root}`);
+
+expect(fs.existsSync(benchmarkPath), 'taste benchmark fixture exists');
+const benchmark = JSON.parse(fs.readFileSync(benchmarkPath, 'utf8'));
+expect(benchmark.schema === 'ai-coding-os.taste-benchmark.v1', 'schema valid');
+expect(Number.isFinite(benchmark.threshold) && benchmark.threshold >= 80 && benchmark.threshold <= 100, 'threshold valid');
+
+const required = [
+  'creative_fidelity',
+  'visual_hierarchy',
+  'typography_rhythm',
+  'spacing_and_density',
+  'premium_material_quality',
+  'motion_intent',
+  'responsive_resilience',
+  'accessibility_and_native_ui',
+  'implementation_realism',
+];
+const dimensions = benchmark.dimensions || {};
+for (const id of required) {
+  const item = dimensions[id];
+  expect(Boolean(item), `dimension exists: ${id}`);
+  if (!item) continue;
+  expect(Number.isFinite(item.weight) && item.weight > 0, `dimension weight valid: ${id}`);
+  expect(Number.isFinite(item.score) && item.score >= 0 && item.score <= 100, `dimension score valid: ${id}`);
+  expect(Array.isArray(item.evidence) && item.evidence.length >= 2, `dimension evidence present: ${id}`);
+}
+
+const { totalWeight, score } = weightedScore(dimensions);
+expect(totalWeight === 100, `weights total 100 (${totalWeight})`);
+expect(score >= benchmark.threshold, `weighted taste score clears threshold (${score.toFixed(1)})`);
+
+const doctrine = fs.readFileSync(path.join(root, 'docs', 'TASTE-DRIVEN-FRONTEND-WEDGE.md'), 'utf8');
+for (const phrase of ['creative reference', 'design DNA', 'browser proof', 'taste validation']) {
+  expect(doctrine.includes(phrase), `doctrine names ${phrase}`);
+}
+
+console.log('\n## Score\n');
+console.log(`weighted=${score.toFixed(1)} threshold=${benchmark.threshold}`);
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: taste-benchmark-blocked' : 'Status: taste-benchmark-ready');
+process.exit(fail ? 1 : 0);

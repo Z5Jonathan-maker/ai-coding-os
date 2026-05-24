@@ -62,7 +62,7 @@ printf 'Logs: %s\n' "$log_dir"
 
 cd "$DOTFILES" || exit 1
 
-run "Public CI" '^passed=11 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
+run "Public CI" '^passed=12 failed=0$' "$DOTFILES/bin/cc-public-ci-check"
 run "External evaluator" '^Status: evaluator-ready$' "$DOTFILES/bin/cc-evaluator-check"
 run "Fresh clone validation" '^Status: fresh-clone-ready$' "$DOTFILES/bin/cc-fresh-clone-check"
 run "Source-controlled AI checks" '^Status: ai-checks-ready$' "$DOTFILES/bin/cc-ai-checks"

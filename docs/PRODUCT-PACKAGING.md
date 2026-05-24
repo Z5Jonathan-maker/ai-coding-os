@@ -9,6 +9,8 @@ Browser automation mode boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
 Competitive proof against the top reference systems lives at
 `docs/SUPERIORITY-MATRIX.md`.
+The first sustained six-hour dogfood proof lives at
+`docs/DOGFOOD-REPORT-2026-05-24.md`.
 Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
 artifact contract lives at `docs/MISSION-KERNEL.md`.
 

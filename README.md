@@ -41,6 +41,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Mission kernel: `docs/MISSION-KERNEL.md`
 - Mission events: `docs/MISSION-EVENTS.md`
 - Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
+- Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
 - Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`

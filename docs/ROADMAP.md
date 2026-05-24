@@ -22,6 +22,9 @@ developer-grade public launch.
   with `imac-dotfiles` retained as backup.
 - Attach the `cc-release-bundle` tarball and checksum to the public GitHub
   release. Done 2026-05-22 for `v0.1.0-rc7`.
+- Capture sustained local dogfood proof. Done 2026-05-24:
+  `docs/DOGFOOD-REPORT-2026-05-24.md` records a six-hour run with 12/12
+  passing cycles plus final `cc-verify-product` and `cc-ten-readiness` gates.
 
 ## v0.2.0
 
@@ -33,6 +36,8 @@ developer-grade public launch.
   `cc-demo-fixture`.
 - Split personal-machine checks from product checks where external users cannot
   reproduce local-only services.
+- Add a mutating multi-hour coding dogfood that includes real edits, at least
+  one failure/recovery path, review, and merge proof.
 
 ## v1.0.0
 

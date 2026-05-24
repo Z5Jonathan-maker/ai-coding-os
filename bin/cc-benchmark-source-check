@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturesDir = path.join(root, 'fixtures', 'benchmarks');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message, detail = '') {
+  console.log(`fail ${message}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 20).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function fixtureDirs() {
+  return fs.readdirSync(fixturesDir)
+    .map((name) => path.join(fixturesDir, name))
+    .filter((dir) => fs.statSync(dir).isDirectory())
+    .sort();
+}
+
+function sourceFixtures() {
+  return fixtureDirs()
+    .map((dir) => ({ dir, manifest: readJson(path.join(dir, 'benchmark.json')) }))
+    .filter(({ manifest }) => manifest.source);
+}
+
+function checkFixture({ dir, manifest }) {
+  const id = path.basename(dir);
+  const src = manifest.source || {};
+  const expectedUrl = `https://github.com/${src.repo}/issues/${src.issue}`;
+  const readmePath = path.join(dir, 'README.md');
+  const patchPath = path.join(dir, manifest.expectedPatch || '');
+  const errors = [];
+
+  if (!manifest.id || manifest.id !== id) errors.push('manifest id must match directory');
+  if (!src.repo || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(src.repo)) errors.push('source.repo must be owner/repo');
+  if (!Number.isInteger(src.issue) || src.issue < 1) errors.push('source.issue must be a positive integer');
+  if (src.url !== expectedUrl) errors.push(`source.url must be ${expectedUrl}`);
+  if (!src.reportedBehavior || src.reportedBehavior.length < 40) errors.push('source.reportedBehavior must be specific');
+  if (!manifest.expectInitialFail) errors.push('source-linked replay must start broken');
+  if (!manifest.expectedPatch || !fs.existsSync(patchPath)) errors.push('source-linked replay must have expectedPatch');
+  if (!fs.existsSync(readmePath)) errors.push('README.md required');
+  else {
+    const readme = fs.readFileSync(readmePath, 'utf8');
+    if (!readme.includes(src.url)) errors.push('README.md must include source URL');
+    if (!readme.includes('expected.patch')) errors.push('README.md must describe expected.patch');
+  }
+
+  if (errors.length) bad(id, errors.join('\n'));
+  else ok(id);
+}
+
+console.log('# Benchmark Source Check\n');
+console.log(`Fixtures: ${fixturesDir}`);
+
+const sourced = sourceFixtures();
+for (const item of sourced) checkFixture(item);
+
+if (sourced.length >= 2) ok(`source-linked fixtures >= 2 (${sourced.length})`);
+else bad(`source-linked fixtures >= 2 (${sourced.length})`);
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: benchmark-source-blocked' : 'Status: benchmark-source-ready');
+process.exit(fail ? 1 : 0);

@@ -46,7 +46,7 @@ Status values:
 | Dimension | We Must Win By | Current Proof | Missing Proof | Gate / Command | Status |
 |---|---|---|---|---|---|
 | Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics`, degraded-provider replay fixture | More live degraded-provider replays across non-Claude lanes | `cc-router-smoke`, `cc-lane-registry-check`, `cc-router-degradation-check` | Strong |
-| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 13 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and two source-linked upstream issue replays; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
+| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 13 benchmark fixtures; source-integrity gate; graded repair, refactor, long-context, routing PR-quality scoring, and two source-linked upstream issue replays; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-source-check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix, adversarial paid/destructive/secret/force-push/cross-user/credential fixtures | More real-world TEL dry-run fixtures | `cc-trust-gate --check`, `cc-trust-adversarial-check` | Strong |
 | Credentialed execution | Credentials stay behind policy, audit, redaction, and undo contracts | TEL policies, Keychain-first broker, ignored audit logs, GraphQL prefix constraints, mutation undo windows | Live approved dry-runs against each credentialed service | `cc-tel-policy-check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
@@ -94,6 +94,7 @@ cc-benchmark-run long-context
 cc-benchmark-run routing-pr-quality
 cc-benchmark-run upstream-issue-replay
 cc-benchmark-run upstream-issue-replay-axios-params
+cc-benchmark-source-check
 cc-token-ledger --check
 cc-trust-gate --check
 cc-trust-adversarial-check

@@ -73,6 +73,10 @@ launchctl list | grep -E 'cc-(health|self-update|backup-verify)'
 
 After install, **the platform maintains itself.** You only act when ntfy pushes a red alert.
 
+Tracked LaunchAgent plists are classified in
+[`docs/LAUNCHD-INVENTORY.md`](LAUNCHD-INVENTORY.md). Do not copy raw plists
+unless that inventory explicitly marks them as templates for a local operator.
+
 ## Verify each manually
 
 ```bash

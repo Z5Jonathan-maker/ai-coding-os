@@ -61,6 +61,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
 - `cc-launchd-install` — render and install LaunchAgents with the current user's home path.
+- `cc-launchd-inventory` — classify tracked LaunchAgents as rendered, template, or local-only.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-agent-runtime` — thin mission runtime adapter that turns a typed `AgentRunInput` into Mission Kernel route, trust, cost, proof, result, and timeline artifacts.
 - `cc-mission-events` — validate normalized Mission Kernel timeline events and complete runtime run stages.

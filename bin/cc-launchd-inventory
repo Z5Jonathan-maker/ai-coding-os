@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="${DOTFILES:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)}"
+DOC="$ROOT/docs/LAUNCHD-INVENTORY.md"
+
+plists() {
+  find "$ROOT/launchd" "$ROOT/claude/launchd" -type f -name '*.plist' -print | sort
+}
+
+has_personal_path() {
+  rg -q '/Users/[^/<:]+' "$1"
+}
+
+class_for() {
+  local rel="$1"
+  awk -F'|' -v rel="$rel" '
+    NR > 2 {
+      gsub(/^ +| +$/, "", $2)
+      gsub(/^ +| +$/, "", $3)
+      if ($2 == "`" rel "`") print $3
+    }
+  ' "$DOC"
+}
+
+check() {
+  local bad=0 file rel cls rendered
+  [ -s "$DOC" ] || {
+    echo "missing $DOC" >&2
+    return 1
+  }
+
+  while IFS= read -r file; do
+    rel="${file#"$ROOT"/}"
+    plutil -lint "$file" >/dev/null || bad=1
+    cls="$(class_for "$rel")"
+    if [ -z "$cls" ]; then
+      echo "unclassified launchd plist: $rel"
+      bad=1
+      continue
+    fi
+    case "$cls" in
+      rendered | template | local-only) ;;
+      *)
+        echo "invalid launchd class for $rel: $cls"
+        bad=1
+        ;;
+    esac
+    if has_personal_path "$file" && [ "$cls" != "rendered" ] && [ "$cls" != "template" ] && [ "$cls" != "local-only" ]; then
+      echo "personal-path plist must be rendered, template, or local-only: $rel"
+      bad=1
+    fi
+  done < <(plists)
+
+  for name in cc-health-weekly cc-self-update cc-backup-verify; do
+    rendered="$(HOME="$(mktemp -d)" DOTFILES="$ROOT" "$ROOT/bin/cc-launchd-install" --render "$name")"
+    if printf '%s' "$rendered" | rg -q '/Users/[^/<:]+'; then
+      echo "rendered LaunchAgent still contains /Users path: $name"
+      bad=1
+    fi
+  done
+
+  [ "$bad" -eq 0 ] && echo "Status: launchd-inventory-ready"
+  return "$bad"
+}
+
+case "${1:-}" in
+  --check) check ;;
+  -h | --help)
+    echo "Usage: cc-launchd-inventory [--check]"
+    ;;
+  *)
+    printf '# Launchd Inventory\n\n'
+    while IFS= read -r file; do
+      rel="${file#"$ROOT"/}"
+      cls="$(class_for "$rel" 2>/dev/null || true)"
+      printf '%s\t%s\t%s\n' "$rel" "${cls:-unclassified}" "$(has_personal_path "$file" && echo personal-path || echo portable-text)"
+    done < <(plists)
+    ;;
+esac

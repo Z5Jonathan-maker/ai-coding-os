@@ -9,6 +9,8 @@ if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
 fi
 
 prompt="$*"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 root="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
 plans_dir="${CC_PLAN_DIR:-.ai/plans}"
 ts="$(date -u '+%Y%m%dT%H%M%SZ')"
@@ -27,17 +29,35 @@ mkdir -p "$plans_dir"
   if [ -x "$root/scripts/intent-route.sh" ]; then
     "$root/scripts/intent-route.sh" --dry-run "$prompt" || true
   else
-    printf 'intent-route unavailable: %s/scripts/intent-route.sh\n' "$root"
+    printf 'Source: committed routing contract fixture; live route script unavailable at %s/scripts/intent-route.sh\n' "$root"
+    case "$prompt" in
+      *design*|*screenshot*|*browser*|*UI*|*hero*) printf 'Selected: design -> kimi\n' ;;
+      *extract*|*summarize*|*JSON*|*metadata*) printf 'Selected: cheap -> deepseek\n' ;;
+      *security*|*audit*|*review*|*architecture*|*debug*) printf 'Selected: precision -> claude\n' ;;
+      *) printf 'Selected: codex -> codex\n' ;;
+    esac
   fi
   printf '\n## Plan\n\n'
 } >"$file"
 
 plan_prompt="Create a concise implementation plan for this request. Do not edit files. Include scope, ordered steps, verification commands, and stop conditions. Request: $prompt"
+plan_tmp="$(mktemp "${TMPDIR:-/tmp}/cc-plan.XXXXXX")"
+cleanup() {
+  rm -f "$plan_tmp"
+}
+trap cleanup EXIT
 
-if command -v router-ask >/dev/null 2>&1; then
-  router-ask --purpose precision "$plan_prompt" | tee -a "$file"
+if command -v router-ask >/dev/null 2>&1 && router-ask --purpose precision "$plan_prompt" >"$plan_tmp" 2>&1; then
+  cat "$plan_tmp" | tee -a "$file"
 else
-  printf 'router-ask unavailable; fill plan manually.\n' | tee -a "$file"
+  {
+    printf 'Source: local fallback plan template; router-ask unavailable or failed.\n\n'
+    printf '1. Confirm the requested scope and identify touched files.\n'
+    printf '2. Inspect existing project patterns before editing.\n'
+    printf '3. Make the smallest coherent change that satisfies the request.\n'
+    printf '4. Run syntax, unit, integration, or product gates relevant to the touched files.\n'
+    printf '5. Stop if a destructive, paid, credentialed, or cross-user action is required.\n'
+  } | tee -a "$file"
 fi
 
 printf '\nSaved plan: %s\n' "$file"

@@ -18,6 +18,7 @@ cc-product-readiness
 cc-demo-five-minute
 cc-health-weekly --verbose
 cc-package-cockpit
+cc-release-artifact-check
 cc-release-bundle
 cc-cockpit-capture
 git status --short
@@ -31,6 +32,7 @@ Required result:
 - five-minute demo exits with `passed=4 failed=0`
 - benchmark fixtures exit `Status: benchmark-fixtures-ready`
 - cockpit package command produces `dist/ai-system-cockpit-0.1.0.vsix`
+- release artifact check exits `Status: release-artifact-ready`
 - release bundle command produces `dist/ai-coding-os-<version>.tar.gz` and `.sha256`
 - cockpit capture writes the expected files in `docs/media/cockpit/`
 - git tree is clean and synced

@@ -38,6 +38,7 @@ const requiredCommands = [
   'cc-mission-ledger',
   'cc-browser-visual-proof',
   'cc-cockpit-webview-smoke',
+  'cc-release-artifact-check',
   'cc-verify-product',
   'cc-ten-readiness',
 ];
@@ -140,6 +141,7 @@ if (prove) {
     'bin/cc-mission-ledger --check',
     'bin/cc-browser-visual-proof --check',
     'bin/cc-cockpit-webview-smoke',
+    'bin/cc-release-artifact-check',
   ].forEach(run);
 }
 

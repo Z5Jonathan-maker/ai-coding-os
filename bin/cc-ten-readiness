@@ -69,6 +69,7 @@ run "Source-controlled AI checks" '^Status: ai-checks-ready$' "$DOTFILES/bin/cc-
 run "Feedback law gate" '^Status: feedback-laws-ready$' "$DOTFILES/bin/cc-feedback-law-check"
 run "Developer-day dogfood" '^passed=7 failed=0$' "$DOTFILES/bin/cc-dogfood-day"
 run "Product readiness" '^Status: product-ready$' "$DOTFILES/bin/cc-product-readiness"
+run "Release artifact" '^Status: release-artifact-ready$' "$DOTFILES/bin/cc-release-artifact-check"
 run "Release readiness" '^passed=11 failed=0$' "$DOTFILES/bin/cc-release-check"
 run "Portable launch docs" '' launch_docs_are_portable
 run "10/10 contract documented" '' ten_contract_present

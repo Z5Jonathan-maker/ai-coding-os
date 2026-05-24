@@ -55,7 +55,7 @@ Status values:
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report | External issue/PR-quality scoring with maintainer-style review | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
 | Extensibility | Provider/tool growth is controlled by lane contracts | `ai-lanes.json`, command registry, product packaging rule | Public extension guide for adding one lane safely | `cc-lane-registry-check`, `cc-public-ci-check` | Strong |
-| Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, Public CI | Hosted demo/video walkthrough and release artifact download path | `cc-evaluator-check` | Needs proof |
+| Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, `cc-release-artifact-check`, Public CI | Hosted demo/video walkthrough | `cc-evaluator-check`, `cc-release-artifact-check` | Strong |
 | Competitive clarity | The repo states where it wins and where it does not | This document and `cc-superiority-check` | Periodic refresh against live reference projects | `cc-superiority-check` | Strong |
 
 ## Non-Negotiable Gaps Before "Better Than The Top Projects"
@@ -66,7 +66,7 @@ These are the remaining gaps that matter most:
 2. **Authenticated browser replay**: convert local Kimi/WebBridge session proof into a reusable fixture replay that can verify logged-in workflows without exposing credentials.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced issues with PR-quality scoring.
 4. **Cockpit real-use evidence**: add short dogfood videos or replay bundles showing the cockpit carrying real daily work, not only deterministic screenshots.
-5. **Package separability**: make the router/cockpit easy to install without inheriting personal machine assumptions.
+5. **Package separability**: keep reducing maintainer-machine assumptions until the router/cockpit install path is boring from any clone.
 
 Until those are closed, the honest rating is:
 
@@ -100,6 +100,7 @@ cc-dogfood-session --check
 cc-mutating-dogfood --check
 cc-public-repo-dogfood --check
 cc-third-party-dogfood --check
+cc-release-artifact-check
 cc-verify-product
 cc-ten-readiness
 ```

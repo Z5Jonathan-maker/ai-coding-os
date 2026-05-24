@@ -18,6 +18,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-product-readiness` — paid-product readiness gate for cockpit, router, sync, and packaging.
 - `cc-public-repo-dogfood` — fresh public-clone mutating proof with failing test, runtime repair, Mission Events, review evidence, local commit, and public CI gate.
 - `cc-public-ci-check` — portable repo validation for GitHub Actions and external contributors.
+- `cc-release-artifact-check` — build and verify the release tarball, checksum, VSIX, evaluator docs, manifest, and launch media from the current clone.
 - `cc-release-bundle` — build a distributable release tarball with VSIX, docs, media, manifest, and checksum.
 - `cc-release-manifest` — generate release artifact inventory with SHA-256 checksums.
 - `cc-release-check` — one-command release gate: first-run, readiness, demos, health, package, bundle, media, and clean/synced git.

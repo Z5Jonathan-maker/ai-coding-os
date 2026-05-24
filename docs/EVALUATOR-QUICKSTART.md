@@ -25,6 +25,18 @@ Status: product-verified
 For a shorter portable check, run `bin/cc-evaluator-check`. On Linux or a clean
 CI runner, the portable gate should pass and macOS-specific steps may be skipped.
 
+To verify the distributable artifact path from the current clone:
+
+```sh
+bin/cc-release-artifact-check
+```
+
+Expected result:
+
+```text
+Status: release-artifact-ready
+```
+
 ## What The Command Proves
 
 - repo syntax and public docs are coherent
@@ -39,6 +51,8 @@ CI runner, the portable gate should pass and macOS-specific steps may be skipped
 - public fixture demo works without private project context
 - macOS first-run doctor is understandable when run on macOS
 - cockpit packaging works when Node/npm are available
+- release tarball, checksum, VSIX, manifest, quickstart, CI docs, and launch
+  media can be built from the current clone
 
 ## What It Does Not Prove
 

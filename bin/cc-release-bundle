@@ -2,7 +2,7 @@
 # shellcheck disable=SC2016
 set -euo pipefail
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 version="${1:-v0.1.0-rc8}"
 dist="$DOTFILES/dist"
 bundle="$dist/ai-coding-os-${version}.tar.gz"

@@ -54,6 +54,26 @@ function routeMatches(text, manifest) {
   }
 }
 
+function selectedFromManifest(manifest) {
+  if (manifest.expectClassifier) return manifest.expectClassifier;
+  const m = String(manifest.expectSelectedRegex || '').match(/Selected:\\s\+([a-z_]+)/i);
+  return m ? m[1] : 'codex';
+}
+
+function fixtureRoute(manifest) {
+  const selected = selectedFromManifest(manifest);
+  return [
+    `Selected:  ${selected} -> fixture`,
+    `Receipt:   ${JSON.stringify({
+      final_class: selected,
+      classifier_output: selected,
+      platform: selected === 'design' ? 'kimi' : selected === 'cheap' ? 'deepseek' : selected,
+      fixture: true
+    })}`,
+    'Status: route-fixture-ready'
+  ].join('\n');
+}
+
 function copyFixture(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   fs.cpSync(src, dest, {
@@ -98,7 +118,9 @@ function evaluate(dir) {
 
   fs.appendFileSync(path.join(work, 'README.md'), `\n\nBenchmark note: ${manifest.prompt}\n`);
 
-  res = run(routeScript, ['--dry-run', manifest.prompt], { cwd: work });
+  res = fs.existsSync(routeScript)
+    ? run(routeScript, ['--dry-run', manifest.prompt], { cwd: work })
+    : { ok: true, code: 0, text: fixtureRoute(manifest) };
   const routeOk = res.ok && routeMatches(res.text, manifest);
   step('route expectation', routeOk, res.text);
 

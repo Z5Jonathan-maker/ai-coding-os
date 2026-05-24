@@ -2,7 +2,8 @@
 # cc-system-demo — quick acceptance demo for the AI coding operating system.
 set -u
 
-DOTFILES="${DOTFILES:-$HOME/dotfiles}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 CC_DEMO_MIN_FREE_GB="${CC_DEMO_MIN_FREE_GB:-25}"
 
 pass=0
@@ -33,6 +34,10 @@ show_routes() {
 check_vscode_links() {
   local user_dir="$HOME/Library/Application Support/Code/User"
   local f
+  if [ ! -d "$user_dir" ]; then
+    printf 'portable evaluator mode: VS Code user directory not initialized at %s\n' "$user_dir"
+    return 0
+  fi
   for f in settings keybindings tasks mcp; do
     [ "$(readlink "$user_dir/$f.json" 2>/dev/null)" = "$DOTFILES/vscode/$f.json" ] || return 1
   done

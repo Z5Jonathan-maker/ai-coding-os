@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+const manifestPath = path.join(root, 'docs', 'media', 'cockpit', 'replay', 'manifest.json');
+
+let pass = 0;
+let fail = 0;
+
+function ok(msg) {
+  console.log(`ok   ${msg}`);
+  pass += 1;
+}
+
+function bad(msg) {
+  console.log(`fail ${msg}`);
+  fail += 1;
+}
+
+function expect(cond, msg) {
+  cond ? ok(msg) : bad(msg);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+console.log('# Cockpit Replay Bundle Check\n');
+console.log(`Root: ${root}`);
+console.log(`Manifest: ${path.relative(root, manifestPath)}\n`);
+
+expect(fs.existsSync(manifestPath), 'replay manifest exists');
+
+if (fs.existsSync(manifestPath)) {
+  const manifest = readJson(manifestPath);
+  expect(manifest.schema === 'ai-coding-os.cockpit-replay-bundle.v1', 'schema valid');
+  expect(Array.isArray(manifest.workflow) && manifest.workflow.length >= 7, 'workflow phases present');
+  expect(manifest.verdict === 'replay-ready', 'verdict is replay-ready');
+
+  const replayDir = path.dirname(manifestPath);
+  for (const phase of manifest.workflow || []) {
+    const artifact = path.resolve(replayDir, phase.artifact || '');
+    expect(Boolean(phase.phase), `phase name present: ${phase.phase || 'missing'}`);
+    expect(fs.existsSync(artifact), `${phase.phase} artifact exists`);
+    if (fs.existsSync(artifact)) expect(fs.statSync(artifact).size > 10000, `${phase.phase} artifact nonblank`);
+    if (phase.manifest) {
+      const child = path.resolve(replayDir, phase.manifest);
+      expect(fs.existsSync(child), `${phase.phase} child manifest exists`);
+    }
+  }
+
+  const interactionManifest = readJson(path.join(root, 'docs', 'media', 'cockpit', 'interaction', 'manifest.json'));
+  const assertionNames = new Set((interactionManifest.assertions || []).filter((item) => item.ok).map((item) => item.name));
+  for (const name of manifest.required_assertions || []) {
+    expect(assertionNames.has(name), `interaction assertion covered: ${name}`);
+  }
+
+  const stateManifest = readJson(path.join(root, 'docs', 'media', 'cockpit', 'states', 'manifest.json'));
+  expect((stateManifest.artifacts || []).length >= 6, 'state manifest covers core states');
+}
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: cockpit-replay-bundle-blocked' : 'Status: cockpit-replay-bundle-ready');
+process.exit(fail ? 1 : 0);

@@ -42,6 +42,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.
 - `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.
 - `cc-cockpit-interaction-proof` — headless browser proof for cockpit keyboard submit, empty/loading/blocked states, permissions, route diagnostics, and visual-regression metadata.
+- `cc-cockpit-replay-bundle-check` — validates cockpit real-use replay bundle across state screenshots and interaction assertions.
 - `cc-cockpit-state-proof` — deterministic cockpit state screenshots for continuation, running, success, blocked, permissions, and route receipt.
 - `cc-cockpit-visual-diff` — cockpit screenshot visual-regression gate with decoded PNG pixel samples, perceptual hash, luma scoring, and diagnostic file-hash/byte drift.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.

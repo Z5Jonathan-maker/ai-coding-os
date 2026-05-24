@@ -1,0 +1,51 @@
+{
+  "schema": "ai-coding-os.cockpit-replay-bundle.v1",
+  "name": "cockpit-real-use-replay",
+  "workflow": [
+    {
+      "phase": "continue",
+      "artifact": "../states/08-state-continuation.png",
+      "expectation": "current mission is visible before command entry"
+    },
+    {
+      "phase": "run",
+      "artifact": "../states/09-state-running.png",
+      "expectation": "system shows calm in-progress execution"
+    },
+    {
+      "phase": "success",
+      "artifact": "../states/10-state-success.png",
+      "expectation": "completed work shows proof-backed result state"
+    },
+    {
+      "phase": "blocked",
+      "artifact": "../states/11-state-blocked.png",
+      "expectation": "trust or setup blocker is explicit"
+    },
+    {
+      "phase": "permissions",
+      "artifact": "../states/12-state-permissions.png",
+      "expectation": "authority selector is visible when needed"
+    },
+    {
+      "phase": "route-receipt",
+      "artifact": "../states/13-state-route-receipt.png",
+      "expectation": "route proof is inspectable without dominating the UI"
+    },
+    {
+      "phase": "interaction",
+      "artifact": "../interaction/interaction-proof.png",
+      "manifest": "../interaction/manifest.json",
+      "expectation": "keyboard submit, permission change, loading, blocked, route diagnostic, and result cleanup are asserted"
+    }
+  ],
+  "required_assertions": [
+    "keyboard submit posts runPrompt",
+    "permission selector updates summary",
+    "loading state title",
+    "blocked state title",
+    "non-diagnostic result hides route noise",
+    "diagnostic result keeps route detail"
+  ],
+  "verdict": "replay-ready"
+}

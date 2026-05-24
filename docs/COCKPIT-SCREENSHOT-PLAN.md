@@ -22,6 +22,7 @@ surface, not a terminal command list.
 | 12-state-permissions | Authority selector/state explanation | `cc-cockpit-state-proof` |
 | 13-state-route-receipt | Inspectable routing proof | `cc-cockpit-state-proof` |
 | interaction-proof | Keyboard/state/diagnostic interaction proof | `cc-cockpit-interaction-proof` |
+| replay manifest | Real-use workflow bundle tying states to assertions | `cc-cockpit-replay-bundle-check` |
 | visual-baseline | Pass/fail visual-diff baseline | `cc-cockpit-visual-diff` |
 
 ## Capture Standards
@@ -53,6 +54,7 @@ docs/media/cockpit/states/13-state-route-receipt.png
 docs/media/cockpit/states/manifest.json
 docs/media/cockpit/interaction/interaction-proof.png
 docs/media/cockpit/interaction/manifest.json
+docs/media/cockpit/replay/manifest.json
 docs/media/cockpit/visual-baseline.json
 ```
 

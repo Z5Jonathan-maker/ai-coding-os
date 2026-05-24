@@ -40,6 +40,7 @@ const requiredCommands = [
   'cc-browser-replay-check',
   'cc-browser-visual-proof',
   'cc-cockpit-webview-smoke',
+  'cc-cockpit-replay-bundle-check',
   'cc-release-artifact-check',
   'cc-pr-quality-score',
   'cc-verify-product',
@@ -147,6 +148,7 @@ if (prove) {
     'bin/cc-browser-replay-check',
     'bin/cc-browser-visual-proof --check',
     'bin/cc-cockpit-webview-smoke',
+    'bin/cc-cockpit-replay-bundle-check',
     'bin/cc-release-artifact-check',
     'bin/cc-pr-quality-score --check',
   ].forEach(run);

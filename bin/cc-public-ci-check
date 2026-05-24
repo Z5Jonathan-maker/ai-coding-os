@@ -144,6 +144,7 @@ media_artifacts() {
     docs/media/cockpit/states/manifest.json \
     docs/media/cockpit/interaction/interaction-proof.png \
     docs/media/cockpit/interaction/manifest.json \
+    docs/media/cockpit/replay/manifest.json \
     docs/media/cockpit/visual-baseline.json; do
     if [ ! -s "$file" ]; then
       printf 'missing media artifact: %s\n' "$file"

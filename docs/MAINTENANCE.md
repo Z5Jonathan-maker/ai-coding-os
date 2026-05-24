@@ -67,10 +67,7 @@ After `cc-bootstrap all` finishes the platform setup, install the
 maintenance LaunchAgents:
 
 ```bash
-for plist in cc-health-weekly cc-self-update cc-backup-verify; do
-  cp ~/dotfiles/launchd/com.user.${plist}.plist ~/Library/LaunchAgents/
-  launchctl load -w ~/Library/LaunchAgents/com.user.${plist}.plist
-done
+cc-launchd-install cc-health-weekly cc-self-update cc-backup-verify
 launchctl list | grep -E 'cc-(health|self-update|backup-verify)'
 ```
 

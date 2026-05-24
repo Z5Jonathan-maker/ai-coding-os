@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)}"
+OWNER_HOME="${CC_LAUNCHD_OWNER_HOME:-}"
+AGENTS_DIR="${LAUNCH_AGENTS_DIR:-$HOME/Library/LaunchAgents}"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  cc-launchd-install --render <name>
+  cc-launchd-install --dry-run [name...]
+  cc-launchd-install [name...]
+
+Names omit the com.user. prefix and .plist suffix.
+Default names: cc-health-weekly cc-self-update cc-backup-verify
+EOF
+}
+
+plist_path() {
+  local name="$1"
+  printf '%s/launchd/com.user.%s.plist' "$DOTFILES" "$name"
+}
+
+render() {
+  local name="$1" src
+  src="$(plist_path "$name")"
+  [ -f "$src" ] || {
+    echo "cc-launchd-install: missing plist: $src" >&2
+    return 66
+  }
+  if [ -n "$OWNER_HOME" ]; then
+    sed "s#${OWNER_HOME}#${HOME}#g" "$src"
+  else
+    sed -E "s#/Users/[^/:<]+#${HOME}#g" "$src"
+  fi
+}
+
+mode="install"
+case "${1:-}" in
+  -h | --help) usage; exit 0 ;;
+  --render) mode="render"; shift ;;
+  --dry-run) mode="dry-run"; shift ;;
+esac
+
+names=("$@")
+[ "${#names[@]}" -gt 0 ] || names=(cc-health-weekly cc-self-update cc-backup-verify)
+
+case "$mode" in
+  render)
+    [ "${#names[@]}" -eq 1 ] || {
+      echo "cc-launchd-install: --render accepts exactly one name" >&2
+      exit 64
+    }
+    render "${names[0]}"
+    ;;
+  dry-run)
+    for name in "${names[@]}"; do
+      src="$(plist_path "$name")"
+      dst="$AGENTS_DIR/com.user.$name.plist"
+      printf 'render %s -> %s\n' "$src" "$dst"
+      render "$name" >/dev/null
+    done
+    ;;
+  install)
+    mkdir -p "$AGENTS_DIR"
+    for name in "${names[@]}"; do
+      dst="$AGENTS_DIR/com.user.$name.plist"
+      render "$name" >"$dst"
+      launchctl unload "$dst" >/dev/null 2>&1 || true
+      launchctl load -w "$dst"
+      printf 'loaded %s\n' "$dst"
+    done
+    ;;
+esac

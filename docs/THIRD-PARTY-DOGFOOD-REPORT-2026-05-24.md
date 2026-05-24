@@ -17,6 +17,7 @@ This is the first third-party public-repo dogfood proof for AI Coding OS.
 ok   Clone third-party repository
 ok   Initial failing test captured
 ok   Runtime repair and Mission Events
+ok   PR-quality score
 ok   Review and local commit
 ok   Third-party tests after mutation
 
@@ -68,5 +69,6 @@ from an unrelated public repository, pins upstream source, mutates tracked
 third-party files, validates Mission Events, commits locally, and reruns that
 project's own test gate after the mutation.
 
-It still does not claim arbitrary issue resolution. The next stronger proof is
-an externally sourced issue or PR-quality patch with review-quality scoring.
+It now also has a reusable PR-quality scorer. It still does not claim arbitrary
+issue resolution. The next stronger proof is an externally sourced issue
+captured from a real upstream tracker and scored with the same gate.

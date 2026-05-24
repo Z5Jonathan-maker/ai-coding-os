@@ -30,7 +30,7 @@ while [ "$#" -gt 0 ]; do
     --output-dir) session_root="$2"; shift 2 ;;
     --check)
       missing=0
-      for cmd in git npm node cc-agent-runtime cc-mission-events; do
+      for cmd in git npm node cc-agent-runtime cc-mission-events cc-pr-quality-score; do
         if ! command -v "$cmd" >/dev/null 2>&1 && [ ! -x "$DOTFILES/bin/$cmd" ]; then
           printf 'missing %s\n' "$cmd"
           missing=$((missing + 1))
@@ -121,6 +121,16 @@ review_and_commit() {
       printf 'Diff check: passed\n'
       cat "$log_dir/diff-stat.log"
     } >"$log_dir/review.log"
+    npm test >"$log_dir/final-test.log" 2>&1
+    "$DOTFILES/bin/cc-pr-quality-score" \
+      --repo "$clone" \
+      --source "$source_repo" \
+      --ref "$source_ref" \
+      --test-log "$log_dir/final-test.log" \
+      --review-log "$log_dir/review.log" \
+      --out "$log_dir/pr-quality.json" \
+      --min-score 90 \
+      >"$log_dir/pr-quality.log" 2>&1
     git add index.js test.js
     git commit -qm "dogfood: support bigint odd checks"
     git rev-parse --short HEAD >"$log_dir/commit.txt"

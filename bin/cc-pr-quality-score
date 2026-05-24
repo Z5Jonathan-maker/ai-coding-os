@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const args = process.argv.slice(2);
+
+function usage() {
+  console.log(`cc-pr-quality-score — maintainer-style patch quality scorer
+
+Usage:
+  cc-pr-quality-score --repo DIR --source URL --ref REF [--test-log FILE] [--review-log FILE] [--out FILE] [--min-score N]
+  cc-pr-quality-score --check
+
+Scores isolated coding work on third-party/public repositories. This is not a
+semantic code reviewer; it enforces the operational PR bar: pinned source,
+narrow diff, clean diff metadata, passing test evidence, review evidence, and a
+maintainer-readable summary.`);
+}
+
+if (args.includes('-h') || args.includes('--help')) {
+  usage();
+  process.exit(0);
+}
+
+function parse(argv) {
+  const opts = { minScore: 80 };
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--check') opts.check = true;
+    else if (arg === '--repo') opts.repo = argv[++i];
+    else if (arg === '--source') opts.source = argv[++i];
+    else if (arg === '--ref') opts.ref = argv[++i];
+    else if (arg === '--test-log') opts.testLog = argv[++i];
+    else if (arg === '--review-log') opts.reviewLog = argv[++i];
+    else if (arg === '--out') opts.out = argv[++i];
+    else if (arg === '--min-score') opts.minScore = Number(argv[++i]);
+    else throw new Error(`unknown arg: ${arg}`);
+  }
+  return opts;
+}
+
+function run(cmd, repo) {
+  const res = spawnSync(cmd, { cwd: repo, shell: true, encoding: 'utf8' });
+  return { ok: res.status === 0, out: `${res.stdout || ''}${res.stderr || ''}`, status: res.status };
+}
+
+function read(file) {
+  return file && fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+}
+
+function score(opts) {
+  const repo = path.resolve(opts.repo || '.');
+  const diffName = run('git diff --name-only', repo);
+  const diffStat = run('git diff --stat', repo);
+  const diffCheck = run('git diff --check', repo);
+  const files = diffName.out.split(/\r?\n/).filter(Boolean);
+  const testLog = read(opts.testLog);
+  const reviewLog = read(opts.reviewLog);
+
+  const checks = [
+    {
+      id: 'external_source',
+      points: 15,
+      ok: Boolean(opts.source && /^https?:\/\/|\.git$|^\//.test(opts.source)),
+      detail: opts.source || 'missing source',
+    },
+    {
+      id: 'pinned_ref',
+      points: 15,
+      ok: Boolean(opts.ref && opts.ref.length >= 7),
+      detail: opts.ref || 'missing ref',
+    },
+    {
+      id: 'nonempty_patch',
+      points: 15,
+      ok: files.length > 0,
+      detail: `${files.length} changed file(s)`,
+    },
+    {
+      id: 'narrow_diff',
+      points: 15,
+      ok: files.length > 0 && files.length <= 5,
+      detail: files.join(', ') || 'no files',
+    },
+    {
+      id: 'diff_metadata_clean',
+      points: 15,
+      ok: diffCheck.ok,
+      detail: diffCheck.ok ? 'git diff --check passed' : diffCheck.out.trim(),
+    },
+    {
+      id: 'passing_test_evidence',
+      points: 15,
+      ok: /passing|passed|ok\s+|success/i.test(testLog),
+      detail: testLog ? 'test log contains pass signal' : 'missing test log',
+    },
+    {
+      id: 'review_evidence',
+      points: 10,
+      ok: /review gate:\s*passed|diff check:\s*passed|repair:\s*verified/i.test(reviewLog),
+      detail: reviewLog ? 'review log contains maintainer signals' : 'missing review log',
+    },
+  ];
+
+  const total = checks.reduce((sum, item) => sum + item.points, 0);
+  const earned = checks.reduce((sum, item) => sum + (item.ok ? item.points : 0), 0);
+  const payload = {
+    schema: 'ai-coding-os.pr-quality-score.v1',
+    source: opts.source || null,
+    ref: opts.ref || null,
+    repo,
+    changed_files: files,
+    score: Math.round((earned / total) * 100),
+    threshold: Number(opts.minScore || 80),
+    passed: Math.round((earned / total) * 100) >= Number(opts.minScore || 80),
+    diff_stat: diffStat.out.trim(),
+    checks,
+  };
+  return payload;
+}
+
+function selfCheck() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-pr-quality-score.'));
+  run('git init -q && git config user.email test@example.local && git config user.name Test', tmp);
+  fs.writeFileSync(path.join(tmp, 'index.js'), 'module.exports = 1;\n');
+  run('git add index.js && git commit -qm init', tmp);
+  fs.writeFileSync(path.join(tmp, 'index.js'), 'module.exports = 2;\n');
+  const testLog = path.join(tmp, 'test.log');
+  const reviewLog = path.join(tmp, 'review.log');
+  fs.writeFileSync(testLog, 'ok tests passed\n');
+  fs.writeFileSync(reviewLog, 'Review gate: passed\nDiff check: passed\nRepair: verified\n');
+  const result = score({
+    repo: tmp,
+    source: 'https://example.com/repo.git',
+    ref: '1234567890abcdef',
+    testLog,
+    reviewLog,
+    minScore: 80,
+  });
+  fs.rmSync(tmp, { recursive: true, force: true });
+  if (!result.passed || result.score !== 100) throw new Error(`self-check score ${result.score}`);
+  console.log('Status: pr-quality-score-ready');
+}
+
+let opts;
+try {
+  opts = parse(args);
+  if (opts.check) {
+    selfCheck();
+    process.exit(0);
+  }
+  if (!opts.repo || !opts.source || !opts.ref) throw new Error('missing --repo, --source, or --ref');
+  const result = score(opts);
+  const json = JSON.stringify(result, null, 2);
+  if (opts.out) {
+    fs.mkdirSync(path.dirname(path.resolve(opts.out)), { recursive: true });
+    fs.writeFileSync(opts.out, `${json}\n`);
+  }
+  console.log(json);
+  console.log(result.passed ? 'Status: pr-quality-score-passed' : 'Status: pr-quality-score-blocked');
+  process.exit(result.passed ? 0 : 1);
+} catch (err) {
+  console.error(`cc-pr-quality-score: ${err.message}`);
+  usage();
+  process.exit(2);
+}

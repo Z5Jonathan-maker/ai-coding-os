@@ -7,6 +7,10 @@ known ref, creates a branch, introduces a failing test, repairs it through the
 runtime adapter, validates Mission Events, writes review evidence, commits
 locally, and reruns the third-party test gate.
 
+Before the local commit, the runner scores the patch with `cc-pr-quality-score`.
+The score is stored at `logs/pr-quality.json` and requires pinned source,
+narrow diff, clean metadata, passing test evidence, and review evidence.
+
 The default target is:
 
 ```text
@@ -32,7 +36,10 @@ Output lives under:
     agent-runtime.log
     mission-events.log
     review.log
+    pr-quality.json
+    pr-quality.log
     patch.diff
+    final-test.log
     commit.txt
     final-git-log.txt
     final-git-status.txt
@@ -48,6 +55,7 @@ Output lives under:
 - the runtime adapter performs the repair
 - Mission Events validate
 - review evidence is captured
+- PR-quality scoring passes
 - a local commit is produced
 - the third-party test suite passes after the mutation
 
@@ -56,5 +64,5 @@ Output lives under:
 This is a controlled external-repo task. It does not claim arbitrary
 open-source issue resolution across unknown codebases. It closes the
 self-referential proof gap by moving the mutating workflow outside this repo.
-The next stronger proof is a real external issue or PR-quality patch with
-review scoring.
+The next stronger proof is an externally sourced issue captured from a real
+upstream tracker and scored with the same PR-quality gate.

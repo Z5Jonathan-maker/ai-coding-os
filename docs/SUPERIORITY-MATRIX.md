@@ -52,7 +52,7 @@ Status values:
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
 | Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Authenticated-browser fixture replay still depends on local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-visual-proof --check` | Strong |
 | Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots, headless interaction proof, pixel/perceptual visual-diff gate | More dogfood videos showing real daily use | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-cockpit-interaction-proof`, `cc-cockpit-visual-diff`, `cc-package-cockpit` | Strong |
-| Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report | External issue/PR-quality scoring with maintainer-style review | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
+| Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report, PR-quality scorer | Externally sourced issue replay with maintainer-style scoring | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood`, `cc-pr-quality-score --check` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
 | Extensibility | Provider/tool growth is controlled by lane contracts | `ai-lanes.json`, command registry, product packaging rule | Public extension guide for adding one lane safely | `cc-lane-registry-check`, `cc-public-ci-check` | Strong |
 | Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, `cc-release-artifact-check`, Public CI | Hosted demo/video walkthrough | `cc-evaluator-check`, `cc-release-artifact-check` | Strong |
@@ -64,7 +64,7 @@ These are the remaining gaps that matter most:
 
 1. **Real-world benchmark depth**: add larger public repo tasks with expected diffs, test evidence, and review-quality scoring.
 2. **Authenticated browser replay**: convert local Kimi/WebBridge session proof into a reusable fixture replay that can verify logged-in workflows without exposing credentials.
-3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced issues with PR-quality scoring.
+3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced upstream issues scored by the PR-quality gate.
 4. **Cockpit real-use evidence**: add short dogfood videos or replay bundles showing the cockpit carrying real daily work, not only deterministic screenshots.
 5. **Package separability**: keep reducing maintainer-machine assumptions until the router/cockpit install path is boring from any clone.
 
@@ -100,6 +100,7 @@ cc-dogfood-session --check
 cc-mutating-dogfood --check
 cc-public-repo-dogfood --check
 cc-third-party-dogfood --check
+cc-pr-quality-score --check
 cc-release-artifact-check
 cc-verify-product
 cc-ten-readiness

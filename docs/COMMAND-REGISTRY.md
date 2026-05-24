@@ -16,6 +16,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-permission-matrix` — visible autonomy boundaries for cockpit approvals.
 - `cc-plan` — save a read-only implementation plan artifact in `.ai/plans/`.
 - `cc-product-readiness` — paid-product readiness gate for cockpit, router, sync, and packaging.
+- `cc-pr-quality-score` — maintainer-style patch quality scorer for third-party/public repo dogfood work.
 - `cc-public-repo-dogfood` — fresh public-clone mutating proof with failing test, runtime repair, Mission Events, review evidence, local commit, and public CI gate.
 - `cc-public-ci-check` — portable repo validation for GitHub Actions and external contributors.
 - `cc-release-artifact-check` — build and verify the release tarball, checksum, VSIX, evaluator docs, manifest, and launch media from the current clone.

@@ -1,5 +1,5 @@
 #!/bin/bash
-# cc-handoff — read the latest session HANDOFF.json at ~/.claude/state/HANDOFF.json
+# cc-handoff — read the latest session HANDOFF.json at ~/.Codex/state/HANDOFF.json
 #
 # Different from cc-resume (which controls the cc-loop pause flag). This reads
 # the structured session-state artifact /checkpoint writes, that session-resume.sh
@@ -12,7 +12,10 @@
 #   cc-handoff age          # human-readable age of the artifact
 set -u
 
-HANDOFF_FILE="$HOME/.claude/state/HANDOFF.json"
+codex_handoff="${CODEX_HANDOFF_FILE:-$HOME/.Codex/state/HANDOFF.json}"
+claude_handoff="${CLAUDE_HANDOFF_FILE:-$HOME/.claude/state/HANDOFF.json}"
+HANDOFF_FILE="$codex_handoff"
+[ -f "$HANDOFF_FILE" ] || [ ! -f "$claude_handoff" ] || HANDOFF_FILE="$claude_handoff"
 
 usage() {
   cat <<EOF

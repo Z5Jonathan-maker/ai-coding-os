@@ -1,5 +1,5 @@
 #!/bin/bash
-# cc-phase — read the ambient loop-status surface at ~/.claude/state/loop-status.md
+# cc-phase — read the ambient loop-status surface at ~/.Codex/state/loop-status.md
 #
 # Different from cc-status (which inspects the cc-loop runtime). This reads the
 # Verdent-style ambient pane that mega-cycle, autonomous-loop, and design-director
@@ -13,7 +13,10 @@
 #   cc-phase path         # print the underlying file path
 set -u
 
-STATUS_FILE="$HOME/.claude/state/loop-status.md"
+codex_status="${CODEX_LOOP_STATUS_FILE:-$HOME/.Codex/state/loop-status.md}"
+claude_status="${CLAUDE_LOOP_STATUS_FILE:-$HOME/.claude/state/loop-status.md}"
+STATUS_FILE="$codex_status"
+[ -f "$STATUS_FILE" ] || [ ! -f "$claude_status" ] || STATUS_FILE="$claude_status"
 
 usage() {
   cat <<EOF
@@ -58,7 +61,13 @@ case "$cmd" in
       done
     fi
     ;;
-  raw) cat "$STATUS_FILE" ;;
+  raw)
+    if [ -f "$STATUS_FILE" ]; then
+      cat "$STATUS_FILE"
+    else
+      print_phase
+    fi
+    ;;
   path) echo "$STATUS_FILE" ;;
   -h | --help | help) usage ;;
   *)

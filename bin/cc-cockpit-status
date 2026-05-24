@@ -40,14 +40,19 @@ section "Capability Routes"
 
 section "VS Code"
 user_dir="$HOME/Library/Application Support/Code/User"
-for f in settings keybindings tasks mcp; do
-  target="$(readlink "$user_dir/$f.json" 2>/dev/null || true)"
-  if [ "$target" = "$DOTFILES/vscode/$f.json" ]; then
-    printf -- '- %s.json: linked\n' "$f"
-  else
-    printf -- '- %s.json: NOT LINKED (%s)\n' "$f" "${target:-missing}"
-  fi
-done
+if [ ! -d "$user_dir" ]; then
+  printf -- '- portable evaluator mode: VS Code user directory not initialized\n'
+  printf -- '- install path: run ./install.sh after cloning on the target Mac\n'
+else
+  for f in settings keybindings tasks mcp; do
+    target="$(readlink "$user_dir/$f.json" 2>/dev/null || true)"
+    if [ "$target" = "$DOTFILES/vscode/$f.json" ]; then
+      printf -- '- %s.json: linked\n' "$f"
+    else
+      printf -- '- %s.json: NOT LINKED (%s)\n' "$f" "${target:-missing}"
+    fi
+  done
+fi
 
 section "Permission"
 if command -v cc-permission-matrix >/dev/null 2>&1; then

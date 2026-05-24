@@ -64,7 +64,9 @@ else
 fi
 
 section "Route Receipt"
-if command -v cc-router-receipt >/dev/null 2>&1; then
+if [ -x "$DOTFILES/bin/cc-router-receipt" ]; then
+  "$DOTFILES/bin/cc-router-receipt" --summary
+elif command -v cc-router-receipt >/dev/null 2>&1; then
   cc-router-receipt --summary
 else
   printf 'cc-router-receipt unavailable\n'
@@ -78,13 +80,12 @@ else
 fi
 
 section "Router Usage"
-router_usage="$HOME/code/projects/cc-router/bin/router-usage"
-if [ -x "$router_usage" ]; then
-  "$router_usage" 25 | sed -n '1,45p'
-elif command -v router-usage >/dev/null 2>&1; then
-  router-usage 25 | sed -n '1,45p'
+if [ -x "$DOTFILES/bin/cc-router-metrics" ]; then
+  "$DOTFILES/bin/cc-router-metrics" 25 | sed -n '1,70p'
+elif command -v cc-router-metrics >/dev/null 2>&1; then
+  cc-router-metrics 25 | sed -n '1,70p'
 else
-  printf 'router-usage unavailable\n'
+  printf 'cc-router-metrics unavailable\n'
 fi
 
 section "Core Commands"

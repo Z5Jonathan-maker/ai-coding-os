@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-src="$HOME/code/research/wassim-drive/PULSE-TOKEN-EFFICIENCY-COMPACTOR.md"
-skill="$HOME/dotfiles/claude/skills/pulse/SKILL.md"
-agents_skill="$HOME/.agents/skills/pulse/SKILL.md"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+dotfiles="${DOTFILES:-$(cd "$script_dir/.." && pwd)}"
+
+src="${PULSE_SOURCE:-$HOME/code/research/wassim-drive/PULSE-TOKEN-EFFICIENCY-COMPACTOR.md}"
+skill="${PULSE_DOTFILES_SKILL:-$dotfiles/claude/skills/pulse/SKILL.md}"
+agents_skill="${PULSE_AGENTS_SKILL:-$HOME/.agents/skills/pulse/SKILL.md}"
 
 printf '# Pulse Status\n\n'
 printf 'Source: %s\n' "$([ -f "$src" ] && printf present || printf missing)"
@@ -19,3 +22,5 @@ printf -- '- Tests/error text/user copy: clarity beats compression.\n\n'
 
 printf '## Fit\n\n'
 printf 'Pulse is a code-density protocol, not a routing lane. It belongs in code-generation/edit workflows and package-hardening passes, not as another model/tool button.\n'
+
+printf '\nStatus: pulse-status-ready\n'

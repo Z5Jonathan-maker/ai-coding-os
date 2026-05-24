@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-state="${CLAUDE_STATE_DIR:-$HOME/.claude/state}"
-project_slug="${CLAUDE_PROJECT_SLUG:--Users-$(id -un)-Claude-Code}"
-project_mem="${CLAUDE_PROJECT_MEMORY:-$HOME/.claude/projects/$project_slug/memory}"
+codex_state="${CODEX_STATE_DIR:-$HOME/.Codex/state}"
+claude_state="${CLAUDE_STATE_DIR:-$HOME/.claude/state}"
+state="$codex_state"
+[ -f "$state/loop-status.md" ] || [ ! -f "$claude_state/loop-status.md" ] || state="$claude_state"
+
+project_slug="${CODEX_PROJECT_SLUG:-${CLAUDE_PROJECT_SLUG:--Users-$(id -un)-Claude-Code}}"
+project_mem="${CODEX_PROJECT_MEMORY:-$HOME/.Codex/projects/$project_slug/memory}"
+[ -d "$project_mem" ] || project_mem="${CLAUDE_PROJECT_MEMORY:-$HOME/.claude/projects/$project_slug/memory}"
 loop_status="$state/loop-status.md"
 
 printf '# Loop Quality\n\n'
@@ -33,7 +38,7 @@ done
 printf '```\n\n'
 
 printf '## Depth Signal\n\n'
-if grep -q '_(empty' "$loop_status" 2>/dev/null; then
+if [ ! -f "$loop_status" ] || grep -q '_(empty' "$loop_status" 2>/dev/null; then
   printf 'No active cycle history yet. Use this as a readiness surface before long autonomous runs.\n'
 else
   printf 'Recent cycle history exists. Run /depth-check for qualitative audit.\n'
@@ -45,3 +50,5 @@ printf -- '- Null result is healthy when the investigation genuinely found no sa
 printf -- '- Repeated theme means escalate to root cause, not another surface cycle.\n'
 printf -- '- Finding and fix should be one action whenever scope is safe.\n'
 printf -- '- State mutations should persist incrementally, not only at batch end.\n'
+
+printf '\nStatus: loop-quality-ready\n'

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 prompt="${*:-debug this repo and verify the safest next step}"
 route_script="${AI_SYSTEM_ROUTE_SCRIPT:-${AI_SYSTEM_V2:-$HOME/AI-SYSTEM-V2}/scripts/intent-route.sh}"
 router_root="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
@@ -31,20 +32,20 @@ elif [ ! -x "$router_root/bin/cc-router-classifier-check" ]; then
   printf '```\n\n'
 else
   printf '## Product Readiness\n\n```text\n'
-  "$DOTFILES/bin/cc-product-readiness" | sed -n '1,28p'
+  "$DOTFILES/bin/cc-product-readiness" | sed -n '1,28p' || true
   printf '```\n\n'
 fi
 
 printf '## Route Preview\n\n```text\n'
 if [ -x "$route_script" ]; then
-  "$route_script" --dry-run "$prompt" | sed -n '1,34p'
+  "$route_script" --dry-run "$prompt" | sed -n '1,34p' || true
 else
   route_fixture
 fi
 printf '```\n\n'
 
 printf '## Repo Index\n\n'
-"$DOTFILES/bin/cc-repo-index" | sed -n '1,54p'
+"$DOTFILES/bin/cc-repo-index" | sed -n '1,54p' || true
 
 printf '\n## Repo Map\n\n```text\n'
 "$DOTFILES/bin/cc-repo-map" 18
@@ -52,7 +53,7 @@ printf '```\n\n'
 
 printf '\n## Diff Review Surface\n\n```text\n'
 if git rev-parse --show-toplevel >/dev/null 2>&1; then
-  git diff --stat -- . | sed -n '1,40p'
+  git diff --stat -- . | sed -n '1,40p' || true
 else
   printf 'not inside a git repository\n'
 fi

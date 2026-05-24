@@ -32,7 +32,7 @@ bash_syntax() {
     case "$first" in
     *bash*) bash -n "$file" || bad=1 ;;
     esac
-  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  done < <(find -L bin -maxdepth 1 -type f -perm -111 -print | sort)
   return "$bad"
 }
 
@@ -43,7 +43,7 @@ node_syntax() {
     case "$first" in
     *node*) node --check "$file" || bad=1 ;;
     esac
-  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  done < <(find -L bin -maxdepth 1 -type f -perm -111 -print | sort)
   node --check vscode/ai-cockpit/extension.js || bad=1
   node --check vscode/ai-cockpit/media/main.js || bad=1
   node -e 'JSON.parse(require("fs").readFileSync("vscode/ai-cockpit/package.json", "utf8"))' || bad=1
@@ -81,14 +81,40 @@ required_docs() {
 }
 
 command_registry_complete() {
-  local missing=0 name
+  local missing=0 name bin_list doc_list dupes stale
+  bin_list="$(mktemp "${TMPDIR:-/tmp}/cc-public-ci-bin.XXXXXX")"
+  doc_list="$(mktemp "${TMPDIR:-/tmp}/cc-public-ci-doc.XXXXXX")"
+
   while IFS= read -r file; do
     name="$(basename "$file")"
+    printf '%s\n' "$name" >>"$bin_list"
     if ! grep -Fq "\`$name\`" docs/COMMAND-REGISTRY.md; then
       printf 'missing registry entry: %s\n' "$name"
       missing=1
     fi
-  done < <(find bin -maxdepth 1 -type f -perm -111 -print | sort)
+  done < <(find -L bin -maxdepth 1 -type f -perm -111 -print | sort)
+
+  sort -u "$bin_list" -o "$bin_list"
+  sed '/^## Retired/,$d' docs/COMMAND-REGISTRY.md |
+    sed -n "s/^- \`\\([^\`]*\\)\`.*/\\1/p" |
+    sort >"$doc_list"
+
+  dupes="$(sed '/^## Retired/,$d' docs/COMMAND-REGISTRY.md |
+    sed -n "s/^- \`\\([^\`]*\\)\`.*/\\1/p" |
+    sort |
+    uniq -d)"
+  if [ -n "$dupes" ]; then
+    printf 'duplicate active registry entries:\n%s\n' "$dupes"
+    missing=1
+  fi
+
+  stale="$(comm -13 "$bin_list" "$doc_list")"
+  if [ -n "$stale" ]; then
+    printf 'stale active registry entries:\n%s\n' "$stale"
+    missing=1
+  fi
+
+  rm -f "$bin_list" "$doc_list"
   return "$missing"
 }
 

@@ -1,1 +1,43 @@
-/Users/leonardofibonacci/code/security/shannon/shannon
+#!/usr/bin/env bash
+set -euo pipefail
+
+candidates=(
+  "${SHANNON_BIN:-}"
+  "$HOME/code/security/shannon/shannon"
+  "$HOME/local/bin/shannon"
+  "$HOME/.local/bin/shannon"
+)
+
+last_error=""
+for candidate in "${candidates[@]}"; do
+  [ -n "$candidate" ] || continue
+  if [ -x "$candidate" ] && [ "$candidate" != "$0" ]; then
+    if [ "${SHANNON_SKIP_HEALTHCHECK:-0}" = "1" ]; then
+      exec "$candidate" "$@"
+    fi
+    if "$candidate" --version >/dev/null 2>&1 || "$candidate" --help >/dev/null 2>&1; then
+      exec "$candidate" "$@"
+    fi
+    last_error="$candidate exists but failed its startup health check"
+  fi
+done
+
+if [ -n "$last_error" ]; then
+  cat >&2 <<EOF
+shannon: optional local security CLI is present but not healthy.
+
+$last_error
+
+Set SHANNON_SKIP_HEALTHCHECK=1 to run it anyway after repairing its local dependencies.
+EOF
+else
+  cat >&2 <<'EOF'
+shannon: optional local security CLI is not installed.
+
+Set SHANNON_BIN=/absolute/path/to/shannon or install it at one of:
+  ~/code/security/shannon/shannon
+  ~/local/bin/shannon
+  ~/.local/bin/shannon
+EOF
+fi
+exit 127

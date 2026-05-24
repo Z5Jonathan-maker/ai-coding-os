@@ -21,6 +21,7 @@ surface, not a terminal command list.
 | 11-state-blocked | Permission/trust blocked state | `cc-cockpit-state-proof` |
 | 12-state-permissions | Authority selector/state explanation | `cc-cockpit-state-proof` |
 | 13-state-route-receipt | Inspectable routing proof | `cc-cockpit-state-proof` |
+| interaction-proof | Keyboard/state/diagnostic interaction proof | `cc-cockpit-interaction-proof` |
 
 ## Capture Standards
 
@@ -49,6 +50,8 @@ docs/media/cockpit/states/11-state-blocked.png
 docs/media/cockpit/states/12-state-permissions.png
 docs/media/cockpit/states/13-state-route-receipt.png
 docs/media/cockpit/states/manifest.json
+docs/media/cockpit/interaction/interaction-proof.png
+docs/media/cockpit/interaction/manifest.json
 ```
 
 ## Launch README Placement
@@ -82,6 +85,16 @@ cc-cockpit-state-proof
 This writes the primary state screenshots under `docs/media/cockpit/states/`
 and emits a manifest with file sizes and viewport metadata.
 
+Headless interaction proof is available through:
+
+```sh
+cc-cockpit-interaction-proof
+```
+
+This writes `docs/media/cockpit/interaction/manifest.json`, including keyboard
+flow assertions, state assertions, screenshot metadata, and hashes of the
+primary state screenshots for visual-regression tracking.
+
 ## Attempt Log
 
 - 2026-05-21: CLI/package proof is ready, but unattended GUI capture hit macOS
@@ -92,3 +105,6 @@ and emits a manifest with file sizes and viewport metadata.
   media can be regenerated without an unlocked desktop.
 - 2026-05-24: Added `cc-cockpit-state-proof` for deterministic continuation,
   running, success, blocked, permissions, and route-receipt state screenshots.
+- 2026-05-24: Added `cc-cockpit-interaction-proof` for keyboard submit,
+  empty/loading/blocked states, permission switching, route diagnostics, and
+  visual-regression metadata.

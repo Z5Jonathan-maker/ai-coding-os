@@ -1,0 +1,164 @@
+{
+  "schema": "ai-coding-os.cockpit-interaction-proof.v1",
+  "generated_at": "2026-05-24T13:07:29Z",
+  "viewport": "1180x860",
+  "assertions": [
+    {
+      "name": "initial empty state",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "prompt field present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "keyboard submit posts runPrompt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "empty prompt resolves to mission prompt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "running class toggled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "running disables continue",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "running transcript visible",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "keyboard focus shortcut handler present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "permission selector updates summary",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "clear restores empty state",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "clear removes running state",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "loading state title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "blocked state title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "blocked rail label",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "mission render updates title",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "progress bar updates",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "diff summary rendered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "context meter rendered",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "non-diagnostic result hides route noise",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "non-diagnostic result keeps user output",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "diagnostic result keeps route detail",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "receipt json compacted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interaction screenshot nonblank",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "interaction-proof.png",
+      "bytes": 998192,
+      "sha256": "ad65b4a8793023453a4551eb5d6cb2134cd55661722f22dfd6bc3b7065b7218b"
+    }
+  ],
+  "visual_regression": {
+    "state_screenshot_hashes": [
+      {
+        "file": "../states/08-state-continuation.png",
+        "bytes": 614360,
+        "sha256": "55882d028088bcab34c51906f71d2d7ce765124d4edc30b986d5bfc152f1e21e"
+      },
+      {
+        "file": "../states/09-state-running.png",
+        "bytes": 614591,
+        "sha256": "d8be87cd2be7b1961b1460da76c5f372365e71afdd0931818522d7986840c6ac"
+      },
+      {
+        "file": "../states/10-state-success.png",
+        "bytes": 613911,
+        "sha256": "2b9dc9b8b1f33089e38878cb048dc74d022157880662179faec76aae458afabc"
+      },
+      {
+        "file": "../states/11-state-blocked.png",
+        "bytes": 616643,
+        "sha256": "1efec64b1257ff8119f364593245ae97adfc03021b306a8672309391d390810b"
+      },
+      {
+        "file": "../states/12-state-permissions.png",
+        "bytes": 615488,
+        "sha256": "758e5bd4db8a0c27f230c24e2096bd681c09e5c7cd241972fe845717f371b453"
+      },
+      {
+        "file": "../states/13-state-route-receipt.png",
+        "bytes": 615913,
+        "sha256": "39326be2c6575319e54f5b69a6e00cebf631cc58413995b4ad3253ca9781a705"
+      }
+    ],
+    "score": "metadata-captured"
+  }
+}

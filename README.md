@@ -42,6 +42,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Mission events: `docs/MISSION-EVENTS.md`
 - Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
 - Cockpit state proof: `docs/media/cockpit/states/manifest.json`
+- Cockpit interaction proof: `docs/media/cockpit/interaction/manifest.json`
 - Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
 - Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
 - Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
@@ -133,6 +134,7 @@ cc-mission-events --check
 cc-mission-kernel --check
 cc-cockpit-webview-smoke
 cc-cockpit-state-proof --check
+cc-cockpit-interaction-proof --check
 cc-benchmark-fixtures
 cc-fresh-clone-check
 cc-public-ci-check
@@ -166,6 +168,10 @@ artifacts.
 state is based on durable events, not provider-specific logs.
 `cc-cockpit-state-proof` regenerates deterministic screenshots for
 continuation, running, success, blocked, permissions, and route-receipt states.
+`cc-cockpit-interaction-proof` runs the cockpit webview JavaScript in a real
+headless browser and proves keyboard submit, empty/loading/blocked states,
+permission switching, route-diagnostic rendering, and visual-regression
+metadata.
 `cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
 Kernel cycles, validate Mission Events, capture logs, and finish with product
 gates.
@@ -197,7 +203,9 @@ top-risk reasoning across multiple files.
 More launch media lives in `docs/media/cockpit/` and is regenerated with
 `cc-cockpit-capture`. Primary cockpit state proofs live in
 `docs/media/cockpit/states/` and are regenerated with
-`cc-cockpit-state-proof`.
+`cc-cockpit-state-proof`. Interaction proof lives in
+`docs/media/cockpit/interaction/` and is regenerated with
+`cc-cockpit-interaction-proof`.
 
 ## Local Install
 

@@ -115,7 +115,9 @@ media_artifacts() {
     docs/media/cockpit/states/11-state-blocked.png \
     docs/media/cockpit/states/12-state-permissions.png \
     docs/media/cockpit/states/13-state-route-receipt.png \
-    docs/media/cockpit/states/manifest.json; do
+    docs/media/cockpit/states/manifest.json \
+    docs/media/cockpit/interaction/interaction-proof.png \
+    docs/media/cockpit/interaction/manifest.json; do
     if [ ! -s "$file" ]; then
       printf 'missing media artifact: %s\n' "$file"
       missing=1

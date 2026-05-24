@@ -1,0 +1,325 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+OUT_DIR="${1:-$DOTFILES/docs/media/cockpit/interaction}"
+MAIN_JS="$DOTFILES/vscode/ai-cockpit/media/main.js"
+CSS="$DOTFILES/vscode/ai-cockpit/media/style.css"
+
+playwright_python() {
+  local bin py
+  bin="$(command -v playwright 2>/dev/null || true)"
+  [ -n "$bin" ] || return 1
+  py="$(sed -n '1s/^#!//p' "$bin" 2>/dev/null || true)"
+  if [ -n "$py" ] && [ -x "$py" ]; then
+    printf '%s\n' "$py"
+    return 0
+  fi
+  command -v python3
+}
+
+usage() {
+  cat <<'EOF'
+cc-cockpit-interaction-proof — cockpit keyboard and state interaction proof
+
+Usage:
+  cc-cockpit-interaction-proof [OUT_DIR]
+  cc-cockpit-interaction-proof --check
+
+Runs the real cockpit webview JavaScript in a headless browser and verifies:
+keyboard submit, prompt focus, empty state, loading state, blocked state,
+permission switching, route-diagnostic rendering, result cleanup, and visual
+regression metadata.
+EOF
+}
+
+check_ready() {
+  command -v playwright >/dev/null 2>&1 || {
+    printf 'missing playwright CLI\n'
+    return 1
+  }
+  "$(playwright_python)" - <<'PY'
+try:
+    import playwright.sync_api  # noqa: F401
+except Exception as exc:
+    raise SystemExit(f'missing python playwright runtime: {exc}')
+PY
+  [ -f "$MAIN_JS" ] || {
+    printf 'missing cockpit main.js: %s\n' "$MAIN_JS"
+    return 1
+  }
+  [ -f "$CSS" ] || {
+    printf 'missing cockpit CSS: %s\n' "$CSS"
+    return 1
+  }
+}
+
+if [ "${1:-}" = "--check" ]; then
+  check_ready
+  printf 'Status: cockpit-interaction-proof-ready\n'
+  exit 0
+fi
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  usage
+  exit 0
+fi
+
+check_ready
+mkdir -p "$OUT_DIR"
+
+DOTFILES="$DOTFILES" OUT_DIR="$OUT_DIR" "$(playwright_python)" <<'PY'
+import hashlib
+import json
+import os
+import tempfile
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+root = Path(os.environ["DOTFILES"])
+out_dir = Path(os.environ["OUT_DIR"])
+main_js = root / "vscode" / "ai-cockpit" / "media" / "main.js"
+css = root / "vscode" / "ai-cockpit" / "media" / "style.css"
+
+html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cockpit Interaction Proof</title>
+  <style>
+    :root {{
+      --vscode-foreground: #f2f3ff;
+      --vscode-descriptionForeground: #a9abc0;
+      --vscode-sideBar-background: #080b18;
+      --vscode-editor-background: #101426;
+      --vscode-panel-border: rgba(255,255,255,.1);
+      --vscode-sideBarSectionHeader-border: rgba(255,255,255,.1);
+      --vscode-button-background: #6e56ff;
+      --vscode-button-hoverBackground: #806dff;
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-border: rgba(255,255,255,.16);
+      --vscode-input-background: rgba(255,255,255,.06);
+      --vscode-input-foreground: #f2f3ff;
+      --vscode-input-border: rgba(255,255,255,.12);
+      --vscode-focusBorder: #9f8cff;
+      --vscode-testing-iconPassed: #50e3a4;
+      --vscode-testing-iconFailed: #ff5f7e;
+      --vscode-testing-iconQueued: #ffd166;
+      --vscode-textCodeBlock-background: rgba(0,0,0,.24);
+      --vscode-editor-foreground: #f2f3ff;
+      --vscode-badge-foreground: #ffffff;
+      --vscode-badge-background: #6e56ff;
+      --vscode-editor-font-family: "SF Mono", Menlo, monospace;
+      --vscode-font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }}
+    {css.read_text()}
+    *, *::before, *::after {{ animation: none !important; transition: none !important; }}
+    body {{ min-height: 900px; }}
+  </style>
+  <script>
+    window.__messages = [];
+    window.acquireVsCodeApi = () => ({{ postMessage: (message) => window.__messages.push(message) }});
+  </script>
+</head>
+<body class="panel-mode">
+  <aside class="workspace-rail"><div class="rail-status"><strong><i></i><span id="railStatusLabel">Ready</span></strong></div></aside>
+  <section class="hero"><div class="status-dot" id="statusDot"></div><div><strong id="readinessTitle">Checking readiness</strong><p id="readinessBody">Loading.</p></div></section>
+  <section class="home-intro"><h2>Current workspace</h2><p>Loading.</p></section>
+  <section class="composer">
+    <div class="composer-head"><label for="prompt">Command</label><span id="context">No active editor</span></div>
+    <div class="continuation-copy">
+      <span>Continue current work</span>
+      <h3 id="continueTitle">Current workspace</h3>
+      <div class="continuation-memory"><div><span>Last session</span><p id="continueLast">Loading.</p></div><div><span>Next best step</span><p id="continueBody">Loading.</p></div></div>
+    </div>
+    <div class="continuation-signals"><span id="continueChanges">Checking changes</span><span id="continueTests">Checking gates</span><span id="continueSafety">Checking safety</span></div>
+    <textarea id="prompt" rows="5"></textarea>
+    <div class="chips" id="chips"></div>
+    <button class="pill active" data-mode="autoRun" aria-pressed="true">Auto</button>
+    <button class="mode" data-mode="buildFix" aria-pressed="false">Code</button>
+    <button class="permission active" data-permission="review" aria-pressed="true"><strong>Review</strong><span>Guarded edits</span></button>
+    <button class="permission" data-permission="autopilot" aria-pressed="false"><strong>Autopilot</strong><span>Safe loop</span></button>
+    <div id="modeSummary">Mode: Auto</div>
+    <div id="permissionSummary">Authority: Review</div>
+    <button class="primary command-button" data-run-selected="true"><span>Continue</span></button>
+    <button class="secondary command-button" data-run="explainRoute"><span>Preview Route</span></button>
+    <label><input id="includeContext" type="checkbox" checked> Include active file</label>
+  </section>
+  <section class="workstreams-panel">
+    <article class="workstream active" data-workstream="Interaction proof mission" data-summary="Proof mission summary." data-last-session="Last session loaded." data-focus="Ready" data-focus-body="Run the keyboard proof and verify state transitions." data-progress="62" data-route="Auto">
+      <div class="stream-title"><strong>Interaction proof mission</strong><span>Ready</span></div>
+      <p>Run the keyboard proof and verify state transitions.</p>
+      <div class="stream-status in-progress">Ready</div>
+      <div class="stream-meta"><span>Changes</span><strong>2 files</strong></div>
+      <div class="stream-meta"><span>Tests</span><strong class="ok">Passing</strong></div>
+      <div class="stream-meta"><span>Route</span><strong>Auto</strong></div>
+      <button class="stream-action" data-workstream-prompt="Continue interaction proof mission. Verify keyboard flow and state transitions.">Continue</button>
+    </article>
+  </section>
+  <aside class="workspace-detail">
+    <h2 id="detailTitle">Current workspace</h2>
+    <p id="detailDescription">Loading.</p>
+    <strong id="detailProgress">50%</strong><div class="progress"><span id="detailProgressBar" style="width:50%"></span></div>
+    <h3 id="detailFocus">Continue the current mission</h3><p id="detailFocusBody">Loading.</p>
+    <div class="mission-feed"><div class="mission-agent active"><span class="agent-orb codex">R</span><div><strong>Reading live workspace state.</strong><small>Loading.</small></div><em>now</em></div><div class="activity-preview live-stage"><span>Workspace preview</span><strong>Live state loading</strong><small>No static project claims are used.</small></div></div>
+    <strong id="detailRoute">Auto</strong><strong id="detailStarted">Now</strong>
+  </aside>
+  <section class="result-panel">
+    <div class="panel-head"><h2 id="resultTitle">Momentum</h2><button id="stopRun" data-result-action="stop" disabled>Stop</button><button data-result-action="clear">Clear</button><button data-result-action="copy">Copy</button></div>
+    <div id="result" class="transcript"><div class="empty-state">Ready.</div></div>
+  </section>
+  <section class="status-grid"><button><span>Route</span><strong id="routePill">Auto</strong></button><button><span>Changes</span><strong id="diffPill">--</strong></button><button><span>Context</span><strong id="contextPill">--</strong></button><button><span>Capacity</span><strong id="capacityPill">--</strong></button></section>
+  <pre id="route">Loading...</pre><pre id="metrics">Loading...</pre><pre id="providerCapacity">Loading...</pre><pre id="permissions">Loading...</pre><pre id="checkpoints">Loading...</pre><pre id="disk">Loading...</pre><pre id="product">Loading...</pre><pre id="firstRun">Loading...</pre><pre id="contextMeter">Loading...</pre><pre id="contextSnapshot">Loading...</pre><pre id="diffSummary">Loading...</pre><pre id="sessions">Loading...</pre><pre id="pulse">Loading...</pre><pre id="nativeApps">Loading...</pre><pre id="kimi">Loading...</pre><pre id="jobs">Loading...</pre><pre id="lanes">Loading...</pre><pre id="repoMap">Loading...</pre>
+  <span id="contextUsed">--</span><span id="contextAvailable">--</span><span id="contextDiff">--</span><span id="contextStatus">Loading.</span><span id="contextUsedBar"></span><span id="contextReserveBar"></span>
+  <span id="diffFiles">--</span><span id="diffAdded">--</span><span id="diffRemoved">--</span>
+  <script src="{main_js.as_uri()}"></script>
+</body>
+</html>"""
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def check(assertions, name, ok, detail=""):
+    assertions.append({"name": name, "ok": bool(ok), "detail": detail})
+    if not ok:
+        raise AssertionError(f"{name}: {detail}")
+
+with tempfile.TemporaryDirectory() as tmp:
+    page_file = Path(tmp) / "interaction.html"
+    page_file.write_text(html)
+    assertions = []
+    screenshots = []
+    with sync_playwright() as p:
+        browser = p.chromium.launch(channel="chrome", headless=True)
+        page = browser.new_page(viewport={"width": 1180, "height": 860})
+        page.goto(page_file.as_uri())
+        page.wait_for_load_state("domcontentloaded")
+        page.wait_for_timeout(80)
+
+        check(assertions, "initial empty state", page.locator(".empty-state").inner_text() == "Ready.")
+        check(assertions, "prompt field present", page.locator("#prompt").count() == 1)
+
+        page.keyboard.press("Meta+Enter")
+        page.wait_for_timeout(80)
+        messages = page.evaluate("window.__messages")
+        check(assertions, "keyboard submit posts runPrompt", messages[-1]["command"] == "runPrompt")
+        check(assertions, "empty prompt resolves to mission prompt", "Continue interaction proof mission" in messages[-1]["prompt"])
+        check(assertions, "running class toggled", page.evaluate("document.body.classList.contains('is-running')"))
+        check(assertions, "running disables continue", page.locator("[data-run-selected]").get_attribute("aria-busy") == "true")
+        check(assertions, "running transcript visible", "Running..." in page.locator("#result").inner_text())
+
+        shipped_js = main_js.read_text()
+        check(assertions, "keyboard focus shortcut handler present", "key.toLowerCase() === 'l'" in shipped_js and "$('prompt').focus()" in shipped_js)
+
+        page.dispatch_event("button[data-permission='autopilot']", "click")
+        check(assertions, "permission selector updates summary", "Autopilot" in page.locator("#permissionSummary").inner_text())
+
+        page.dispatch_event("button[data-result-action='clear']", "click")
+        check(assertions, "clear restores empty state", page.locator(".empty-state").inner_text() == "Ready.")
+        check(assertions, "clear removes running state", not page.evaluate("document.body.classList.contains('is-running')"))
+
+        page.evaluate("""window.dispatchEvent(new MessageEvent('message', { data: { type: 'loading' } }))""")
+        check(assertions, "loading state title", page.locator("#readinessTitle").inner_text() == "Refreshing cockpit")
+
+        page.evaluate("""window.dispatchEvent(new MessageEvent('message', { data: { type: 'state', payload: {
+          readiness: { title: 'Ready fallback', body: 'Fallback body' },
+          product: 'Status: not product-ready\\nBlockers:\\n- release gate pending',
+          firstRun: 'Status: first-run-blocked',
+          kimi: 'mode=official-extension',
+          route: 'Latest: auto',
+          providerCapacity: 'status=full-capacity',
+          context: { label: 'proof.js:1', block: 'ctx' },
+          metrics: 'metrics ready',
+          permissions: 'permission matrix',
+          checkpoints: 'checkpoint list',
+          disk: 'disk ready',
+          contextMeter: 'context report',
+          contextMeterJson: '{\"usedPercent\":7,\"availableTokens\":120000,\"diffChars\":42,\"status\":\"low\",\"statusText\":\"low pressure\"}',
+          contextSnapshot: '{\"providers\":[{\"id\":\"file\",\"included\":true,\"values\":[\"a\"],\"source\":\"proof\"}]}',
+          diffSummary: '{\"clean\":false,\"fileCount\":2,\"totalAdded\":8,\"totalRemoved\":1,\"files\":[{\"scope\":\"worktree\",\"added\":8,\"removed\":1,\"path\":\"proof.js\"}],\"hunks\":[]}',
+          sessions: '{\"sessions\":[{\"session_id\":\"s1\",\"turns\":2,\"classes\":{\"codex\":2},\"models\":{\"codex\":2},\"fallbacks\":0,\"sticky\":0}]}',
+          pulse: 'pulse ready',
+          nativeApps: 'apps ready',
+          repoMap: '{\"mapped_count\":1,\"clean\":false,\"branch\":\"main\",\"top\":[{\"score\":9,\"dirty\":true,\"lines\":20,\"path\":\"proof.js\",\"symbols\":[\"proof\"]}]}',
+          jobs: 'no jobs',
+          lanes: 'lanes ready',
+          mission: {
+            title: 'Blocked proof mission',
+            lastSession: 'Tried a blocked setup path.',
+            nextStep: 'Resolve required first-run setup.',
+            changes: '2 files',
+            tests: 'Review',
+            safety: 'Needs attention',
+            summary: 'Blocked mission summary.',
+            status: 'Blocked',
+            route: 'Auto',
+            started: 'Now',
+            progress: 36,
+            prompt: 'Resolve the blocked setup.',
+            feed: [{ state: '', icon: 'B', title: 'Setup blocked.', body: 'Required tool missing.', time: 'now' }]
+          }
+        } } }))""")
+        check(assertions, "blocked state title", page.locator("#readinessTitle").inner_text() == "First-run setup blocked")
+        check(assertions, "blocked rail label", page.locator("#railStatusLabel").inner_text() == "Blocked")
+        check(assertions, "mission render updates title", page.locator("#continueTitle").inner_text() == "Blocked proof mission")
+        check(assertions, "progress bar updates", "36%" in page.locator("#detailProgressBar").get_attribute("style"))
+        check(assertions, "diff summary rendered", page.locator("#diffFiles").inner_text() == "2")
+        check(assertions, "context meter rendered", page.locator("#contextPill").inner_text() == "7%")
+
+        page.evaluate("""window.dispatchEvent(new MessageEvent('message', { data: { type: 'result', payload: {
+          title: 'Auto',
+          body: 'Route selected: precision -> claude\\nProvider capacity: degraded\\nHello user',
+          running: false
+        } } }))""")
+        result_text = page.locator("#result").inner_text()
+        check(assertions, "non-diagnostic result hides route noise", "Route selected" not in result_text and "Provider capacity" not in result_text)
+        check(assertions, "non-diagnostic result keeps user output", "Hello user" in result_text)
+
+        page.evaluate("""document.getElementById('prompt').value = 'show route'""")
+        page.dispatch_event("button[data-run='explainRoute']", "click")
+        page.evaluate("""window.dispatchEvent(new MessageEvent('message', { data: { type: 'result', payload: {
+          title: 'Route Receipt',
+          body: 'Route selected: precision -> claude\\nFallback: codex\\nReceipt: {\"ok\":true}',
+          running: false
+        } } }))""")
+        route_text = page.locator("#result").inner_text()
+        check(assertions, "diagnostic result keeps route detail", "Route selected" in route_text and "Fallback" in route_text)
+        check(assertions, "receipt json compacted", "Receipt: recorded internally" in route_text)
+
+        shot = out_dir / "interaction-proof.png"
+        page.screenshot(path=str(shot), full_page=True)
+        screenshots.append({"file": shot.name, "bytes": shot.stat().st_size, "sha256": sha256(shot)})
+        check(assertions, "interaction screenshot nonblank", shot.stat().st_size > 10000)
+        browser.close()
+
+state_dir = root / "docs" / "media" / "cockpit" / "states"
+state_hashes = []
+for name in [
+    "08-state-continuation.png",
+    "09-state-running.png",
+    "10-state-success.png",
+    "11-state-blocked.png",
+    "12-state-permissions.png",
+    "13-state-route-receipt.png",
+]:
+    full = state_dir / name
+    if not full.exists() or full.stat().st_size < 10000:
+        raise AssertionError(f"missing state screenshot for visual regression: {name}")
+    state_hashes.append({"file": f"../states/{name}", "bytes": full.stat().st_size, "sha256": sha256(full)})
+
+manifest = {
+    "schema": "ai-coding-os.cockpit-interaction-proof.v1",
+    "generated_at": __import__("datetime").datetime.now(__import__("datetime").UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    "viewport": "1180x860",
+    "assertions": assertions,
+    "screenshots": screenshots,
+    "visual_regression": {
+        "state_screenshot_hashes": state_hashes,
+        "score": "metadata-captured",
+    },
+}
+(out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+print(f"assertions={sum(1 for a in assertions if a['ok'])} failed=0")
+print("Status: cockpit-interaction-proof-passed")
+PY

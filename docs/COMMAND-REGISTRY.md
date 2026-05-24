@@ -37,6 +37,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-bootstrap` — one-shot platform bootstrapper.
 - `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output; `--json` returns nonce boundaries, origin, truncation metadata, and proof content.
 - `cc-browser-replay-check` — validates credential-free authenticated browser replay fixtures.
+- `cc-browser-replay-live-check` — prepared-machine live WebBridge replay readiness gate with nonce proof and safe skip on public machines.
 - `cc-browser-visual-proof` — public-clone-safe browser/UI visual contract gate for DOM/layout assertions and bounded browser-proof packet schema.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.

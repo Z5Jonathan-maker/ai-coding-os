@@ -37,10 +37,16 @@ fixture.json
   normal Chrome session.
 - `shim` fixtures may prove public smoke flows only.
 - CI validates fixture safety with `cc-browser-replay-check`.
+- Prepared machines validate live replay readiness with
+  `cc-browser-replay-live-check`; public machines skip cleanly when WebBridge is
+  not connected.
 - Live authenticated replay is local-only and must never write secrets to repo.
 
 ## Status
 
-This repository ships the safe replay contract and verifier. Live replay depends
-on the user's approved browser session and should be run only on the maintainer
-machine or an explicitly prepared evaluator machine.
+This repository ships the safe replay contract, verifier, and prepared-machine
+live readiness gate. The live gate uses a credential-free nonce page to prove the
+official WebBridge path without reading cookies, local storage, session storage,
+authorization headers, or screenshots containing secrets. Real authenticated
+target replays still depend on the user's approved browser session and should be
+run only on the maintainer machine or an explicitly prepared evaluator machine.

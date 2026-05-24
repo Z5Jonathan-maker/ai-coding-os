@@ -1,0 +1,112 @@
+#!/usr/bin/env node
+'use strict';
+
+const cp = require('child_process');
+const http = require('http');
+
+const statusCmd = process.env.KIMI_WEBBRIDGE_STATUS || `${process.env.HOME}/.kimi-webbridge/bin/kimi-webbridge`;
+const session = `cc-replay-live-${Date.now()}`;
+const nonce = `cc-live-${Math.random().toString(36).slice(2, 10)}`;
+let pass = 0;
+let fail = 0;
+let skipped = false;
+
+function ok(name, detail = '') {
+  console.log(`ok   ${name}${detail ? `: ${detail}` : ''}`);
+  pass += 1;
+}
+
+function bad(name, detail) {
+  console.log(`fail ${name}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 30).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function skip(reason) {
+  console.log(`skip live replay: ${reason}`);
+  skipped = true;
+}
+
+function bridgeStatus() {
+  const res = cp.spawnSync(statusCmd, ['status'], { encoding: 'utf8' });
+  if (res.status !== 0) return { ok: false, reason: res.stderr || res.stdout || `status exited ${res.status}` };
+  try {
+    return { ok: true, data: JSON.parse(res.stdout) };
+  } catch (err) {
+    return { ok: false, reason: `invalid status JSON: ${err.message}` };
+  }
+}
+
+function command(action, args = {}) {
+  const payload = JSON.stringify({ action, args, session });
+  return new Promise((resolve, reject) => {
+    const req = http.request({
+      hostname: '127.0.0.1',
+      port: 10086,
+      path: '/command',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload),
+      },
+      timeout: 10000,
+    }, (res) => {
+      let body = '';
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => { body += chunk; });
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(body || '{}');
+          if (res.statusCode >= 400 || parsed.success === false) reject(new Error(body));
+          else resolve(parsed);
+        } catch (err) {
+          reject(new Error(`invalid response: ${body.slice(0, 500)}`));
+        }
+      });
+    });
+    req.on('timeout', () => req.destroy(new Error('request timed out')));
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+}
+
+async function main() {
+  console.log('# Browser Replay Live Check\n');
+  const status = bridgeStatus();
+  if (!status.ok) {
+    skip(status.reason);
+  } else if (!status.data.running || !status.data.extension_connected) {
+    skip(`running=${Boolean(status.data.running)} extension_connected=${Boolean(status.data.extension_connected)}`);
+  } else {
+    ok('official WebBridge connected', `daemon=${status.data.version || 'unknown'} extension=${status.data.extension_version || 'unknown'}`);
+    const html = encodeURIComponent(`<title>AI Coding OS Replay</title><main><h1>Replay live proof</h1><p id="nonce">${nonce}</p><button id="proof">Continue</button></main>`);
+    const nav = await command('navigate', { url: `data:text/html,${html}`, newTab: true, group_title: 'AIOS Replay' });
+    ok('navigate through real browser', nav.url || 'data url');
+    const snapshot = await command('snapshot');
+    if (!JSON.stringify(snapshot).includes(nonce)) throw new Error('snapshot missing nonce');
+    ok('snapshot contains nonce');
+    const evaluated = await command('evaluate', { code: `(() => document.querySelector('#nonce')?.textContent || '')()` });
+    const value = evaluated.value ?? evaluated.data?.value;
+    if (value !== nonce) throw new Error(`evaluate returned ${JSON.stringify(evaluated)}`);
+    ok('evaluate reads nonce without storage capture');
+    await command('close_session');
+    ok('session closed');
+  }
+
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail} skipped=${skipped ? 1 : 0}`);
+  if (fail) console.log('Status: browser-replay-live-blocked');
+  else if (skipped) console.log('Status: browser-replay-live-skipped');
+  else console.log('Status: browser-replay-live-ready');
+  process.exit(fail ? 1 : 0);
+}
+
+main().catch(async (err) => {
+  bad('live replay', err.message);
+  try { await command('close_session'); } catch (_) {}
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail} skipped=${skipped ? 1 : 0}`);
+  console.log('Status: browser-replay-live-blocked');
+  process.exit(1);
+});

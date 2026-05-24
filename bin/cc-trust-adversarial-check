@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturePath = process.env.CC_TRUST_ADVERSARIAL_FIXTURE || path.join(root, 'fixtures', 'trust-adversarial.json');
+const gate = path.join(root, 'bin', 'cc-trust-gate');
+let pass = 0;
+let fail = 0;
+
+function runCase(testCase) {
+  const res = cp.spawnSync(gate, ['--json', '--mode', testCase.mode, '--task', testCase.task], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, DOTFILES: root },
+  });
+  let payload = {};
+  try { payload = JSON.parse(res.stdout || '{}'); } catch (_) {}
+  const hits = (payload.hits || []).map((hit) => hit.id);
+  const ok = res.status === testCase.expect_status &&
+    payload.decision === testCase.expect_decision &&
+    (!testCase.expect_hit || hits.includes(testCase.expect_hit));
+  if (ok) {
+    console.log(`ok   ${testCase.id}: ${payload.decision}`);
+    pass += 1;
+  } else {
+    console.log(`fail ${testCase.id}`);
+    console.log(`     status=${res.status} expected=${testCase.expect_status}`);
+    console.log(`     decision=${payload.decision} expected=${testCase.expect_decision}`);
+    console.log(`     hits=${hits.join(',')}`);
+    console.log((res.stdout || res.stderr || '').split('\n').slice(0, 20).map((line) => `     ${line}`).join('\n'));
+    fail += 1;
+  }
+}
+
+console.log('# Trust Adversarial Check\n');
+const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+if (fixture.schema !== 'ai-coding-os.trust-adversarial.v1') {
+  console.log('fail invalid fixture schema');
+  process.exit(1);
+}
+for (const testCase of fixture.cases || []) runCase(testCase);
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: trust-adversarial-blocked' : 'Status: trust-adversarial-ready');
+process.exit(fail ? 1 : 0);

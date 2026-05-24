@@ -47,7 +47,7 @@ Status values:
 |---|---|---|---|---|---|
 | Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics`, degraded-provider replay fixture | More live degraded-provider replays across non-Claude lanes | `cc-router-smoke`, `cc-lane-registry-check`, `cc-router-degradation-check` | Strong |
 | Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 12 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and a source-linked upstream issue replay; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
-| Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
+| Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix, adversarial paid/destructive/secret/force-push/cross-user/credential fixtures | More real-world TEL policy fixtures | `cc-trust-gate --check`, `cc-trust-adversarial-check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
 | Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-replay-check`, `cc-browser-replay-live-check`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Real target authenticated replay still depends on approved local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-replay-check`, `cc-browser-replay-live-check`, `cc-browser-visual-proof --check` | Strong |
@@ -94,6 +94,7 @@ cc-benchmark-run routing-pr-quality
 cc-benchmark-run upstream-issue-replay
 cc-token-ledger --check
 cc-trust-gate --check
+cc-trust-adversarial-check
 cc-mission-ledger --check
 cc-creative-kernel-check
 cc-lane-extension-check

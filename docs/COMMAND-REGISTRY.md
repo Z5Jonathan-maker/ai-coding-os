@@ -98,6 +98,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
 - `cc-token-ledger` — read-only router economics ledger: calls, token estimates, costs, fallbacks, and premium-spend avoidance.
+- `cc-trust-adversarial-check` — adversarial autonomy-boundary fixtures for paid, destructive, secret, force-push, cross-user, and credential-mutation tasks.
 - `cc-third-party-dogfood` — external public-repo mutating proof with pinned upstream source, failing test, runtime repair, Mission Events, review evidence, local commit, and third-party test gate.
 - `cc-trust-profile` — validate and print the repo-local `.ai/trust.json` workspace autonomy policy.
 - `cc-trust-gate` — enforce `.ai/trust.json` plus AI-SYSTEM-V2 permission policy before cockpit routing.

@@ -53,6 +53,42 @@ function permissionDecision(task) {
   }
 }
 
+function localRiskDecision(task) {
+  const hits = [];
+  const rules = [
+    {
+      decision: 'deny',
+      id: 'destructive_shell',
+      reason: 'Destructive shell actions require an explicit human command outside autopilot.',
+      pattern: /\b(rm\s+-rf|sudo\s+rm|mkfs|diskutil\s+erase|drop\s+table|truncate\s+table)\b/i,
+    },
+    {
+      decision: 'deny',
+      id: 'force_push_main',
+      reason: 'Force-pushing shared branches is blocked by the trust gate.',
+      pattern: /\b(force[- ]?push|push\s+--force|git\s+push\s+.*--force)\b.*\b(main|master)\b/i,
+    },
+    {
+      decision: 'review',
+      id: 'cross_user_message',
+      reason: 'Sending email, comments, posts, DMs, or Slack messages requires review.',
+      pattern: /\b(send|email|post|comment|dm|slack|message)\b.*(@|#|to\s+[^\s]+@[^\s]+)/i,
+    },
+    {
+      decision: 'review',
+      id: 'credential_mutation',
+      reason: 'Credential creation, rotation, reset, or revocation requires TEL or explicit review.',
+      pattern: /\b(create|rotate|reset|revoke|change)\b.*\b(api[-_ ]?key|secret|token|credential|password)\b/i,
+    },
+  ];
+  for (const rule of rules) {
+    if (rule.pattern.test(task)) hits.push({ id: rule.id, reason: rule.reason, decision: rule.decision });
+  }
+  if (hits.some((hit) => hit.decision === 'deny')) return { decision: 'deny', hits };
+  if (hits.length) return { decision: 'review', hits };
+  return { decision: 'allow', hits: [] };
+}
+
 function gate() {
   const mode = String(arg('mode', 'review')).toLowerCase();
   const task = arg('task') || args.filter((item, i) => !item.startsWith('--') && args[i - 1] !== '--mode' && args[i - 1] !== '--task').join(' ');
@@ -63,10 +99,14 @@ function gate() {
   if (!trust.allow_shell) fail('trust profile does not allow shell execution');
 
   const decision = permissionDecision(task);
-  const hits = decision.hits || [];
+  const local = localRiskDecision(task);
+  const hits = [...(decision.hits || []), ...local.hits];
+  let mergedDecision = decision.decision || 'allow';
+  if (local.decision === 'deny' || mergedDecision === 'deny') mergedDecision = 'deny';
+  else if (local.decision === 'review' || mergedDecision === 'review') mergedDecision = 'review';
   const result = {
     ok: true,
-    decision: decision.decision || 'allow',
+    decision: mergedDecision,
     mode,
     task,
     trust: {
@@ -107,6 +147,10 @@ function check() {
     ['ask', 'brew install a new global dependency', false],
     ['autopilot', 'brew install a new global dependency', false],
     ['autopilot', 'print my api key', false],
+    ['autopilot', 'rm -rf /tmp/ai-coding-os-proof', false],
+    ['autopilot', 'force-push main', false],
+    ['autopilot', 'send an email to support@example.com saying hello', false],
+    ['autopilot', 'rotate production API key', false],
   ];
   for (const [mode, task, expected] of probes) {
     const res = spawnSync(process.execPath, [__filename, '--json', '--mode', mode, '--task', task], {

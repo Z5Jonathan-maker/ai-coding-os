@@ -1,0 +1,133 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const registryPath = path.join(root, 'ai-lanes.json');
+const guidePath = path.join(root, 'docs', 'ADDING-A-LANE.md');
+let pass = 0;
+let fail = 0;
+
+function runCheck(name, fn) {
+  process.stdout.write(`\n## ${name}\n`);
+  try {
+    const detail = fn();
+    console.log(`ok   ${name}${detail ? `: ${detail}` : ''}`);
+    pass += 1;
+  } catch (err) {
+    console.log(`fail ${name}`);
+    console.log(String(err.message || err).split('\n').slice(0, 30).map((line) => `     ${line}`).join('\n'));
+    fail += 1;
+  }
+}
+
+function run(cmd, args, env = {}) {
+  const res = cp.spawnSync(cmd, args, {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, DOTFILES: root, ...env },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status,
+    text: `${res.stdout || ''}${res.stderr || ''}`,
+  };
+}
+
+function requireGuide() {
+  const text = fs.readFileSync(guidePath, 'utf8');
+  for (const phrase of [
+    'Decision Checklist',
+    'Required Registry Fields',
+    'Safe Example',
+    'Verification',
+    'Cockpit Rule',
+    'cc-lane-registry-check',
+    'cc-lane route <capability>',
+    'cc-trust-gate --check',
+  ]) {
+    if (!text.includes(phrase)) throw new Error(`missing guide phrase: ${phrase}`);
+  }
+  return 'guide contract present';
+}
+
+function validExampleRegistry() {
+  const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+  registry.lanes.push({
+    id: 'example-lane',
+    role: 'Example transform worker for safe text-only rewrites.',
+    status: 'optional',
+    capabilities: ['example_safe_transform'],
+    health: {
+      kind: 'command',
+      command: 'command -v example-lane',
+      expect: 'example-lane',
+    },
+    fallbacks: ['codex'],
+    unsupported: ['credentialed_action', 'payment_compliance', 'destructive_action'],
+    hardFloor: false,
+    credential: 'none',
+    notes: 'Use only for safe text transforms; never route credentials or final QA here.',
+  });
+  registry.capabilities.example_safe_transform = {
+    primary: 'example-lane',
+    fallbacks: ['codex'],
+  };
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-lane-extension-valid.'));
+  const file = path.join(tmp, 'ai-lanes.json');
+  fs.writeFileSync(file, `${JSON.stringify(registry, null, 2)}\n`);
+
+  let res = run(path.join(root, 'bin', 'cc-lane-registry-check'), [file]);
+  if (!res.ok) throw new Error(res.text);
+  res = run(path.join(root, 'bin', 'cc-lane'), ['route', 'example_safe_transform'], { CC_LANE_REGISTRY: file });
+  if (!res.ok || !/example_safe_transform: example-lane -> codex/.test(res.text)) throw new Error(res.text);
+  res = run(path.join(root, 'bin', 'cc-lane'), ['support', 'example-lane', 'example_safe_transform'], { CC_LANE_REGISTRY: file });
+  if (!res.ok || !/supports example_safe_transform/.test(res.text)) throw new Error(res.text);
+  return 'example lane validates and routes';
+}
+
+function invalidExampleFails() {
+  const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+  registry.lanes.push({
+    id: 'bad-lane',
+    role: 'Invalid active lane without health.',
+    status: 'active',
+    capabilities: ['bad_capability'],
+    health: { kind: 'none' },
+    fallbacks: [],
+    unsupported: [],
+    hardFloor: false,
+    credential: 'none',
+    notes: 'This fixture must fail.',
+  });
+  registry.capabilities.bad_capability = { primary: 'bad-lane' };
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-lane-extension-invalid.'));
+  const file = path.join(tmp, 'ai-lanes.json');
+  fs.writeFileSync(file, `${JSON.stringify(registry, null, 2)}\n`);
+  const res = run(path.join(root, 'bin', 'cc-lane-registry-check'), [file]);
+  if (res.ok) throw new Error('invalid active lane passed registry check');
+  if (!/active lane cannot have health kind none|fallback or noFallbackReason required/.test(res.text)) {
+    throw new Error(res.text);
+  }
+  return 'unsafe fixture rejected';
+}
+
+function main() {
+  console.log('# Lane Extension Check');
+  console.log(`\nRoot: ${root}`);
+  runCheck('Public lane guide', requireGuide);
+  runCheck('Valid extension fixture', validExampleRegistry);
+  runCheck('Invalid extension fixture rejected', invalidExampleFails);
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail}`);
+  console.log(fail ? 'Status: lane-extension-blocked' : 'Status: lane-extension-ready');
+  process.exit(fail ? 1 : 0);
+}
+
+main();

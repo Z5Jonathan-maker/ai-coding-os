@@ -27,6 +27,8 @@ clone_root_defaults() {
     bin/cc-demo-five-minute \
     bin/cc-dogfood-day \
     bin/cc-dogfood-session \
+    bin/cc-lane \
+    bin/cc-lane-registry-check \
     bin/cc-package-cockpit \
     bin/cc-product-readiness \
     bin/cc-release-manifest \
@@ -36,7 +38,7 @@ clone_root_defaults() {
       cat /tmp/cc-portability.$$
       bad=1
     fi
-    if ! rg -n 'git rev-parse --show-toplevel' "$file" >/dev/null 2>&1; then
+    if ! rg -n 'git rev-parse --show-toplevel|path\.resolve\(__dirname, '\''\.\.'\''\)' "$file" >/dev/null 2>&1; then
       printf '%s: missing git-root fallback\n' "$file"
       bad=1
     fi

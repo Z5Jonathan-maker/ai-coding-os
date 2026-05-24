@@ -84,7 +84,7 @@ printf 'Source: %s\n' "$source_repo"
 printf 'Temp root: %s\n' "$tmp_root"
 
 run "Clone repository" '' clone_repo
-run "Public CI in fresh clone" '^passed=13 failed=0$' public_ci
+run "Public CI in fresh clone" '^passed=14 failed=0$' public_ci
 run "First-run dry-run in temp home" '^Status: first-run-ready$' first_run_dry_run
 run "Cockpit package in fresh clone" 'Packaged|\.vsix' cockpit_package
 run "Public fixture demo in fresh clone" '^Fixture:' fixture_demo

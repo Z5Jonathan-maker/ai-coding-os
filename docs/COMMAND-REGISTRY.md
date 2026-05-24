@@ -66,6 +66,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-kimi-status` — Kimi Desktop, CLI, WebBridge, and VS Code extension status.
 - `cc-kimi-webbridge-shim` — local fallback WebBridge extension client for remote setup.
 - `cc-lane-registry-check` — structural validation for `ai-lanes.json`.
+- `cc-lane-extension-check` — public lane-extension guide and valid/invalid registry fixture gate.
 - `cc-launchd-install` — render and install LaunchAgents with the current user's home path.
 - `cc-launchd-inventory` — classify tracked LaunchAgents as rendered, template, or local-only.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.

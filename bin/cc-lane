@@ -8,7 +8,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const registryPath = process.env.CC_LANE_REGISTRY || path.join(os.homedir(), 'dotfiles', 'ai-lanes.json');
+const root = process.env.DOTFILES || path.join(os.homedir(), 'dotfiles');
+const registryPath = process.env.CC_LANE_REGISTRY || path.join(root, 'ai-lanes.json');
 const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
 const lanes = new Map((registry.lanes || []).map((lane) => [lane.id, lane]));
 

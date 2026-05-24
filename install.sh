@@ -3,7 +3,7 @@
 # are already correctly symlinked, and refuses to clobber unrelated files.
 set -euo pipefail
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+DOTFILES_DIR="${DOTFILES_DIR:-${DOTFILES:-$HOME/dotfiles}}"
 
 case "${1:-}" in
 --dry-run | --doctor | doctor)

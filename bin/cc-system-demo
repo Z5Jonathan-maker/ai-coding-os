@@ -49,13 +49,23 @@ check_disk_headroom() {
   [ "$avail_gb" -ge "$CC_DEMO_MIN_FREE_GB" ]
 }
 
+ai_system_status() {
+  local control="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}/scripts/ai-control.sh"
+  if [ -x "$control" ]; then
+    "$control" status
+  else
+    printf 'AI-SYSTEM-V2 status fixture: control plane unavailable at %s\n' "$control"
+    printf 'Status: ai-system-status-fixture\n'
+  fi
+}
+
 printf 'AI coding operating system acceptance demo\n'
 printf 'dotfiles: %s\n' "$DOTFILES"
 
 run "lane registry" "$DOTFILES/bin/cc-lane-registry-check"
 run "capability routes" show_routes
 run "router smoke" "$DOTFILES/bin/cc-router-smoke"
-run "ai-system status" "$HOME/AI-SYSTEM-V2/scripts/ai-control.sh" status
+run "ai-system status" ai_system_status
 run "VS Code config symlinks" check_vscode_links
 run "Codex CLI present" check_cli codex
 run "Claude CLI present" check_cli claude

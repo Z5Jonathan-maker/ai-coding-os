@@ -6,11 +6,15 @@ DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 version="${1:-v0.1.0-rc8}"
 dist="$DOTFILES/dist"
 bundle="$dist/ai-coding-os-${version}.tar.gz"
+bundle_tmp="$dist/.ai-coding-os-${version}.$$.tar.gz"
+checksum="$bundle.sha256"
+checksum_tmp="$dist/.ai-coding-os-${version}.$$.tar.gz.sha256"
 staging="$(mktemp -d "${TMPDIR:-/tmp}/cc-release-bundle.XXXXXX")"
 root="$staging/ai-coding-os-${version}"
 
 cleanup() {
   rm -rf "$staging"
+  rm -f "$bundle_tmp" "$checksum_tmp"
 }
 trap cleanup EXIT
 
@@ -59,10 +63,12 @@ done < <(find "$DOTFILES/docs/media/cockpit" -type f \( -name '*.png' -o -name '
   printf 'Integrity manifest: `docs/RELEASE-MANIFEST-%s.md`\n' "$version"
 } >"$root/BUNDLE-README.md"
 
-tar -C "$staging" -czf "$bundle" "ai-coding-os-${version}"
-(cd "$dist" && shasum -a 256 "$(basename "$bundle")" >"$(basename "$bundle").sha256")
+tar -C "$staging" -czf "$bundle_tmp" "ai-coding-os-${version}"
+mv -f "$bundle_tmp" "$bundle"
+(cd "$dist" && shasum -a 256 "$(basename "$bundle")" >"$(basename "$checksum_tmp")")
+mv -f "$checksum_tmp" "$checksum"
 
 printf 'Bundle: %s\n' "$bundle"
 printf 'Bytes: %s\n' "$(wc -c <"$bundle" | tr -d ' ')"
 printf 'SHA-256: %s\n' "$(sha256 "$bundle")"
-printf 'Checksum file: %s\n' "$bundle.sha256"
+printf 'Checksum file: %s\n' "$checksum"

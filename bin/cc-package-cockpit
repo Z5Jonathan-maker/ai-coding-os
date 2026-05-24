@@ -4,6 +4,13 @@ set -euo pipefail
 DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 EXT="$DOTFILES/vscode/ai-cockpit"
 DIST="$DOTFILES/dist"
+OUT="$DIST/ai-system-cockpit-0.1.0.vsix"
+TMP_OUT="$DIST/.ai-system-cockpit-0.1.0.$$.vsix"
+
+cleanup() {
+  rm -f "$TMP_OUT"
+}
+trap cleanup EXIT
 
 mkdir -p "$DIST"
 
@@ -12,6 +19,7 @@ node --check "$EXT/media/main.js"
 node -e "JSON.parse(require('fs').readFileSync('$EXT/package.json','utf8'))"
 
 cd "$EXT"
-npx --yes @vscode/vsce package --no-dependencies --out "$DIST/ai-system-cockpit-0.1.0.vsix"
+npx --yes @vscode/vsce package --no-dependencies --out "$TMP_OUT"
+mv -f "$TMP_OUT" "$OUT"
 
-printf 'Packaged: %s\n' "$DIST/ai-system-cockpit-0.1.0.vsix"
+printf 'Packaged: %s\n' "$OUT"

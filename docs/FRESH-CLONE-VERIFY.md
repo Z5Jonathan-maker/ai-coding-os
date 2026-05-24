@@ -20,15 +20,16 @@ The command creates a temporary clone and temporary home, then verifies:
 1. public CI passes in the clone
 2. `install.sh --dry-run` reports first-run readiness
 3. the VS Code cockpit packages as a VSIX
-4. the public fixture demo runs from the clone
-5. the temporary home remains empty
+4. the release tarball/checksum/manifest can be built from the clone
+5. the public fixture demo runs from the clone
+6. the temporary home remains empty
 
 ## Verified Result
 
 Date: 2026-05-23
 
 ```text
-passed=6 failed=0
+passed=7 failed=0
 Status: first-run-ready
 Status: fresh-clone-ready
 ```

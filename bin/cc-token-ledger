@@ -6,6 +6,8 @@ const path = require('path');
 
 const router = process.env.CC_ROUTER_ROOT || path.join(process.env.HOME, 'code/projects/cc-router');
 const log = process.env.CC_ROUTER_USAGE_LOG || path.join(router, 'memory', 'tier-usage.jsonl');
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixtureLog = process.env.CC_TOKEN_LEDGER_FIXTURE || path.join(root, 'fixtures', 'router', 'tier-usage.jsonl');
 const windowSize = Number.parseInt(process.env.CC_TOKEN_LEDGER_WINDOW || '100', 10);
 const checkOnly = process.argv.includes('--check');
 
@@ -23,15 +25,20 @@ const tokenPricePerM = {
   claude: 12,
 };
 
-function readRows() {
-  if (!fs.existsSync(log)) return [];
-  return fs.readFileSync(log, 'utf8')
+function parseRows(file) {
+  return fs.readFileSync(file, 'utf8')
     .split('\n')
     .filter(Boolean)
     .map((line) => {
       try { return JSON.parse(line); } catch { return null; }
     })
     .filter(Boolean);
+}
+
+function readRows() {
+  if (fs.existsSync(log)) return { rows: parseRows(log), source: log, fixture: false };
+  if (fs.existsSync(fixtureLog)) return { rows: parseRows(fixtureLog), source: fixtureLog, fixture: true };
+  return { rows: [], source: log, fixture: false };
 }
 
 function tokenUsage(row) {
@@ -105,10 +112,10 @@ function printTable(title, obj) {
   }
 }
 
-const rows = readRows();
+const { rows, source, fixture } = readRows();
 if (!rows.length) {
   console.log('# Token Ledger\n');
-  console.log(`Log: ${log}`);
+  console.log(`Log: ${source}`);
   console.log('No router usage rows found.');
   console.log('Status: token-ledger-empty');
   process.exit(checkOnly ? 1 : 0);
@@ -118,7 +125,8 @@ const { totals, byLane, byPlatform } = summarize(rows);
 
 if (!checkOnly) {
   console.log('# Token Ledger\n');
-  console.log(`Log: ${log}`);
+  console.log(`Log: ${source}`);
+  if (fixture) console.log('Source: committed fixture fallback; live router telemetry unavailable.');
   console.log(`Window: last ${totals.calls} calls`);
   console.log(`Tokens: ${totals.tokens} (${totals.estimatedTokens} estimated from prompt chars)`);
   console.log(`Cost: $${totals.cost.toFixed(4)} ($${totals.estimatedCost.toFixed(4)} estimated)`);

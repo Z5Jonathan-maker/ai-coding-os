@@ -80,6 +80,9 @@ trust tier, and safety boundary.
 - **Code-density discipline:** Pulse is present as a generation/cleanup protocol, not another lane.
 - **Token ledger:** `cc-token-ledger` reports lane mix, estimated token usage,
   fallback count, cost, and premium-spend avoidance from existing router logs.
+  If live router telemetry is absent, it falls back to the committed
+  `fixtures/router/tier-usage.jsonl` sample and labels that output as fixture
+  data.
 - **Benchmark fixtures:** `cc-benchmark-fixtures` runs 10 public scenarios:
   coding, extraction, design, browser proof, security review, long context,
   refactor, failing test repair, image-to-UI handoff, and permission-denied

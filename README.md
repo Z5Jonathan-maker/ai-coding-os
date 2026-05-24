@@ -150,8 +150,9 @@ autonomy preflight and exposed through the control plane. `cc-ai-checks` runs
 the source-controlled checks in `.ai/checks/`; `cc-trust-profile` validates the
 repo-local autonomy policy in `.ai/trust.json`, and `cc-trust-gate` enforces
 that policy before cockpit routing. `cc-token-ledger` reports router economics
-from existing usage telemetry. `cc-mission-ledger` provides the append-only
-continuation state used by the cockpit mission surface.
+from existing usage telemetry, with a committed fixture fallback for public
+evaluators who do not have the private router log. `cc-mission-ledger` provides
+the append-only continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
 single external-facing proof command that wraps first-run, source checks,

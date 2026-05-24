@@ -37,5 +37,7 @@ Expected optional misses in a clean temp home:
 
 - `cc-router` clone is optional unless the evaluator wants the full local
   router development checkout.
+- Token-ledger proof falls back to committed fixture telemetry when live router
+  usage logs are not present.
 - VS Code extensions are optional until the real installer is run.
 - Kimi WebBridge under the temp home is optional.

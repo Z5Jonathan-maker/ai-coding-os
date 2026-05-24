@@ -42,6 +42,8 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Mission events: `docs/MISSION-EVENTS.md`
 - Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
 - Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
+- Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
+- Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
 - Agent runtime adapter: `cc-agent-runtime --check`
 - Architecture map: `docs/ARCHITECTURE.md`
 - Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
@@ -118,6 +120,7 @@ cc-ten-readiness
 cc-ai-checks
 cc-superiority-check
 cc-dogfood-session --check
+cc-mutating-dogfood --check
 cc-agent-runtime --check
 cc-mission-events --check
 cc-mission-kernel --check
@@ -156,6 +159,8 @@ state is based on durable events, not provider-specific logs.
 `cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
 Kernel cycles, validate Mission Events, capture logs, and finish with product
 gates.
+`cc-mutating-dogfood` proves the isolated mutating path: failing tests, real
+edits, recovery, review evidence, Mission Events, and commits.
 `cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
 fresh-clone validation, source-controlled AI checks, feedback-law validation,
 benchmark fixtures, developer-day dogfood, product/release gates, portable

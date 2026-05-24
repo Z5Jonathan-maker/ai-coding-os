@@ -11,6 +11,8 @@ Competitive proof against the top reference systems lives at
 `docs/SUPERIORITY-MATRIX.md`.
 The first sustained six-hour dogfood proof lives at
 `docs/DOGFOOD-REPORT-2026-05-24.md`.
+The first isolated mutating coding proof lives at
+`docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
 Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
 artifact contract lives at `docs/MISSION-KERNEL.md`.
 
@@ -60,6 +62,9 @@ trust tier, and safety boundary.
 - **Sustained dogfood runner:** `cc-dogfood-session` runs multi-cycle timed
   sessions with Mission Kernel runs, event validation, provider/context/router
   logs, and final product gates.
+- **Mutating dogfood runner:** `cc-mutating-dogfood` proves real isolated code
+  edits with failing tests, recovery, review evidence, Mission Events, and
+  commits.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -236,6 +241,8 @@ Installed system is 100% when:
     verification, proof, and completion
 22. `cc-dogfood-session --check` proves the sustained dogfood runner and its
     dependencies are installed before a six-hour run
+23. `cc-mutating-dogfood --check` proves the isolated mutating coding-session
+    runner and dependencies are installed
 
 Daily-driver confidence is sampled by:
 
@@ -279,6 +286,9 @@ Sellable system is 100% when:
 18. the timed dogfood runner can execute a real sustained working window and
     leave durable cycle logs, mission artifacts, event validation, and final
     readiness proof
+19. the mutating dogfood runner can prove the code-edit path with failing
+    tests, recovery edits, review evidence, event validation, and commits in an
+    isolated workspace
 
 The strict gate is:
 

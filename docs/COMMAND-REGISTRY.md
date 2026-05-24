@@ -61,6 +61,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-mission-events` — validate normalized Mission Kernel timeline events and complete runtime run stages.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).
 - `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
+- `cc-mutating-dogfood` — isolated mutating coding-session proof with failing tests, real edits, recovery, review evidence, Mission Events, and commits.
 - `cc-native-app-status` — installed native AI app versions and role map.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
 - `cc-provider-capacity` — live provider capacity check across Claude, Codex, Kimi, and DeepSeek; separates installed/healthy from quota-exhausted/degraded.

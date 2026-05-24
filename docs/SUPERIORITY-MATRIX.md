@@ -46,13 +46,13 @@ Status values:
 | Dimension | We Must Win By | Current Proof | Missing Proof | Gate / Command | Status |
 |---|---|---|---|---|---|
 | Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics` | More live degraded-provider replay fixtures | `cc-router-smoke`, `cc-lane-registry-check` | Strong |
-| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 10 benchmark fixtures; graded repair, refactor, and long-context scoring | More real repo tasks, UI/browser visual scoring, PR-quality scoring | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>` | Needs proof |
+| Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 10 benchmark fixtures; graded repair, refactor, long-context scoring; mutating dogfood report | More real repo tasks, UI/browser visual scoring, PR-quality scoring | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood` | Strong |
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
 | Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-kimi-status`, browser-proof benchmark | Visual regression scoring and authenticated-browser fixture replay | `cc-browser-proof --json` | Needs proof |
 | Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke | More dogfood videos, keyboard-flow tests, empty/error/loading state audit | `cc-cockpit-webview-smoke`, `cc-package-cockpit` | Needs proof |
-| Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report | Real mutating multi-hour coding session with failure recovery and review | `cc-dogfood-session`, `docs/DOGFOOD-REPORT-2026-05-24.md` | Strong |
+| Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report | Larger public repo task with failure recovery, review, and merge-ready diff | `cc-dogfood-session`, `cc-mutating-dogfood` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
 | Extensibility | Provider/tool growth is controlled by lane contracts | `ai-lanes.json`, command registry, product packaging rule | Public extension guide for adding one lane safely | `cc-lane-registry-check`, `cc-public-ci-check` | Strong |
 | Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, Public CI | Hosted demo/video walkthrough and release artifact download path | `cc-evaluator-check` | Needs proof |
@@ -64,7 +64,7 @@ These are the remaining gaps that matter most:
 
 1. **Real-world benchmark depth**: add larger public repo tasks with expected diffs, test evidence, and review-quality scoring.
 2. **UI/browser scoring**: move beyond route expectation into screenshot or DOM-level visual assertions.
-3. **Live mutating dogfood proof**: capture a complete multi-hour coding transcript with real edits, failures, recovery, review, and merge.
+3. **Larger public-repo dogfood proof**: capture a complete coding transcript on a public repo with real edits, failures, recovery, review, and merge-ready diff.
 4. **Cockpit polish proof**: add deterministic screenshots/GIFs for every primary state: continuation, running, success, blocked, permissions, and route receipt.
 5. **Package separability**: make the router/cockpit easy to install without inheriting personal machine assumptions.
 
@@ -93,6 +93,7 @@ cc-trust-gate --check
 cc-mission-ledger --check
 cc-cockpit-webview-smoke
 cc-dogfood-session --check
+cc-mutating-dogfood --check
 cc-verify-product
 cc-ten-readiness
 ```

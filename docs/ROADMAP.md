@@ -38,6 +38,9 @@ developer-grade public launch.
   reproduce local-only services.
 - Add a mutating multi-hour coding dogfood that includes real edits, at least
   one failure/recovery path, review, and merge proof.
+- Add a larger public-repo mutating dogfood with failing CI, repair, review,
+  and merge-ready diff. The isolated fixture version is done:
+  `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
 
 ## v1.0.0
 

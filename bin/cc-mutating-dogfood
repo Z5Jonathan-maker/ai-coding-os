@@ -1,0 +1,276 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+cycles=3
+session_id="mutating-dogfood-$(date -u +%Y%m%dT%H%M%SZ)"
+session_root="${CC_MUTATING_DOGFOOD_ROOT:-$HOME/.Codex/mutating-dogfood}"
+
+usage() {
+  cat <<'EOF'
+cc-mutating-dogfood — isolated mutating coding-session proof
+
+Usage:
+  cc-mutating-dogfood [--cycles N] [--session-id ID] [--output-dir DIR]
+  cc-mutating-dogfood --check
+
+Creates a temporary Git repo, runs failing tests, applies real edits, verifies,
+validates Mission Events, and commits each recovered cycle.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --cycles) cycles="$2"; shift 2 ;;
+    --session-id) session_id="$2"; shift 2 ;;
+    --output-dir) session_root="$2"; shift 2 ;;
+    --check)
+      missing=0
+      for cmd in git npm node cc-agent-runtime cc-mission-events; do
+        if ! command -v "$cmd" >/dev/null 2>&1 && [ ! -x "$DOTFILES/bin/$cmd" ]; then
+          printf 'missing %s\n' "$cmd"
+          missing=$((missing + 1))
+        fi
+      done
+      if [ "$missing" -eq 0 ]; then
+        printf 'Status: mutating-dogfood-ready\n'
+        exit 0
+      fi
+      exit 1
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'cc-mutating-dogfood: unknown arg: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+case "$cycles" in
+  *[!0-9]*|'') printf 'cc-mutating-dogfood: --cycles must be an integer\n' >&2; exit 2 ;;
+esac
+
+session_dir="$session_root/$session_id"
+work="$session_dir/workspace"
+mkdir -p "$work/src" "$session_dir"
+
+write_project() {
+  cat >"$work/package.json" <<'JSON'
+{
+  "name": "ai-coding-os-mutating-dogfood",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node src/cart.test.js"
+  }
+}
+JSON
+
+  cat >"$work/src/cart.js" <<'JS'
+export function lineTotal(item) {
+  return item.price + item.qty;
+}
+
+export function cartTotal(items) {
+  return Math.round(items.reduce((sum, item) => sum + lineTotal(item), 0) * 100) / 100;
+}
+JS
+
+  cat >"$work/src/cart.test.js" <<'JS'
+import assert from 'node:assert/strict';
+import { cartTotal, lineTotal } from './cart.js';
+
+assert.equal(lineTotal({ price: 12, qty: 3 }), 36);
+assert.equal(cartTotal([{ price: 10, qty: 2 }, { price: 4.5, qty: 1 }]), 24.5);
+
+console.log('cart tests passed');
+JS
+}
+
+write_helpers() {
+  mkdir -p "$work/scripts"
+  cat >"$work/scripts/apply-cycle-1.mjs" <<'JS'
+import fs from 'node:fs';
+
+const file = 'src/cart.js';
+const source = fs.readFileSync(file, 'utf8');
+fs.writeFileSync(file, source.replace('return item.price + item.qty;', 'return item.price * item.qty;'));
+JS
+
+  cat >"$work/scripts/apply-cycle-2.mjs" <<'JS'
+import fs from 'node:fs';
+
+fs.writeFileSync('src/cart.js', `export function lineTotal(item) {
+  return item.price * item.qty;
+}
+
+export function cartTotal(items, options = {}) {
+  const subtotal = items.reduce((sum, item) => sum + lineTotal(item), 0);
+  const discount = subtotal * (options.discountRate || 0);
+  return Math.round((subtotal - discount) * 100) / 100;
+}
+`);
+JS
+
+  cat >"$work/scripts/apply-cycle-3.mjs" <<'JS'
+import fs from 'node:fs';
+
+fs.writeFileSync('src/cart.js', `export function lineTotal(item) {
+  if (item.qty <= 0) throw new Error('quantity must be positive');
+  return item.price * item.qty;
+}
+
+export function cartTotal(items, options = {}) {
+  const subtotal = items.reduce((sum, item) => sum + lineTotal(item), 0);
+  const discount = subtotal * (options.discountRate || 0);
+  return Math.round((subtotal - discount) * 100) / 100;
+}
+`);
+JS
+
+  cat >"$work/scripts/introduce-cycle-2.mjs" <<'JS'
+import fs from 'node:fs';
+
+fs.appendFileSync('src/cart.test.js', `
+assert.equal(cartTotal([{ price: 10, qty: 2 }], { discountRate: 0.1 }), 18);
+`);
+JS
+
+  cat >"$work/scripts/introduce-cycle-3.mjs" <<'JS'
+import fs from 'node:fs';
+
+fs.appendFileSync('src/cart.test.js', `
+assert.throws(() => lineTotal({ price: 10, qty: 0 }), /quantity must be positive/);
+`);
+JS
+}
+
+write_project
+write_helpers
+
+(
+  cd "$work" || exit 1
+  git init -q
+  git config user.email dogfood@example.local
+  git config user.name "AI Coding OS Dogfood"
+  git add .
+  git commit -qm "initial broken cart fixture"
+)
+
+cat >"$session_dir/session.json" <<JSON
+{
+  "schema": "ai-coding-os.mutating-dogfood.v1",
+  "session_id": "$session_id",
+  "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "cycles": $cycles,
+  "workspace": "$work"
+}
+JSON
+
+printf '# Mutating Dogfood Session\n\n' | tee "$session_dir/summary.md"
+printf 'session_id=%s\nworkspace=%s\ncycles=%s\n\n' "$session_id" "$work" "$cycles" | tee -a "$session_dir/summary.md"
+printf 'cycle\tmission_id\tinitial_failure\trecovery\tmission_events\tcommit\tstatus\n' >"$session_dir/cycles.tsv"
+
+pass=0
+fail=0
+
+run_cycle() {
+  local cycle="$1" cycle_dir mission_id runner verify runtime_status events_status commit_sha status introduce repair
+  cycle_dir="$session_dir/cycle-$cycle"
+  mission_id="$session_id-cycle-$cycle"
+  mkdir -p "$cycle_dir"
+
+  case "$cycle" in
+    1) introduce="true"; repair="node scripts/apply-cycle-1.mjs" ;;
+    2) introduce="node scripts/introduce-cycle-2.mjs"; repair="node scripts/apply-cycle-2.mjs" ;;
+    *) introduce="node scripts/introduce-cycle-3.mjs"; repair="node scripts/apply-cycle-3.mjs" ;;
+  esac
+
+  runner="$cycle_dir/run-cycle.sh"
+  cat >"$runner" <<SH
+#!/usr/bin/env bash
+set -u
+cd "$work" || exit 1
+$introduce >"$cycle_dir/introduce.log" 2>&1 || exit 20
+npm test >"$cycle_dir/initial-test.log" 2>&1
+initial=\$?
+if [ "\$initial" -eq 0 ]; then
+  printf 'initial test unexpectedly passed\n' >"$cycle_dir/recovery.log"
+  exit 21
+fi
+$repair >"$cycle_dir/recovery.log" 2>&1 || exit 22
+npm test >"$cycle_dir/final-test.log" 2>&1 || exit 23
+git diff --check >"$cycle_dir/diff-check.log" 2>&1 || exit 24
+git diff --stat >"$cycle_dir/diff-stat.log"
+git diff >"$cycle_dir/patch.diff"
+{
+  printf 'Review gate: passed\n'
+  printf 'Initial test: failed as expected\n'
+  printf 'Final test: passed\n'
+  printf 'Diff check: passed\n'
+  cat "$cycle_dir/diff-stat.log"
+} >"$cycle_dir/review.log"
+SH
+  chmod +x "$runner"
+
+  verify="test -s '$cycle_dir/initial-test.log' && test -s '$cycle_dir/final-test.log' && grep -q 'cart tests passed' '$cycle_dir/final-test.log' && test -s '$cycle_dir/patch.diff' && grep -q 'Review gate: passed' '$cycle_dir/review.log'"
+
+  "$DOTFILES/bin/cc-agent-runtime" run \
+    --cwd "$work" \
+    --mission-id "$mission_id" \
+    --title "Mutating dogfood cycle $cycle" \
+    --task "Repair failing cart fixture cycle $cycle with tests, diff review, and final verification" \
+    --context "session=$session_id cycle=$cycle workspace=$work" \
+    --command "bash '$runner'" \
+    --verify-command "$verify" \
+    --timeout-ms 120000 \
+    >"$cycle_dir/agent-runtime.log" 2>&1
+  runtime_status=$?
+
+  "$DOTFILES/bin/cc-mission-events" validate --mission-dir "$DOTFILES/.ai/missions/$mission_id" --complete-run >"$cycle_dir/mission-events.log" 2>&1
+  events_status=$?
+
+  if [ "$runtime_status" -eq 0 ] && [ "$events_status" -eq 0 ]; then
+    (
+      cd "$work" || exit 1
+      git add src/cart.js src/cart.test.js
+      git commit -qm "mutating dogfood cycle $cycle"
+      git rev-parse --short HEAD
+    ) >"$cycle_dir/commit.log" 2>&1
+    commit_sha="$(tail -1 "$cycle_dir/commit.log")"
+    status=passed
+    pass=$((pass + 1))
+  else
+    commit_sha=none
+    status=failed
+    fail=$((fail + 1))
+  fi
+
+  initial_failure=$([ -s "$cycle_dir/initial-test.log" ] && printf yes || printf no)
+  recovery=$([ -s "$cycle_dir/final-test.log" ] && grep -q 'cart tests passed' "$cycle_dir/final-test.log" && printf yes || printf no)
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$cycle" "$mission_id" "$initial_failure" "$recovery" "$events_status" "$commit_sha" "$status" >>"$session_dir/cycles.tsv"
+  printf 'cycle=%s mission_id=%s status=%s commit=%s\n' "$cycle" "$mission_id" "$status" "$commit_sha" | tee -a "$session_dir/summary.md"
+}
+
+i=1
+while [ "$i" -le "$cycles" ]; do
+  run_cycle "$i"
+  i=$((i + 1))
+done
+
+(
+  cd "$work" || exit 1
+  npm test >"$session_dir/final-test.log" 2>&1
+  git status --short >"$session_dir/final-git-status.txt"
+  git log --oneline --decorate -5 >"$session_dir/final-git-log.txt"
+)
+final_test=$?
+if [ "$final_test" -ne 0 ]; then
+  fail=$((fail + 1))
+fi
+
+printf '\n## Summary\n' | tee -a "$session_dir/summary.md"
+printf 'cycles=%s passed=%s failed=%s\n' "$cycles" "$pass" "$fail" | tee -a "$session_dir/summary.md"
+printf 'workspace=%s\n' "$work" | tee -a "$session_dir/summary.md"
+printf 'finished_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$session_dir/summary.md"
+printf 'Status: %s\n' "$([ "$fail" -eq 0 ] && printf mutating-dogfood-passed || printf mutating-dogfood-failed)" | tee -a "$session_dir/summary.md"
+
+[ "$fail" -eq 0 ]

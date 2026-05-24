@@ -1,3 +1,40 @@
 #!/usr/bin/env bash
 set -euo pipefail
-exec "$HOME/code/projects/cc-router/bin/router-sessions" "${@:-list}"
+
+ROOT="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+ROUTER_SESSIONS="$ROUTER/bin/router-sessions"
+COMMAND="${1:-list}"
+
+case "$COMMAND" in
+check | --check)
+  if [ -x "$ROUTER_SESSIONS" ]; then
+    "$ROUTER_SESSIONS" "$@"
+  else
+    DOTFILES="$ROOT" "$ROOT/bin/cc-mission-ledger" --check >/dev/null
+  fi
+  printf 'Status: session-ledger-ready\n'
+  ;;
+list | --json | '')
+  if [ -x "$ROUTER_SESSIONS" ]; then
+    exec "$ROUTER_SESSIONS" "$@"
+  fi
+  if [ "$COMMAND" = "--json" ]; then
+    DOTFILES="$ROOT" "$ROOT/bin/cc-mission-ledger" list --json
+  else
+    printf '# Session Ledger\n\n'
+    printf 'Router sessions unavailable: %s\n' "$ROUTER_SESSIONS"
+    printf 'Fallback: mission ledger\n\n'
+    DOTFILES="$ROOT" "$ROOT/bin/cc-mission-ledger" list "${@:2}"
+    printf '\nStatus: session-ledger-fallback\n'
+  fi
+  ;;
+*)
+  if [ -x "$ROUTER_SESSIONS" ]; then
+    exec "$ROUTER_SESSIONS" "$@"
+  fi
+  printf 'cc-session-ledger: router sessions unavailable: %s\n' "$ROUTER_SESSIONS" >&2
+  printf 'cc-session-ledger: supported fallback commands: list, --json, check, --check\n' >&2
+  exit 2
+  ;;
+esac

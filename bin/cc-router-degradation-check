@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturePath = process.env.CC_ROUTER_DEGRADATION_FIXTURE || path.join(root, 'fixtures', 'router-degradation', 'precision-fallback.json');
+let pass = 0;
+let fail = 0;
+
+function ok(name, detail = '') {
+  console.log(`ok   ${name}${detail ? `: ${detail}` : ''}`);
+  pass += 1;
+}
+
+function bad(name, detail) {
+  console.log(`fail ${name}`);
+  if (detail) console.log(String(detail).split('\n').slice(0, 40).map((line) => `     ${line}`).join('\n'));
+  fail += 1;
+}
+
+function assertScenario(scenario) {
+  if (!scenario.id) throw new Error('missing id');
+  if (!scenario.prompt) throw new Error(`${scenario.id}: missing prompt`);
+  if (!scenario.selected?.class || !scenario.selected?.platform) throw new Error(`${scenario.id}: missing selected route`);
+  if (!scenario.degradedPrimary?.reason) throw new Error(`${scenario.id}: missing degradedPrimary.reason`);
+  if (!Array.isArray(scenario.fallbackChain) || scenario.fallbackChain.length < 2) throw new Error(`${scenario.id}: fallbackChain must include primary and fallback`);
+  if (!scenario.userNotice || /[{}"]/.test(scenario.userNotice)) throw new Error(`${scenario.id}: userNotice must be human-readable, not raw JSON`);
+  const first = scenario.fallbackChain[0];
+  if (!first.class || !first.platform || !first.state) throw new Error(`${scenario.id}: fallback entries require class/platform/state`);
+  if (scenario.degradedPrimary.reason === 'circuit_breaker_open' && first.state !== 'open') {
+    throw new Error(`${scenario.id}: circuit-breaker fixture must mark first fallback entry open`);
+  }
+  for (const hidden of scenario.mustNotExpose || []) {
+    if (scenario.userNotice.includes(hidden)) throw new Error(`${scenario.id}: user notice exposes ${hidden}`);
+  }
+}
+
+function liveRouterShape() {
+  const router = process.env.AI_INTENT_ROUTER || path.join(process.env.HOME || '', 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+  if (!fs.existsSync(router)) return 'router unavailable; fixture-only validation';
+  const res = cp.spawnSync(router, ['--dry-run', 'debug a distributed auth race and produce a verified patch'], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (res.status !== 0) throw new Error(res.stderr || res.stdout || `router exited ${res.status}`);
+  const line = res.stdout.split('\n').find((item) => item.trim().startsWith('Receipt:'));
+  if (!line) throw new Error('live dry-run missing receipt');
+  const receipt = JSON.parse(line.replace(/^.*Receipt:\s*/, ''));
+  if (!Array.isArray(receipt.fallback_chain) || receipt.fallback_chain.length < 2) {
+    throw new Error('live receipt missing fallback_chain');
+  }
+  if (receipt.final_class !== 'precision') throw new Error(`expected precision class, got ${receipt.final_class}`);
+  return `live fallback entries=${receipt.fallback_chain.length}`;
+}
+
+console.log('# Router Degradation Check\n');
+console.log(`Root: ${root}`);
+console.log(`Fixture: ${fixturePath}`);
+
+try {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  if (fixture.version !== 1) throw new Error('version must be 1');
+  if (!Array.isArray(fixture.scenarios) || fixture.scenarios.length < 2) throw new Error('requires at least two scenarios');
+  for (const scenario of fixture.scenarios) assertScenario(scenario);
+  ok('degradation replay fixture', `${fixture.scenarios.length} scenarios`);
+} catch (err) {
+  bad('degradation replay fixture', err.message);
+}
+
+try {
+  ok('live router fallback shape', liveRouterShape());
+} catch (err) {
+  bad('live router fallback shape', err.message);
+}
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: router-degradation-blocked' : 'Status: router-degradation-ready');
+process.exit(fail ? 1 : 0);

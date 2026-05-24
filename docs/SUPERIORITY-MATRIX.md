@@ -45,7 +45,7 @@ Status values:
 
 | Dimension | We Must Win By | Current Proof | Missing Proof | Gate / Command | Status |
 |---|---|---|---|---|---|
-| Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics` | More live degraded-provider replay fixtures | `cc-router-smoke`, `cc-lane-registry-check` | Strong |
+| Routing/orchestration | Capability lanes are explicit, inspectable, and fallback-aware | `ai-lanes.json`, `cc-lane`, `cc-router-smoke`, `cc-router-receipt`, `cc-router-metrics`, degraded-provider replay fixture | More live degraded-provider replays across non-Claude lanes | `cc-router-smoke`, `cc-lane-registry-check`, `cc-router-degradation-check` | Strong |
 | Output-quality benchmarks | Claims are backed by executable tasks, not screenshots | 12 benchmark fixtures; graded repair, refactor, long-context, routing PR-quality scoring, and a source-linked upstream issue replay; mutating dogfood report; public-repo dogfood report; third-party dogfood report | More third-party repo tasks from real upstream issues | `cc-benchmark-fixtures --check`, `cc-benchmark-run <fixture>`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood` | Strong |
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
@@ -86,6 +86,7 @@ The competitive claim must stay backed by these commands:
 ```sh
 cc-demo-quick
 cc-benchmark-fixtures --check
+cc-router-degradation-check
 cc-benchmark-run failing-test-repair
 cc-benchmark-run refactor-cleanup
 cc-benchmark-run long-context

@@ -85,6 +85,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-repo-map` — Aider-inspired ranked repo map with entrypoints, changed files, symbols, scores, and `--json` output.
 - `cc-repo-index` — compact workspace index for cockpit context and repo inspection.
 - `cc-router-receipt` — latest router decision, fallback, quota, token receipt.
+- `cc-router-degradation-check` — degraded-provider replay fixture plus live dry-run fallback-chain shape check.
 - `cc-router-metrics` — router usage, fallback, failure, token, and session metrics.
 - `cc-router-smoke` — deterministic dry-run checks for expected model/platform routing.
 - `cc-self-update` — monthly platform update sweep.

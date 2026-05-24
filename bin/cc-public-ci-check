@@ -198,6 +198,7 @@ run "Required public docs" required_docs
 run "Command registry complete" command_registry_complete
 run "Package portability" "$ROOT/bin/cc-portability-check"
 run "Lane extension guide" "$ROOT/bin/cc-lane-extension-check"
+run "Router degradation replay" "$ROOT/bin/cc-router-degradation-check"
 run "License alignment" license_alignment
 run "Launch media present" media_artifacts
 run "No personal path leaks" personal_path_leaks

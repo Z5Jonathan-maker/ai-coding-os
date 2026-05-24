@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "precision_primary_circuit_open",
+      "prompt": "debug a distributed auth race and produce a verified patch",
+      "selected": {
+        "class": "precision",
+        "platform": "claude"
+      },
+      "degradedPrimary": {
+        "class": "precision",
+        "platform": "claude",
+        "reason": "circuit_breaker_open"
+      },
+      "fallbackChain": [
+        { "class": "precision", "platform": "claude", "state": "open" },
+        { "class": "codex", "platform": "codex", "state": "closed" },
+        { "class": "design", "platform": "kimi", "state": "closed" },
+        { "class": "cheap", "platform": "deepseek", "state": "closed" }
+      ],
+      "userNotice": "Precision lane is degraded. Continuing through available fallback chain.",
+      "mustNotExpose": ["ALERT", "circuit_breaker_open", "raw_json_log"]
+    },
+    {
+      "id": "design_primary_available_after_precision_degrades",
+      "prompt": "implement the approved hero reference in the UI and verify the browser result",
+      "selected": {
+        "class": "design",
+        "platform": "kimi"
+      },
+      "degradedPrimary": {
+        "class": "precision",
+        "platform": "claude",
+        "reason": "quota_exhausted"
+      },
+      "fallbackChain": [
+        { "class": "design", "platform": "kimi", "state": "closed" },
+        { "class": "codex", "platform": "codex", "state": "closed" }
+      ],
+      "userNotice": "Design lane is available. Precision degradation does not block UI execution.",
+      "mustNotExpose": ["stack_trace", "provider_error_blob", "raw_json_log"]
+    }
+  ]
+}

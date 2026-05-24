@@ -57,7 +57,7 @@ Status values:
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report, PR-quality scorer | Externally sourced issue replay with maintainer-style scoring | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood`, `cc-pr-quality-score --check` | Strong |
 | Autonomous loops | System improves through checks and feedback laws without endless noise | `cc-feedback-law-check`, loop quality, depth-check/evolve exposure | Real repeated-cycle improvement logs tied to shipped diffs | `cc-feedback-law-check` | Strong |
 | Extensibility | Provider/tool growth is controlled by lane contracts | `ai-lanes.json`, command registry, product packaging rule, public lane-extension guide, valid/invalid extension fixtures | More third-party lane adapters exercised without secrets | `cc-lane-registry-check`, `cc-lane-extension-check`, `cc-public-ci-check` | Strong |
-| Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, `cc-release-artifact-check`, `cc-portability-check`, Public CI | Hosted demo/video walkthrough | `cc-evaluator-check`, `cc-release-artifact-check`, `cc-portability-check` | Strong |
+| Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, `cc-release-artifact-check`, `cc-release-concurrency-check`, `cc-portability-check`, Public CI | Hosted demo/video walkthrough | `cc-evaluator-check`, `cc-release-artifact-check`, `cc-release-concurrency-check`, `cc-portability-check` | Strong |
 | Competitive clarity | The repo states where it wins and where it does not | This document and `cc-superiority-check` | Periodic refresh against live reference projects | `cc-superiority-check` | Strong |
 
 ## Non-Negotiable Gaps Before "Better Than The Top Projects"
@@ -117,6 +117,7 @@ cc-third-party-dogfood --check
 cc-pr-quality-score --check
 cc-portability-check
 cc-release-artifact-check
+cc-release-concurrency-check
 cc-verify-product
 cc-ten-readiness
 ```

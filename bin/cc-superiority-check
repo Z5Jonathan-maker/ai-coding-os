@@ -48,6 +48,7 @@ const requiredCommands = [
   'cc-cockpit-replay-bundle-check',
   'cc-cockpit-walkthrough-check',
   'cc-release-artifact-check',
+  'cc-release-concurrency-check',
   'cc-pr-quality-score',
   'cc-verify-product',
   'cc-ten-readiness',
@@ -166,6 +167,7 @@ if (prove) {
     'bin/cc-cockpit-replay-bundle-check',
     'bin/cc-cockpit-walkthrough-check',
     'bin/cc-release-artifact-check',
+    'bin/cc-release-concurrency-check',
     'bin/cc-pr-quality-score --check',
   ].forEach(run);
 }

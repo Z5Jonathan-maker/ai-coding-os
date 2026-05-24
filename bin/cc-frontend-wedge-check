@@ -49,6 +49,7 @@ expect(workflow.dominant_user_action === 'describe the desired business outcome'
 
 const expectedPhases = [
   ['creative_reference', 'chatgpt-image'],
+  ['asset_decomposition', 'chatgpt-image'],
   ['design_dna', 'chatgpt-image'],
   ['implementation_plan', 'kimi-webbridge'],
   ['browser_proof', 'codex'],
@@ -72,6 +73,7 @@ for (const item of ['provider selection', 'token balancing', 'fallback mechanics
 const gates = workflow.required_gates || [];
 for (const gate of [
   'cc-creative-kernel-check',
+  'cc-asset-kit-check',
   'cc-benchmark-run image-to-ui-handoff',
   'cc-browser-visual-proof --check',
   'cc-cockpit-visual-diff',

@@ -13,6 +13,7 @@ const root = process.env.DOTFILES || (() => {
 const fixture = path.join(root, 'fixtures', 'creative-kernel', 'premium-saas');
 const required = [
   'creative.brief.json',
+  'creative.asset-kit.json',
   'design.dna.json',
   'implementation.plan.json',
   'taste.validation.json',
@@ -81,6 +82,12 @@ expect(capabilities.design_dna_extraction?.primary === 'chatgpt-image', 'design 
 expect(capabilities.design_dna_implementation?.primary === 'kimi-webbridge', 'design DNA implementation routes to Kimi');
 expect(capabilities.taste_validation?.primary === 'claude', 'taste validation routes to precision lane');
 expect(capabilities.proof_bundle_validation?.primary === 'codex', 'proof bundle validation routes to Codex');
+
+const assetKit = json(path.join(fixture, 'creative.asset-kit.json'));
+expect(assetKit.mode === 'sequential_approved_extraction', 'asset kit extraction is sequential');
+expect(assetKit.rules?.approval_required_before_next_asset === true, 'asset kit requires approval between assets');
+expect(assetKit.rules?.do_not_parallelize_extraction_requests === true, 'asset extraction is not parallelized');
+expect(Array.isArray(assetKit.assets) && assetKit.assets.length >= 4, 'asset kit has implementation primitives');
 
 const dna = json(path.join(fixture, 'design.dna.json'));
 for (const field of dnaFields) expect(Boolean(dna[field]), `design DNA field: ${field}`);

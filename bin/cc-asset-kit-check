@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const fixturePath = path.join(root, 'fixtures', 'creative-kernel', 'premium-saas', 'creative.asset-kit.json');
+const doctrinePath = path.join(root, 'docs', 'IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md');
+let pass = 0;
+let fail = 0;
+
+function ok(message) {
+  console.log(`ok   ${message}`);
+  pass += 1;
+}
+
+function bad(message) {
+  console.log(`fail ${message}`);
+  fail += 1;
+}
+
+function expect(cond, message) {
+  cond ? ok(message) : bad(message);
+}
+
+console.log('# Creative Asset Kit Check\n');
+console.log(`Root: ${root}`);
+console.log(`Fixture: ${path.relative(root, fixturePath)}\n`);
+
+expect(fs.existsSync(fixturePath), 'creative asset kit exists');
+expect(fs.existsSync(doctrinePath), 'Image 2.0 workflow doctrine exists');
+
+const kit = fs.existsSync(fixturePath) ? JSON.parse(fs.readFileSync(fixturePath, 'utf8')) : {};
+expect(kit.schema === 'ai-coding-os.creative-asset-kit.v1', 'asset kit schema valid');
+expect(kit.mode === 'sequential_approved_extraction', 'mode is sequential approved extraction');
+expect(kit.owner_lane === 'chatgpt-image', 'asset extraction owned by Image 2.0 lane');
+expect(kit.canonical_reference?.path === 'visual.target.png', 'canonical reference declared');
+expect(kit.canonical_reference?.owner_lane === 'chatgpt-image', 'canonical reference owned by Image 2.0');
+
+const rules = kit.rules || {};
+for (const rule of [
+  'extract_one_asset_at_a_time',
+  'approval_required_before_next_asset',
+  'use_same_image_thread_after_reference_approval',
+  'implementation_model_must_not_reinvent_visual_direction',
+  'native_text_and_interactions_stay_in_code',
+  'do_not_parallelize_extraction_requests',
+]) {
+  expect(rules[rule] === true, `rule enforced: ${rule}`);
+}
+
+const assets = Array.isArray(kit.assets) ? kit.assets : [];
+expect(assets.length >= 4, `asset sequence has at least 4 assets (${assets.length})`);
+assets.forEach((asset, index) => {
+  expect(asset.sequence === index + 1, `asset ${index + 1} sequence is ordered`);
+  expect(Boolean(asset.id), `asset ${index + 1} id present`);
+  expect(Boolean(asset.role), `asset ${index + 1} role present`);
+  expect(Boolean(asset.asset_type), `asset ${index + 1} type present`);
+  expect(Boolean(asset.extraction_prompt), `asset ${index + 1} extraction prompt present`);
+  expect(Boolean(asset.implementation_usage), `asset ${index + 1} implementation usage present`);
+  expect(Boolean(asset.approval_gate), `asset ${index + 1} approval gate present`);
+});
+
+const ids = new Set(assets.map((asset) => asset.id));
+for (const required of ['hero-background', 'primary-button-style', 'section-divider', 'feature-banner-background']) {
+  expect(ids.has(required), `required asset present: ${required}`);
+}
+
+expect(Array.isArray(kit.handoff_to_kimi?.include), 'Kimi handoff includes artifact list');
+for (const required of ['canonical_reference', 'approved_assets', 'design.dna.json', 'implementation.plan.json']) {
+  expect(kit.handoff_to_kimi?.include?.includes(required), `Kimi handoff includes ${required}`);
+}
+expect(/Asset Decomposition Protocol/.test(fs.readFileSync(doctrinePath, 'utf8')), 'doctrine documents asset decomposition protocol');
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: asset-kit-blocked' : 'Status: asset-kit-ready');
+process.exit(fail ? 1 : 0);

@@ -200,6 +200,7 @@ run "Required public docs" required_docs
 run "Command registry complete" command_registry_complete
 run "Package portability" "$ROOT/bin/cc-portability-check"
 run "Benchmark source integrity" "$ROOT/bin/cc-benchmark-source-check"
+run "Creative asset kit" "$ROOT/bin/cc-asset-kit-check"
 run "Frontend wedge" "$ROOT/bin/cc-frontend-wedge-check"
 run "Taste benchmark" "$ROOT/bin/cc-taste-benchmark-check"
 run "Frontend demo" "$ROOT/bin/cc-frontend-demo"

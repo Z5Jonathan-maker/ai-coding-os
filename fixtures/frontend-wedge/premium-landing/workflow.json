@@ -10,6 +10,11 @@
       "artifact": "fixtures/creative-kernel/premium-saas/creative.brief.json"
     },
     {
+      "id": "asset_decomposition",
+      "owner_lane": "chatgpt-image",
+      "artifact": "fixtures/creative-kernel/premium-saas/creative.asset-kit.json"
+    },
+    {
       "id": "design_dna",
       "owner_lane": "chatgpt-image",
       "artifact": "fixtures/creative-kernel/premium-saas/design.dna.json"
@@ -44,6 +49,7 @@
   ],
   "required_gates": [
     "cc-creative-kernel-check",
+    "cc-asset-kit-check",
     "cc-taste-benchmark-check",
     "cc-benchmark-run image-to-ui-handoff",
     "cc-browser-visual-proof --check",

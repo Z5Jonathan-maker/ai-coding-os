@@ -81,6 +81,36 @@ For products, labels, packaging, and repeated catalog images:
 This is the catalog consistency lever: one approved label/product render can
 be duplicated across a full SKU set without visual mismatch.
 
+## Asset Decomposition Protocol
+
+For premium frontend work, the fastest reliable path is sequential extraction,
+not asking the implementation model to infer every visual detail from one full
+mockup.
+
+After the full Image 2.0 reference is approved:
+
+1. Stay in the same image thread.
+2. Extract one asset only, such as the hero background.
+3. Approve that asset before requesting the next one.
+4. Extract the next asset, such as the primary button style, divider, banner,
+   card surface, or texture.
+5. Store the ordered kit as `creative.asset-kit.json`.
+6. Hand Kimi the full reference, approved assets, design DNA, and implementation
+   plan together.
+
+Use this when Kimi is close but misses a specific visual primitive. Do not
+restart the whole design. Extract the primitive from the approved reference and
+feed it back into implementation.
+
+The rule is:
+
+```text
+reference first -> approved asset one -> approved asset two -> implementation
+```
+
+This takes longer per step, but reduces total revision time because visual
+integrity is locked before the page is assembled.
+
 ## Routing Examples
 
 | Prompt | Route |
@@ -88,6 +118,8 @@ be duplicated across a full SKU set without visual mismatch.
 | "Show me an example of a hero for this peptide site" | ChatGPT/Image 2.0 |
 | "Create the canonical product listing image for this label" | ChatGPT/Image 2.0 |
 | "Use this image as the hero background and build the section" | Kimi |
+| "Extract only the approved hero background from this reference" | ChatGPT/Image 2.0 |
+| "Extract only the primary button style from this reference" | ChatGPT/Image 2.0 |
 | "Make the buttons responsive and accessible" | Kimi |
 | "Refactor the asset pipeline that stores these images" | Codex |
 | "Review whether this brand system is coherent" | Claude/Codex precision |

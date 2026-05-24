@@ -25,6 +25,7 @@ to produce these files:
 ```text
 creative.brief.json
 visual.target.png
+creative.asset-kit.json
 design.dna.json
 implementation.plan.json
 taste.validation.json
@@ -41,12 +42,21 @@ system. Text-only lanes may critique it, but they do not replace it.
 |---|---|---|
 | `creative.brief.json` | Codex/Claude | Defines intent, audience, constraints, and anti-goals |
 | `visual.target.png` | ChatGPT/Image 2.0 | Canonical creative direction |
+| `creative.asset-kit.json` | ChatGPT/Image 2.0 | Ordered asset decomposition from the approved reference |
 | `design.dna.json` | ChatGPT/Image 2.0 + Claude | Extracts spacing, hierarchy, palette, motion, density, and emotional tone |
 | `implementation.plan.json` | Kimi | Maps design DNA to components, assets, responsive behavior, and browser checks |
 | `taste.validation.json` | Claude/Codex | Scores coherence, premium feel, hierarchy, noise, and drift |
 | `final.proof.bundle.json` | Codex | Records changed files, commands, screenshots, visual diff, and verdict |
 
 ## Non-Negotiable Fields
+
+`creative.asset-kit.json` must enforce:
+
+- one asset extraction request at a time
+- approval before the next asset is requested
+- same Image 2.0 thread after the canonical reference is approved
+- native HTML/CSS text and interactions in implementation
+- no implementation-model reinvention of the approved visual direction
 
 `design.dna.json` must name:
 

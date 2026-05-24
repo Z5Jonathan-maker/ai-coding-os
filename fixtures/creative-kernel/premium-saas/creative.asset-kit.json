@@ -1,0 +1,65 @@
+{
+  "schema": "ai-coding-os.creative-asset-kit.v1",
+  "mode": "sequential_approved_extraction",
+  "owner_lane": "chatgpt-image",
+  "canonical_reference": {
+    "path": "visual.target.png",
+    "status": "external_reference_required",
+    "owner_lane": "chatgpt-image"
+  },
+  "rules": {
+    "extract_one_asset_at_a_time": true,
+    "approval_required_before_next_asset": true,
+    "use_same_image_thread_after_reference_approval": true,
+    "implementation_model_must_not_reinvent_visual_direction": true,
+    "native_text_and_interactions_stay_in_code": true,
+    "do_not_parallelize_extraction_requests": true
+  },
+  "assets": [
+    {
+      "sequence": 1,
+      "id": "hero-background",
+      "role": "full-bleed section background",
+      "asset_type": "raster-background",
+      "extraction_prompt": "Using the approved hero reference, provide only the hero background with no text, buttons, logo, people, or UI labels.",
+      "implementation_usage": "Use as the hero environmental background. Overlay headline, copy, and CTA as native HTML/CSS.",
+      "approval_gate": "background matches lighting, atmosphere, palette, and spatial depth from canonical reference"
+    },
+    {
+      "sequence": 2,
+      "id": "primary-button-style",
+      "role": "button material and shape reference",
+      "asset_type": "style-reference",
+      "extraction_prompt": "Using the approved hero reference, provide only the primary button as a clean isolated reference with no surrounding page elements.",
+      "implementation_usage": "Recreate the button as native CSS. Do not rasterize text inside the button.",
+      "approval_gate": "button glow, radius, weight, contrast, and hover implication match canonical reference"
+    },
+    {
+      "sequence": 3,
+      "id": "section-divider",
+      "role": "transition between page bands",
+      "asset_type": "raster-divider",
+      "extraction_prompt": "Using the approved visual language, provide a page divider asset that transitions from the hero atmosphere into the next section.",
+      "implementation_usage": "Use as a decorative divider or CSS background layer between sections.",
+      "approval_gate": "divider feels native to the same brand system and does not introduce a second visual language"
+    },
+    {
+      "sequence": 4,
+      "id": "feature-banner-background",
+      "role": "supporting feature or proof section background",
+      "asset_type": "raster-background",
+      "extraction_prompt": "Using the approved hero direction, provide a wide banner background for a proof or feature section with no baked-in text.",
+      "implementation_usage": "Use behind native text and proof metrics in the implementation layer.",
+      "approval_gate": "banner preserves reference lighting, depth, and premium pacing without competing with the hero"
+    }
+  ],
+  "handoff_to_kimi": {
+    "include": [
+      "canonical_reference",
+      "approved_assets",
+      "design.dna.json",
+      "implementation.plan.json"
+    ],
+    "instruction": "Implement from the approved asset kit. Preserve raster atmosphere and recreate controls natively unless the asset is explicitly decorative."
+  }
+}

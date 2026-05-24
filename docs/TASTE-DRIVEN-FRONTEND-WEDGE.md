@@ -8,6 +8,7 @@ generation from creative direction.
 ```text
 intent
   -> Image 2.0 creative reference
+  -> sequential asset kit
   -> design DNA
   -> Kimi frontend implementation
   -> browser proof
@@ -41,6 +42,7 @@ The workflow is only real when it produces:
 
 - a creative brief
 - an approved visual reference or canonical reference placeholder
+- an ordered creative asset kit when implementation needs exact visual primitives
 - design DNA
 - an implementation plan
 - browser proof
@@ -52,3 +54,4 @@ The gate for this wedge is `cc-frontend-wedge-check`.
 The taste scoring gate is `cc-taste-benchmark-check`.
 The human-visible flagship demo is `demos/frontend-wedge/ai-coding-os/index.html`.
 Its portability and proof-language gate is `cc-frontend-demo`.
+The sequential Image 2.0 asset decomposition gate is `cc-asset-kit-check`.

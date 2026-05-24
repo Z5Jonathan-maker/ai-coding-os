@@ -40,7 +40,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-capture` — deterministic launch screenshot/GIF capture for cockpit media.
 - `cc-cockpit-interaction-proof` — headless browser proof for cockpit keyboard submit, empty/loading/blocked states, permissions, route diagnostics, and visual-regression metadata.
 - `cc-cockpit-state-proof` — deterministic cockpit state screenshots for continuation, running, success, blocked, permissions, and route receipt.
-- `cc-cockpit-visual-diff` — strict cockpit screenshot baseline gate with exact dimensions, hash checks, and byte-delta thresholds.
+- `cc-cockpit-visual-diff` — cockpit screenshot visual-regression gate with decoded PNG pixel samples, perceptual hash, luma scoring, and diagnostic file-hash/byte drift.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.

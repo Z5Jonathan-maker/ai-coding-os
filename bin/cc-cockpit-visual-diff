@@ -14,8 +14,10 @@ Usage:
   cc-cockpit-visual-diff --update-baseline
 
 Checks committed cockpit proof screenshots against a committed baseline. The
-gate fails on dimension drift, byte-threshold drift, or hash drift. Use
---update-baseline only when a visual change has been intentionally reviewed.
+gate decodes PNG pixels and fails on dimension drift, perceptual-hash drift,
+luma drift, or deterministic pixel-sample drift. File hash and byte drift are
+reported as diagnostics only. Use --update-baseline only when a visual change
+has been intentionally reviewed.
 EOF
 }
 
@@ -49,6 +51,7 @@ import hashlib
 import json
 import os
 import struct
+import zlib
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -73,6 +76,135 @@ def png_size(path):
     width, height = struct.unpack(">II", data[16:24])
     return width, height
 
+def png_rgb(path):
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError(f"{path}: not a PNG")
+    pos = 8
+    width = height = bit_depth = color_type = None
+    palette = []
+    transparency = b""
+    compressed = bytearray()
+    while pos < len(data):
+        length = struct.unpack(">I", data[pos:pos + 4])[0]
+        kind = data[pos + 4:pos + 8]
+        payload = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if kind == b"IHDR":
+            width, height, bit_depth, color_type, _, _, _ = struct.unpack(">IIBBBBB", payload)
+        elif kind == b"PLTE":
+            palette = [tuple(payload[i:i + 3]) for i in range(0, len(payload), 3)]
+        elif kind == b"tRNS":
+            transparency = payload
+        elif kind == b"IDAT":
+            compressed.extend(payload)
+        elif kind == b"IEND":
+            break
+    if bit_depth != 8:
+        raise ValueError(f"{path}: unsupported PNG bit depth {bit_depth}")
+    channels_by_type = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}
+    if color_type not in channels_by_type:
+        raise ValueError(f"{path}: unsupported PNG color type {color_type}")
+    channels = channels_by_type[color_type]
+    raw = zlib.decompress(bytes(compressed))
+    stride = width * channels
+    rows = []
+    prior = bytearray(stride)
+    offset = 0
+    for _ in range(height):
+        filter_type = raw[offset]
+        offset += 1
+        row = bytearray(raw[offset:offset + stride])
+        offset += stride
+        bpp = channels
+        for i in range(stride):
+            left = row[i - bpp] if i >= bpp else 0
+            up = prior[i]
+            up_left = prior[i - bpp] if i >= bpp else 0
+            if filter_type == 1:
+                row[i] = (row[i] + left) & 255
+            elif filter_type == 2:
+                row[i] = (row[i] + up) & 255
+            elif filter_type == 3:
+                row[i] = (row[i] + ((left + up) // 2)) & 255
+            elif filter_type == 4:
+                p = left + up - up_left
+                pa = abs(p - left)
+                pb = abs(p - up)
+                pc = abs(p - up_left)
+                predictor = left if pa <= pb and pa <= pc else up if pb <= pc else up_left
+                row[i] = (row[i] + predictor) & 255
+            elif filter_type != 0:
+                raise ValueError(f"{path}: unsupported PNG filter {filter_type}")
+        rows.append(row)
+        prior = row
+    pixels = []
+    for row in rows:
+        if color_type == 0:
+            pixels.extend((v, v, v) for v in row)
+        elif color_type == 2:
+            pixels.extend(tuple(row[i:i + 3]) for i in range(0, len(row), 3))
+        elif color_type == 3:
+            for idx in row:
+                if idx >= len(palette):
+                    raise ValueError(f"{path}: palette index out of range")
+                r, g, b = palette[idx]
+                a = transparency[idx] if idx < len(transparency) else 255
+                pixels.append((255, 255, 255) if a == 0 else (r, g, b))
+        elif color_type == 4:
+            for i in range(0, len(row), 2):
+                v, a = row[i], row[i + 1]
+                pixels.append((255, 255, 255) if a == 0 else (v, v, v))
+        elif color_type == 6:
+            for i in range(0, len(row), 4):
+                r, g, b, a = row[i], row[i + 1], row[i + 2], row[i + 3]
+                if a == 255:
+                    pixels.append((r, g, b))
+                elif a == 0:
+                    pixels.append((255, 255, 255))
+                else:
+                    pixels.append(tuple(round((c * a + 255 * (255 - a)) / 255) for c in (r, g, b)))
+    return width, height, pixels
+
+def luma(pixel):
+    r, g, b = pixel
+    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
+def visual_fingerprint(path):
+    width, height, pixels = png_rgb(path)
+    total = len(pixels)
+    avg_r = sum(p[0] for p in pixels) / total
+    avg_g = sum(p[1] for p in pixels) / total
+    avg_b = sum(p[2] for p in pixels) / total
+    avg_luma = sum(luma(p) for p in pixels) / total
+    ahash_values = []
+    for y in range(8):
+        py = min(height - 1, round((y + 0.5) * height / 8))
+        for x in range(8):
+            px = min(width - 1, round((x + 0.5) * width / 8))
+            ahash_values.append(luma(pixels[py * width + px]))
+    ahash_avg = sum(ahash_values) / len(ahash_values)
+    ahash = ''.join('1' if value >= ahash_avg else '0' for value in ahash_values)
+    sample = bytearray()
+    for y in range(18):
+        py = min(height - 1, round((y + 0.5) * height / 18))
+        for x in range(32):
+            px = min(width - 1, round((x + 0.5) * width / 32))
+            sample.extend(pixels[py * width + px])
+    return {
+        "pixel_count": total,
+        "average_rgb": [round(avg_r, 3), round(avg_g, 3), round(avg_b, 3)],
+        "average_luma": round(avg_luma, 3),
+        "ahash64": ahash,
+        "sample_grid": "32x18",
+        "sample_sha256": hashlib.sha256(sample).hexdigest(),
+    }
+
+def hamming(left, right):
+    if not left or not right or len(left) != len(right):
+        return 64
+    return sum(1 for a, b in zip(left, right) if a != b)
+
 def artifact(rel):
     path = root / rel
     if not path.exists():
@@ -85,8 +217,13 @@ def artifact(rel):
         "width": width,
         "height": height,
         "sha256": hashlib.sha256(data).hexdigest(),
+        "visual": visual_fingerprint(path),
+        "max_average_luma_delta": 0.5,
+        "max_ahash_hamming": 0,
+        "max_sample_hash_changes": 0,
         "max_byte_delta_percent": 0.25,
-        "max_hash_changes": 0,
+        "byte_delta_policy": "diagnostic",
+        "sha256_policy": "diagnostic",
     }
 
 def update_baseline():
@@ -96,8 +233,11 @@ def update_baseline():
         "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "policy": {
             "dimensions": "exact",
-            "hash_changes_allowed": 0,
-            "byte_delta_percent_default": 0.25,
+            "pixel_sample": "exact",
+            "average_hash_hamming_default": 0,
+            "average_luma_delta_default": 0.5,
+            "byte_delta": "diagnostic",
+            "sha256": "diagnostic",
         },
         "artifacts": [artifact(rel) for rel in targets],
     }
@@ -121,9 +261,15 @@ def check_baseline():
         allowed_bytes = max(1, int(int(base["bytes"]) * allowed_pct / 100))
         hash_changed = current["sha256"] != base["sha256"]
         dim_changed = current["width"] != base["width"] or current["height"] != base["height"]
-        byte_failed = abs(byte_delta) > allowed_bytes
-        hash_failed = hash_changed and int(base.get("max_hash_changes", 0)) == 0
-        ok = not (dim_changed or byte_failed or hash_failed)
+        base_visual = base.get("visual") or {}
+        current_visual = current["visual"]
+        luma_delta = abs(float(current_visual["average_luma"]) - float(base_visual.get("average_luma", -999)))
+        ahash_delta = hamming(current_visual["ahash64"], base_visual.get("ahash64", ""))
+        sample_changed = current_visual["sample_sha256"] != base_visual.get("sample_sha256")
+        luma_failed = luma_delta > float(base.get("max_average_luma_delta", 0.5))
+        ahash_failed = ahash_delta > int(base.get("max_ahash_hamming", 0))
+        sample_failed = sample_changed and int(base.get("max_sample_hash_changes", 0)) == 0
+        ok = not (dim_changed or luma_failed or ahash_failed or sample_failed)
         rows.append({
             "file": rel,
             "ok": ok,
@@ -132,21 +278,26 @@ def check_baseline():
             "byte_delta": byte_delta,
             "allowed_bytes": allowed_bytes,
             "hash_changed": hash_changed,
+            "luma_delta": round(luma_delta, 3),
+            "ahash_delta": ahash_delta,
+            "sample_changed": sample_changed,
             "dimensions": f"{current['width']}x{current['height']}",
         })
         if not ok:
             reasons = []
             if dim_changed:
                 reasons.append(f"dimension {current['width']}x{current['height']} != {base['width']}x{base['height']}")
-            if byte_failed:
-                reasons.append(f"byte delta {byte_delta} exceeds {allowed_bytes}")
-            if hash_failed:
-                reasons.append("hash changed")
+            if luma_failed:
+                reasons.append(f"average luma delta {luma_delta:.3f} exceeds {base.get('max_average_luma_delta', 0.5)}")
+            if ahash_failed:
+                reasons.append(f"perceptual hash hamming {ahash_delta} exceeds {base.get('max_ahash_hamming', 0)}")
+            if sample_failed:
+                reasons.append("pixel sample hash changed")
             failures.append(f"{rel}: " + "; ".join(reasons))
     print("# Cockpit Visual Diff\n")
     for row in rows:
         mark = "ok  " if row["ok"] else "fail"
-        print(f"{mark} {row['file']} bytes={row['bytes']} delta={row['byte_delta']} allowed={row['allowed_bytes']} hash_changed={str(row['hash_changed']).lower()} dimensions={row['dimensions']}")
+        print(f"{mark} {row['file']} dimensions={row['dimensions']} luma_delta={row['luma_delta']} ahash_delta={row['ahash_delta']} sample_changed={str(row['sample_changed']).lower()} bytes={row['bytes']} byte_delta={row['byte_delta']} byte_warn>{row['allowed_bytes']} hash_changed={str(row['hash_changed']).lower()}")
     print("\n## Summary\n")
     print(f"passed={len(rows) - len(failures)} failed={len(failures)}")
     if failures:

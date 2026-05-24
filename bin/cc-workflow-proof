@@ -26,7 +26,8 @@ elif [ ! -x "$router_root/bin/cc-router-classifier-check" ]; then
   printf '## Product Readiness\n\n```text\n'
   printf 'portable evaluator mode\n'
   printf 'private router and local VS Code readiness skipped\n'
-  "$DOTFILES/bin/cc-public-ci-check" | sed -n '1,28p'
+  printf 'public gate: cc-public-ci-check\n'
+  printf 'quick proof: cc-demo-quick\n'
   printf '```\n\n'
 else
   printf '## Product Readiness\n\n```text\n'

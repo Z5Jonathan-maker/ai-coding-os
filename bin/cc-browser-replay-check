@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || (() => {
+  const res = spawnSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' });
+  return res.status === 0 ? res.stdout.trim() : process.cwd();
+})();
+const fixturePath = process.argv.includes('--fixture')
+  ? process.argv[process.argv.indexOf('--fixture') + 1]
+  : path.join(root, 'fixtures', 'browser-replay', 'kimi-webbridge-authenticated.json');
+
+if (process.argv.includes('-h') || process.argv.includes('--help')) {
+  console.log('Usage: cc-browser-replay-check [--fixture FILE]');
+  process.exit(0);
+}
+
+let pass = 0;
+let fail = 0;
+
+function ok(msg) {
+  console.log(`ok   ${msg}`);
+  pass += 1;
+}
+
+function bad(msg) {
+  console.log(`fail ${msg}`);
+  fail += 1;
+}
+
+function expect(cond, msg) {
+  cond ? ok(msg) : bad(msg);
+}
+
+function scanSecrets(value) {
+  const clone = JSON.parse(JSON.stringify(value));
+  delete clone.forbidden_storage;
+  const raw = JSON.stringify(clone);
+  const patterns = [
+    /sk-[A-Za-z0-9_-]{20,}/,
+    /Bearer\s+[A-Za-z0-9._-]+/i,
+    /password\s*[:=]/i,
+    /cookie\s*[:=]/i,
+    /localStorage/i,
+    /sessionStorage/i,
+    /api[_-]?key\s*[:=]/i,
+  ];
+  return patterns.filter((pattern) => pattern.test(raw)).map(String);
+}
+
+console.log('# Browser Replay Check\n');
+console.log(`Root: ${root}`);
+console.log(`Fixture: ${path.relative(root, path.resolve(fixturePath))}\n`);
+
+expect(fs.existsSync(path.join(root, 'docs', 'AUTHENTICATED-BROWSER-REPLAY.md')), 'replay doctrine exists');
+expect(fs.existsSync(fixturePath), 'fixture exists');
+
+if (fs.existsSync(fixturePath)) {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  expect(fixture.schema === 'ai-coding-os.browser-replay.v1', 'schema valid');
+  expect(fixture.required_mode === 'official-extension', 'requires official extension for authenticated replay');
+  expect(fixture.credential_boundary === 'existing_user_browser_session', 'credential boundary is browser session');
+  expect(Array.isArray(fixture.origin_allowlist) && fixture.origin_allowlist.every((url) => /^https:\/\//.test(url)), 'origin allowlist is https-only');
+  expect(Array.isArray(fixture.steps) && fixture.steps.length >= 3, 'steps present');
+  expect(Array.isArray(fixture.assertions) && fixture.assertions.length >= 4, 'assertions present');
+  expect((fixture.forbidden_storage || []).includes('cookies'), 'cookies forbidden');
+  expect((fixture.forbidden_storage || []).includes('authorization_headers'), 'authorization headers forbidden');
+  expect(fixture.proof_packet?.requires_nonce === true, 'proof requires nonce');
+  expect(fixture.proof_packet?.requires_redaction_report === true, 'proof requires redaction report');
+  const hits = scanSecrets(fixture);
+  expect(hits.length === 0, `no credential-shaped material (${hits.join(', ') || 'clean'})`);
+}
+
+console.log('\n## Summary\n');
+console.log(`passed=${pass} failed=${fail}`);
+console.log(fail ? 'Status: browser-replay-blocked' : 'Status: browser-replay-ready');
+process.exit(fail ? 1 : 0);

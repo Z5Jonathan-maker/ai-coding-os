@@ -30,6 +30,12 @@ boundaries, origin, max/returned/content chars, truncation status, and
 `screenshot_path` when a lane provides one. This is the reviewer-facing proof
 contract; raw snapshots are implementation detail.
 
+Authenticated replay fixtures are validated by `cc-browser-replay-check`. They
+describe workflow steps, assertions, origin allowlists, and proof expectations,
+but never store cookies, tokens, passwords, browser storage, or authorization
+headers. Live replay still requires the official extension connected to the
+user's approved Chrome session.
+
 ## Current Boundary
 
 Chrome and macOS intentionally require user approval for externally installed

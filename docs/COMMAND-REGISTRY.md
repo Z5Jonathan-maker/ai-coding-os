@@ -36,6 +36,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-benchmark-fixtures` — run tiny public benchmark fixtures for route expectation, npm test, repo-map, and diff-surface regression proof.
 - `cc-bootstrap` — one-shot platform bootstrapper.
 - `cc-browser-proof` — Kimi WebBridge readiness plus bounded browser proof output; `--json` returns nonce boundaries, origin, truncation metadata, and proof content.
+- `cc-browser-replay-check` — validates credential-free authenticated browser replay fixtures.
 - `cc-browser-visual-proof` — public-clone-safe browser/UI visual contract gate for DOM/layout assertions and bounded browser-proof packet schema.
 - `cc-checkpoints` — read-only checkpoint timeline for shadow Git and session handoffs.
 - `cc-cockpit-status` — concise AI cockpit status snapshot.

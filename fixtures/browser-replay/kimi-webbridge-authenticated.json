@@ -1,0 +1,55 @@
+{
+  "schema": "ai-coding-os.browser-replay.v1",
+  "name": "kimi-webbridge-authenticated-session-proof",
+  "required_mode": "official-extension",
+  "credential_boundary": "existing_user_browser_session",
+  "origin_allowlist": [
+    "https://chatgpt.com",
+    "https://claude.ai",
+    "https://kimi.moonshot.cn"
+  ],
+  "forbidden_storage": [
+    "cookies",
+    "localStorage",
+    "sessionStorage",
+    "authorization_headers",
+    "passwords",
+    "api_keys"
+  ],
+  "steps": [
+    {
+      "action": "status",
+      "expect": {
+        "extension_connected": true,
+        "mode": "official-extension"
+      }
+    },
+    {
+      "action": "navigate",
+      "url": "https://chatgpt.com",
+      "redact_url_query": true
+    },
+    {
+      "action": "snapshot",
+      "max_chars": 2000,
+      "redact_patterns": [
+        "email",
+        "account_name",
+        "workspace_name"
+      ]
+    }
+  ],
+  "assertions": [
+    "mode is official-extension",
+    "proof packet has nonce boundaries",
+    "snapshot content is bounded",
+    "no credential material appears in proof"
+  ],
+  "proof_packet": {
+    "requires_nonce": true,
+    "requires_origin": true,
+    "requires_mode": true,
+    "requires_truncation_metadata": true,
+    "requires_redaction_report": true
+  }
+}

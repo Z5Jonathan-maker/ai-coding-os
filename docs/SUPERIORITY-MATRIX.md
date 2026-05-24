@@ -50,7 +50,7 @@ Status values:
 | Trust and permissions | Autonomy is gated before routing, not after damage | `.ai/trust.json`, `cc-trust-profile`, `cc-trust-gate`, permission matrix | More adversarial fixture coverage for paid/destructive/cross-user actions | `cc-trust-gate --check` | Strong |
 | Token and cost efficiency | Quality-first routing still exposes economics and fallback cost | `cc-token-ledger`, router receipts, premium-spend avoidance estimates | Real per-provider token capture where APIs expose usage | `cc-token-ledger --check` | Strong |
 | Persistent memory and continuation | The product opens on current mission, not a blank prompt | `cc-mission-ledger`, cockpit continuation UI, session ledger | More real multi-day mission replay demos | `cc-mission-ledger --check`, `cc-cockpit-webview-smoke` | Strong |
-| Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Authenticated-browser fixture replay still depends on local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-visual-proof --check` | Strong |
+| Browser/UI lane | Browser work has a bounded proof path and Kimi/WebBridge status | `cc-browser-proof`, `cc-browser-replay-check`, `cc-browser-visual-proof`, `cc-kimi-status`, browser-proof benchmark | Live authenticated replay still depends on local Kimi/WebBridge session state | `cc-browser-proof --json`, `cc-browser-replay-check`, `cc-browser-visual-proof --check` | Strong |
 | Cockpit product UX | Main surface feels like an AI-native workspace, not a dashboard | VS Code cockpit package, media, webview smoke, deterministic state screenshots, headless interaction proof, pixel/perceptual visual-diff gate | More dogfood videos showing real daily use | `cc-cockpit-webview-smoke`, `cc-cockpit-state-proof`, `cc-cockpit-interaction-proof`, `cc-cockpit-visual-diff`, `cc-package-cockpit` | Strong |
 | Creative direction kernel | Taste is routed as cognitive work, not treated as a generic image task | `cc-creative-kernel-check`, Creative Direction Kernel fixture, design DNA, taste validation | Real project proof bundles from shipped design missions | `cc-creative-kernel-check` | Strong |
 | Daily-driver workflow | A developer can route, edit, verify, review, and resume from one system | `cc-dogfood-day`, `cc-demo-quick`, `cc-workflow-proof`, six-hour dogfood report, mutating dogfood report, public-repo dogfood report, third-party dogfood report, PR-quality scorer | Externally sourced issue replay with maintainer-style scoring | `cc-dogfood-session`, `cc-mutating-dogfood`, `cc-public-repo-dogfood`, `cc-third-party-dogfood`, `cc-pr-quality-score --check` | Strong |
@@ -64,7 +64,7 @@ Status values:
 These are the remaining gaps that matter most:
 
 1. **Real-world benchmark depth**: add larger public repo tasks with expected diffs, test evidence, and review-quality scoring.
-2. **Authenticated browser replay**: convert local Kimi/WebBridge session proof into a reusable fixture replay that can verify logged-in workflows without exposing credentials.
+2. **Authenticated browser replay**: execute the credential-free replay fixture live through official Kimi/WebBridge on a prepared machine.
 3. **Third-party issue realism**: expand from controlled external repo mutation to externally sourced upstream issues scored by the PR-quality gate.
 4. **Cockpit real-use evidence**: add short dogfood videos or replay bundles showing the cockpit carrying real daily work, not only deterministic screenshots.
 5. **Package separability**: keep reducing maintainer-machine assumptions until the router/cockpit install path is boring from any clone.
@@ -93,6 +93,7 @@ cc-token-ledger --check
 cc-trust-gate --check
 cc-mission-ledger --check
 cc-creative-kernel-check
+cc-browser-replay-check
 cc-browser-visual-proof --check
 cc-cockpit-webview-smoke
 cc-cockpit-state-proof --check

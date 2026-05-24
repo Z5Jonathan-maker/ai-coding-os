@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+BASELINE="${CC_COCKPIT_VISUAL_BASELINE:-$DOTFILES/docs/media/cockpit/visual-baseline.json}"
+
+usage() {
+  cat <<'EOF'
+cc-cockpit-visual-diff — cockpit screenshot baseline gate
+
+Usage:
+  cc-cockpit-visual-diff
+  cc-cockpit-visual-diff --check
+  cc-cockpit-visual-diff --update-baseline
+
+Checks committed cockpit proof screenshots against a committed baseline. The
+gate fails on dimension drift, byte-threshold drift, or hash drift. Use
+--update-baseline only when a visual change has been intentionally reviewed.
+EOF
+}
+
+case "${1:-}" in
+  -h|--help)
+    usage
+    exit 0
+    ;;
+  --check)
+    command -v python3 >/dev/null 2>&1 || {
+      printf 'missing python3\n'
+      exit 1
+    }
+    [ -f "$BASELINE" ] || {
+      printf 'missing cockpit visual baseline: %s\n' "$BASELINE"
+      exit 1
+    }
+    printf 'Status: cockpit-visual-diff-ready\n'
+    exit 0
+    ;;
+  ""|--update-baseline) ;;
+  *)
+    printf 'cc-cockpit-visual-diff: unknown arg: %s\n' "$1" >&2
+    usage >&2
+    exit 2
+    ;;
+esac
+
+DOTFILES="$DOTFILES" BASELINE="$BASELINE" MODE="${1:-check}" python3 <<'PY'
+import hashlib
+import json
+import os
+import struct
+from datetime import UTC, datetime
+from pathlib import Path
+
+root = Path(os.environ["DOTFILES"])
+baseline_path = Path(os.environ["BASELINE"])
+mode = os.environ["MODE"]
+
+targets = [
+    "docs/media/cockpit/states/08-state-continuation.png",
+    "docs/media/cockpit/states/09-state-running.png",
+    "docs/media/cockpit/states/10-state-success.png",
+    "docs/media/cockpit/states/11-state-blocked.png",
+    "docs/media/cockpit/states/12-state-permissions.png",
+    "docs/media/cockpit/states/13-state-route-receipt.png",
+    "docs/media/cockpit/interaction/interaction-proof.png",
+]
+
+def png_size(path):
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        raise ValueError(f"{path}: not a PNG with IHDR")
+    width, height = struct.unpack(">II", data[16:24])
+    return width, height
+
+def artifact(rel):
+    path = root / rel
+    if not path.exists():
+        raise FileNotFoundError(rel)
+    data = path.read_bytes()
+    width, height = png_size(path)
+    return {
+        "file": rel,
+        "bytes": len(data),
+        "width": width,
+        "height": height,
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "max_byte_delta_percent": 0.25,
+        "max_hash_changes": 0,
+    }
+
+def update_baseline():
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": "ai-coding-os.cockpit-visual-baseline.v1",
+        "updated_at": datetime.now(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "policy": {
+            "dimensions": "exact",
+            "hash_changes_allowed": 0,
+            "byte_delta_percent_default": 0.25,
+        },
+        "artifacts": [artifact(rel) for rel in targets],
+    }
+    baseline_path.write_text(json.dumps(payload, indent=2) + "\n")
+    print(f"updated {baseline_path}")
+    print("Status: cockpit-visual-baseline-updated")
+
+def check_baseline():
+    baseline = json.loads(baseline_path.read_text())
+    expected = {item["file"]: item for item in baseline.get("artifacts", [])}
+    missing = [rel for rel in targets if rel not in expected]
+    if missing:
+        raise SystemExit("baseline missing: " + ", ".join(missing))
+    failures = []
+    rows = []
+    for rel in targets:
+        current = artifact(rel)
+        base = expected[rel]
+        byte_delta = current["bytes"] - int(base["bytes"])
+        allowed_pct = float(base.get("max_byte_delta_percent", 0.25))
+        allowed_bytes = max(1, int(int(base["bytes"]) * allowed_pct / 100))
+        hash_changed = current["sha256"] != base["sha256"]
+        dim_changed = current["width"] != base["width"] or current["height"] != base["height"]
+        byte_failed = abs(byte_delta) > allowed_bytes
+        hash_failed = hash_changed and int(base.get("max_hash_changes", 0)) == 0
+        ok = not (dim_changed or byte_failed or hash_failed)
+        rows.append({
+            "file": rel,
+            "ok": ok,
+            "bytes": current["bytes"],
+            "baseline_bytes": base["bytes"],
+            "byte_delta": byte_delta,
+            "allowed_bytes": allowed_bytes,
+            "hash_changed": hash_changed,
+            "dimensions": f"{current['width']}x{current['height']}",
+        })
+        if not ok:
+            reasons = []
+            if dim_changed:
+                reasons.append(f"dimension {current['width']}x{current['height']} != {base['width']}x{base['height']}")
+            if byte_failed:
+                reasons.append(f"byte delta {byte_delta} exceeds {allowed_bytes}")
+            if hash_failed:
+                reasons.append("hash changed")
+            failures.append(f"{rel}: " + "; ".join(reasons))
+    print("# Cockpit Visual Diff\n")
+    for row in rows:
+        mark = "ok  " if row["ok"] else "fail"
+        print(f"{mark} {row['file']} bytes={row['bytes']} delta={row['byte_delta']} allowed={row['allowed_bytes']} hash_changed={str(row['hash_changed']).lower()} dimensions={row['dimensions']}")
+    print("\n## Summary\n")
+    print(f"passed={len(rows) - len(failures)} failed={len(failures)}")
+    if failures:
+        print("Status: cockpit-visual-diff-blocked")
+        print("\nBlockers:")
+        for failure in failures:
+            print(f"- {failure}")
+        raise SystemExit(1)
+    print("Status: cockpit-visual-diff-ready")
+
+if mode == "--update-baseline":
+    update_baseline()
+else:
+    check_baseline()
+PY

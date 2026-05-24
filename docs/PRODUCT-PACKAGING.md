@@ -101,6 +101,9 @@ trust tier, and safety boundary.
   shipped webview JavaScript in a headless browser and proves keyboard submit,
   empty/loading/blocked states, permissions, diagnostic route rendering, and
   visual-regression metadata.
+- **Cockpit visual diff:** `cc-cockpit-visual-diff` enforces committed
+  screenshot baselines with exact dimensions, hash checks, and byte-delta
+  thresholds.
 - **Feedback-law discipline:** Mega Cycle anti-pattern laws are executable through
   autonomy preflight, `ai depth-check`, `ai evolve`, and `cc-feedback-law-check`.
 - **Safe credentials:** TEL handles credentialed actions; free/lab lanes do not.
@@ -246,26 +249,28 @@ Installed system is 100% when:
     capture dependencies are installed
 18. `cc-cockpit-interaction-proof --check` proves the cockpit interaction
     proof runner and Playwright runtime are installed
-19. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
+19. `cc-cockpit-visual-diff --check` proves the cockpit visual-diff gate has a
+    committed baseline
+20. `cc-feedback-law-check` proves the Mega Cycle feedback laws are present,
     loaded by autonomy preflight, exposed through the control plane, and
     documented in the packaged system
-20. `cc-superiority-check` proves competitive claims are documented against
+21. `cc-superiority-check` proves competitive claims are documented against
     reference systems, tied to commands, and backed by at least three graded
     benchmark fixtures
-21. `cc-mission-kernel --check` proves mission artifacts have a documented,
+22. `cc-mission-kernel --check` proves mission artifacts have a documented,
     schema-validated object model for cockpit continuity and proof bundles
-22. `cc-agent-runtime --check` proves a harmless typed runtime run can create
+23. `cc-agent-runtime --check` proves a harmless typed runtime run can create
     route, trust, cost, proof, result, and timeline artifacts
-23. `cc-mission-events --check` proves the runtime emits normalized lifecycle
+24. `cc-mission-events --check` proves the runtime emits normalized lifecycle
     events for preflight, trust, route, context, runtime, permission, tool,
     verification, proof, and completion
-24. `cc-dogfood-session --check` proves the sustained dogfood runner and its
+25. `cc-dogfood-session --check` proves the sustained dogfood runner and its
     dependencies are installed before a six-hour run
-25. `cc-mutating-dogfood --check` proves the isolated mutating coding-session
+26. `cc-mutating-dogfood --check` proves the isolated mutating coding-session
     runner and dependencies are installed
-26. `cc-public-repo-dogfood --check` proves the larger public-clone dogfood
+27. `cc-public-repo-dogfood --check` proves the larger public-clone dogfood
     runner and dependencies are installed
-27. `cc-third-party-dogfood --check` proves the external public-repo dogfood
+28. `cc-third-party-dogfood --check` proves the external public-repo dogfood
     runner and dependencies are installed
 
 Daily-driver confidence is sampled by:
@@ -299,28 +304,30 @@ Sellable system is 100% when:
 13. cockpit interaction proof exercises keyboard submit, empty/loading/blocked
     states, permission switching, route diagnostics, and visual-regression
     metadata
-14. source-controlled AI checks and workspace trust policy are executable
-15. `cc-demo-quick` gives a cold reviewer the product thesis and proof in one
+14. cockpit visual-diff thresholds fail unapproved screenshot drift and require
+    explicit baseline updates for intentional visual changes
+15. source-controlled AI checks and workspace trust policy are executable
+16. `cc-demo-quick` gives a cold reviewer the product thesis and proof in one
     short terminal run without requiring a clean tree
-16. `cc-superiority-check` keeps "better than the top projects" claims honest
+17. `cc-superiority-check` keeps "better than the top projects" claims honest
     by requiring a dimension-by-dimension matrix, required proof commands, and
     graded benchmark depth
-17. the Mission Kernel exists as a concrete artifact contract so missions can
+18. the Mission Kernel exists as a concrete artifact contract so missions can
     carry route, trust, cost, proof, timeline, blockers, and next action
-18. the Agent Runtime Adapter exists so a mission can move through preflight,
+19. the Agent Runtime Adapter exists so a mission can move through preflight,
     trust, route, context, launch, tool execution, verification, and proof
     without bespoke per-tool state
-19. the Mission Event contract exists so provider-specific logs adapt into one
+20. the Mission Event contract exists so provider-specific logs adapt into one
     cockpit-safe event ontology
-20. the timed dogfood runner can execute a real sustained working window and
+21. the timed dogfood runner can execute a real sustained working window and
     leave durable cycle logs, mission artifacts, event validation, and final
     readiness proof
-21. the mutating dogfood runner can prove the code-edit path with failing
+22. the mutating dogfood runner can prove the code-edit path with failing
     tests, recovery edits, review evidence, event validation, and commits in an
     isolated workspace
-22. the public-repo dogfood runner can prove a fresh public clone, branch,
+23. the public-repo dogfood runner can prove a fresh public clone, branch,
     failing test, runtime repair, review, local commit, and public CI gate
-23. the third-party dogfood runner can prove an unrelated external repo, pinned
+24. the third-party dogfood runner can prove an unrelated external repo, pinned
     upstream ref, failing test, runtime repair, review, local commit, and that
     project's own test gate
 

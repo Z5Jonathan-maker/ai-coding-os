@@ -43,6 +43,7 @@ cockpit, router, receipts, permissions, memory, browser proof, and packaging.
 - Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
 - Cockpit state proof: `docs/media/cockpit/states/manifest.json`
 - Cockpit interaction proof: `docs/media/cockpit/interaction/manifest.json`
+- Cockpit visual baseline: `docs/media/cockpit/visual-baseline.json`
 - Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
 - Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
 - Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
@@ -135,6 +136,7 @@ cc-mission-kernel --check
 cc-cockpit-webview-smoke
 cc-cockpit-state-proof --check
 cc-cockpit-interaction-proof --check
+cc-cockpit-visual-diff
 cc-benchmark-fixtures
 cc-fresh-clone-check
 cc-public-ci-check
@@ -172,6 +174,9 @@ continuation, running, success, blocked, permissions, and route-receipt states.
 headless browser and proves keyboard submit, empty/loading/blocked states,
 permission switching, route-diagnostic rendering, and visual-regression
 metadata.
+`cc-cockpit-visual-diff` turns those screenshots into a pass/fail visual gate
+against committed baselines. Intentional visual changes require
+`cc-cockpit-visual-diff --update-baseline`.
 `cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
 Kernel cycles, validate Mission Events, capture logs, and finish with product
 gates.
@@ -205,7 +210,9 @@ More launch media lives in `docs/media/cockpit/` and is regenerated with
 `docs/media/cockpit/states/` and are regenerated with
 `cc-cockpit-state-proof`. Interaction proof lives in
 `docs/media/cockpit/interaction/` and is regenerated with
-`cc-cockpit-interaction-proof`.
+`cc-cockpit-interaction-proof`. The committed visual baseline lives at
+`docs/media/cockpit/visual-baseline.json` and is enforced by
+`cc-cockpit-visual-diff`.
 
 ## Local Install
 

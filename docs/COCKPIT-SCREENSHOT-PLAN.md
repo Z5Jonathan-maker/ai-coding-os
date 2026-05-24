@@ -22,6 +22,7 @@ surface, not a terminal command list.
 | 12-state-permissions | Authority selector/state explanation | `cc-cockpit-state-proof` |
 | 13-state-route-receipt | Inspectable routing proof | `cc-cockpit-state-proof` |
 | interaction-proof | Keyboard/state/diagnostic interaction proof | `cc-cockpit-interaction-proof` |
+| visual-baseline | Pass/fail visual-diff baseline | `cc-cockpit-visual-diff` |
 
 ## Capture Standards
 
@@ -52,6 +53,7 @@ docs/media/cockpit/states/13-state-route-receipt.png
 docs/media/cockpit/states/manifest.json
 docs/media/cockpit/interaction/interaction-proof.png
 docs/media/cockpit/interaction/manifest.json
+docs/media/cockpit/visual-baseline.json
 ```
 
 ## Launch README Placement
@@ -95,6 +97,20 @@ This writes `docs/media/cockpit/interaction/manifest.json`, including keyboard
 flow assertions, state assertions, screenshot metadata, and hashes of the
 primary state screenshots for visual-regression tracking.
 
+Visual-diff thresholding is enforced through:
+
+```sh
+cc-cockpit-visual-diff
+```
+
+This compares committed screenshots against
+`docs/media/cockpit/visual-baseline.json`, requiring exact dimensions, unchanged
+hashes, and byte deltas within threshold. Intentional visual changes require:
+
+```sh
+cc-cockpit-visual-diff --update-baseline
+```
+
 ## Attempt Log
 
 - 2026-05-21: CLI/package proof is ready, but unattended GUI capture hit macOS
@@ -108,3 +124,5 @@ primary state screenshots for visual-regression tracking.
 - 2026-05-24: Added `cc-cockpit-interaction-proof` for keyboard submit,
   empty/loading/blocked states, permission switching, route diagnostics, and
   visual-regression metadata.
+- 2026-05-24: Added `cc-cockpit-visual-diff` for strict screenshot baseline
+  enforcement with exact dimensions, hash checks, and byte-delta thresholds.

@@ -1,0 +1,74 @@
+{
+  "schema": "ai-coding-os.cockpit-visual-baseline.v1",
+  "updated_at": "2026-05-24T13:20:33Z",
+  "policy": {
+    "dimensions": "exact",
+    "hash_changes_allowed": 0,
+    "byte_delta_percent_default": 0.25
+  },
+  "artifacts": [
+    {
+      "file": "docs/media/cockpit/states/08-state-continuation.png",
+      "bytes": 614360,
+      "width": 1440,
+      "height": 900,
+      "sha256": "55882d028088bcab34c51906f71d2d7ce765124d4edc30b986d5bfc152f1e21e",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/states/09-state-running.png",
+      "bytes": 614591,
+      "width": 1440,
+      "height": 900,
+      "sha256": "d8be87cd2be7b1961b1460da76c5f372365e71afdd0931818522d7986840c6ac",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/states/10-state-success.png",
+      "bytes": 613911,
+      "width": 1440,
+      "height": 900,
+      "sha256": "2b9dc9b8b1f33089e38878cb048dc74d022157880662179faec76aae458afabc",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/states/11-state-blocked.png",
+      "bytes": 616643,
+      "width": 1440,
+      "height": 900,
+      "sha256": "1efec64b1257ff8119f364593245ae97adfc03021b306a8672309391d390810b",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/states/12-state-permissions.png",
+      "bytes": 615488,
+      "width": 1440,
+      "height": 900,
+      "sha256": "758e5bd4db8a0c27f230c24e2096bd681c09e5c7cd241972fe845717f371b453",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/states/13-state-route-receipt.png",
+      "bytes": 615913,
+      "width": 1440,
+      "height": 900,
+      "sha256": "39326be2c6575319e54f5b69a6e00cebf631cc58413995b4ad3253ca9781a705",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    },
+    {
+      "file": "docs/media/cockpit/interaction/interaction-proof.png",
+      "bytes": 998192,
+      "width": 1180,
+      "height": 1570,
+      "sha256": "ad65b4a8793023453a4551eb5d6cb2134cd55661722f22dfd6bc3b7065b7218b",
+      "max_byte_delta_percent": 0.25,
+      "max_hash_changes": 0
+    }
+  ]
+}

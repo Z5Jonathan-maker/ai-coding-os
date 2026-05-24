@@ -23,8 +23,9 @@ fi
 if [ -x "$bridge" ]; then
   status="$("$bridge" status 2>/dev/null || true)"
   if [ -n "$status" ]; then
-    # shellcheck disable=SC2016
-    node -e '
+    if command -v node >/dev/null 2>&1; then
+      # shellcheck disable=SC2016
+      node -e '
       const s = JSON.parse(process.argv[1]);
       const extensionVersion = s.extension_version || "";
       const mode = !s.running ? "not-ready"
@@ -33,7 +34,10 @@ if [ -x "$bridge" ]; then
         : extensionVersion ? "official-extension"
         : "unknown";
       console.log(`WebBridge: running=${Boolean(s.running)} extension_connected=${Boolean(s.extension_connected)} mode=${mode} port=${s.port || "unknown"} version=${s.version || "unknown"} extension_version=${extensionVersion || "unknown"}`);
-    ' "$status"
+    ' "$status" || printf 'WebBridge: status available; JSON parse failed\n'
+    else
+      printf 'WebBridge: status available; install Node for detailed mode parsing\n'
+    fi
   else
     printf 'WebBridge: status unavailable\n'
   fi
@@ -51,3 +55,4 @@ fi
 printf '\n## Local Paths\n\n'
 printf '%s\n' "$app"
 printf '%s\n' "$HOME/Library/Application Support/kimi-desktop"
+printf '\nStatus: kimi-status-ready\n'

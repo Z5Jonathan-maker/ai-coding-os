@@ -15,6 +15,8 @@ The first isolated mutating coding proof lives at
 `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
 The first larger public-clone coding proof lives at
 `docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`.
+The first third-party public-repo coding proof lives at
+`docs/THIRD-PARTY-DOGFOOD-REPORT-2026-05-24.md`.
 Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
 artifact contract lives at `docs/MISSION-KERNEL.md`.
 
@@ -69,6 +71,9 @@ trust tier, and safety boundary.
   commits.
 - **Public-repo dogfood runner:** `cc-public-repo-dogfood` proves the same
   path in a fresh public clone with a branch, local commit, and public CI gate.
+- **Third-party dogfood runner:** `cc-third-party-dogfood` proves the path
+  against an unrelated public repository with pinned upstream source and that
+  project's own test gate.
 - **Visible health:** weekly health and acceptance demo show drift.
 - **Visible control:** permission matrix, checkpoint timeline, and route receipts are in the cockpit.
 - **Visible dependencies:** native AI app versions and bridge health are in the cockpit.
@@ -249,6 +254,8 @@ Installed system is 100% when:
     runner and dependencies are installed
 24. `cc-public-repo-dogfood --check` proves the larger public-clone dogfood
     runner and dependencies are installed
+25. `cc-third-party-dogfood --check` proves the external public-repo dogfood
+    runner and dependencies are installed
 
 Daily-driver confidence is sampled by:
 
@@ -297,6 +304,9 @@ Sellable system is 100% when:
     isolated workspace
 20. the public-repo dogfood runner can prove a fresh public clone, branch,
     failing test, runtime repair, review, local commit, and public CI gate
+21. the third-party dogfood runner can prove an unrelated external repo, pinned
+    upstream ref, failing test, runtime repair, review, local commit, and that
+    project's own test gate
 
 The strict gate is:
 

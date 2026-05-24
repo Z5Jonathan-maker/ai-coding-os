@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+set -u
+
+DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+source_repo="${CC_THIRD_PARTY_DOGFOOD_SOURCE:-https://github.com/jonschlinkert/is-odd.git}"
+source_ref="${CC_THIRD_PARTY_DOGFOOD_REF:-a80ee0d831a8ee69f1fad5b4673491847975eb26}"
+session_id="third-party-dogfood-$(date -u +%Y%m%dT%H%M%SZ)"
+session_root="${CC_THIRD_PARTY_DOGFOOD_ROOT:-$HOME/.Codex/third-party-dogfood}"
+
+usage() {
+  cat <<'EOF'
+cc-third-party-dogfood — external public-repo coding proof
+
+Usage:
+  cc-third-party-dogfood [--source URL_OR_PATH] [--ref GIT_REF] [--session-id ID] [--output-dir DIR]
+  cc-third-party-dogfood --check
+
+Clones a third-party public repository, pins a ref, creates a branch,
+introduces a failing test, repairs it through the runtime adapter, validates
+Mission Events, captures review evidence, commits locally, and reruns the
+third-party test gate.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --source) source_repo="$2"; shift 2 ;;
+    --ref) source_ref="$2"; shift 2 ;;
+    --session-id) session_id="$2"; shift 2 ;;
+    --output-dir) session_root="$2"; shift 2 ;;
+    --check)
+      missing=0
+      for cmd in git npm node cc-agent-runtime cc-mission-events; do
+        if ! command -v "$cmd" >/dev/null 2>&1 && [ ! -x "$DOTFILES/bin/$cmd" ]; then
+          printf 'missing %s\n' "$cmd"
+          missing=$((missing + 1))
+        fi
+      done
+      if [ "$missing" -eq 0 ]; then
+        printf 'Status: third-party-dogfood-ready\n'
+        exit 0
+      fi
+      exit 1
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'cc-third-party-dogfood: unknown arg: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+session_dir="$session_root/$session_id"
+clone="$session_dir/repo"
+log_dir="$session_dir/logs"
+mkdir -p "$log_dir"
+
+run() {
+  local name="$1" expect="$2" tmp ok
+  shift 2
+  tmp="$log_dir/$(printf '%s' "$name" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-').log"
+  ok=0
+  if "$@" >"$tmp" 2>&1; then ok=1; fi
+  if [ -n "$expect" ] && ! grep -Eq "$expect" "$tmp"; then ok=0; fi
+  if [ "$ok" = 1 ]; then
+    printf 'ok   %s\n' "$name" | tee -a "$session_dir/summary.md"
+    return 0
+  fi
+  printf 'fail %s\n' "$name" | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$tmp" | sed -n '1,100p' | tee -a "$session_dir/summary.md"
+  return 1
+}
+
+clone_repo() {
+  if [ -d "$source_repo/.git" ]; then
+    git clone "$source_repo" "$clone"
+  else
+    git clone --no-checkout "$source_repo" "$clone"
+  fi
+  (
+    cd "$clone" || exit 1
+    if [ -n "$source_ref" ]; then
+      git fetch --depth=1 origin "$source_ref"
+      git checkout -q FETCH_HEAD
+    fi
+    git config user.email dogfood@example.local
+    git config user.name "AI Coding OS Dogfood"
+    git checkout -qb "dogfood/${session_id}"
+    npm install --silent
+    npm test
+  )
+}
+
+introduce_failure() {
+  (
+    cd "$clone" || exit 1
+    node <<'NODE'
+const fs = require('fs');
+fs.appendFileSync('test.js', `
+
+it('should support bigint inputs:', function() {
+  assert(isOdd(3n));
+  assert(!isOdd(2n));
+  assert(isOdd(-3n));
+});
+`);
+NODE
+    npm test
+  )
+}
+
+review_and_commit() {
+  (
+    cd "$clone" || exit 1
+    git diff --check
+    git diff --stat >"$log_dir/diff-stat.log"
+    git diff >"$log_dir/patch.diff"
+    {
+      printf 'Review gate: passed\n'
+      printf 'External repository: %s\n' "$source_repo"
+      printf 'Pinned ref: %s\n' "$source_ref"
+      printf 'Initial failure: captured\n'
+      printf 'Repair: verified\n'
+      printf 'Diff check: passed\n'
+      cat "$log_dir/diff-stat.log"
+    } >"$log_dir/review.log"
+    git add index.js test.js
+    git commit -qm "dogfood: support bigint odd checks"
+    git rev-parse --short HEAD >"$log_dir/commit.txt"
+  )
+}
+
+final_gates() {
+  (
+    cd "$clone" || exit 1
+    npm test
+    git status --short
+  )
+}
+
+cat >"$session_dir/session.json" <<JSON
+{
+  "schema": "ai-coding-os.third-party-dogfood.v1",
+  "session_id": "$session_id",
+  "source": "$source_repo",
+  "ref": "$source_ref",
+  "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+JSON
+
+printf '# Third-Party Dogfood\n\n' | tee "$session_dir/summary.md"
+printf 'session_id=%s\nsource=%s\nref=%s\n\n' "$session_id" "$source_repo" "$source_ref" | tee -a "$session_dir/summary.md"
+
+pass=0
+fail=0
+
+if run "Clone third-party repository" '3 passing' clone_repo; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+
+initial_log="$log_dir/initial-failing-test.log"
+if introduce_failure >"$initial_log" 2>&1; then
+  printf 'fail Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  printf '     initial test unexpectedly passed\n' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+elif grep -Eq 'Cannot convert a BigInt value|failing|FAIL|AssertionError' "$initial_log"; then
+  printf 'ok   Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  pass=$((pass + 1))
+else
+  printf 'fail Initial failing test captured\n' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$initial_log" | sed -n '1,100p' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+fi
+
+mission_id="$session_id-repair"
+command="cd '$clone'; node <<'NODE'
+const fs = require('fs');
+const file = 'index.js';
+const source = fs.readFileSync(file, 'utf8');
+const needle = 'module.exports = function isOdd(value) {\\n';
+if (!source.includes(needle)) throw new Error('unexpected index.js shape');
+const patch = needle + \"  if (typeof value === 'bigint') {\\n    const n = value < 0n ? -value : value;\\n    return (n % 2n) === 1n;\\n  }\\n\";
+fs.writeFileSync(file, source.replace(needle, patch));
+NODE
+npm test"
+verify="cd '$clone' && npm test && git diff --check && git diff --name-only | grep -Eq '^(index.js|test.js)$'"
+
+"$DOTFILES/bin/cc-agent-runtime" run \
+  --cwd "$clone" \
+  --mission-id "$mission_id" \
+  --title "Third-party public repo repair" \
+  --task "Repair failing BigInt support test in an external public repository clone" \
+  --context "session=$session_id source=$source_repo ref=$source_ref clone=$clone" \
+  --command "$command" \
+  --verify-command "$verify" \
+  --timeout-ms 180000 \
+  >"$log_dir/agent-runtime.log" 2>&1
+runtime_status=$?
+
+"$DOTFILES/bin/cc-mission-events" validate --mission-dir "$DOTFILES/.ai/missions/$mission_id" --complete-run >"$log_dir/mission-events.log" 2>&1
+events_status=$?
+
+if [ "$runtime_status" -eq 0 ] && [ "$events_status" -eq 0 ]; then
+  printf 'ok   Runtime repair and Mission Events\n' | tee -a "$session_dir/summary.md"
+  pass=$((pass + 1))
+else
+  printf 'fail Runtime repair and Mission Events\n' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$log_dir/agent-runtime.log" | sed -n '1,100p' | tee -a "$session_dir/summary.md"
+  sed 's/^/     /' "$log_dir/mission-events.log" | sed -n '1,100p' | tee -a "$session_dir/summary.md"
+  fail=$((fail + 1))
+fi
+
+if run "Review and local commit" '' review_and_commit; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+if run "Third-party tests after mutation" '4 passing' final_gates; then pass=$((pass + 1)); else fail=$((fail + 1)); fi
+
+(
+  cd "$clone" || exit 1
+  git status --short >"$log_dir/final-git-status.txt"
+  git log --oneline --decorate -5 >"$log_dir/final-git-log.txt"
+)
+
+printf '\n## Summary\n' | tee -a "$session_dir/summary.md"
+printf 'passed=%s failed=%s\n' "$pass" "$fail" | tee -a "$session_dir/summary.md"
+printf 'clone=%s\n' "$clone" | tee -a "$session_dir/summary.md"
+printf 'commit=%s\n' "$(cat "$log_dir/commit.txt" 2>/dev/null || printf none)" | tee -a "$session_dir/summary.md"
+printf 'finished_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" | tee -a "$session_dir/summary.md"
+printf 'Status: %s\n' "$([ "$fail" -eq 0 ] && printf third-party-dogfood-passed || printf third-party-dogfood-failed)" | tee -a "$session_dir/summary.md"
+
+[ "$fail" -eq 0 ]

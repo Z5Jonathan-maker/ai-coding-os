@@ -2,10 +2,46 @@
 set -euo pipefail
 
 ROUTER="${CC_ROUTER_ROOT:-$HOME/code/projects/cc-router}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+FIXTURE="${CC_PROVIDER_CAPACITY_FIXTURE:-$DOTFILES/fixtures/provider-capacity.json}"
 
 printf '# Provider Capacity\n\n'
 printf 'Generated: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 printf 'Router: %s\n\n' "$ROUTER"
+
+print_fixture() {
+  node - "$FIXTURE" <<'NODE'
+const fs = require('fs');
+const file = process.argv[2];
+const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+console.log(`Source: committed fixture fallback; ${data.note}`);
+console.log(`Captured: ${data.captured_at}`);
+console.log('');
+for (const row of data.rows) {
+  console.log(`${row.status === 'ready' ? 'ok  ' : 'warn'} ${row.lane.padEnd(14)} ${row.provider.padEnd(8)} ${row.status}`);
+  console.log(`     model=${row.model}`);
+  console.log(`     ${row.detail}`);
+}
+const ready = data.rows.filter((row) => row.status === 'ready').length;
+const degraded = data.rows.some((row) => row.status !== 'ready');
+console.log(`\nready=${ready}/${data.rows.length} status=${degraded ? 'degraded-fixture' : 'fixture-capacity'}`);
+NODE
+}
+
+required=(
+  "$ROUTER/lib/anthropic-client.cjs"
+  "$ROUTER/lib/codex-client.cjs"
+  "$ROUTER/lib/kimi-client.cjs"
+  "$ROUTER/lib/deepseek-client.cjs"
+  "$ROUTER/lib/error-classify.cjs"
+)
+for file in "${required[@]}"; do
+  if [ ! -f "$file" ]; then
+    print_fixture
+    exit 0
+  fi
+done
 
 node - "$ROUTER" <<'NODE'
 const root = process.argv[2];

@@ -1,0 +1,35 @@
+{
+  "schema": "ai-coding-os.provider-capacity.fixture.v1",
+  "captured_at": "2026-05-24T14:45:00Z",
+  "note": "live provider probes require the private cc-router checkout and user credentials.",
+  "rows": [
+    {
+      "lane": "precision",
+      "provider": "Claude",
+      "model": "claude-opus/sonnet via subscription lane",
+      "status": "ready",
+      "detail": "Fixture shows expected precision lane posture; live check probes quota and CLI health."
+    },
+    {
+      "lane": "code/direct",
+      "provider": "Codex",
+      "model": "codex subscription lane",
+      "status": "ready",
+      "detail": "Fixture shows expected execution lane posture; live check probes Codex CLI/API health."
+    },
+    {
+      "lane": "design/browser",
+      "provider": "Kimi",
+      "model": "kimi-k2.6 web/operator lane",
+      "status": "ready",
+      "detail": "Fixture shows expected design/browser lane posture; live check probes WebBridge and model access."
+    },
+    {
+      "lane": "cheap/bulk",
+      "provider": "DeepSeek",
+      "model": "deepseek-v4 API lane",
+      "status": "ready",
+      "detail": "Fixture shows expected bulk lane posture; live check probes API health."
+    }
+  ]
+}

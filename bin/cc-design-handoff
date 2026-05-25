@@ -238,6 +238,7 @@ function actionPacket(handoff, phase) {
     },
     design_dna: {
       blocks_execution: true,
+      command: 'cc-design-handoff execute --phase design_dna',
       prompt: [
         'Analyze the approved visual reference and asset kit.',
         'Extract design DNA: visual density, section pacing, typography rhythm, surface language, shadow language, motion energy, emotional frame, and visual noise budget.',
@@ -245,16 +246,16 @@ function actionPacket(handoff, phase) {
       expected_artifact: 'design.dna.json',
     },
     kimi_implementation: {
-      command: 'router-ask purpose=ui_design < approved design handoff packet',
+      command: 'cc-design-handoff execute --phase kimi_implementation',
       prompt: [
         'Implement the approved visual reference and asset kit as production UI.',
         'Use native text/buttons/forms in code. Do not reinvent the visual direction.',
         'Preserve responsive composition, accessibility, and browser-verifiable layout.',
       ].join('\n'),
-      expected_artifact: 'implementation.patch',
+      expected_artifact: 'implementation.plan.json',
     },
     claude_review: {
-      command: 'router-ask purpose=precision < taste validation packet',
+      command: 'cc-design-handoff execute --phase claude_review',
       prompt: [
         'Review implementation against visual.target.png, creative.asset-kit.json, and design.dna.json.',
         'Score creative fidelity, hierarchy, rhythm, material quality, motion, responsiveness, accessibility, and implementation realism.',

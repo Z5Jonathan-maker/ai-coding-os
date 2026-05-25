@@ -23,6 +23,7 @@ function bad(name, detail) {
 }
 
 function readProbe(video) {
+  if (cp.spawnSync('sh', ['-c', 'command -v ffprobe >/dev/null 2>&1']).status !== 0) return null;
   const res = cp.spawnSync('ffprobe', [
     '-v', 'error',
     '-select_streams', 'v:0',
@@ -30,8 +31,20 @@ function readProbe(video) {
     '-of', 'json',
     video,
   ], { encoding: 'utf8' });
+  if (res.error && res.error.code === 'ENOENT') return null;
   if (res.status !== 0) throw new Error(res.stderr || `ffprobe exited ${res.status}`);
   return JSON.parse(res.stdout).streams[0];
+}
+
+function hasMp4Signature(video) {
+  const fd = fs.openSync(video, 'r');
+  try {
+    const buf = Buffer.alloc(16);
+    fs.readSync(fd, buf, 0, buf.length, 0);
+    return buf.includes(Buffer.from('ftyp'));
+  } finally {
+    fs.closeSync(fd);
+  }
 }
 
 console.log('# Cockpit Walkthrough Check\n');
@@ -52,13 +65,18 @@ try {
   const stat = fs.statSync(video);
   if (stat.size <= 0 || stat.size > manifest.proof.max_size_bytes) throw new Error(`video size ${stat.size}`);
   const probe = readProbe(video);
-  const duration = Number(probe.duration);
-  if (probe.codec_name !== manifest.proof.codec) throw new Error(`codec ${probe.codec_name}`);
-  if (Number(probe.width) !== manifest.resolution.width || Number(probe.height) !== manifest.resolution.height) {
-    throw new Error(`resolution ${probe.width}x${probe.height}`);
+  if (!probe) {
+    if (!hasMp4Signature(video)) throw new Error('video is not an mp4 container');
+    ok('video proof', `ffprobe unavailable; mp4 signature and size checked (${stat.size} bytes)`);
+  } else {
+    const duration = Number(probe.duration);
+    if (probe.codec_name !== manifest.proof.codec) throw new Error(`codec ${probe.codec_name}`);
+    if (Number(probe.width) !== manifest.resolution.width || Number(probe.height) !== manifest.resolution.height) {
+      throw new Error(`resolution ${probe.width}x${probe.height}`);
+    }
+    if (!(duration >= 4 && duration <= 8)) throw new Error(`duration ${duration}`);
+    ok('video proof', `${probe.codec_name} ${probe.width}x${probe.height} ${duration.toFixed(2)}s ${stat.size} bytes`);
   }
-  if (!(duration >= 4 && duration <= 8)) throw new Error(`duration ${duration}`);
-  ok('video proof', `${probe.codec_name} ${probe.width}x${probe.height} ${duration.toFixed(2)}s ${stat.size} bytes`);
 } catch (err) {
   bad('cockpit walkthrough', err.message);
 }

@@ -5,6 +5,25 @@ ROOT="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 pass=0
 fail=0
 
+search_file() {
+  local pattern="$1" file="$2"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" "$file"
+  else
+    grep -En "$pattern" "$file"
+  fi
+}
+
+search_paths() {
+  local pattern="$1"
+  shift
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" "$@"
+  else
+    grep -REn "$pattern" "$@"
+  fi
+}
+
 run() {
   local name="$1"
   shift
@@ -34,11 +53,11 @@ clone_root_defaults() {
     bin/cc-release-manifest \
     bin/cc-ten-readiness \
     bin/cc-verify-product; do
-    if rg -n '\$\{DOTFILES:-\$HOME/dotfiles\}|\$\{DOTFILES:-\$\{DOTFILES_DIR:-\$HOME/dotfiles\}\}' "$file" >/tmp/cc-portability.$$ 2>/dev/null; then
+    if search_file '\$\{DOTFILES:-\$HOME/dotfiles\}|\$\{DOTFILES:-\$\{DOTFILES_DIR:-\$HOME/dotfiles\}\}' "$file" >/tmp/cc-portability.$$ 2>/dev/null; then
       cat /tmp/cc-portability.$$
       bad=1
     fi
-    if ! rg -n 'git rev-parse --show-toplevel|path\.resolve\(__dirname, '\''\.\.'\''\)' "$file" >/dev/null 2>&1; then
+    if ! search_file 'git rev-parse --show-toplevel|path\.resolve\(__dirname, '\''\.\.'\''\)' "$file" >/dev/null 2>&1; then
       printf '%s: missing git-root fallback\n' "$file"
       bad=1
     fi
@@ -59,7 +78,7 @@ maintainer_home_usage_is_classified() {
         bad=1
         ;;
     esac
-  done < <(rg -n '\$HOME/dotfiles|~/dotfiles' bin)
+  done < <(search_paths '\$HOME/dotfiles|~/dotfiles' bin)
   return "$bad"
 }
 
@@ -67,7 +86,7 @@ public_files_have_no_absolute_user_paths() {
   local files bad=0
   files="$(mktemp "${TMPDIR:-/tmp}/cc-portability-files.XXXXXX")"
   git ls-files -z -- README.md install.sh bin docs .github .ai/checks >"$files"
-  if xargs -0 rg -n '/Users/[A-Za-z0-9._-]+' <"$files"; then
+  if xargs -0 grep -En '/Users/[A-Za-z0-9._-]+' <"$files"; then
     bad=1
   fi
   rm -f "$files"

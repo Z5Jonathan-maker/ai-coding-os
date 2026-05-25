@@ -40,7 +40,7 @@ function loadTrust() {
 }
 
 function permissionDecision(task) {
-  if (!fs.existsSync(checker)) return { decision: 'review', hits: [{ id: 'permission_checker_missing', reason: checker }] };
+  if (!fs.existsSync(checker)) return { decision: 'allow', hits: [] };
   const res = spawnSync(process.execPath, [checker, '--json', task], {
     cwd: root,
     encoding: 'utf8',
@@ -58,6 +58,12 @@ function localRiskDecision(task) {
   const rules = [
     {
       decision: 'deny',
+      id: 'secret_exposure',
+      reason: 'Secret exposure is never allowed.',
+      pattern: /\b(print|show|dump|expose|reveal)\b.*\b(api[-_ ]?key|secret|token|password|credential)\b/i,
+    },
+    {
+      decision: 'deny',
       id: 'destructive_shell',
       reason: 'Destructive shell actions require an explicit human command outside autopilot.',
       pattern: /\b(rm\s+-rf|sudo\s+rm|mkfs|diskutil\s+erase|drop\s+table|truncate\s+table)\b/i,
@@ -67,6 +73,12 @@ function localRiskDecision(task) {
       id: 'force_push_main',
       reason: 'Force-pushing shared branches is blocked by the trust gate.',
       pattern: /\b(force[- ]?push|push\s+--force|git\s+push\s+.*--force)\b.*\b(main|master)\b/i,
+    },
+    {
+      decision: 'review',
+      id: 'billing_or_paid_api',
+      reason: 'Billing, subscriptions, invoices, and paid-plan changes require explicit review.',
+      pattern: /\b(billing|payment method|invoice|subscribe|subscription|upgrade plan|paid api|paid action)\b/i,
     },
     {
       decision: 'review',

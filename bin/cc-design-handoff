@@ -60,6 +60,52 @@ function run(cmd, cmdArgs, options = {}) {
   });
 }
 
+function createPhaseCheckpoint(repo, handoff, phase, label) {
+  if (has('no-checkpoint') || process.env.CC_DESIGN_HANDOFF_NO_CHECKPOINT === '1') return null;
+  const res = run(path.join(root, 'bin', 'cc-phase-checkpoint'), [
+    'create',
+    '--repo',
+    repo,
+    '--mission',
+    handoff.mission_id,
+    '--phase',
+    phase.id,
+    '--label',
+    label,
+    '--json',
+  ], { timeout: 60000, maxBuffer: 1024 * 1024 * 4 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  if (res.status !== 0) {
+    return {
+      schema: 'ai-coding-os.phase-checkpoint.v1',
+      repo: path.resolve(repo),
+      mission: handoff.mission_id,
+      phase: phase.id,
+      label,
+      status: 'failed',
+      error: raw || `cc-phase-checkpoint exited ${res.status}`,
+      created_at: now(),
+    };
+  }
+  const parsed = extractJson(raw) || {};
+  return {
+    schema: 'ai-coding-os.phase-checkpoint.v1',
+    ...parsed,
+    repo: parsed.repo || path.resolve(repo),
+    mission: parsed.mission || handoff.mission_id,
+    phase: parsed.phase || phase.id,
+    label: parsed.label || label,
+    status: 'created',
+    created_at: now(),
+  };
+}
+
+function addCheckpointRecord(phase, record) {
+  if (!record) return;
+  phase.checkpoints = Array.isArray(phase.checkpoints) ? phase.checkpoints : [];
+  phase.checkpoints.push(record);
+}
+
 function extractJson(text) {
   const raw = String(text || '').trim();
   if (!raw) return null;
@@ -1726,6 +1772,11 @@ function executeStage() {
     console.log('\nStatus: design-handoff-execute-blocked');
     return;
   }
+  const targetRepo = value('target-repo', '');
+  addCheckpointRecord(phase, createPhaseCheckpoint(root, handoff, phase, 'pre'));
+  if (phase.id === 'kimi_implementation' && targetRepo) {
+    addCheckpointRecord(phase, createPhaseCheckpoint(targetRepo, handoff, phase, 'target-pre'));
+  }
   const providedArtifact = value('artifact', '');
   let artifact = providedArtifact;
   let blocked = false;
@@ -1811,6 +1862,11 @@ function executeStage() {
     artifact,
     blocked,
   }, [artifact], phase.owner_lane));
+  if (phase.id === 'kimi_implementation' && targetRepo) {
+    addCheckpointRecord(phase, createPhaseCheckpoint(targetRepo, handoff, phase, 'target-post'));
+  }
+  addCheckpointRecord(phase, createPhaseCheckpoint(root, handoff, phase, 'post'));
+  writeJson(files.handoff, handoff);
 
   const result = {
     schema: 'ai-coding-os.design-handoff-execute.v1',
@@ -1818,6 +1874,7 @@ function executeStage() {
     phase: phase.id,
     artifact,
     blocked,
+    checkpoints: phase.checkpoints || [],
     status: blocked ? 'blocked' : 'completed',
   };
   if (has('json')) {

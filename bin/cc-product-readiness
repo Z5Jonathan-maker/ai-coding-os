@@ -62,6 +62,7 @@ check 'router smoke routes expected prompts' "$DOTFILES/bin/cc-router-smoke"
 check 'router integrity aligned' "node '$ROUTER/lib/check-integrity.cjs'"
 check 'router classifier regression suite passes' "'$ROUTER/bin/cc-router-classifier-check'"
 check 'external contracts stable' "$DOTFILES/bin/cc-external-contracts"
+check 'phase checkpoints restore' "$DOTFILES/bin/cc-phase-checkpoint --check"
 check 'system demo passes' "$DOTFILES/bin/cc-system-demo"
 check 'first-run doctor passes' "$DOTFILES/install.sh --dry-run"
 check 'VS Code cockpit extension installed' extension_ready

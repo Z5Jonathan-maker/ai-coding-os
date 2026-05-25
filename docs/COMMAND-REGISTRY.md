@@ -14,6 +14,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-loop` — unattended Claude runner.
 - `cc-pause` — pause `cc-loop`.
 - `cc-permission-matrix` — visible autonomy boundaries for cockpit approvals.
+- `cc-phase-checkpoint` — phase-scoped shadow Git checkpoints with list/show/restore for handoff undo.
 - `cc-plan` — save a read-only implementation plan artifact in `.ai/plans/`.
 - `cc-product-readiness` — paid-product readiness gate for cockpit, router, sync, and packaging.
 - `cc-pr-quality-score` — maintainer-style patch quality scorer for third-party/public repo dogfood work.

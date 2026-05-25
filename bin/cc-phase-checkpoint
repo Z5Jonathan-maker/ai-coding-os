@@ -1,0 +1,214 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo="."
+mission=""
+phase=""
+label="manual"
+json=0
+yes=0
+ref_arg=""
+
+usage() {
+  cat <<'EOF'
+Usage:
+  cc-phase-checkpoint create --repo DIR --mission ID --phase ID [--label pre|post] [--json]
+  cc-phase-checkpoint list [--repo DIR] [--mission ID]
+  cc-phase-checkpoint show --repo DIR --ref REF
+  cc-phase-checkpoint restore --repo DIR --ref REF [--yes]
+  cc-phase-checkpoint --check
+
+Creates phase-scoped shadow Git commits without touching HEAD or the real index.
+Restore overwrites working tree files from the selected checkpoint and leaves
+HEAD untouched.
+EOF
+}
+
+sub="${1:-list}"
+[ "$#" -gt 0 ] && shift || true
+if [ "$sub" = "--check" ]; then
+  sub="check"
+fi
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+  --repo)
+    repo="${2:?missing --repo value}"
+    shift 2
+    ;;
+  --mission)
+    mission="${2:?missing --mission value}"
+    shift 2
+    ;;
+  --phase)
+    phase="${2:?missing --phase value}"
+    shift 2
+    ;;
+  --label)
+    label="${2:?missing --label value}"
+    shift 2
+    ;;
+  --ref)
+    ref_arg="${2:?missing --ref value}"
+    shift 2
+    ;;
+  --json)
+    json=1
+    shift
+    ;;
+  --yes)
+    yes=1
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    echo "cc-phase-checkpoint: unknown option $1" >&2
+    usage >&2
+    exit 2
+    ;;
+  esac
+done
+
+repo="$(cd "$repo" && pwd)"
+git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+  echo "cc-phase-checkpoint: not a git repo: $repo" >&2
+  exit 2
+}
+
+slug() {
+  printf '%s' "${1:-manual}" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-' | sed 's/^-//;s/-$//' | cut -c1-96
+}
+
+checkpoint_ref() {
+  local m p l
+  m="$(slug "$mission")"
+  p="$(slug "$phase")"
+  l="$(slug "$label")"
+  [ -n "$m" ] || m="manual"
+  [ -n "$p" ] || p="phase"
+  [ -n "$l" ] || l="manual"
+  printf 'refs/cc-phase-checkpoints/%s/%s/%s' "$m" "$p" "$l"
+}
+
+json_print() {
+  node -e 'const obj=JSON.parse(process.argv[1]); process.stdout.write(JSON.stringify(obj,null,2)+"\n")' "$1"
+}
+
+cmd_create() {
+  [ -n "$mission" ] || {
+    echo "cc-phase-checkpoint: --mission required" >&2
+    exit 2
+  }
+  [ -n "$phase" ] || {
+    echo "cc-phase-checkpoint: --phase required" >&2
+    exit 2
+  }
+  local ref index tree parent commit status_short dirty_count head message
+  ref="$(checkpoint_ref)"
+  index="$(mktemp "${TMPDIR:-/tmp}/cc-phase-checkpoint.XXXXXX")"
+  rm -f "$index"
+  trap 'rm -f "$index"' RETURN
+
+  GIT_INDEX_FILE="$index" git -C "$repo" read-tree HEAD 2>/dev/null ||
+    GIT_INDEX_FILE="$index" git -C "$repo" read-tree --empty
+  GIT_INDEX_FILE="$index" git -C "$repo" add -A
+  tree="$(GIT_INDEX_FILE="$index" git -C "$repo" write-tree)"
+  parent="$(git -C "$repo" rev-parse --verify "$ref" 2>/dev/null || true)"
+  head="$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || printf '')"
+  status_short="$(git -C "$repo" status --short)"
+  dirty_count="$(printf '%s\n' "$status_short" | sed '/^$/d' | wc -l | tr -d ' ')"
+  message="phase checkpoint: $mission $phase $label"
+  if [ -n "$parent" ]; then
+    commit="$(printf '%s\n\nrepo=%s\nhead=%s\ndirty_count=%s\n' "$message" "$repo" "$head" "$dirty_count" |
+      GIT_INDEX_FILE="$index" git -C "$repo" commit-tree "$tree" -p "$parent")"
+  else
+    commit="$(printf '%s\n\nrepo=%s\nhead=%s\ndirty_count=%s\n' "$message" "$repo" "$head" "$dirty_count" |
+      GIT_INDEX_FILE="$index" git -C "$repo" commit-tree "$tree")"
+  fi
+  git -C "$repo" update-ref "$ref" "$commit"
+
+  if [ "$json" -eq 1 ]; then
+    json_print "$(node -e 'const [repo,ref,commit,mission,phase,label,head,dirty]=process.argv.slice(1); process.stdout.write(JSON.stringify({schema:"ai-coding-os.phase-checkpoint.v1",repo,ref,commit,mission,phase,label,head,dirty_count:Number(dirty)}))' "$repo" "$ref" "$commit" "$mission" "$phase" "$label" "$head" "$dirty_count")"
+  else
+    printf '# Phase Checkpoint\n\n'
+    printf 'Repo: %s\n' "$repo"
+    printf 'Ref: %s\n' "$ref"
+    printf 'Commit: %s\n' "$commit"
+    printf 'Dirty paths: %s\n' "$dirty_count"
+    printf 'Status: phase-checkpoint-ready\n'
+  fi
+}
+
+cmd_list() {
+  local pattern="refs/cc-phase-checkpoints"
+  if [ -n "$mission" ]; then
+    pattern="$pattern/$(slug "$mission")"
+  fi
+  if ! git -C "$repo" for-each-ref --format='%(refname)%09%(objectname:short)%09%(committerdate:iso8601)%09%(subject)' "$pattern" | sed -n '1,80p'; then
+    return 1
+  fi
+}
+
+cmd_show() {
+  [ -n "$ref_arg" ] || {
+    echo "cc-phase-checkpoint: --ref required" >&2
+    exit 2
+  }
+  git -C "$repo" diff "$ref_arg" -- .
+}
+
+cmd_restore() {
+  [ -n "$ref_arg" ] || {
+    echo "cc-phase-checkpoint: --ref required" >&2
+    exit 2
+  }
+  git -C "$repo" rev-parse --verify "$ref_arg" >/dev/null
+  if [ "$yes" -ne 1 ]; then
+    printf 'this will overwrite working tree files from %s\n' "$ref_arg"
+    read -rp "proceed? [y/N] " ans
+    [[ "$ans" =~ ^[yY] ]] || {
+      echo "aborted"
+      exit 0
+    }
+  fi
+  git -C "$repo" checkout "$ref_arg" -- .
+  printf 'restored from %s; HEAD untouched\n' "$ref_arg"
+}
+
+cmd_check() {
+  local tmp ref
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/cc-phase-checkpoint-check.XXXXXX")"
+  trap 'rm -rf "$tmp"' RETURN
+  git -C "$tmp" init >/dev/null
+  git -C "$tmp" config user.email test@example.com
+  git -C "$tmp" config user.name "Test User"
+  printf 'before\n' >"$tmp/app.txt"
+  git -C "$tmp" add .
+  git -C "$tmp" commit -m init >/dev/null
+  printf 'after\n' >"$tmp/app.txt"
+  "$0" create --repo "$tmp" --mission demo --phase implementation --label pre --json >/tmp/cc-phase-checkpoint-check.json
+  ref="$(node -e 'const fs=require("fs"); process.stdout.write(JSON.parse(fs.readFileSync(process.argv[1],"utf8")).ref)' /tmp/cc-phase-checkpoint-check.json)"
+  "$0" list --repo "$tmp" --mission demo | grep -Fq "$ref"
+  printf 'broken\n' >"$tmp/app.txt"
+  "$0" restore --repo "$tmp" --ref "$ref" --yes >/dev/null
+  grep -Fxq 'after' "$tmp/app.txt"
+  rm -f /tmp/cc-phase-checkpoint-check.json
+  printf 'Status: phase-checkpoint-ready\n'
+}
+
+case "$sub" in
+create) cmd_create ;;
+list) cmd_list ;;
+show) cmd_show ;;
+restore) cmd_restore ;;
+check) cmd_check ;;
+-h | --help) usage ;;
+*)
+  echo "cc-phase-checkpoint: unknown subcommand $sub" >&2
+  usage >&2
+  exit 2
+  ;;
+esac

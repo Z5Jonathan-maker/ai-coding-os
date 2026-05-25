@@ -7,6 +7,11 @@ and a verification gate.
 Code-level study before Agent Runtime Adapter implementation:
 `docs/CODE-EXTRACTION-STUDY-2026-05-23.md`.
 
+Deep reference studies:
+
+- `docs/archive/reference-studies/OPENHANDS-CODE-STUDY-2026-05-24.md`
+- `docs/archive/reference-studies/DEVIN-PUBLIC-ARTIFACT-STUDY-2026-05-24.md`
+
 ## Rule
 
 Extract primitives, not product clutter.

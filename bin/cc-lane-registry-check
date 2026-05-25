@@ -23,6 +23,14 @@ if (!Array.isArray(registry.lanes) || registry.lanes.length === 0) err('lanes mu
 if (!registry.capabilities || typeof registry.capabilities !== 'object') err('capabilities must be an object');
 
 const laneIds = new Set();
+const classPrimary = {
+  image: 'chatgpt-image',
+  design: 'kimi-webbridge',
+  cheap: 'deepseek',
+  precision: 'claude',
+  codex: 'codex',
+};
+
 for (const lane of registry.lanes || []) {
   if (!lane.id) {
     err('lane missing id');
@@ -42,6 +50,18 @@ for (const lane of registry.lanes || []) {
     if (!laneIds.has(fb) && !(registry.lanes || []).some((candidate) => candidate.id === fb)) {
       err(`${lane.id}: fallback references missing lane ${fb}`);
     }
+  }
+}
+
+for (const [klass, laneId] of Object.entries(classPrimary)) {
+  const lane = (registry.lanes || []).find((candidate) => candidate.id === laneId);
+  if (!lane) {
+    err(`route class ${klass}: primary lane missing: ${laneId}`);
+    continue;
+  }
+  if (lane.status !== 'active') err(`route class ${klass}: primary lane ${laneId} must be active`);
+  for (const fb of lane.fallbacks || []) {
+    if (!laneIds.has(fb)) err(`route class ${klass}: fallback lane missing: ${fb}`);
   }
 }
 

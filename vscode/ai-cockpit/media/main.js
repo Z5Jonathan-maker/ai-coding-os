@@ -7,6 +7,10 @@
   let contextBlock = '';
   let attached = [];
   let activePrompt = '';
+  let annotateMode = false;
+  let annotationStart = null;
+  let pendingAnnotation = null;
+  let visualAnnotations = [];
 
   function renderChips() {
     $('chips').innerHTML = '';
@@ -99,6 +103,35 @@
       return;
     }
 
+    if (event.target.closest('#visualPreviewLoad')) {
+      loadVisualPreview();
+      return;
+    }
+
+    if (event.target.closest('#visualAnnotateToggle')) {
+      toggleAnnotateMode();
+      return;
+    }
+
+    const visualRoute = event.target.closest('button[data-visual-route]');
+    if (visualRoute) {
+      const index = Number(visualRoute.dataset.visualRoute || -1);
+      const annotation = visualAnnotations[index];
+      if (annotation) {
+        vscode.postMessage({ command: 'routeVisualAnnotation', payload: annotation });
+        startTranscript('designBrowser', annotation.note || 'Apply visual annotation');
+      }
+      return;
+    }
+
+    const visualDelete = event.target.closest('button[data-visual-delete]');
+    if (visualDelete) {
+      const index = Number(visualDelete.dataset.visualDelete || -1);
+      const annotation = visualAnnotations[index];
+      if (annotation) vscode.postMessage({ command: 'deleteVisualAnnotation', payload: annotation });
+      return;
+    }
+
     const workstreamButton = event.target.closest('button[data-workstream-prompt]');
     if (workstreamButton) {
       const article = workstreamButton.closest('.workstream');
@@ -175,6 +208,7 @@
 
   window.addEventListener('load', () => {
     setTimeout(() => $('prompt')?.focus(), 0);
+    bindVisualAnnotationLayer();
   });
 
   document.addEventListener('keydown', (event) => {
@@ -214,6 +248,12 @@
     if (message.type === 'appendContext') {
       attached.push(message.payload);
       renderChips();
+      return;
+    }
+    if (message.type === 'visualAnnotationNote') {
+      const payload = message.payload || {};
+      if (payload.rect && payload.note) saveVisualAnnotation(payload.rect, payload.note, payload);
+      pendingAnnotation = null;
       return;
     }
     if (message.type !== 'state') return;
@@ -379,6 +419,8 @@
     if (!surface) return;
     const data = handoff && typeof handoff === 'object' ? handoff : {};
     const progress = clamp(Number(data.progress || 0), 0, 100);
+    surface.dataset.missionId = data.missionId || '';
+    surface.dataset.missionDir = data.relativeDir || data.dir || '';
     surface.classList.toggle('empty', data.status === 'empty' || !data.phases?.length);
     setText('handoffTitle', data.title || 'No creative handoff mission');
     setText('handoffSummary', data.summary || 'Create a handoff to see creative direction and implementation proof.');
@@ -390,6 +432,207 @@
     renderHandoffStages(data.phases || [], data.activePhase);
     renderHandoffArtifacts(data.artifacts || []);
     renderHandoffEvents(data.events || []);
+    renderVisualAnnotations(data.visualAnnotations || []);
+  }
+
+  function loadVisualPreview() {
+    const input = $('visualPreviewUrl');
+    const frame = $('visualPreview');
+    if (!input || !frame) return;
+    const url = normalizePreviewUrl(input.value);
+    if (!url) return;
+    input.value = url;
+    frame.src = url;
+    toggleAnnotateMode(false);
+  }
+
+  function toggleAnnotateMode(force) {
+    annotateMode = typeof force === 'boolean' ? force : !annotateMode;
+    const layer = $('visualAnnotationLayer');
+    const button = $('visualAnnotateToggle');
+    if (layer) {
+      layer.hidden = !annotateMode;
+      layer.classList.toggle('active', annotateMode);
+      clearDraftAnnotation();
+    }
+    if (button) {
+      button.classList.toggle('active', annotateMode);
+      button.setAttribute('aria-pressed', String(annotateMode));
+      button.textContent = annotateMode ? 'Annotating' : 'Annotate';
+    }
+  }
+
+  function bindVisualAnnotationLayer() {
+    const layer = $('visualAnnotationLayer');
+    if (!layer) return;
+    layer.addEventListener('pointerdown', (event) => {
+      if (!annotateMode || event.button !== 0) return;
+      event.preventDefault();
+      const bounds = layer.getBoundingClientRect();
+      annotationStart = pointInBounds(event, bounds);
+      const draft = document.createElement('div');
+      draft.className = 'visual-annotation-rect draft';
+      draft.dataset.draft = 'true';
+      layer.appendChild(draft);
+      layer.setPointerCapture(event.pointerId);
+      updateDraftAnnotation(annotationStart, annotationStart, bounds);
+    });
+    layer.addEventListener('pointermove', (event) => {
+      if (!annotationStart) return;
+      const bounds = layer.getBoundingClientRect();
+      updateDraftAnnotation(annotationStart, pointInBounds(event, bounds), bounds);
+    });
+    layer.addEventListener('pointerup', (event) => {
+      if (!annotationStart) return;
+      const bounds = layer.getBoundingClientRect();
+      const rect = normalizedRect(annotationStart, pointInBounds(event, bounds), bounds);
+      annotationStart = null;
+      clearDraftAnnotation();
+      if (rect.width < 8 || rect.height < 8) return;
+      pendingAnnotation = annotationPayload(rect);
+      vscode.postMessage({ command: 'askVisualAnnotationNote', payload: pendingAnnotation });
+    });
+  }
+
+  function pointInBounds(event, bounds) {
+    return {
+      x: clamp(event.clientX - bounds.left, 0, bounds.width),
+      y: clamp(event.clientY - bounds.top, 0, bounds.height),
+    };
+  }
+
+  function normalizedRect(start, end, bounds) {
+    const left = Math.min(start.x, end.x);
+    const top = Math.min(start.y, end.y);
+    const width = Math.abs(end.x - start.x);
+    const height = Math.abs(end.y - start.y);
+    return {
+      left: round(left),
+      top: round(top),
+      width: round(width),
+      height: round(height),
+      x_percent: round((left / Math.max(1, bounds.width)) * 100),
+      y_percent: round((top / Math.max(1, bounds.height)) * 100),
+      width_percent: round((width / Math.max(1, bounds.width)) * 100),
+      height_percent: round((height / Math.max(1, bounds.height)) * 100),
+    };
+  }
+
+  function updateDraftAnnotation(start, end, bounds) {
+    const draft = document.querySelector('.visual-annotation-rect.draft');
+    if (!draft) return;
+    const rect = normalizedRect(start, end, bounds);
+    Object.assign(draft.style, {
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${rect.width}px`,
+      height: `${rect.height}px`,
+    });
+  }
+
+  function clearDraftAnnotation() {
+    document.querySelectorAll('.visual-annotation-rect.draft').forEach((node) => node.remove());
+  }
+
+  function annotationPayload(rect) {
+    const frame = $('visualPreview');
+    const surface = document.querySelector('.creative-surface');
+    return {
+      url: normalizePreviewUrl(frame?.src || $('visualPreviewUrl')?.value || ''),
+      rect,
+      viewport: {
+        width: $('visualAnnotationLayer')?.clientWidth || 0,
+        height: $('visualAnnotationLayer')?.clientHeight || 0,
+        device_scale_factor: window.devicePixelRatio || 1,
+      },
+      missionId: surface?.dataset.missionId || '',
+      missionDir: surface?.dataset.missionDir || '',
+      routeHint: 'design/kimi',
+      selection_kind: 'region',
+    };
+  }
+
+  function saveVisualAnnotation(rect, note, base = {}) {
+    const payload = {
+      ...base,
+      rect,
+      note: String(note || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').slice(0, 4000).trim(),
+      url: normalizePreviewUrl(base.url || $('visualPreview')?.src || $('visualPreviewUrl')?.value || ''),
+    };
+    if (!payload.note || !payload.url) return;
+    visualAnnotations.unshift({
+      ...payload,
+      id: 'pending',
+      created_at: new Date().toISOString(),
+      status: 'captured',
+    });
+    renderVisualAnnotations(visualAnnotations);
+    vscode.postMessage({ command: 'saveVisualAnnotation', payload });
+  }
+
+  function normalizePreviewUrl(value) {
+    const raw = String(value || '').trim();
+    if (!raw || raw === 'about:blank') return raw;
+    try {
+      const url = new URL(raw);
+      if (!['http:', 'https:'].includes(url.protocol)) return '';
+      if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return '';
+      return url.href;
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function renderVisualAnnotations(list) {
+    const container = $('visualAnnotations');
+    if (!container) return;
+    visualAnnotations = Array.isArray(list) ? list.slice(0, 8) : [];
+    container.innerHTML = '';
+    if (!visualAnnotations.length) {
+      const empty = document.createElement('div');
+      empty.className = 'visual-annotation-empty';
+      empty.textContent = 'No visual annotations captured yet.';
+      container.appendChild(empty);
+      return;
+    }
+    visualAnnotations.forEach((annotation, index) => {
+      const node = document.createElement('article');
+      node.className = 'visual-annotation-item';
+      const top = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = `Annotation ${index + 1}`;
+      const time = document.createElement('span');
+      time.textContent = relativeTime(annotation.created_at) || annotation.status || 'captured';
+      top.append(title, time);
+      const note = document.createElement('p');
+      note.textContent = annotation.note || 'No note recorded.';
+      const meta = document.createElement('small');
+      const rect = annotation.rect || {};
+      meta.textContent = [
+        annotation.route_hint || annotation.routeHint || 'design/kimi',
+        annotation.url ? compact(annotation.url) : '',
+        Number.isFinite(rect.width_percent) ? `${rect.width_percent}%w x ${rect.height_percent}%h` : '',
+      ].filter(Boolean).join(' · ');
+      const route = document.createElement('button');
+      route.type = 'button';
+      route.className = 'visual-route-button';
+      route.dataset.visualRoute = String(index);
+      route.textContent = 'Route';
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'visual-delete-button';
+      remove.dataset.visualDelete = String(index);
+      remove.textContent = 'Delete';
+      const actions = document.createElement('div');
+      actions.className = 'visual-annotation-actions';
+      actions.append(remove, route);
+      node.append(top, note, meta, actions);
+      container.appendChild(node);
+    });
+  }
+
+  function round(value) {
+    return Math.round(Number(value || 0) * 100) / 100;
   }
 
   function renderHandoffStages(phases, activePhase) {

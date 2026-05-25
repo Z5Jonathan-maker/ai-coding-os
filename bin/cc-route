@@ -53,6 +53,40 @@ function platformFor(cls) {
   })[cls] || 'codex';
 }
 
+function laneIdForClass(cls) {
+  return ({
+    image: 'chatgpt-image',
+    design: 'kimi-webbridge',
+    cheap: 'deepseek',
+    precision: 'claude',
+    codex: 'codex',
+  })[cls] || cls;
+}
+
+function classForLaneId(id) {
+  return ({
+    'chatgpt-image': 'image',
+    'kimi-webbridge': 'design',
+    playwright: 'design',
+    deepseek: 'cheap',
+    claude: 'precision',
+    codex: 'codex',
+    tel: 'credentialed',
+  })[id] || id;
+}
+
+function platformForLaneId(id) {
+  return ({
+    'chatgpt-image': 'chatgpt',
+    'kimi-webbridge': 'kimi',
+    playwright: 'playwright',
+    deepseek: 'deepseek',
+    claude: 'claude',
+    codex: 'codex',
+    tel: 'tel',
+  })[id] || id;
+}
+
 function canonicalPurpose(purpose) {
   const text = String(purpose || '').toLowerCase().replace(/[^a-z0-9_/-]+/g, '_');
   if (!text) return '';
@@ -87,32 +121,40 @@ function classify(prompt, purpose) {
   return { cls: hit ? hit[0] : 'precision', source: hit ? 'regex' : 'default' };
 }
 
-function fallbackFor(cls) {
-  const chains = {
-    image: ['image/chatgpt'],
-    design: ['design/kimi', 'precision/claude', 'codex/codex'],
-    cheap: ['cheap/deepseek', 'codex/codex', 'precision/claude'],
-    precision: ['precision/claude', 'codex/codex', 'design/kimi', 'cheap/deepseek'],
-    codex: ['codex/codex', 'precision/claude', 'cheap/deepseek'],
-  };
-  return (chains[cls] || chains.precision).map((entry) => {
-    const [klass, platform] = entry.split('/');
-    return { class: klass, platform, id: klass };
-  });
+function laneById(data, id) {
+  return (data.lanes || []).find((lane) => lane.id === id) || null;
 }
 
-function laneExists(data, cls, platform) {
-  const byPlatform = { chatgpt: 'chatgpt-image', kimi: 'kimi-webbridge' };
-  const id = byPlatform[platform] || platform;
-  return Array.isArray(data.lanes) && data.lanes.some((lane) => lane.id === id || lane.id === platform || lane.id === cls);
+function fallbackFor(data, cls) {
+  const primaryId = laneIdForClass(cls);
+  const seen = new Set();
+  const out = [];
+  const push = (id) => {
+    if (!id || seen.has(id)) return;
+    seen.add(id);
+    const lane = laneById(data, id);
+    out.push({
+      class: classForLaneId(id),
+      platform: platformForLaneId(id),
+      id,
+      hard_floor: Boolean(lane?.hardFloor),
+      status: lane?.status || 'unknown',
+    });
+  };
+  push(primaryId);
+  for (const id of laneById(data, primaryId)?.fallbacks || []) push(id);
+  if (out.length < 2 && cls !== 'image') push('codex');
+  return out;
 }
 
 function decision(prompt, purpose = '') {
   const lanes = readLanes();
   const classified = classify(prompt, purpose);
   const cls = classified.cls;
-  const platform = platformFor(cls);
-  const fallbackChain = fallbackFor(cls);
+  const primaryLaneId = laneIdForClass(cls);
+  const primaryLane = laneById(lanes, primaryLaneId);
+  const platform = platformForLaneId(primaryLaneId) || platformFor(cls);
+  const fallbackChain = fallbackFor(lanes, cls);
   return {
     purpose: purpose || null,
     flags: [],
@@ -122,21 +164,12 @@ function decision(prompt, purpose = '') {
     classified_after_overrides: cls,
     final_class: cls,
     platform,
-    hard_floor: cls === 'precision',
-    quota_bypassed: true,
-    quota_rebalanced: false,
-    quota_from: null,
-    quota_to: null,
-    sticky_session: false,
-    sticky_applied: false,
-    sticky_from: null,
-    sticky_to: null,
-    sticky_reason: null,
-    cost_threshold: null,
+    primary_lane: primaryLaneId,
+    hard_floor: Boolean(primaryLane?.hardFloor),
     fallback_chain: fallbackChain,
     source: 'in-tree',
     router: 'cc-route',
-    lane_known: laneExists(lanes, cls, platform),
+    lane_known: Boolean(primaryLane),
   };
 }
 

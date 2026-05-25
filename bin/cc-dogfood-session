@@ -190,7 +190,7 @@ else
     fail=$((fail + 1))
   fi
 
-  if "$DOTFILES/bin/cc-ten-readiness" >"$session_dir/ten-readiness.log" 2>&1; then
+  if "$DOTFILES/bin/cc-ten-readiness" >"$session_dir/strict-readiness.log" 2>&1; then
     printf 'cc-ten-readiness=passed\n' | tee -a "$session_dir/summary.md"
   else
     printf 'cc-ten-readiness=failed\n' | tee -a "$session_dir/summary.md"

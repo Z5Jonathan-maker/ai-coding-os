@@ -35,7 +35,7 @@ Default output:
     router-metrics.log
     git-status.txt
   verify-product.log
-  ten-readiness.log
+  strict-readiness.log
 ```
 
 Each cycle creates a Mission Kernel directory under `.ai/missions/`, which is
@@ -68,7 +68,7 @@ The session is a continuity test:
 - Mission Events are validated per cycle
 - dogfood workflow proof is captured repeatedly
 - context, diff, provider capacity, and router metrics are recorded
-- final product and 10/10 readiness gates run after the timed session
+- final product and strict readiness gates run after the timed session
 
 This is the closest local proof that the system can survive a sustained working
 window without pretending a short benchmark is a full day of development.

@@ -8,16 +8,11 @@ The current four-week plan lives at
 `.ai/ISA-internal-excellence-criteria.md`.
 Browser automation mode boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
-Competitive proof against the top reference systems lives at
-`docs/SUPERIORITY-MATRIX.md`.
-The first sustained six-hour dogfood proof lives at
-`docs/DOGFOOD-REPORT-2026-05-24.md`.
-The first isolated mutating coding proof lives at
-`docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
-The first larger public-clone coding proof lives at
-`docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`.
-The first third-party public-repo coding proof lives at
-`docs/THIRD-PARTY-DOGFOOD-REPORT-2026-05-24.md`.
+Competitive evidence against the top reference systems lives at
+`docs/COMPETITIVE-EVIDENCE.md`.
+Dogfood workflows should be runnable fixtures, not dated report files. The
+dated 2026-05-24 dogfood reports were removed from the product docs because
+they were session logs, not product documentation.
 Reference extraction tracks live at `docs/EXTRACTION-TRACKS.md`. The mission
 artifact contract lives at `docs/MISSION-KERNEL.md`.
 
@@ -97,7 +92,7 @@ trust tier, and safety boundary.
   upstream issue fixtures with an expected patch, baseline probe when present,
   and final test verification. Long-context fixtures include citation and
   top-risk scoring.
-- **Competitive proof matrix:** `cc-superiority-check` keeps claims against
+- **Competitive evidence ledger:** `cc-competitive-evidence-check` keeps claims against
   OpenHands, Claude Code, Cursor, Cline, OpenCode, Kimi, Codex, Windsurf,
   Devin, Octagents-style swarms, and token-router stacks tied to explicit
   proof commands and known gaps.
@@ -234,9 +229,9 @@ Removed from active stack:
 - Crush, because it duplicated the interface layer without adding an independent
   model, safety boundary, or cost advantage.
 
-## Definition Of 100% Functional
+## Definition Of Daily-Driver Ready
 
-Installed system is 100% when:
+Installed system is daily-driver ready when:
 
 1. `cc-health-weekly --verbose` is green except intentional dirty-repo state
 2. `cc-system-demo` passes
@@ -266,7 +261,7 @@ Installed system is 100% when:
     documented in the packaged system. Fresh public clones use the committed
     `fixtures/feedback-laws` fallback when the local `AI-SYSTEM-V2` install is
     absent.
-21. `cc-superiority-check` proves competitive claims are documented against
+21. `cc-competitive-evidence-check` proves reference-app claims are documented against
     reference systems, tied to commands, and backed by at least three graded
     benchmark fixtures
 22. `cc-mission-kernel --check` proves mission artifacts have a documented,
@@ -299,7 +294,7 @@ proof, cockpit packaging, and mission-state regression tests.
 Current local state is tracked by `cc-product-readiness`; dirty/synced repo
 state is expected while active work is in flight.
 
-Internal excellence is 100% when:
+Internal excellence is reached when:
 
 1. install flow is one command plus documented prerequisite accounts
 2. first-run health explains every missing dependency in plain language
@@ -322,7 +317,7 @@ Internal excellence is 100% when:
 15. source-controlled AI checks and workspace trust policy are executable
 16. `cc-demo-quick` gives a cold reviewer the product thesis and proof in one
     short terminal run without requiring a clean tree
-17. `cc-superiority-check` keeps "better than the top projects" claims honest
+17. `cc-competitive-evidence-check` keeps reference-app comparisons honest
     by requiring a dimension-by-dimension matrix, required proof commands, and
     graded benchmark depth
 18. the Mission Kernel exists as a concrete artifact contract so missions can
@@ -359,7 +354,7 @@ cc-verify-product
 It is intentionally harsher than `cc-product-readiness`. It requires public CI,
 external evaluator readiness, fresh-clone validation, source-controlled AI
 checks, feedback-law validation, dogfood proof, product readiness, release
-readiness, portable launch docs, and this documented 10/10 contract.
+readiness, portable launch docs, and this documented strict readiness contract.
 
 ## Packaging Rule
 

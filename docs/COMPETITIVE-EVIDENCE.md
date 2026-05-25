@@ -61,7 +61,7 @@ Status values:
 | Public evaluator experience | Cold reviewer can understand and verify quickly | `cc-demo-quick`, `cc-evaluator-check`, `cc-fresh-clone-check`, `cc-release-artifact-check`, `cc-release-concurrency-check`, `cc-portability-check`, Public CI | Hosted demo/video walkthrough and public/maintainer split | `cc-evaluator-check`, `cc-release-artifact-check`, `cc-release-concurrency-check`, `cc-portability-check` | Needs live proof |
 | Competitive clarity | The repo states where it wins and where it does not | This document, executable command inventory, graded benchmark fixtures, and explicit gap list | Periodic refresh against live reference projects | `cc-superiority-check` | Needs proof |
 
-## Non-Negotiable Gaps Before "Better Than The Top Projects"
+## Non-Negotiable Gaps Before Reference-Level Claims
 
 These are the remaining gaps that matter most:
 
@@ -78,12 +78,12 @@ Architecture/orchestration: elite
 Proof harness: strong and improving
 Daily-driver UX: close, not fully proven
 Public installability: improving, not finished
-Competitive superiority: plausible, not fully proven
+Competitive standing: plausible, not fully proven
 ```
 
 ## Required Proof Commands
 
-The competitive claim must stay backed by these commands:
+Reference-app comparisons must stay backed by these commands:
 
 ```sh
 cc-demo-quick

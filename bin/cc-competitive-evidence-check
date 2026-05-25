@@ -12,7 +12,7 @@ const root = process.env.DOTFILES || (() => {
 
 const args = process.argv.slice(2);
 const prove = args.includes('--prove');
-const docPath = path.join(root, 'docs', 'SUPERIORITY-MATRIX.md');
+const docPath = path.join(root, 'docs', 'COMPETITIVE-EVIDENCE.md');
 const fixturesDir = path.join(root, 'fixtures', 'benchmarks');
 
 const requiredCommands = [
@@ -65,7 +65,7 @@ const requiredDimensions = [
 const requiredHonestyMarkers = [
   'If a reference system is stronger in a category, we mark the gap directly.',
   'Non-Negotiable Gaps',
-  'Competitive superiority: plausible, not fully proven',
+  'Competitive standing: plausible, not fully proven',
 ];
 
 function fail(message) {
@@ -113,14 +113,14 @@ function run(command) {
 let passes = 0;
 let failures = 0;
 
-console.log('# Superiority Matrix Check\n');
+console.log('# Competitive Evidence Check\n');
 console.log(`Root: ${root}`);
 console.log(`Doc: ${docPath}\n`);
 
 if (!fs.existsSync(docPath)) {
-  fail('docs/SUPERIORITY-MATRIX.md exists');
+  fail('docs/COMPETITIVE-EVIDENCE.md exists');
 } else {
-  ok('docs/SUPERIORITY-MATRIX.md exists');
+  ok('docs/COMPETITIVE-EVIDENCE.md exists');
   const doc = fs.readFileSync(docPath, 'utf8');
   for (const dimension of requiredDimensions) {
     doc.includes(dimension) ? ok(`covers ${dimension}`) : fail(`covers ${dimension}`);
@@ -178,5 +178,5 @@ if (prove) {
 
 console.log('\n## Summary\n');
 console.log(`passed=${passes} failed=${failures}`);
-console.log(failures ? 'Status: superiority-matrix-blocked' : 'Status: superiority-matrix-ready');
+console.log(failures ? 'Status: competitive-evidence-blocked' : 'Status: competitive-evidence-ready');
 process.exit(failures ? 1 : 0);

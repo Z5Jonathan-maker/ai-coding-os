@@ -22,9 +22,9 @@ developer-grade public launch.
   with `imac-dotfiles` retained as backup.
 - Attach the `cc-release-bundle` tarball and checksum to the public GitHub
   release. Done 2026-05-22 for `v0.1.0-rc7`.
-- Capture sustained local dogfood proof. Done 2026-05-24:
-  `docs/DOGFOOD-REPORT-2026-05-24.md` records a six-hour run with 12/12
-  passing cycles plus final `cc-verify-product` and `cc-ten-readiness` gates.
+- Capture sustained local dogfood evidence through runnable fixtures, not dated
+  report files. Historical dated dogfood reports were removed from the product
+  docs during the cleanup pass.
 
 ## v0.2.0
 
@@ -39,13 +39,10 @@ developer-grade public launch.
 - Add a mutating multi-hour coding dogfood that includes real edits, at least
   one failure/recovery path, review, and merge proof.
 - Add a larger public-repo mutating dogfood with failing CI, repair, review,
-  and merge-ready diff. The isolated fixture version is done:
-  `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`.
-- Add a third-party public-repo dogfood. The first public-clone version against
-  AI Coding OS itself is done: `docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`.
-- Add a third-party public-repo dogfood. The first external version against
-  `jonschlinkert/is-odd` is done:
-  `docs/THIRD-PARTY-DOGFOOD-REPORT-2026-05-24.md`.
+  and merge-ready diff. Keep the workflow as a runnable fixture instead of a
+  dated report.
+- Add a third-party public-repo dogfood. Keep the workflow as a runnable fixture
+  instead of a dated report.
 
 ## v1.0.0
 

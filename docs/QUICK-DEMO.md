@@ -1,7 +1,7 @@
 # QUICK-DEMO.md
 
-This is the shortest human-facing proof path for the AI Coding Operating
-System. It exists for reviewers who need to understand the product before they
+This is the shortest human-facing proof path for the AI coding workspace. It
+exists for reviewers who need to understand the product before they
 read architecture docs or long readiness logs.
 
 Run:

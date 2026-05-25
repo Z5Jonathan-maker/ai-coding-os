@@ -1410,6 +1410,143 @@ body.panel-mode::after {
   transition: width .22s ease;
 }
 
+.visual-edit-surface {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(66, 215, 199, .12), transparent 38%),
+    rgba(255, 255, 255, .035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025);
+}
+
+.visual-edit-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.visual-edit-toolbar label {
+  color: rgba(226, 232, 255, .62);
+}
+
+.visual-preview-url {
+  min-width: 0;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: #f8f7ff;
+  background: rgba(255, 255, 255, .045);
+  font: inherit;
+  font-size: 12px;
+}
+
+.visual-preview-url:focus {
+  outline: 1px solid rgba(139, 92, 246, .7);
+  outline-offset: 1px;
+}
+
+.visual-preview-shell {
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(7, 10, 22, .92), rgba(16, 24, 46, .8)),
+    #080b16;
+}
+
+.visual-preview-shell iframe {
+  width: 100%;
+  height: min(58vh, 620px);
+  min-height: 320px;
+  border: 0;
+  background: #fff;
+}
+
+.visual-annotation-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: crosshair;
+  background: rgba(8, 11, 22, .08);
+}
+
+.visual-annotation-layer.active {
+  box-shadow: inset 0 0 0 1px rgba(139, 92, 246, .45);
+}
+
+.visual-annotation-rect {
+  position: absolute;
+  border: 1px solid rgba(66, 215, 199, .95);
+  border-radius: 10px;
+  background: rgba(66, 215, 199, .12);
+  box-shadow:
+    0 0 0 1px rgba(10, 255, 220, .18),
+    0 14px 36px rgba(66, 215, 199, .2);
+}
+
+.visual-annotation-list {
+  display: grid;
+  gap: 8px;
+}
+
+.visual-annotation-item {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .055);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .03);
+}
+
+.visual-annotation-item div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.visual-annotation-item p {
+  margin: 0;
+  color: rgba(248, 247, 255, .86);
+  font-size: 12px;
+}
+
+.visual-annotation-item span,
+.visual-annotation-item small,
+.visual-annotation-empty {
+  color: rgba(226, 232, 255, .58);
+  font-size: 11px;
+}
+
+.visual-annotation-actions {
+  justify-content: flex-end;
+}
+
+.visual-route-button,
+.visual-delete-button {
+  width: auto;
+  min-height: 28px;
+}
+
+.visual-route-button {
+  border-color: rgba(139, 92, 246, .28);
+  color: #f8f7ff;
+  background: rgba(139, 92, 246, .16);
+}
+
+.visual-delete-button {
+  border-color: rgba(255, 255, 255, .08);
+  color: rgba(226, 232, 255, .68);
+  background: rgba(255, 255, 255, .035);
+}
+
 .handoff-stages,
 .handoff-artifacts {
   display: grid;

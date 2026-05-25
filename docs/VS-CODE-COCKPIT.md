@@ -169,7 +169,7 @@ Cline/Roo-inspired review surface. They group changed files, added/removed
 lines, and hunk headers before sending a review or route request, without
 adding apply behavior or hidden write actions.
 
-`AI: Product Readiness` is the 10/10 gate. It checks lane registry, router
+`AI: Product Readiness` is the strict readiness gate. It checks lane registry, router
 smoke, router integrity, system demo, first-run doctor, cockpit install, VS
 Code symlinks, disk headroom, repo cleanliness, upstream sync, and product docs.
 It is intentionally stricter than daily cockpit readiness because active coding

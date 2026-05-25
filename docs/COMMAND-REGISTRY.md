@@ -109,10 +109,10 @@ useful, delete it or move it out of `bin/`.
 - `cc-self-update` — monthly platform update sweep.
 - `cc-semantic-index` — dependency-free repo symbol map using `ctags` and `rg`.
 - `cc-session-ledger` — recent routed sessions, cwd-aware resume metadata, stale state, lanes, models, fallbacks, sticky state, and transcript turn summaries; supports `--json`.
-- `cc-superiority-check` — competitive evidence gate for the superiority matrix, executable command inventory, honesty markers, and graded benchmark depth.
+- `cc-competitive-evidence-check` — reference-app evidence gate for executable command inventory, honesty markers, explicit gaps, and graded benchmark depth.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
-- `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
+- `cc-ten-readiness` — strict readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.
 - `cc-tel-policy-check` — public-safe TEL proof for credentialed-action whitelists, redaction, audit hygiene, undo windows, and GraphQL query constraints.
 - `cc-taste-benchmark-check` — weighted premium-frontend taste rubric for creative fidelity, hierarchy, rhythm, material quality, motion, responsiveness, accessibility, and implementation realism.
 - `cc-token-ledger` — read-only router economics ledger: calls, token estimates, costs, fallbacks, and premium-spend avoidance.

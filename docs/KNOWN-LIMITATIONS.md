@@ -36,5 +36,5 @@ should be named directly instead of hidden behind successful-looking demos.
 2. validate install on one separate fresh macOS Apple Silicon account
 3. remove or explain any remaining personal-only paths in public docs
 4. keep GitHub-hosted Ubuntu CI green from a clean `main` branch
-5. attach real same-brief competitor artifacts before making superiority claims
+5. attach real same-brief competitor artifacts before making reference-app claims
 6. split or clearly label maintainer-only commands and docs

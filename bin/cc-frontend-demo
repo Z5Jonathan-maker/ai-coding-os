@@ -63,7 +63,7 @@ expect(html.includes('design DNA'), 'design DNA explained');
 expect(/proof bundle/i.test(html), 'proof bundle explained');
 expect(html.includes('92.3/100'), 'taste benchmark metric visible');
 expect(html.includes('56/56'), 'AI checks metric visible');
-expect(html.includes('80/80'), 'superiority proof metric visible');
+expect(html.includes('80/80'), 'competitive evidence metric visible');
 expect(!/trusted by|testimonial|customers love|fortune 500/i.test(html), 'no fake social proof language');
 expect(/@media \(max-width: 940px\)/.test(html) && /@media \(max-width: 640px\)/.test(html), 'responsive breakpoints present');
 expect(/prefers-reduced-motion/.test(html), 'reduced-motion support present');

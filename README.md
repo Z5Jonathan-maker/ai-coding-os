@@ -139,7 +139,7 @@ optional lanes, Brewfile drift, and VS Code extension drift.
 - This is local-first and macOS-first.
 - Public clones do not include provider accounts or credentials.
 - `cc-route` plans routes; live execution is delegated to external adapters.
-- Fixture checks prove contracts, not market superiority.
+- Fixture checks prove contracts, not market claims.
 - Credentialed actions require TEL policy and explicit approval.
 
 Apache-2.0. See `LICENSE`.

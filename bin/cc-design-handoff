@@ -60,6 +60,24 @@ function run(cmd, cmdArgs, options = {}) {
   });
 }
 
+function extractJson(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (_) {
+    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fenced) {
+      try { return JSON.parse(fenced[1]); } catch (_) {}
+    }
+    const object = raw.match(/\{[\s\S]*\}/);
+    if (object) {
+      try { return JSON.parse(object[0]); } catch (_) {}
+    }
+  }
+  return null;
+}
+
 function route(prompt, purpose) {
   const res = run(path.join(root, 'bin', 'cc-route'), ['--json', '--purpose', purpose, prompt]);
   if (res.status !== 0) {
@@ -149,6 +167,12 @@ function relative(dir, file) {
 
 function artifactPath(dir, artifact) {
   return path.isAbsolute(artifact) ? artifact : path.join(dir, artifact);
+}
+
+function readArtifact(dir, artifact, max = 12000) {
+  const file = artifactPath(dir, artifact);
+  if (!fs.existsSync(file)) return '';
+  return fs.readFileSync(file, 'utf8').slice(0, max);
 }
 
 function nextActionFor(handoff) {
@@ -585,7 +609,7 @@ function check() {
       dir,
       '--phase',
       'claude_review',
-    ], { timeout: 30000 });
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
     if (reviewExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(reviewExec.stdout)) {
       throw new Error(`review execute failed: ${reviewExec.stdout || reviewExec.stderr}`);
     }
@@ -607,6 +631,8 @@ function check() {
     if (deployExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(deployExec.stdout)) {
       throw new Error(`deploy execute failed: ${deployExec.stdout || deployExec.stderr}`);
     }
+    const validation = readJson(path.join(dir, 'taste.validation.json'));
+    if (validation.source !== 'offline_fixture' || validation.live_lane_call !== false) throw new Error('offline check did not label review fixture');
     const receipt = readJson(path.join(dir, 'deploy.receipt.json'));
     if (receipt.provider !== 'vercel' || receipt.url !== 'https://example.vercel.app') throw new Error('deploy receipt invalid');
   } catch (err) {
@@ -782,20 +808,9 @@ function writeStageArtifact(dir, handoff, phase) {
       ],
     });
   } else if (phase.id === 'claude_review') {
-    writeJson(file, {
-      schema: 'ai-coding-os.taste-validation.v1',
-      ...common,
-      threshold: 90,
-      scores: {
-        creative_fidelity: 92,
-        hierarchy: 92,
-        spacing: 91,
-        material_quality: 90,
-        responsiveness: 90,
-        accessibility: 91,
-      },
-      verdict: 'passes_fixture_threshold_requires_real_visual_review_before_ship',
-    });
+    const result = runClaudeReview(dir, handoff);
+    if (!result.ok) throw new Error(`claude_review failed: ${result.error}`);
+    writeJson(file, { ...common, ...result.review });
   } else {
     writeJson(file, { schema: 'ai-coding-os.stage-artifact.v1', ...common });
   }
@@ -820,6 +835,86 @@ function writeDeployReceipt(dir, handoff) {
   };
   writeJson(path.join(dir, 'deploy.receipt.json'), receipt);
   return 'deploy.receipt.json';
+}
+
+function reviewPassed(review) {
+  const verdict = String(review.verdict || '').toLowerCase();
+  if (/\bfail|blocked|not[_ -]?ready|reject/.test(verdict)) return false;
+  const scores = Object.values(review.scores || {}).map(Number).filter(Number.isFinite);
+  const threshold = Number(review.threshold || 90);
+  return scores.length > 0 && scores.every((score) => score >= threshold);
+}
+
+function offlineClaudeReview(handoff) {
+  return {
+    schema: 'ai-coding-os.taste-validation.v1',
+    mission_id: handoff.mission_id,
+    phase: 'claude_review',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'offline_fixture',
+    live_lane_call: false,
+    threshold: 90,
+    scores: {
+      creative_fidelity: 92,
+      hierarchy: 92,
+      spacing: 91,
+      material_quality: 90,
+      responsiveness: 90,
+      accessibility: 91,
+    },
+    verdict: 'fixture_passes_threshold_for_portable_check_only',
+  };
+}
+
+function runClaudeReview(dir, handoff) {
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, review: offlineClaudeReview(handoff) };
+  const prompt = [
+    'You are the Claude review lane for a taste-driven frontend handoff.',
+    'Review the mission artifacts below and return only valid JSON.',
+    '',
+    'Required JSON shape:',
+    '{"schema":"ai-coding-os.taste-validation.v1","threshold":90,"scores":{"creative_fidelity":0,"hierarchy":0,"spacing":0,"material_quality":0,"responsiveness":0,"accessibility":0},"verdict":"...","risks":["..."],"required_fixes":["..."]}',
+    '',
+    `Mission: ${handoff.mission_id}`,
+    `Request: ${handoff.request}`,
+    '',
+    'design-handoff.json:',
+    readArtifact(dir, 'design-handoff.json'),
+    '',
+    'creative.asset-kit.json:',
+    readArtifact(dir, 'creative.asset-kit.json'),
+    '',
+    'design.dna.json:',
+    readArtifact(dir, 'design.dna.json'),
+    '',
+    'implementation.plan.json:',
+    readArtifact(dir, 'implementation.plan.json'),
+  ].join('\n');
+
+  const res = run('claude', ['--print', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'taste.validation.raw.md'), `${output}\n`);
+  if (res.status !== 0) {
+    return { ok: false, error: output || `claude exited ${res.status}` };
+  }
+  const parsed = extractJson(output);
+  const review = parsed || {
+    schema: 'ai-coding-os.taste-validation.v1',
+    threshold: 90,
+    scores: {},
+    verdict: 'claude_review_returned_unstructured_output',
+    raw_output_artifact: 'taste.validation.raw.md',
+  };
+  review.schema = review.schema || 'ai-coding-os.taste-validation.v1';
+  review.mission_id = handoff.mission_id;
+  review.phase = 'claude_review';
+  review.request = handoff.request;
+  review.generated_at = now();
+  review.source = 'claude-cli';
+  review.live_lane_call = true;
+  review.raw_output_artifact = 'taste.validation.raw.md';
+  return { ok: true, review };
 }
 
 function executeStage() {
@@ -862,6 +957,14 @@ function executeStage() {
       recorded_at: now(),
       note: 'Placeholder record for an externally produced artifact.',
     });
+  }
+  if (!blocked && phase.id === 'claude_review') {
+    const review = readJson(artifactPath(dir, artifact));
+    if (!reviewPassed(review)) {
+      blocked = true;
+      phase.status = 'blocked_review_failed';
+      note = 'Claude review completed but did not pass the taste threshold.';
+    }
   }
 
   if (!blocked) {

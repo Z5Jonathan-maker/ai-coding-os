@@ -624,11 +624,13 @@ function check() {
       dir,
       '--phase',
       'design_dna',
-    ], { timeout: 30000 });
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
     if (dnaExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(dnaExec.stdout)) {
       throw new Error(`design dna execute failed: ${dnaExec.stdout || dnaExec.stderr}`);
     }
     if (!fs.existsSync(path.join(dir, 'design.dna.json'))) throw new Error('design.dna.json not written');
+    const dna = readJson(path.join(dir, 'design.dna.json'));
+    if (dna.source !== 'offline_fixture' || dna.live_lane_call !== false) throw new Error('offline design DNA fixture not labeled');
     const implementationExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -815,23 +817,9 @@ function writeStageArtifact(dir, handoff, phase) {
       ],
     });
   } else if (phase.id === 'design_dna') {
-    writeJson(file, {
-      schema: 'ai-coding-os.design-dna.v1',
-      ...common,
-      visual_density: 'low',
-      section_pacing: 'cinematic',
-      typography_rhythm: 'editorial-confident',
-      surface_language: 'glass-soft with atmospheric depth',
-      shadow_language: 'diffused environmental shadows',
-      motion_energy: 'subtle-premium',
-      emotional_frame: 'calm momentum, premium trust, continuity',
-      visual_noise_budget: 'minimal',
-      implementation_constraints: [
-        'native text and controls remain selectable and accessible',
-        'approved reference owns composition; implementation must not reinvent taste',
-        'route/provider mechanics stay behind proof mode',
-      ],
-    });
+    const result = runDesignDnaExtraction(dir, handoff);
+    if (!result.ok) throw new Error(`design_dna failed: ${result.error}`);
+    writeJson(file, { ...common, ...result.dna });
   } else if (phase.id === 'kimi_implementation') {
     const result = runKimiImplementation(dir, handoff);
     if (!result.ok) throw new Error(`kimi_implementation failed: ${result.error}`);
@@ -1014,6 +1002,81 @@ function extractAsset(dir, handoff) {
     run_dir: parsed?.runDir || '',
     manifest_path: parsed?.manifestPath || '',
   });
+}
+
+function offlineDesignDna(handoff) {
+  return {
+    schema: 'ai-coding-os.design-dna.v1',
+    mission_id: handoff.mission_id,
+    phase: 'design_dna',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'offline_fixture',
+    live_lane_call: false,
+    visual_density: 'low',
+    section_pacing: 'cinematic',
+    typography_rhythm: 'editorial-confident',
+    surface_language: 'glass-soft with atmospheric depth',
+    shadow_language: 'diffused environmental shadows',
+    motion_energy: 'subtle-premium',
+    emotional_frame: 'calm momentum, premium trust, continuity',
+    visual_noise_budget: 'minimal',
+    implementation_constraints: [
+      'native text and controls remain selectable and accessible',
+      'approved reference owns composition; implementation must not reinvent taste',
+      'route/provider mechanics stay behind proof mode',
+    ],
+  };
+}
+
+function runDesignDnaExtraction(dir, handoff) {
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, dna: offlineDesignDna(handoff) };
+  const prompt = [
+    'You are the design DNA extraction lane for a taste-driven frontend handoff.',
+    'Extract implementation-ready design DNA from the mission artifacts. Return only valid JSON.',
+    '',
+    'Required JSON shape:',
+    '{"schema":"ai-coding-os.design-dna.v1","visual_density":"...","section_pacing":"...","typography_rhythm":"...","surface_language":"...","shadow_language":"...","motion_energy":"...","emotional_frame":"...","visual_noise_budget":"...","implementation_constraints":["..."],"risks":["..."]}',
+    '',
+    `Mission: ${handoff.mission_id}`,
+    `Request: ${handoff.request}`,
+    '',
+    'creative.brief.json:',
+    readArtifact(dir, 'creative.brief.json'),
+    '',
+    'visual.reference.manifest.json:',
+    readArtifact(dir, 'visual.reference.manifest.json'),
+    '',
+    'creative.asset-kit.json:',
+    readArtifact(dir, 'creative.asset-kit.json'),
+  ].join('\n');
+  const res = run('claude', ['--print', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'design.dna.raw.md'), `${output}\n`);
+  if (res.status !== 0) return { ok: false, error: output || `claude exited ${res.status}` };
+  const parsed = extractJson(output);
+  const dna = parsed || {
+    schema: 'ai-coding-os.design-dna.v1',
+    visual_density: '',
+    section_pacing: '',
+    typography_rhythm: '',
+    surface_language: '',
+    shadow_language: '',
+    motion_energy: '',
+    emotional_frame: '',
+    visual_noise_budget: '',
+    implementation_constraints: [],
+    raw_output_artifact: 'design.dna.raw.md',
+  };
+  dna.schema = dna.schema || 'ai-coding-os.design-dna.v1';
+  dna.mission_id = handoff.mission_id;
+  dna.phase = 'design_dna';
+  dna.request = handoff.request;
+  dna.generated_at = now();
+  dna.source = 'claude-cli';
+  dna.live_lane_call = true;
+  dna.raw_output_artifact = 'design.dna.raw.md';
+  return { ok: true, dna };
 }
 
 function writeDeployReceipt(dir, handoff) {

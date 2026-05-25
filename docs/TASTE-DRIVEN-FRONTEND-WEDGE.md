@@ -92,9 +92,9 @@ locally derivable, records externally produced artifacts when passed with
 approved-reference asset at a time when `asset_decomposition --extract-asset
 <id> --image-api-ok` is supplied, invokes `router-ask --purpose design` for the
 `kimi_implementation` stage by default, invokes `claude --print` for the
-`claude_review` stage by default, blocks deploy unlock when the review fails
-the taste threshold, and writes `deploy.receipt.json` only from explicit deploy
-receipt fields or an explicit TEL verification call.
+`design_dna` and `claude_review` stages by default, blocks deploy unlock when
+the review fails the taste threshold, and writes `deploy.receipt.json` only
+from explicit deploy receipt fields or an explicit TEL verification call.
 `--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.

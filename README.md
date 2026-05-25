@@ -74,6 +74,9 @@ first live execution lane: by default it calls `claude --print`, stores
 unlock if the review fails its threshold. The `kimi_implementation` stage also
 calls the live design route by default through `router-ask --purpose design`,
 stores `implementation.raw.md`, and writes `implementation.plan.json`.
+`design_dna` also calls `claude --print` by default, stores
+`design.dna.raw.md`, and writes structured implementation constraints instead
+of a hardcoded taste template.
 
 ## Proof Commands
 

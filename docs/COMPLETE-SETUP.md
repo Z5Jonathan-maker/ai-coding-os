@@ -106,12 +106,17 @@ To authorize, paste this verbatim into a Claude Code session:
 > Ralph-style outcome-bound circuit breaker per the design doc.*
 
 ### Pushing dotfiles to main
-For routine pushes after this initial stretch, paste:
-> *yes, push to main on dotfiles*
+Direct pushes to `main` are blocked locally by `cc-push-gate` unless the
+push is intentional and explicit:
 
-The harness reads this as named-scope authorization for that specific
-repo + branch combination. Generic "push" / "deploy" / "ship it" reads
-as encouragement, not authorization.
+```bash
+cc-push-gate --install
+CC_ALLOW_DIRECT_MAIN_PUSH=1 git push
+```
+
+Routine work should use a feature branch and PR. Use the override only for
+deliberate maintainer-sync commits where rewriting or branching would create
+more operational risk than the direct push.
 
 ## How to know you're done
 

@@ -8,10 +8,10 @@
 # defense-in-depth — even if CI is down, a local smoke check catches obvious
 # broken-build commits before they leave the dev machine.
 #
-# Runs:
+# Blocks direct pushes to protected branches by default, then runs:
 #   1. If package.json has a "typecheck" script — run it (fast, ~1-5s typical)
-#   2. If package.json has a "lint" script — run it (slower, ~10-30s)
-#   3. Skip entirely if no scripts present (graceful no-op for non-Node repos)
+#   2. If package.json has a "lint" script and CC_PUSH_GATE_LINT=1 — run it
+#   3. Skip smoke checks if no scripts present (graceful no-op for non-Node repos)
 #
 # Hard timeout: 60s. Tests are NOT run (too slow, do them in CI/pre-merge).
 #
@@ -19,10 +19,92 @@
 #   - git push --no-verify          (standard skip)
 #   - touch .git/cc-push-gate-off    (repo-level disable marker)
 #   - CC_PUSH_GATE=off git push      (one-off env override)
+#   - CC_ALLOW_DIRECT_MAIN_PUSH=1 git push
+#       (targeted override for intentional protected-branch pushes)
 #
 # Called by .git/hooks/pre-push which is a thin invoker.
 
 set -u
+
+usage() {
+  cat <<'EOF'
+cc-push-gate — local pre-push guard
+
+Usage:
+  cc-push-gate              # run as .git/hooks/pre-push
+  cc-push-gate --install    # install hook into this repo
+  cc-push-gate --check      # run branch-discipline self-check
+  cc-push-gate --help
+
+Overrides:
+  CC_ALLOW_DIRECT_MAIN_PUSH=1  allow protected branch push, then run smoke checks
+  CC_PUSH_GATE=off             bypass the gate entirely
+EOF
+}
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+install_hook() {
+  local hook="$REPO_ROOT/.git/hooks/pre-push"
+  mkdir -p "$(dirname "$hook")"
+  cat >"$hook" <<EOF
+#!/usr/bin/env bash
+exec "$REPO_ROOT/bin/cc-push-gate" "\$@"
+EOF
+  chmod +x "$hook"
+  echo "cc-push-gate: installed $hook"
+}
+
+run_self_check() {
+  local script="$REPO_ROOT/bin/cc-push-gate"
+  local failures=0
+
+  if printf 'refs/heads/feature abc refs/heads/feature def\n' | CC_PUSH_GATE_SKIP_SMOKE=1 "$script" >/tmp/cc-push-gate-check-feature.out 2>&1; then
+    echo "ok feature branch push allowed"
+  else
+    echo "fail feature branch push should be allowed"
+    cat /tmp/cc-push-gate-check-feature.out
+    failures=$((failures + 1))
+  fi
+
+  if printf 'refs/heads/main abc refs/heads/main def\n' | CC_PUSH_GATE_SKIP_SMOKE=1 "$script" >/tmp/cc-push-gate-check-main.out 2>&1; then
+    echo "fail direct main push should be blocked"
+    cat /tmp/cc-push-gate-check-main.out
+    failures=$((failures + 1))
+  else
+    echo "ok direct protected branch push blocked"
+  fi
+
+  if printf 'refs/heads/main abc refs/heads/main def\n' | CC_ALLOW_DIRECT_MAIN_PUSH=1 CC_PUSH_GATE_SKIP_SMOKE=1 "$script" >/tmp/cc-push-gate-check-override.out 2>&1; then
+    echo "ok explicit direct-main override allowed"
+  else
+    echo "fail explicit direct-main override should be allowed"
+    cat /tmp/cc-push-gate-check-override.out
+    failures=$((failures + 1))
+  fi
+
+  rm -f /tmp/cc-push-gate-check-feature.out /tmp/cc-push-gate-check-main.out /tmp/cc-push-gate-check-override.out
+  if [ "$failures" -gt 0 ]; then
+    echo "Status: push-gate-check-blocked"
+    return 1
+  fi
+  echo "Status: push-gate-check-ready"
+}
+
+case "${1:-}" in
+  --help|-h)
+    usage
+    exit 0
+    ;;
+  --install)
+    install_hook
+    exit 0
+    ;;
+  --check)
+    run_self_check
+    exit $?
+    ;;
+esac
 
 # Bypass conditions
 if [ "${CC_PUSH_GATE:-}" = "off" ]; then
@@ -30,7 +112,6 @@ if [ "${CC_PUSH_GATE:-}" = "off" ]; then
   exit 0
 fi
 
-REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 if [ -f "$REPO_ROOT/.git/cc-push-gate-off" ]; then
   echo "cc-push-gate: bypassed via .git/cc-push-gate-off marker" >&2
   exit 0
@@ -52,7 +133,20 @@ if [ "${MUST_GATE:-0}" = "0" ]; then
   exit 0
 fi
 
+if [ "${CC_ALLOW_DIRECT_MAIN_PUSH:-0}" != "1" ]; then
+  echo "cc-push-gate: direct push to protected branch '$REMOTE_BRANCH' blocked" >&2
+  echo "Use a feature branch + PR, or set CC_ALLOW_DIRECT_MAIN_PUSH=1 for an intentional one-off." >&2
+  exit 1
+fi
+
+echo "cc-push-gate: protected branch override active via CC_ALLOW_DIRECT_MAIN_PUSH=1" >&2
+
 cd "$REPO_ROOT" || exit 0
+
+if [ "${CC_PUSH_GATE_SKIP_SMOKE:-0}" = "1" ]; then
+  echo "cc-push-gate: smoke checks skipped for self-test" >&2
+  exit 0
+fi
 
 # Probe package.json for runnable scripts
 HAS_TYPECHECK=0

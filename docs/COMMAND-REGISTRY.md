@@ -130,7 +130,7 @@ useful, delete it or move it out of `bin/`.
 
 - `cc-handoff` — read latest session handoff artifact.
 - `cc-phase` — read ambient autonomous-loop phase.
-- `cc-push-gate` — pre-push smoke gate for autonomous repos.
+- `cc-push-gate` — pre-push protected-branch and smoke gate for autonomous repos; supports `--install` and `--check`.
 - `cc-reflect` — queue structured wiki reflections.
 - `cc-rollback` — inspect/restore git shadow checkpoints.
 - `cc-skill-register` — register skills, CLIs, and agents in routing tables.

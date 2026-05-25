@@ -521,6 +521,7 @@ textarea:focus {
 .workspace-rail,
 .topbar,
 .home-intro,
+.creative-surface,
 .workstreams-panel,
 .workspace-detail {
   display: none;
@@ -770,9 +771,10 @@ body.panel-mode {
   height: 100vh;
   display: grid;
   grid-template-columns: 206px minmax(620px, 1fr) 320px;
-  grid-template-rows: minmax(390px, auto) minmax(0, 1fr);
+  grid-template-rows: minmax(390px, auto) auto minmax(0, 1fr);
   grid-template-areas:
     "rail composer detail"
+    "rail creative detail"
     "rail streams detail";
   column-gap: 28px;
   row-gap: 26px;
@@ -1027,6 +1029,7 @@ body.panel-mode::after {
 
 .panel-mode .home-intro,
 .panel-mode .composer,
+.panel-mode .creative-surface,
 .panel-mode .workstreams-panel {
   grid-column: 2;
 }
@@ -1355,6 +1358,174 @@ body.panel-mode::after {
   margin-top: 0;
   padding-bottom: 26px;
   overflow: auto;
+}
+
+.panel-mode .creative-surface {
+  grid-area: creative;
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+  padding: 6px 0 2px;
+  color: #f8f7ff;
+}
+
+.panel-mode .creative-surface > p {
+  max-width: 760px;
+  margin: 0;
+  color: rgba(226, 232, 255, .66);
+  font-size: 13px;
+}
+
+.handoff-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: rgba(226, 232, 255, .72);
+  font-size: 12px;
+}
+
+.handoff-progress strong {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.handoff-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .075);
+  overflow: hidden;
+}
+
+.handoff-track span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #42d7c7, #8b5cf6);
+  transition: width .22s ease;
+}
+
+.handoff-stages,
+.handoff-artifacts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.handoff-stage,
+.handoff-artifact {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .065);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(124, 92, 255, .16), transparent 42%),
+    rgba(255, 255, 255, .035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .025);
+}
+
+.handoff-stage {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.handoff-stage.active {
+  border-color: rgba(139, 92, 246, .38);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(124, 92, 255, .3), transparent 48%),
+    rgba(255, 255, 255, .05);
+}
+
+.handoff-stage.approved,
+.handoff-stage.completed {
+  border-color: rgba(66, 215, 199, .18);
+}
+
+.handoff-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.handoff-stage strong,
+.handoff-artifact strong,
+.handoff-event strong {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.handoff-stage-top span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: rgba(255, 255, 255, .88);
+  background: rgba(255, 255, 255, .08);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.handoff-stage p,
+.handoff-stage small,
+.handoff-artifact small,
+.handoff-event span,
+.handoff-event small,
+.handoff-empty {
+  color: rgba(226, 232, 255, .62);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.handoff-artifact {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  min-height: 60px;
+  padding: 9px;
+}
+
+.handoff-artifact::before {
+  content: "";
+  width: 46px;
+  height: 42px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(139, 92, 246, .34), transparent 38%),
+    rgba(255, 255, 255, .055);
+}
+
+.handoff-artifact img {
+  width: 46px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.handoff-artifact:has(img)::before {
+  display: none;
+}
+
+.handoff-artifact.missing {
+  opacity: .58;
+}
+
+.handoff-events {
+  display: grid;
+  gap: 8px;
+}
+
+.handoff-event {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 7px 2px;
+  border-top: 1px solid rgba(255, 255, 255, .045);
 }
 
 .panel-mode .section-head h2,
@@ -2005,9 +2176,10 @@ body.panel-mode::after {
 @media (max-width: 760px) {
   body.panel-mode {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr);
     grid-template-areas:
       "composer"
+      "creative"
       "detail"
       "streams";
     padding: 18px;
@@ -2021,6 +2193,7 @@ body.panel-mode::after {
 
   .panel-mode .home-intro,
   .panel-mode .composer,
+  .panel-mode .creative-surface,
   .panel-mode .workstreams-panel,
   .panel-mode .workspace-detail {
     grid-column: 1;
@@ -2123,9 +2296,10 @@ body.panel-mode::after {
 /* Ambient workspace architecture: the cockpit is the hero, not a dashboard around a hero. */
 body.panel-mode {
   grid-template-columns: 88px minmax(0, 1fr);
-  grid-template-rows: minmax(600px, 600px) minmax(220px, 1fr);
+  grid-template-rows: minmax(540px, 58vh) auto minmax(220px, 1fr);
   grid-template-areas:
     "rail composer"
+    "rail creative"
     "rail streams";
   column-gap: 28px;
   padding-right: 34px;
@@ -2445,9 +2619,10 @@ body.panel-mode {
 @media (max-width: 760px) {
   body.panel-mode {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: auto auto auto auto auto;
     grid-template-areas:
       "composer"
+      "creative"
       "detail"
       "result"
       "streams";
@@ -2485,6 +2660,21 @@ body.panel-mode {
     margin: 76px 0 34px;
     opacity: 1;
     mask-image: none;
+  }
+
+  .panel-mode .creative-surface {
+    grid-area: creative;
+    padding: 8px 0 18px;
+  }
+
+  .handoff-stages,
+  .handoff-artifacts {
+    grid-template-columns: 1fr;
+  }
+
+  .handoff-event {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 
   .panel-mode .workstreams-panel {

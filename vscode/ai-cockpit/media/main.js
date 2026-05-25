@@ -202,10 +202,11 @@
     }
     if (message.type !== 'state') return;
 
-    const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, mission } = message.payload;
+    const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, mission, designHandoff } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity);
     contextBlock = context && context.block ? context.block : '';
     renderMissionState(mission);
+    renderDesignHandoff(designHandoff);
     $('readinessTitle').textContent = health.title;
     $('readinessBody').textContent = health.body;
     const railLabel = $('railStatusLabel');
@@ -355,6 +356,101 @@
       preview.querySelector('strong').textContent = first.title || 'Live state loaded';
       preview.querySelector('small').textContent = first.body || 'Mission state is derived from local signals.';
     }
+  }
+
+  function renderDesignHandoff(handoff) {
+    const surface = document.querySelector('.creative-surface');
+    if (!surface) return;
+    const data = handoff && typeof handoff === 'object' ? handoff : {};
+    const progress = clamp(Number(data.progress || 0), 0, 100);
+    surface.classList.toggle('empty', data.status === 'empty' || !data.phases?.length);
+    setText('handoffTitle', data.title || 'No creative handoff mission');
+    setText('handoffSummary', data.summary || 'Create a handoff to see creative direction and implementation proof.');
+    setText('handoffGate', data.currentGate || 'Create a creative handoff mission.');
+    setText('handoffProgress', `${progress}%`);
+    const bar = $('handoffProgressBar');
+    if (bar) bar.style.width = `${progress}%`;
+
+    renderHandoffStages(data.phases || [], data.activePhase);
+    renderHandoffArtifacts(data.artifacts || []);
+    renderHandoffEvents(data.events || []);
+  }
+
+  function renderHandoffStages(phases, activePhase) {
+    const container = $('handoffStages');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!phases.length) {
+      const empty = document.createElement('div');
+      empty.className = 'handoff-empty';
+      empty.textContent = 'No mission stages yet. Start a Creative Handoff from the command area.';
+      container.appendChild(empty);
+      return;
+    }
+    phases.forEach((phase) => {
+      const node = document.createElement('article');
+      node.className = `handoff-stage ${phase.status || 'pending'} ${phase.id === activePhase ? 'active' : ''}`.trim();
+      const top = document.createElement('div');
+      top.className = 'handoff-stage-top';
+      const title = document.createElement('strong');
+      title.textContent = phase.label || phase.id || 'Stage';
+      const status = document.createElement('span');
+      status.textContent = phase.status || 'pending';
+      top.append(title, status);
+
+      const meta = document.createElement('p');
+      meta.textContent = `${phase.owner || 'codex'}${phase.artifact ? ` -> ${phase.artifact}` : ''}`;
+
+      const proof = document.createElement('small');
+      proof.textContent = phase.artifactExists ? 'Artifact present' : phase.output ? 'Awaiting artifact' : (phase.approvalGate || 'Ready');
+
+      node.append(top, meta, proof);
+      container.appendChild(node);
+    });
+  }
+
+  function renderHandoffArtifacts(artifacts) {
+    const container = $('handoffArtifacts');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!artifacts.length) return;
+    artifacts.slice(0, 10).forEach((artifact) => {
+      const node = document.createElement('div');
+      node.className = `handoff-artifact ${artifact.exists ? 'exists' : 'missing'}`;
+      if (artifact.previewUri) {
+        const img = document.createElement('img');
+        img.src = artifact.previewUri;
+        img.alt = artifact.name || 'Creative artifact';
+        node.appendChild(img);
+      }
+      const body = document.createElement('div');
+      const name = document.createElement('strong');
+      name.textContent = artifact.name || artifact.path || 'artifact';
+      const state = document.createElement('small');
+      state.textContent = artifact.exists ? artifact.kind || 'artifact' : 'missing';
+      body.append(name, state);
+      node.appendChild(body);
+      container.appendChild(node);
+    });
+  }
+
+  function renderHandoffEvents(events) {
+    const container = $('handoffEvents');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!events.length) return;
+    events.slice(0, 5).forEach((event) => {
+      const node = document.createElement('div');
+      node.className = 'handoff-event';
+      const title = document.createElement('strong');
+      title.textContent = event.stage || 'event';
+      const message = document.createElement('span');
+      message.textContent = event.message || 'Mission event recorded.';
+      const agent = document.createElement('small');
+      agent.textContent = [event.agent, relativeTime(event.time)].filter(Boolean).join(' · ');
+      node.append(title, message, agent);
+      container.appendChild(node);
+    });
   }
 
   function selectWorkstream(workstream) {
@@ -671,6 +767,19 @@
 
   function compact(value) {
     return String(value).replace(/\s+/g, ' ').slice(0, 120);
+  }
+
+  function relativeTime(value) {
+    const time = Date.parse(value || '');
+    if (!Number.isFinite(time)) return '';
+    const delta = Math.max(0, Date.now() - time);
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    if (delta < minute) return 'now';
+    if (delta < hour) return `${Math.floor(delta / minute)}m ago`;
+    if (delta < day) return `${Math.floor(delta / hour)}h ago`;
+    return `${Math.floor(delta / day)}d ago`;
   }
 
   function clamp(value, min, max) {

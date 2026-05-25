@@ -176,7 +176,7 @@ For us:
 }
 ```
 
-This should become the canonical receipt across `intent-route.sh`,
+This should become the canonical receipt across `cc-route`,
 `router-ask`, VS Code tasks, and health.
 
 ### 6. Dashboard/Admin Surface
@@ -230,7 +230,7 @@ For us:
 VS Code / Claude / Codex / CLI
         |
         v
-intent-route.sh / router-ask
+cc-route / router-ask
         |
         v
 Capability Classifier
@@ -272,7 +272,7 @@ Receipt + Telemetry + Health Update
    capabilities, health commands, fallback chains, and unsupported work.
 3. **Lane health ledger** — append JSONL for route attempts, health, cooldowns,
    and sticky sessions.
-4. **Unified receipt** — make `intent-route.sh` and `router-ask` emit the same
+4. **Unified receipt** — make `cc-route` and `router-ask` emit the same
    receipt fields.
 5. **Cooldown/penalty resolver** — apply FreeLLMAPI-style dynamic demotion to
    flaky lanes.

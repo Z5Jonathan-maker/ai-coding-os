@@ -11,7 +11,6 @@ fi
 prompt="$*"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
-root="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
 route_script="${AI_SYSTEM_ROUTE_SCRIPT:-$DOTFILES/bin/cc-route}"
 plans_dir="${CC_PLAN_DIR:-.ai/plans}"
 ts="$(date -u '+%Y%m%dT%H%M%SZ')"
@@ -29,8 +28,6 @@ mkdir -p "$plans_dir"
   printf '## Route Preview\n\n'
   if [ -x "$route_script" ]; then
     "$route_script" --dry-run "$prompt" || true
-  elif [ -x "$root/scripts/intent-route.sh" ]; then
-    "$root/scripts/intent-route.sh" --dry-run "$prompt" || true
   else
     printf 'Route preview unavailable: %s\n' "$route_script"
   fi

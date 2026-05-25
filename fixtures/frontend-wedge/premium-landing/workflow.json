@@ -48,6 +48,7 @@
     "routing dashboards"
   ],
   "required_gates": [
+    "cc-design-handoff --check",
     "cc-creative-kernel-check",
     "cc-asset-kit-check",
     "cc-taste-benchmark-check",

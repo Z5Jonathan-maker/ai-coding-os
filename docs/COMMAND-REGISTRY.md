@@ -54,6 +54,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
 - `cc-creative-kernel-check` — verifies the Creative Direction Kernel, cognitive design routes, design DNA fields, and taste validation scores.
+- `cc-design-handoff` — create the first-class taste-driven frontend mission spine: Image 2.0 reference, asset approval, Kimi implementation, Claude review, TEL deploy gate, and proof bundle.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.

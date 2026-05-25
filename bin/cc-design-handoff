@@ -1,0 +1,280 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) {
+  return args.includes(`--${name}`);
+}
+
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+
+function promptArgs() {
+  const skip = new Set(['--out-dir', '--title']);
+  const out = [];
+  for (let i = 0; i < args.length; i += 1) {
+    if (skip.has(args[i])) i += 1;
+    else if (!args[i].startsWith('--')) out.push(args[i]);
+  }
+  return out.join(' ').trim();
+}
+
+function slug(text) {
+  return String(text || 'design-handoff')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 72) || 'design-handoff';
+}
+
+function now() {
+  return new Date().toISOString();
+}
+
+function writeJson(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function run(cmd, cmdArgs, options = {}) {
+  return spawnSync(cmd, cmdArgs, {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    timeout: options.timeout || 30000,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root, ...(options.env || {}) },
+  });
+}
+
+function route(prompt, purpose) {
+  const res = run(path.join(root, 'bin', 'cc-route'), ['--json', '--purpose', purpose, prompt]);
+  if (res.status !== 0) {
+    return {
+      schema: 'ai-coding-os.route-receipt.v1',
+      final_class: purpose,
+      platform: 'unavailable',
+      source: 'cc-route-error',
+      error: `${res.stdout || ''}${res.stderr || ''}`.trim(),
+    };
+  }
+  return JSON.parse(res.stdout);
+}
+
+function event(missionId, stage, message, data = {}, proof = [], agent = '') {
+  return {
+    schema: 'ai-coding-os.timeline-event.v1',
+    mission_id: missionId,
+    ts: now(),
+    agent: agent || String(stage).split('.')[0],
+    stage,
+    kind: String(stage).split('.')[0],
+    message,
+    proof,
+    data,
+    severity: 'info',
+  };
+}
+
+function artifactsFor(dir) {
+  return {
+    creativeBrief: path.join(dir, 'creative.brief.json'),
+    routeReceipt: path.join(dir, 'route.receipt.json'),
+    handoff: path.join(dir, 'design-handoff.json'),
+    timeline: path.join(dir, 'agent.timeline.json'),
+    proofBundle: path.join(dir, 'proof.bundle.json'),
+  };
+}
+
+function createHandoff() {
+  const request = promptArgs();
+  if (!request) {
+    console.error('Usage: cc-design-handoff "premium landing page brief" [--out-dir DIR] [--title TITLE]');
+    process.exit(2);
+  }
+
+  const title = value('title', request.slice(0, 96));
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, 'Z');
+  const dir = path.resolve(value('out-dir', path.join(root, '.ai', 'design-handoffs', `${stamp}-${slug(title)}`)));
+  const missionId = path.basename(dir);
+  const files = artifactsFor(dir);
+  const routeReceipt = route(request, 'creative_direction');
+
+  const phases = [
+    {
+      id: 'creative_reference',
+      owner_lane: 'chatgpt-image',
+      status: 'awaiting_generation',
+      output: 'visual.target.png',
+      approval_gate: 'human_approves_reference_before_asset_extraction',
+    },
+    {
+      id: 'asset_decomposition',
+      owner_lane: 'chatgpt-image',
+      status: 'blocked_until_reference_approved',
+      output: 'creative.asset-kit.json',
+      approval_gate: 'one_asset_approved_before_next_asset',
+    },
+    {
+      id: 'design_dna',
+      owner_lane: 'chatgpt-image',
+      status: 'blocked_until_reference_approved',
+      output: 'design.dna.json',
+    },
+    {
+      id: 'kimi_implementation',
+      owner_lane: 'kimi-webbridge',
+      status: 'blocked_until_approved_assets_exist',
+      output: 'implementation.patch',
+    },
+    {
+      id: 'claude_review',
+      owner_lane: 'claude',
+      status: 'blocked_until_implementation_exists',
+      output: 'taste.validation.json',
+    },
+    {
+      id: 'tel_deploy',
+      owner_lane: 'tel',
+      status: 'blocked_until_review_passes_and_human_approves',
+      output: 'deploy.receipt.json',
+      approval_gate: 'human_approves_credentialed_deploy',
+    },
+  ];
+
+  writeJson(files.creativeBrief, {
+    schema: 'ai-coding-os.creative-brief.v1',
+    mission_id: missionId,
+    title,
+    request,
+    product_wedge: 'taste-driven frontend generation',
+    dominant_user_action: 'describe the desired business outcome',
+    success_outcome: 'approved visual direction survives implementation and deploy proof',
+    anti_goals: [
+      'do not expose provider routing as the main UX',
+      'do not let implementation lanes reinvent approved visual direction',
+      'do not deploy without explicit approval',
+    ],
+  });
+
+  writeJson(files.routeReceipt, routeReceipt);
+  writeJson(files.handoff, {
+    schema: 'ai-coding-os.design-handoff.v1',
+    mission_id: missionId,
+    title,
+    request,
+    status: 'awaiting_creative_reference',
+    current_gate: 'generate_or_attach_visual.target.png_and_approve_it',
+    phases,
+    required_artifacts: [
+      'creative.brief.json',
+      'visual.target.png',
+      'creative.asset-kit.json',
+      'design.dna.json',
+      'implementation.plan.json',
+      'taste.validation.json',
+      'deploy.receipt.json',
+      'proof.bundle.json',
+    ],
+    hidden_from_primary_ui: [
+      'provider selection',
+      'token balancing',
+      'fallback mechanics',
+      'raw model logs',
+    ],
+  });
+
+  writeJson(files.timeline, {
+    schema: 'ai-coding-os.agent-timeline.v1',
+    mission_id: missionId,
+    events: [
+      event(missionId, 'preflight.started', 'Design handoff mission initialized.', { title }, ['creative.brief.json'], 'codex'),
+      event(missionId, 'creative.reference.requested', 'Image 2.0 creative reference is required before implementation.', {
+        owner_lane: 'chatgpt-image',
+        output: 'visual.target.png',
+      }, ['route.receipt.json'], 'chatgpt-image'),
+      event(missionId, 'approval.requested', 'Human approval gate is open for the visual reference.', {
+        gate: 'approve_visual_target',
+      }, ['design-handoff.json'], 'human'),
+    ],
+  });
+
+  writeJson(files.proofBundle, {
+    schema: 'ai-coding-os.design-handoff-proof.v1',
+    mission_id: missionId,
+    status: 'initialized',
+    verdict: 'not_shippable_until_reference_approved_and_implementation_verified',
+    files: Object.fromEntries(Object.entries(files).map(([key, file]) => [key, path.relative(dir, file)])),
+    next_required_action: 'Generate or attach visual.target.png, then mark the creative_reference phase approved.',
+  });
+
+  const validate = run(path.join(root, 'bin', 'cc-mission-events'), ['validate', '--file', files.timeline]);
+  if (validate.status !== 0) {
+    console.error(`${validate.stdout || ''}${validate.stderr || ''}`.trim());
+    process.exit(1);
+  }
+
+  if (has('json')) {
+    console.log(JSON.stringify({ schema: 'ai-coding-os.design-handoff-result.v1', mission_id: missionId, dir }, null, 2));
+  } else {
+    console.log('# Design Handoff Mission\n');
+    console.log(`Mission: ${missionId}`);
+    console.log(`Directory: ${dir}`);
+    console.log(`Route: ${routeReceipt.final_class || 'unknown'} -> ${routeReceipt.platform || 'unknown'}`);
+    console.log('Status: awaiting creative reference approval');
+    console.log('Next: generate or attach visual.target.png, approve it, then pass approved artifacts to Kimi implementation.');
+    console.log('\nStatus: design-handoff-ready');
+  }
+}
+
+function check() {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-design-handoff.'));
+  try {
+    const res = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'premium peptide landing page with cinematic hero, product trust, and conversion-focused pricing',
+      '--out-dir',
+      path.join(temp, 'mission'),
+      '--title',
+      'Premium peptide landing page',
+    ], { timeout: 60000 });
+    if (res.status !== 0 || !/Status: design-handoff-ready/.test(res.stdout)) {
+      console.error(`${res.stdout || ''}${res.stderr || ''}`.trim());
+      process.exit(1);
+    }
+    const dir = path.join(temp, 'mission');
+    for (const file of Object.values(artifactsFor(dir))) {
+      if (!fs.existsSync(file)) throw new Error(`missing ${path.basename(file)}`);
+    }
+    const handoff = readJson(path.join(dir, 'design-handoff.json'));
+    const ids = new Set(handoff.phases.map((phase) => phase.id));
+    for (const id of ['creative_reference', 'asset_decomposition', 'design_dna', 'kimi_implementation', 'claude_review', 'tel_deploy']) {
+      if (!ids.has(id)) throw new Error(`missing phase ${id}`);
+    }
+    const timeline = readJson(path.join(dir, 'agent.timeline.json'));
+    const stages = timeline.events.map((item) => item.stage);
+    for (const stage of ['creative.reference.requested', 'approval.requested']) {
+      if (!stages.includes(stage)) throw new Error(`missing event stage ${stage}`);
+    }
+  } catch (err) {
+    console.error(`cc-design-handoff check failed: ${err.message}`);
+    process.exit(1);
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+  console.log('Status: design-handoff-check-ready');
+}
+
+if (has('check')) check();
+else createHandoff();

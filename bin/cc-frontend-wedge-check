@@ -72,6 +72,7 @@ for (const item of ['provider selection', 'token balancing', 'fallback mechanics
 
 const gates = workflow.required_gates || [];
 for (const gate of [
+  'cc-design-handoff --check',
   'cc-creative-kernel-check',
   'cc-asset-kit-check',
   'cc-benchmark-run image-to-ui-handoff',

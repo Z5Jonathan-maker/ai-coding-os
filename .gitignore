@@ -9,6 +9,7 @@ claude/skills/prompt-master/
 .venv/
 claude/tel/.venv/
 .ai/missions/
+.ai/design-handoffs/
 .ai/plans/
 memory/
 

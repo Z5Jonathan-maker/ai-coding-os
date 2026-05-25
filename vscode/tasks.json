@@ -25,6 +25,21 @@
       "id": "designMissionDir",
       "type": "promptString",
       "description": "Design handoff mission directory"
+    },
+    {
+      "id": "designPhase",
+      "type": "promptString",
+      "description": "Design handoff phase to approve"
+    },
+    {
+      "id": "designArtifact",
+      "type": "promptString",
+      "description": "Approved design handoff artifact"
+    },
+    {
+      "id": "designApprovalNote",
+      "type": "promptString",
+      "description": "Design handoff approval note"
     }
   ],
   "tasks": [
@@ -93,6 +108,13 @@
       "type": "shell",
       "command": "cc-design-handoff",
       "args": ["status", "--dir", "${input:designMissionDir}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Creative Handoff Approve",
+      "type": "shell",
+      "command": "cc-design-handoff",
+      "args": ["approve", "--dir", "${input:designMissionDir}", "--phase", "${input:designPhase}", "--artifact", "${input:designArtifact}", "--note", "${input:designApprovalNote}"],
       "problemMatcher": []
     },
     {

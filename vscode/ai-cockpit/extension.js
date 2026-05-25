@@ -86,6 +86,9 @@ function activate(context) {
     command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.browserProof', () => showOutput(output, 'Browser Proof', COMMANDS.browserProof)),
     command('aiSystemCockpit.designHandoff', () => provider.promptDesignHandoff()),
+    command('aiSystemCockpit.designHandoffStatus', () => provider.designHandoffStatus()),
+    command('aiSystemCockpit.designHandoffContinue', () => provider.designHandoffContinue()),
+    command('aiSystemCockpit.designHandoffApprove', () => provider.designHandoffApprove()),
     command('aiSystemCockpit.fiveMinuteDemo', () => provider.runInlineStream('Five-Minute Demo', COMMANDS.fiveMinuteDemo)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
@@ -472,6 +475,9 @@ class CockpitProvider {
       buildFix: () => vscode.commands.executeCommand('aiSystemCockpit.buildFix'),
       designBrowser: () => vscode.commands.executeCommand('aiSystemCockpit.designBrowser'),
       designHandoff: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoff'),
+      designHandoffStatus: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffStatus'),
+      designHandoffContinue: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffContinue'),
+      designHandoffApprove: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffApprove'),
       researchExtract: () => vscode.commands.executeCommand('aiSystemCockpit.researchExtract'),
       savePlan: () => vscode.commands.executeCommand('aiSystemCockpit.savePlan'),
       reviewDiff: () => vscode.commands.executeCommand('aiSystemCockpit.reviewDiff'),
@@ -512,7 +518,86 @@ class CockpitProvider {
       vscode.window.showWarningMessage('AI Cockpit blocked this design handoff by trust policy.');
       return;
     }
-    this.runInlineStream('Creative Handoff', `${COMMANDS.designHandoff} ${quote(prompt)}`);
+    this.runHandoffCommand('Creative Handoff', `${COMMANDS.designHandoff} ${quote(prompt)}`);
+  }
+
+  async designHandoffStatus() {
+    const dir = await this.pickDesignHandoffDir();
+    if (!dir) return;
+    this.runHandoffCommand('Creative Handoff Status', `cc-design-handoff status --dir ${quote(dir)}`);
+  }
+
+  async designHandoffContinue() {
+    const dir = await this.pickDesignHandoffDir();
+    if (!dir) return;
+    this.runHandoffCommand('Creative Handoff Continue', `cc-design-handoff continue --dir ${quote(dir)}`);
+  }
+
+  async designHandoffApprove() {
+    const dir = await this.pickDesignHandoffDir();
+    if (!dir) return;
+    const handoff = this.readDesignHandoff(dir);
+    const phases = (handoff.phases || []).map((phase) => ({
+      label: phase.id,
+      description: `${phase.status} · ${phase.owner_lane}`,
+      phase,
+    }));
+    const picked = await vscode.window.showQuickPick(phases, { placeHolder: 'Approve design handoff phase' });
+    if (!picked) return;
+    const artifact = await vscode.window.showInputBox({
+      prompt: 'Approved artifact path or name',
+      placeHolder: picked.phase.output || 'visual.target.png',
+      value: picked.phase.output || '',
+      ignoreFocusOut: true,
+    });
+    if (artifact === undefined) return;
+    const note = await vscode.window.showInputBox({
+      prompt: 'Approval note',
+      value: `${picked.phase.id} approved`,
+      ignoreFocusOut: true,
+    });
+    if (note === undefined) return;
+    this.runHandoffCommand('Creative Handoff Approve', `cc-design-handoff approve --dir ${quote(dir)} --phase ${quote(picked.phase.id)} --artifact ${quote(artifact)} --note ${quote(note)}`);
+  }
+
+  async pickDesignHandoffDir() {
+    const base = path.join(cwd(), '.ai', 'design-handoffs');
+    if (!fs.existsSync(base)) {
+      vscode.window.showInformationMessage('No design handoff missions found in .ai/design-handoffs.');
+      return '';
+    }
+    const entries = fs.readdirSync(base, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => {
+        const dir = path.join(base, entry.name);
+        const file = path.join(dir, 'design-handoff.json');
+        if (!fs.existsSync(file)) return null;
+        const handoff = this.readDesignHandoff(dir);
+        return {
+          label: handoff.title || entry.name,
+          description: handoff.status || 'unknown',
+          detail: dir,
+          dir,
+          mtime: fs.statSync(file).mtimeMs,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.mtime - a.mtime);
+    const picked = await vscode.window.showQuickPick(entries, { placeHolder: 'Select a design handoff mission' });
+    return picked?.dir || '';
+  }
+
+  readDesignHandoff(dir) {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(dir, 'design-handoff.json'), 'utf8'));
+    } catch (_) {
+      return {};
+    }
+  }
+
+  runHandoffCommand(title, commandLine) {
+    if (this.view) this.runInlineStream(title, commandLine);
+    else runTerminal(`AI ${title}`, commandLine);
   }
 
   async runInline(name, commandLine) {
@@ -822,6 +907,8 @@ class CockpitProvider {
         <button class="tool-button" data-command="pickFile"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5"/></svg><span>File</span></button>
         <button class="tool-button" data-command="attachDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h6M7 17h10"/><path d="M4 4v16M20 4v16"/></svg><span>Diff</span></button>
         <button class="tool-button" data-command="reviewDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
+        <button class="tool-button" data-command="designHandoffContinue"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Handoff</span></button>
+        <button class="tool-button" data-command="designHandoffApprove"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><span>Approve</span></button>
       </div>
       <label class="check">
         <input id="includeContext" type="checkbox" checked>

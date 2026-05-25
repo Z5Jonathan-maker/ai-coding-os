@@ -1,0 +1,100 @@
+{
+  "schema": "ai-coding-os.microagent-index.v1",
+  "rules": [
+    {
+      "id": "design-handoff",
+      "triggers": [
+        "design",
+        "frontend",
+        "landing",
+        "hero",
+        "visual",
+        "taste",
+        "kimi"
+      ],
+      "paths": [
+        "docs/TASTE-DRIVEN-FRONTEND-WEDGE.md",
+        "docs/IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md"
+      ]
+    },
+    {
+      "id": "browser-proof",
+      "triggers": [
+        "browser",
+        "playwright",
+        "screenshot",
+        "click",
+        "url",
+        "proof"
+      ],
+      "paths": [
+        "docs/BROWSER-IN-LOOP-PROOF.md",
+        ".ai/checks/browser-visual-proof.md"
+      ]
+    },
+    {
+      "id": "tel-deploy",
+      "triggers": [
+        "deploy",
+        "vercel",
+        "github",
+        "credential",
+        "tel",
+        "rollback"
+      ],
+      "paths": [
+        "docs/KNOWN-LIMITATIONS.md",
+        ".ai/checks/tel-policy.md"
+      ]
+    },
+    {
+      "id": "routing",
+      "triggers": [
+        "route",
+        "router",
+        "lane",
+        "model",
+        "fallback",
+        "deepseek",
+        "claude",
+        "codex"
+      ],
+      "paths": [
+        "docs/ADDING-A-LANE.md",
+        "ai-lanes.json"
+      ]
+    },
+    {
+      "id": "mission-runtime",
+      "triggers": [
+        "mission",
+        "phase",
+        "receipt",
+        "proof",
+        "runtime",
+        "checkpoint",
+        "undo"
+      ],
+      "paths": [
+        "docs/MISSION-KERNEL.md",
+        "docs/MISSION-EVENTS.md",
+        "docs/PHASE-CHECKPOINTS.md"
+      ]
+    },
+    {
+      "id": "aurex-commerce",
+      "triggers": [
+        "dosecraft",
+        "peptide",
+        "checkout",
+        "cart",
+        "ruo",
+        "janoshik",
+        "product"
+      ],
+      "paths": [
+        "AGENTS.md"
+      ]
+    }
+  ]
+}

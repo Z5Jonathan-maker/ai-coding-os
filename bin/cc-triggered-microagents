@@ -1,0 +1,102 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+function writeJson(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+function usage() {
+  console.log(`Usage:
+  cc-triggered-microagents --text PROMPT [--phase ID] [--json]
+  cc-triggered-microagents --check`);
+}
+
+const defaultRules = [
+  { id: 'design-handoff', triggers: ['design', 'frontend', 'landing', 'hero', 'visual', 'taste', 'kimi'], paths: ['docs/TASTE-DRIVEN-FRONTEND-WEDGE.md', 'docs/IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md'] },
+  { id: 'browser-proof', triggers: ['browser', 'playwright', 'screenshot', 'click', 'url', 'proof'], paths: ['docs/BROWSER-IN-LOOP-PROOF.md', '.ai/checks/browser-visual-proof.md'] },
+  { id: 'tel-deploy', triggers: ['deploy', 'vercel', 'github', 'credential', 'tel', 'rollback'], paths: ['docs/KNOWN-LIMITATIONS.md', '.ai/checks/tel-policy.md'] },
+  { id: 'routing', triggers: ['route', 'router', 'lane', 'model', 'fallback', 'deepseek', 'claude', 'codex'], paths: ['docs/ADDING-A-LANE.md', 'ai-lanes.json'] },
+  { id: 'mission-runtime', triggers: ['mission', 'phase', 'receipt', 'proof', 'runtime', 'checkpoint', 'undo'], paths: ['docs/MISSION-KERNEL.md', 'docs/MISSION-EVENTS.md', 'docs/PHASE-CHECKPOINTS.md'] },
+  { id: 'aurex-commerce', triggers: ['dosecraft', 'peptide', 'checkout', 'cart', 'ruo', 'janoshik', 'product'], paths: ['AGENTS.md'] },
+];
+
+function loadRules() {
+  const file = path.join(root, '.ai', 'microagents.json');
+  if (!fs.existsSync(file)) {
+    writeJson(file, { schema: 'ai-coding-os.microagent-index.v1', rules: defaultRules });
+    return defaultRules;
+  }
+  const parsed = readJson(file);
+  return Array.isArray(parsed.rules) ? parsed.rules : defaultRules;
+}
+
+function scoreRule(rule, text, phase) {
+  const hay = `${text} ${phase}`.toLowerCase();
+  let score = 0;
+  const matched = [];
+  for (const trigger of rule.triggers || []) {
+    const needle = String(trigger).toLowerCase();
+    if (needle && hay.includes(needle)) {
+      score += needle.startsWith('/') ? 4 : 2;
+      matched.push(trigger);
+    }
+  }
+  if (rule.phase && rule.phase === phase) score += 3;
+  return { score, matched };
+}
+
+function select(text, phase) {
+  const rules = loadRules();
+  const selected = rules
+    .map((rule) => ({ rule, ...scoreRule(rule, text, phase) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || String(a.rule.id).localeCompare(String(b.rule.id)))
+    .slice(0, Number(value('limit', '5')))
+    .map((item) => ({
+      id: item.rule.id,
+      score: item.score,
+      matched_triggers: item.matched,
+      paths: (item.rule.paths || []).filter((p) => fs.existsSync(path.join(root, p))),
+    }));
+  return {
+    schema: 'ai-coding-os.triggered-microagents.v1',
+    text_chars: text.length,
+    phase: phase || null,
+    selected,
+  };
+}
+
+function check() {
+  const out = select('Deploy this Kimi landing page to Vercel and run browser proof', 'tel_deploy');
+  const ids = out.selected.map((item) => item.id);
+  if (!ids.includes('tel-deploy') || !ids.includes('browser-proof') || !ids.includes('design-handoff')) throw new Error(`bad selection: ${ids.join(',')}`);
+  console.log('Status: triggered-microagents-ready');
+}
+
+if (has('check')) check();
+else {
+  const text = value('text', args.filter((arg) => !arg.startsWith('--')).join(' '));
+  if (!text) {
+    usage();
+    process.exit(2);
+  }
+  const out = select(text, value('phase', ''));
+  if (has('json')) console.log(JSON.stringify(out, null, 2));
+  else {
+    console.log('# Triggered Microagents\n');
+    for (const item of out.selected) console.log(`- ${item.id}: ${item.paths.join(', ')}`);
+    console.log('\nStatus: triggered-microagents-ready');
+  }
+}

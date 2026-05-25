@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo="."
+mission=""
+phase=""
+dir=""
+artifact=()
+json=0
+
+usage() {
+  cat <<'EOF'
+Usage:
+  cc-mission-git record --repo DIR --mission ID --phase ID --dir HANDOFF_DIR [--artifact FILE...] [--json]
+  cc-mission-git log [--repo DIR] [--mission ID]
+  cc-mission-git show --repo DIR --mission ID --phase ID
+  cc-mission-git --check
+
+Creates Git-backed mission ledger commits under refs/cc-missions/<mission>/<phase>
+without moving HEAD or touching the real index.
+EOF
+}
+
+sub="${1:-log}"
+[ "$#" -gt 0 ] && shift || true
+[ "$sub" = "--check" ] && sub="check"
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+  --repo) repo="${2:?missing --repo value}"; shift 2 ;;
+  --mission) mission="${2:?missing --mission value}"; shift 2 ;;
+  --phase) phase="${2:?missing --phase value}"; shift 2 ;;
+  --dir) dir="${2:?missing --dir value}"; shift 2 ;;
+  --artifact) artifact+=("${2:?missing --artifact value}"); shift 2 ;;
+  --json) json=1; shift ;;
+  -h | --help) usage; exit 0 ;;
+  *) echo "cc-mission-git: unknown option $1" >&2; usage >&2; exit 2 ;;
+  esac
+done
+
+repo="$(cd "$repo" && pwd)"
+
+slug() {
+  printf '%s' "${1:-manual}" | tr '[:upper:] /' '[:lower:]--' | tr -cd 'a-z0-9._-' | sed 's/^-//;s/-$//' | cut -c1-96
+}
+
+ref_for() {
+  local m p
+  m="$(slug "$mission")"
+  p="$(slug "$phase")"
+  [ -n "$m" ] || m="manual"
+  [ -n "$p" ] || p="phase"
+  printf 'refs/cc-missions/%s/%s' "$m" "$p"
+}
+
+relpath() {
+  python3 - "$repo" "$1" <<'PY'
+import os, sys
+print(os.path.relpath(os.path.abspath(sys.argv[2]), os.path.abspath(sys.argv[1])))
+PY
+}
+
+json_print() {
+  node -e 'const obj=JSON.parse(process.argv[1]); process.stdout.write(JSON.stringify(obj,null,2)+"\n")' "$1"
+}
+
+cmd_record() {
+  [ -n "$mission" ] || { echo "cc-mission-git: --mission required" >&2; exit 2; }
+  [ -n "$phase" ] || { echo "cc-mission-git: --phase required" >&2; exit 2; }
+  [ -n "$dir" ] || { echo "cc-mission-git: --dir required" >&2; exit 2; }
+  git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+    echo "cc-mission-git: not a git repo: $repo" >&2
+    exit 2
+  }
+
+  local ref index tree parent commit head body dirty_count
+  ref="$(ref_for)"
+  index="$(mktemp "${TMPDIR:-/tmp}/cc-mission-git.XXXXXX")"
+  rm -f "$index"
+  trap 'rm -f "$index"' RETURN
+
+  GIT_INDEX_FILE="$index" git -C "$repo" read-tree HEAD 2>/dev/null ||
+    GIT_INDEX_FILE="$index" git -C "$repo" read-tree --empty
+
+  if [ -d "$dir" ]; then
+    local rel_dir
+    rel_dir="$(relpath "$dir")"
+    case "$rel_dir" in
+    ..*) : ;;
+    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -- "$rel_dir" ;;
+    esac
+  fi
+  for item in "${artifact[@]}"; do
+    [ -e "$item" ] || item="$dir/$item"
+    [ -e "$item" ] || continue
+    local rel_item
+    rel_item="$(relpath "$item")"
+    case "$rel_item" in
+    ..*) : ;;
+    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -- "$rel_item" ;;
+    esac
+  done
+
+  tree="$(GIT_INDEX_FILE="$index" git -C "$repo" write-tree)"
+  parent="$(git -C "$repo" rev-parse --verify "$ref" 2>/dev/null || true)"
+  head="$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || printf '')"
+  dirty_count="$(git -C "$repo" status --short | sed '/^$/d' | wc -l | tr -d ' ')"
+  body="$(node -e 'const fs=require("fs"),path=require("path"); const [dir,mission,phase,repo,head,dirty]=process.argv.slice(1); const read=f=>{try{return JSON.parse(fs.readFileSync(path.join(dir,f),"utf8"))}catch{return null}}; const handoff=read("design-handoff.json"); const proof=read("proof.bundle.json"); const timeline=read("agent.timeline.json"); process.stdout.write(JSON.stringify({schema:"ai-coding-os.mission-git-body.v1",mission_id:mission,phase,repo,head,dirty_count:Number(dirty),handoff_status:handoff&&handoff.status,phase_status:handoff&&handoff.phases&&((handoff.phases.find(p=>p.id===phase)||{}).status),proof_verdict:proof&&proof.verdict,event_count:timeline&&timeline.events&&timeline.events.length,recorded_at:new Date().toISOString()},null,2))' "$dir" "$mission" "$phase" "$repo" "$head" "$dirty_count")"
+
+  if [ -n "$parent" ]; then
+    commit="$(printf 'mission %s: %s\n\n%s\n' "$mission" "$phase" "$body" |
+      GIT_INDEX_FILE="$index" git -C "$repo" commit-tree "$tree" -p "$parent")"
+  else
+    commit="$(printf 'mission %s: %s\n\n%s\n' "$mission" "$phase" "$body" |
+      GIT_INDEX_FILE="$index" git -C "$repo" commit-tree "$tree")"
+  fi
+  git -C "$repo" update-ref "$ref" "$commit"
+
+  if [ "$json" -eq 1 ]; then
+    json_print "$(node -e 'const [repo,ref,commit,mission,phase,head,dirty]=process.argv.slice(1); process.stdout.write(JSON.stringify({schema:"ai-coding-os.mission-git-record.v1",repo,ref,commit,mission_id:mission,phase,head,dirty_count:Number(dirty)}))' "$repo" "$ref" "$commit" "$mission" "$phase" "$head" "$dirty_count")"
+  else
+    printf 'Mission: %s\nPhase: %s\nRef: %s\nCommit: %s\nStatus: mission-git-ready\n' "$mission" "$phase" "$ref" "$commit"
+  fi
+}
+
+cmd_log() {
+  local pattern="refs/cc-missions"
+  [ -n "$mission" ] && pattern="$pattern/$(slug "$mission")"
+  git -C "$repo" for-each-ref --format='%(refname)%09%(objectname:short)%09%(committerdate:iso8601)%09%(subject)' "$pattern" | sed -n '1,120p'
+}
+
+cmd_show() {
+  [ -n "$mission" ] || { echo "cc-mission-git: --mission required" >&2; exit 2; }
+  [ -n "$phase" ] || { echo "cc-mission-git: --phase required" >&2; exit 2; }
+  git -C "$repo" show --stat --format=fuller "$(ref_for)"
+}
+
+cmd_check() {
+  local tmp ref commit
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/cc-mission-git-check.XXXXXX")"
+  trap 'rm -rf "$tmp"' RETURN
+  git -C "$tmp" init >/dev/null
+  git -C "$tmp" config user.email test@example.com
+  git -C "$tmp" config user.name "Test User"
+  mkdir -p "$tmp/.ai/design-handoffs/demo"
+  printf '{}\n' >"$tmp/README.md"
+  git -C "$tmp" add README.md
+  git -C "$tmp" commit -m init >/dev/null
+  cat >"$tmp/.ai/design-handoffs/demo/design-handoff.json" <<'JSON'
+{"mission_id":"demo","status":"awaiting_codex_proof","phases":[{"id":"codex_proof","status":"completed"}]}
+JSON
+  cat >"$tmp/.ai/design-handoffs/demo/proof.bundle.json" <<'JSON'
+{"verdict":"ready_for_tel_deploy_gate"}
+JSON
+  cat >"$tmp/.ai/design-handoffs/demo/agent.timeline.json" <<'JSON'
+{"events":[{"stage":"proof.completed"}]}
+JSON
+  "$0" record --repo "$tmp" --mission demo --phase codex_proof --dir "$tmp/.ai/design-handoffs/demo" --json >/tmp/cc-mission-git-check.json
+  ref="$(node -e 'const fs=require("fs"); process.stdout.write(JSON.parse(fs.readFileSync(process.argv[1],"utf8")).ref)' /tmp/cc-mission-git-check.json)"
+  commit="$(git -C "$tmp" rev-parse "$ref")"
+  git -C "$tmp" show -s --format=%B "$commit" | grep -Fq 'ready_for_tel_deploy_gate'
+  rm -f /tmp/cc-mission-git-check.json
+  printf 'Status: mission-git-ready\n'
+}
+
+case "$sub" in
+record) cmd_record ;;
+log) cmd_log ;;
+show) cmd_show ;;
+check) cmd_check ;;
+*) echo "cc-mission-git: unknown subcommand $sub" >&2; usage >&2; exit 2 ;;
+esac

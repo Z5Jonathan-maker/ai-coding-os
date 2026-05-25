@@ -117,6 +117,98 @@ function addCheckpointRecord(phase, record) {
   phase.checkpoints.push(record);
 }
 
+function recordMissionGit(repo, dir, handoff, phase, artifact) {
+  if (has('no-mission-git') || process.env.CC_DESIGN_HANDOFF_NO_MISSION_GIT === '1') return null;
+  const args = [
+    'record',
+    '--repo',
+    repo,
+    '--mission',
+    handoff.mission_id,
+    '--phase',
+    phase.id,
+    '--dir',
+    dir,
+    '--json',
+  ];
+  if (artifact) args.push('--artifact', artifactPath(dir, artifact));
+  const res = run(path.join(root, 'bin', 'cc-mission-git'), args, { timeout: 60000, maxBuffer: 1024 * 1024 * 4 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  if (res.status !== 0) {
+    return {
+      schema: 'ai-coding-os.mission-git-record.v1',
+      repo: path.resolve(repo),
+      mission_id: handoff.mission_id,
+      phase: phase.id,
+      status: 'failed',
+      error: raw || `cc-mission-git exited ${res.status}`,
+      recorded_at: now(),
+    };
+  }
+  return {
+    schema: 'ai-coding-os.mission-git-record.v1',
+    ...(extractJson(raw) || {}),
+    repo: path.resolve(repo),
+    mission_id: handoff.mission_id,
+    phase: phase.id,
+    status: 'recorded',
+    recorded_at: now(),
+  };
+}
+
+function addMissionGitRecord(phase, proof, record) {
+  if (!record) return;
+  phase.git_ledger = Array.isArray(phase.git_ledger) ? phase.git_ledger : [];
+  phase.git_ledger.push(record);
+  proof.git_ledger = Array.isArray(proof.git_ledger) ? proof.git_ledger : [];
+  proof.git_ledger.push({
+    phase: phase.id,
+    repo: record.repo,
+    ref: record.ref || '',
+    commit: record.commit || '',
+    status: record.status,
+  });
+}
+
+function updateContextSummary(dir, proof) {
+  if (has('no-condense') || process.env.CC_DESIGN_HANDOFF_NO_CONDENSE === '1') return null;
+  const args = ['--dir', dir, '--json'];
+  if (has('live-condense')) args.push('--live');
+  const res = run(path.join(root, 'bin', 'cc-mission-condenser'), args, { timeout: 120000, maxBuffer: 1024 * 1024 * 4 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  if (res.status !== 0) {
+    proof.context_summary = {
+      artifact: null,
+      status: 'failed',
+      error: raw || `cc-mission-condenser exited ${res.status}`,
+      updated_at: now(),
+    };
+    return proof.context_summary;
+  }
+  const parsed = extractJson(raw) || {};
+  proof.context_summary = {
+    artifact: 'mission.context-summary.json',
+    source: parsed.source || '',
+    event_count: parsed.event_count || 0,
+    condensed: Boolean(parsed.condensed),
+    updated_at: now(),
+  };
+  return proof.context_summary;
+}
+
+function triggeredMicroagents(handoff, phase, promptText) {
+  if (has('no-microagents') || process.env.CC_DESIGN_HANDOFF_NO_MICROAGENTS === '1') return [];
+  const res = run(path.join(root, 'bin', 'cc-triggered-microagents'), [
+    '--json',
+    '--phase',
+    phase?.id || '',
+    '--text',
+    `${handoff.request || ''}\n${promptText || ''}`,
+  ], { timeout: 30000, maxBuffer: 1024 * 1024 * 2 });
+  if (res.status !== 0) return [];
+  return (extractJson(res.stdout || '')?.selected || []).slice(0, 5);
+}
+
 function extractJson(text) {
   const raw = String(text || '').trim();
   if (!raw) return null;
@@ -402,7 +494,9 @@ function actionPacket(handoff, phase) {
       expected_artifact: 'deploy.receipt.json',
     },
   };
-  return { ...base, ...(packets[phase.id] || { prompt: nextActionFor(handoff) }) };
+  const packet = { ...base, ...(packets[phase.id] || { prompt: nextActionFor(handoff) }) };
+  packet.selected_context = triggeredMicroagents(handoff, phase, packet.prompt);
+  return packet;
 }
 
 function requestStageFor(phaseId) {
@@ -692,6 +786,7 @@ function check() {
     const firstPacket = readJson(path.join(dir, 'next-action.json'));
     if (firstPacket.phase !== 'creative_reference') throw new Error(`unexpected first action phase ${firstPacket.phase}`);
     if (firstPacket.owner_lane !== 'chatgpt-image') throw new Error(`unexpected first action lane ${firstPacket.owner_lane}`);
+    if (!Array.isArray(firstPacket.selected_context)) throw new Error('triggered microagent context missing from action packet');
     const imageExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -796,6 +891,11 @@ function check() {
     const impl = readJson(path.join(dir, 'implementation.result.json'));
     if (impl.source !== 'offline_fixture' || impl.live_lane_call !== false) throw new Error('offline implementation result fixture not labeled');
     if (!impl.changed_files?.some((file) => file.includes('app/page.tsx'))) throw new Error('implementation result did not capture target changes');
+    const handoffAfterImpl = readJson(path.join(dir, 'design-handoff.json'));
+    const implPhase = phaseById(handoffAfterImpl, 'kimi_implementation');
+    if (!implPhase.git_ledger?.length) throw new Error('mission git ledger missing from implementation phase');
+    const proofAfterImpl = readJson(path.join(dir, 'proof.bundle.json'));
+    if (proofAfterImpl.context_summary?.artifact !== 'mission.context-summary.json') throw new Error('mission condenser summary missing from proof bundle');
     const reviewExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -1958,7 +2058,13 @@ function executeStage() {
     addCheckpointRecord(phase, createPhaseCheckpoint(targetRepo, handoff, phase, 'target-post'));
   }
   addCheckpointRecord(phase, createPhaseCheckpoint(root, handoff, phase, 'post'));
+  updateContextSummary(dir, proof);
+  addMissionGitRecord(phase, proof, recordMissionGit(root, dir, handoff, phase, artifact));
+  if (phase.id === 'kimi_implementation' && targetRepo) {
+    addMissionGitRecord(phase, proof, recordMissionGit(targetRepo, targetRepo, handoff, phase, ''));
+  }
   writeJson(files.handoff, handoff);
+  writeJson(files.proofBundle, proof);
 
   const result = {
     schema: 'ai-coding-os.design-handoff-execute.v1',
@@ -1967,6 +2073,8 @@ function executeStage() {
     artifact,
     blocked,
     checkpoints: phase.checkpoints || [],
+    git_ledger: phase.git_ledger || [],
+    context_summary: proof.context_summary || null,
     status: blocked ? 'blocked' : 'completed',
   };
   if (has('json')) {

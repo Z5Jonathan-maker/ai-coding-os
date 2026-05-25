@@ -85,7 +85,9 @@ useful, delete it or move it out of `bin/`.
 - `cc-maintainer-stack` — non-mutating seam report for live maintainer-only tools: router-ask, provider CLIs, Kimi WebBridge, cc-router, cc-image, and TEL client.
 - `cc-agent-runtime` — thin mission runtime adapter that turns a typed `AgentRunInput` into Mission Kernel route, trust, cost, proof, result, and timeline artifacts; supports `local_process` and isolated `worktree` adapters.
 - `cc-mission-events` — validate, append, and replay normalized Mission Kernel timeline events and complete runtime run stages.
+- `cc-mission-git` — Aider-inspired Git-backed mission ledger commits under hidden `refs/cc-missions/*` without moving HEAD.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).
+- `cc-mission-condenser` — OpenHands-inspired mission context condenser that keeps first/recent events and writes `mission.context-summary.json`.
 - `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
 - `cc-mutating-dogfood` — isolated mutating coding-session proof with failing tests, real edits, recovery, review evidence, Mission Events, and commits.
 - `cc-native-app-status` — installed native AI app versions and role map.
@@ -113,6 +115,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-taste-benchmark-check` — weighted premium-frontend taste rubric for creative fidelity, hierarchy, rhythm, material quality, motion, responsiveness, accessibility, and implementation realism.
 - `cc-token-ledger` — read-only router economics ledger: calls, token estimates, costs, fallbacks, and premium-spend avoidance.
 - `cc-trust-adversarial-check` — adversarial autonomy-boundary fixtures for paid, destructive, secret, force-push, cross-user, and credential-mutation tasks.
+- `cc-triggered-microagents` — OpenHands-inspired keyword-triggered context selector for loading only relevant docs/skills into a mission packet.
 - `cc-third-party-dogfood` — external public-repo mutating proof with pinned upstream source, failing test, runtime repair, Mission Events, review evidence, local commit, and third-party test gate.
 - `cc-trust-profile` — validate and print the repo-local `.ai/trust.json` workspace autonomy policy.
 - `cc-trust-gate` — enforce `.ai/trust.json` plus AI-SYSTEM-V2 permission policy before cockpit routing.

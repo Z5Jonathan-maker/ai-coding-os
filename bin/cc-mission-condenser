@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
+}
+function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+function writeJson(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+function now() { return new Date().toISOString(); }
+function run(cmd, cmdArgs, opts = {}) {
+  return spawnSync(cmd, cmdArgs, { cwd: opts.cwd || root, encoding: 'utf8', timeout: opts.timeout || 120000, maxBuffer: 1024 * 1024 * 4 });
+}
+function usage() {
+  console.log(`Usage:
+  cc-mission-condenser --dir HANDOFF_DIR [--max-events N] [--keep-first N] [--keep-recent N] [--live] [--json]
+  cc-mission-condenser --check`);
+}
+
+if (has('help') || has('h')) {
+  usage();
+  process.exit(0);
+}
+
+function summarizeLocal(handoff, timeline, proof, keepFirst, keepRecent) {
+  const events = Array.isArray(timeline.events) ? timeline.events : [];
+  const first = events.slice(0, keepFirst);
+  const recent = events.slice(Math.max(keepFirst, events.length - keepRecent));
+  const phases = Array.isArray(handoff.phases) ? handoff.phases.map((p) => ({
+    id: p.id,
+    status: p.status,
+    owner_lane: p.owner_lane,
+    artifact: p.completed_artifact || p.approved_artifact || null,
+  })) : [];
+  const completed = phases.filter((p) => ['completed', 'approved'].includes(p.status)).map((p) => p.id);
+  const blocked = phases.filter((p) => String(p.status).startsWith('blocked_')).map((p) => `${p.id}:${p.status}`);
+  const last = recent[recent.length - 1] || events[events.length - 1] || {};
+  return [
+    `Mission ${handoff.mission_id || 'unknown'}: ${handoff.title || handoff.request || 'untitled'}.`,
+    `Status: ${handoff.status || 'unknown'}; verdict: ${proof.verdict || 'unknown'}.`,
+    completed.length ? `Completed/approved phases: ${completed.join(', ')}.` : 'Completed/approved phases: none yet.',
+    blocked.length ? `Blocked phases: ${blocked.join(', ')}.` : 'Blocked phases: none.',
+    `Last event: ${last.stage || 'none'} ${last.message ? `- ${last.message}` : ''}`.trim(),
+  ].join('\n');
+}
+
+function summarizeLive(packet) {
+  const promptFile = path.join(os.tmpdir(), `cc-mission-condenser-${process.pid}.txt`);
+  fs.writeFileSync(promptFile, [
+    'Condense this AI coding mission into a compact handoff summary.',
+    'Keep only operational state: current objective, completed phases, blockers, artifacts, next action, risk.',
+    'Do not add marketing language.',
+    JSON.stringify(packet, null, 2),
+  ].join('\n\n'));
+  try {
+    const res = run('router-ask', ['-p', 'cheap', '--file', promptFile], { timeout: 120000 });
+    if (res.status === 0 && String(res.stdout || '').trim()) return String(res.stdout).trim();
+    return null;
+  } finally {
+    fs.rmSync(promptFile, { force: true });
+  }
+}
+
+function condense(dir) {
+  const handoff = readJson(path.join(dir, 'design-handoff.json'));
+  const timeline = readJson(path.join(dir, 'agent.timeline.json'));
+  const proof = fs.existsSync(path.join(dir, 'proof.bundle.json')) ? readJson(path.join(dir, 'proof.bundle.json')) : {};
+  const maxEvents = Number(value('max-events', process.env.CC_MISSION_CONDENSER_MAX_EVENTS || '24'));
+  const keepFirst = Number(value('keep-first', '2'));
+  const keepRecent = Number(value('keep-recent', '8'));
+  const events = Array.isArray(timeline.events) ? timeline.events : [];
+  const shouldCondense = events.length > maxEvents || has('force') || has('live');
+  const packet = {
+    schema: 'ai-coding-os.mission-condense-input.v1',
+    mission_id: handoff.mission_id,
+    event_count: events.length,
+    handoff,
+    proof,
+    first_events: events.slice(0, keepFirst),
+    recent_events: events.slice(Math.max(keepFirst, events.length - keepRecent)),
+  };
+  const liveSummary = (has('live') || process.env.CC_MISSION_CONDENSER_LIVE === '1') ? summarizeLive(packet) : null;
+  const summary = liveSummary || summarizeLocal(handoff, timeline, proof, keepFirst, keepRecent);
+  const out = {
+    schema: 'ai-coding-os.mission-context-summary.v1',
+    mission_id: handoff.mission_id,
+    generated_at: now(),
+    source: liveSummary ? 'router-ask:cheap' : 'local-deterministic',
+    live_lane_call: Boolean(liveSummary),
+    condensed: shouldCondense,
+    event_count: events.length,
+    max_events: maxEvents,
+    keep_first: keepFirst,
+    keep_recent: keepRecent,
+    summary,
+    retained_events: {
+      first: packet.first_events,
+      recent: packet.recent_events,
+    },
+  };
+  writeJson(path.join(dir, 'mission.context-summary.json'), out);
+  if (has('json')) console.log(JSON.stringify(out, null, 2));
+  else {
+    console.log(`# Mission Context Summary\n\nMission: ${handoff.mission_id}\nEvents: ${events.length}\nSource: ${out.source}\nCondensed: ${out.condensed}\n\nStatus: mission-condenser-ready`);
+  }
+}
+
+function check() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-mission-condenser.'));
+  try {
+    fs.writeFileSync(path.join(tmp, 'design-handoff.json'), JSON.stringify({
+      mission_id: 'demo',
+      title: 'Demo mission',
+      status: 'awaiting_codex_proof',
+      phases: [{ id: 'creative_reference', status: 'approved' }, { id: 'codex_proof', status: 'awaiting_work' }],
+    }));
+    fs.writeFileSync(path.join(tmp, 'proof.bundle.json'), JSON.stringify({ verdict: 'not_shippable_until_remaining_phases_complete' }));
+    fs.writeFileSync(path.join(tmp, 'agent.timeline.json'), JSON.stringify({ events: Array.from({ length: 30 }, (_, i) => ({ stage: `s${i}`, message: `event ${i}` })) }));
+    condense(tmp);
+    const out = readJson(path.join(tmp, 'mission.context-summary.json'));
+    if (!out.condensed || out.event_count !== 30 || !out.summary.includes('Demo mission')) throw new Error('bad summary');
+    console.log('Status: mission-condenser-ready');
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+if (has('check')) check();
+else {
+  const dir = path.resolve(value('dir', ''));
+  if (!dir) {
+    usage();
+    process.exit(2);
+  }
+  condense(dir);
+}

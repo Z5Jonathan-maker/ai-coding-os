@@ -99,7 +99,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-self-update` — monthly platform update sweep.
 - `cc-semantic-index` — dependency-free repo symbol map using `ctags` and `rg`.
 - `cc-session-ledger` — recent routed sessions, cwd-aware resume metadata, stale state, lanes, models, fallbacks, sticky state, and transcript turn summaries; supports `--json`.
-- `cc-superiority-check` — competitive proof gate for the superiority matrix, reference systems, required proof commands, and graded benchmark depth.
+- `cc-superiority-check` — competitive evidence gate for the superiority matrix, executable command inventory, honesty markers, and graded benchmark depth.
 - `cc-system-demo` — acceptance demo for the AI coding operating system.
 - `cc-tailscale-qr` — phone-assisted Tailscale auth.
 - `cc-ten-readiness` — strict 10/10 readiness gate for public CI, evaluator, dogfood, product, release, docs portability, and launch contract.

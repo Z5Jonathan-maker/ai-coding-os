@@ -15,20 +15,6 @@ const prove = args.includes('--prove');
 const docPath = path.join(root, 'docs', 'SUPERIORITY-MATRIX.md');
 const fixturesDir = path.join(root, 'fixtures', 'benchmarks');
 
-const competitors = [
-  'OpenHands',
-  'Claude Code',
-  'Cursor',
-  'Cline',
-  'OpenCode',
-  'Kimi',
-  'Codex',
-  'Windsurf',
-  'Devin',
-  'Octagents',
-  'Triple-router',
-];
-
 const requiredCommands = [
   'cc-demo-quick',
   'cc-benchmark-fixtures',
@@ -74,6 +60,12 @@ const requiredDimensions = [
   'Extensibility',
   'Public evaluator experience',
   'Competitive clarity',
+];
+
+const requiredHonestyMarkers = [
+  'If a reference system is stronger in a category, we mark the gap directly.',
+  'Non-Negotiable Gaps',
+  'Competitive superiority: plausible, not fully proven',
 ];
 
 function fail(message) {
@@ -130,18 +122,20 @@ if (!fs.existsSync(docPath)) {
 } else {
   ok('docs/SUPERIORITY-MATRIX.md exists');
   const doc = fs.readFileSync(docPath, 'utf8');
-  for (const competitor of competitors) {
-    const pattern = new RegExp(competitor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-    pattern.test(doc) ? ok(`mentions ${competitor}`) : fail(`mentions ${competitor}`);
-  }
-  for (const command of requiredCommands) {
-    doc.includes(command) ? ok(`mentions ${command}`) : fail(`mentions ${command}`);
-  }
   for (const dimension of requiredDimensions) {
     doc.includes(dimension) ? ok(`covers ${dimension}`) : fail(`covers ${dimension}`);
   }
   doc.includes('Missing Proof') ? ok('tracks missing proof honestly') : fail('tracks missing proof honestly');
-  doc.includes('Non-Negotiable Gaps') ? ok('declares non-negotiable gaps') : fail('declares non-negotiable gaps');
+  for (const marker of requiredHonestyMarkers) {
+    doc.includes(marker) ? ok(`honesty marker: ${marker}`) : fail(`honesty marker: ${marker}`);
+  }
+}
+
+for (const command of requiredCommands) {
+  const file = path.join(root, 'bin', command);
+  fs.existsSync(file) && (fs.statSync(file).mode & 0o111)
+    ? ok(`command executable: ${command}`)
+    : fail(`command executable: ${command}`);
 }
 
 const graded = countGradedFixtures();

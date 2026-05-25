@@ -67,6 +67,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-disk-readiness` — read-only disk gate and cleanup candidate report.
 - `cc-diff-hunks` — changed-file stats, hunk list, and patch preview for cockpit review; supports `--json`.
 - `cc-evaluator-check` — external evaluator check for fresh clones and public review.
+- `cc-external-contracts` — maintainer-only contract test for router-ask, tier registry, dry-run receipts, DeepSeek CLI shape, Kimi CLI presence, and TEL client.
 - `cc-feedback-law-check` — executable gate for Mega Cycle feedback laws, autonomy preflight, depth-check, evolve, and packaging exposure.
 - `cc-first-run` — non-mutating public setup doctor for required, optional, and personal prerequisites.
 - `cc-fresh-clone-check` — fresh public clone gate: temp clone, temp home, dry-run install, cockpit package, fixture demo, and no temp-home writes.

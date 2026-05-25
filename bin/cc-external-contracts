@@ -1,0 +1,156 @@
+#!/usr/bin/env bash
+set -u
+
+pass=0
+fail=0
+tmp="${TMPDIR:-/tmp}/cc-external-contracts.$$"
+trap 'rm -f "$tmp".*' EXIT
+
+ok() {
+  pass=$((pass + 1))
+  printf 'ok   %s\n' "$1"
+}
+
+bad() {
+  fail=$((fail + 1))
+  printf 'fail %s\n' "$1"
+  [ "${2:-}" ] && printf '     %s\n' "$2"
+}
+
+require_cmd() {
+  local name="$1"
+  if command -v "$name" >/dev/null 2>&1; then
+    ok "$name present"
+  else
+    bad "$name present" "$name not found in PATH"
+  fi
+}
+
+receipt_contract() {
+  local out="$tmp.router-dry-run"
+  if ! router-ask --dry-run --json --purpose cheap "contract probe: route only" >"$out" 2>&1; then
+    bad "router-ask dry-run receipt" "router-ask dry-run failed"
+    return
+  fi
+  if node - "$out" <<'NODE'; then
+const fs = require('fs');
+const text = fs.readFileSync(process.argv[2], 'utf8').trim();
+let receipt;
+try {
+  receipt = JSON.parse(text);
+} catch (_) {
+  const match = text.match(/Receipt:\s*(\{[\s\S]*\})\s*$/m);
+  if (!match) {
+    console.error('missing embedded Receipt JSON');
+    process.exit(1);
+  }
+  receipt = JSON.parse(match[1]);
+}
+const required = ['purpose', 'prompt_chars', 'final_class', 'platform', 'fallback_chain'];
+for (const key of required) {
+  if (!(key in receipt)) {
+    console.error(`missing receipt.${key}`);
+    process.exit(1);
+  }
+}
+if (receipt.purpose !== 'cheap') {
+  console.error(`expected purpose=cheap, got ${receipt.purpose}`);
+  process.exit(1);
+}
+if (receipt.final_class !== 'cheap') {
+  console.error(`expected final_class=cheap, got ${receipt.final_class}`);
+  process.exit(1);
+}
+if (!Array.isArray(receipt.fallback_chain) || receipt.fallback_chain.length < 2) {
+  console.error('fallback_chain must include primary plus fallback entries');
+  process.exit(1);
+}
+for (const item of receipt.fallback_chain) {
+  for (const key of ['class', 'platform', 'id']) {
+    if (!(key in item)) {
+      console.error(`fallback entry missing ${key}`);
+      process.exit(1);
+    }
+  }
+}
+NODE
+    ok "router-ask dry-run receipt"
+  else
+    bad "router-ask dry-run receipt" "$(cat "$out" | head -n 12 | tr '\n' ' ' | cut -c1-220)"
+  fi
+}
+
+health_contract() {
+  local out="$tmp.router-health"
+  if router-ask --health >"$out" 2>&1 && grep -Eq '[0-9]+/[0-9]+ bridges healthy' "$out"; then
+    ok "router-ask health"
+  else
+    bad "router-ask health" "$(cat "$out" | head -n 12 | tr '\n' ' ' | cut -c1-220)"
+  fi
+}
+
+tier_contract() {
+  local out="$tmp.router-tiers" tier
+  if ! router-ask --list-tiers >"$out" 2>&1; then
+    bad "router-ask tier registry" "router-ask --list-tiers failed"
+    return
+  fi
+  for tier in cheap codex design image precision; do
+    if ! grep -Eq "^[[:space:]]+${tier}[[:space:]]+${tier}" "$out"; then
+      bad "router tier: $tier" "missing from router-ask --list-tiers"
+      return
+    fi
+  done
+  ok "router-ask tier registry"
+}
+
+deepseek_contract() {
+  local out="$tmp.deepseek-help"
+  if deepseek --help >"$out" 2>&1 &&
+    grep -Fq -- '--json' "$out" &&
+    grep -Fq -- '--ping' "$out"; then
+    ok "deepseek CLI contract"
+  else
+    bad "deepseek CLI contract" "$(cat "$out" | head -n 12 | tr '\n' ' ' | cut -c1-220)"
+  fi
+}
+
+kimi_contract() {
+  if command -v kimi >/dev/null 2>&1; then
+    ok "kimi CLI present"
+  else
+    bad "kimi CLI present" "kimi not found in PATH"
+  fi
+}
+
+tel_contract() {
+  local client="$HOME/.Codex/tel/client/tel-call.sh"
+  if [ -x "$client" ]; then
+    ok "TEL client executable"
+  else
+    bad "TEL client executable" "$client missing or not executable"
+  fi
+}
+
+printf '# External Contracts\n\n'
+require_cmd router-ask
+require_cmd deepseek
+require_cmd kimi
+
+if command -v router-ask >/dev/null 2>&1; then
+  receipt_contract
+  health_contract
+  tier_contract
+fi
+command -v deepseek >/dev/null 2>&1 && deepseek_contract
+kimi_contract
+tel_contract
+
+printf '\nSummary: passed=%s failed=%s\n' "$pass" "$fail"
+if [ "$fail" -eq 0 ]; then
+  printf 'Status: external-contracts-ready\n'
+else
+  printf 'Status: external-contracts-blocked\n'
+fi
+
+[ "$fail" -eq 0 ]

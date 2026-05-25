@@ -140,6 +140,7 @@ mission_ledger_state() {
 }
 
 run_status "Maintainer stack" "$ROOT/bin/cc-maintainer-stack --strict" 'Status: maintainer-stack-ready'
+run_status "External contracts" "$ROOT/bin/cc-external-contracts" 'Status: external-contracts-ready'
 run_status "Product readiness" "$ROOT/bin/cc-product-readiness" 'Status: product-ready'
 git_state "$ROOT" "dotfiles git"
 [ -d "$ROUTER" ] && git_state "$ROUTER" "router git" 1 || add_row "router git" fail "missing router root: $ROUTER"

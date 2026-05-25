@@ -97,6 +97,7 @@ Maintainer/full-stack checks:
 
 ```sh
 bin/cc-doctor
+bin/cc-external-contracts
 bin/cc-ai-checks
 bin/cc-product-readiness
 bin/cc-maintainer-stack

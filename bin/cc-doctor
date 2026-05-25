@@ -55,7 +55,7 @@ run_status() {
 }
 
 git_state() {
-  local repo="$1" label="$2" porcelain upstream ahead behind
+  local repo="$1" label="$2" allow_no_upstream="${3:-0}" porcelain upstream ahead behind
   if ! git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     add_row "$label" fail "not a git repo: $repo"
     return
@@ -67,7 +67,11 @@ git_state() {
   fi
   upstream="$(git -C "$repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
   if [ -z "$upstream" ]; then
-    add_row "$label" warn "clean; no upstream configured"
+    if [ "$allow_no_upstream" = 1 ]; then
+      add_row "$label" ok "clean; no upstream configured"
+    else
+      add_row "$label" warn "clean; no upstream configured"
+    fi
     return
   fi
   git -C "$repo" fetch --quiet >/dev/null 2>&1 || {
@@ -138,7 +142,7 @@ mission_ledger_state() {
 run_status "Maintainer stack" "$ROOT/bin/cc-maintainer-stack --strict" 'Status: maintainer-stack-ready'
 run_status "Product readiness" "$ROOT/bin/cc-product-readiness" 'Status: product-ready'
 git_state "$ROOT" "dotfiles git"
-[ -d "$ROUTER" ] && git_state "$ROUTER" "router git" || add_row "router git" fail "missing router root: $ROUTER"
+[ -d "$ROUTER" ] && git_state "$ROUTER" "router git" 1 || add_row "router git" fail "missing router root: $ROUTER"
 
 handoff_line="$(handoff_state)"
 handoff_status="${handoff_line%%$'\t'*}"

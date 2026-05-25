@@ -50,9 +50,9 @@ launch_docs_are_portable() {
 }
 
 ten_contract_present() {
-  grep -Fq 'Sellable system is 100% when:' docs/PRODUCT-PACKAGING.md &&
+  grep -Fq 'Internal excellence is 100% when:' docs/PRODUCT-PACKAGING.md &&
     grep -Fq 'Definition Of 100% Functional' docs/PRODUCT-PACKAGING.md &&
-    grep -Fq 'Must Fix Before Public Launch' docs/KNOWN-LIMITATIONS.md
+    grep -Fq 'Must Fix Before Public-Quality Claim' docs/KNOWN-LIMITATIONS.md
 }
 
 printf '# 10/10 Readiness\n\n'

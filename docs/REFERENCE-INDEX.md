@@ -5,6 +5,7 @@ This file keeps secondary proof and reference material out of the README.
 ## Product
 
 - `OPERATING-MODES.md`
+- `GLOSSARY.md`
 - `TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `CREATIVE-DIRECTION-KERNEL.md`
 - `IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md`

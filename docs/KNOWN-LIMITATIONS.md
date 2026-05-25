@@ -1,7 +1,7 @@
 # KNOWN-LIMITATIONS.md
 
-This page exists so the launch surface is honest. Unsupported states should be
-named directly instead of hidden behind successful-looking demos.
+This page exists so the daily-driver surface is honest. Unsupported states
+should be named directly instead of hidden behind successful-looking demos.
 
 ## Current Limitations
 
@@ -15,7 +15,7 @@ named directly instead of hidden behind successful-looking demos.
 | GitHub Actions | Private-repo hosted runners depend on available Actions budget/quota | Current primary path is GitHub-hosted Ubuntu; `PUBLIC_CI_RUNNER` can route to `imac-dotfiles` only as a backup |
 | Dependency audit | Cockpit extension has a committed lockfile and zero npm vulnerabilities | `cc-cockpit-webview-smoke` runs npm audit as part of product proof |
 | Windows/Linux | Not supported as a launch target | Future work only |
-| Hosted/team mode | Not implemented | Sellable path is local product plus support/workflow packaging first |
+| Hosted/team mode | Not implemented | Current path is local daily-driver excellence first |
 | Screenshots/GIFs | Deterministic preview media exists; real unlocked VS Code screenshots are still better for final marketing | `cc-cockpit-capture` writes `docs/media/cockpit/` |
 | Benchmarks | Fixture suite is lightweight and not a SWE-bench replacement | `cc-benchmark-fixtures --check` covers 10 public scenarios; `cc-benchmark-run failing-test-repair`, `cc-benchmark-run refactor-cleanup`, and `cc-benchmark-run long-context` now include graded scoring |
 | Route planning | `cc-route` is a deterministic planner/classifier, not live model execution | Live execution is delegated to `router-ask` and provider CLIs in maintainer/full-stack mode |
@@ -30,7 +30,7 @@ named directly instead of hidden behind successful-looking demos.
 - Missing optional AI tools should be reported as optional unless the requested
   lane depends on them.
 
-## Must Fix Before Public Launch
+## Must Fix Before Public-Quality Claim
 
 1. optionally replace deterministic preview media with real unlocked VS Code screenshots
 2. validate install on one separate fresh macOS Apple Silicon account

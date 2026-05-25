@@ -1,10 +1,11 @@
-# PRODUCT-PACKAGING.md
+# Product Packaging
 
-This system is a premium AI coding operating system, not a bag of tools.
+This system is an internal AI coding workspace held to public-product quality.
+The public standard is a quality bar, not the current distribution target.
 
-The current four-week plan to make it sellable open-source quality lives at
+The current four-week plan lives at
 `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`. The done-state is tracked in
-`.ai/ISA-sellable-open-source-ai-coding-system.md`.
+`.ai/ISA-internal-excellence-criteria.md`.
 Browser automation mode boundaries live at
 `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
 Competitive proof against the top reference systems lives at
@@ -38,7 +39,7 @@ The product value is simplicity under power. A developer should not need to
 think about which model to ask first. The system should route by capability,
 trust tier, and safety boundary.
 
-## What Makes It Sellable
+## What Makes It Worth Keeping
 
 - **Persistent workspace home:** VS Code is the surface. The primary action is
   Continue Work, not manage routes or inspect dashboards.
@@ -298,7 +299,7 @@ proof, cockpit packaging, and mission-state regression tests.
 Current local state is tracked by `cc-product-readiness`; dirty/synced repo
 state is expected while active work is in flight.
 
-Sellable system is 100% when:
+Internal excellence is 100% when:
 
 1. install flow is one command plus documented prerequisite accounts
 2. first-run health explains every missing dependency in plain language

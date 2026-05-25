@@ -1,18 +1,23 @@
-# ISA — Sellable Open Source AI Coding System
+# ISA — Internal Excellence Criteria
 
 **Generated:** 2026-05-21 20:27
 **Owner:** Codex
-**Scope:** Make the current AI coding operating system ready to be studied, installed, demoed, and adopted by serious developers within four weeks.
+**Scope:** Make the current local AI coding workspace reliable, inspectable,
+and polished enough that it could withstand serious developer scrutiny, even if
+it remains an internal daily-driver.
 
 ## Vision (1-3 sentences)
 
-The system is a clean, installable, impressive AI coding operating system with a native VS Code cockpit, deterministic multi-model routing, visible cost/control surfaces, and a five-minute demo that proves why it is better than single-model IDE assistants. A strong developer can clone it, understand it, run it, verify it, and see the product idea without needing Jonathan's personal machine context.
+The system is a clean local handoff runner with a native VS Code cockpit,
+deterministic route planning, visible cost/control surfaces, and one trusted
+daily-driver doctor command. Future Jonathan can understand it, run it, verify
+it, and repair it without reading old strategy notes.
 
 ## Ideal State Criteria (ISCs)
 
 | ID | Criterion | Verification | Status |
 |---|---|---|---|
-| ISC-1 | The public README explains the product promise, target user, architecture, install path, demo, and support boundaries. | Read `README.md`; all six sections are present and specific. | verified |
+| ISC-1 | The README explains the workflow, architecture, install path, proof commands, and maintainer/full-stack boundaries. | Read `README.md`; all sections are present and specific. | verified |
 | ISC-2 | A fresh-install path exists that reports missing prerequisites without failing opaquely. | Run `~/dotfiles/install.sh --dry-run` or documented equivalent; output lists missing keys/apps/tools. | verified |
 | ISC-3 | Product readiness passes on the development machine. | `cc-product-readiness` returns `14/14` and `Status: product-ready`. | verified |
 | ISC-4 | The VS Code cockpit can be packaged and installed as a distributable VSIX. | `cc-package-cockpit` creates `dist/ai-system-cockpit-*.vsix`. | verified |
@@ -21,7 +26,7 @@ The system is a clean, installable, impressive AI coding operating system with a
 | ISC-7 | Browser automation has an honest primary/fallback story. | `cc-kimi-status` and `cc-browser-proof` distinguish official extension, shim, Playwright fallback, and locked-session limits. | verified |
 | ISC-8 | The repo has no obvious internal-only naming or undocumented personal assumptions in the first-run path. | `rg` audit over README/docs/bin/install surfaces no unexplained Jonathan-only blocker in public path. | verified |
 | ISC-9 | The product has a week-by-week public launch plan with weekly ship gates. | `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md` exists and maps weeks to artifacts and commands. | verified |
-| ISC-10 | The final package has a credible open-source launch surface. | README, demo script, screenshots/GIF plan, license boundary, contribution notes, and release checklist exist. | verified |
+| ISC-10 | The workspace has a credible public-quality evidence surface without pretending that maintainer-only tools are portable. | README, demo script, media plan, license boundary, limitations, and command registry exist. | verified |
 
 ## Anti-goals
 

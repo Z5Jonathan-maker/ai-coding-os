@@ -126,6 +126,7 @@ optional lanes, Brewfile drift, and VS Code extension drift.
 ## Start Here
 
 - `docs/OPERATING-MODES.md`
+- `docs/GLOSSARY.md`
 - `docs/ARCHITECTURE.md`
 - `docs/TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `docs/EVALUATOR-QUICKSTART.md`

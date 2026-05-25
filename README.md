@@ -57,7 +57,9 @@ Each mission writes portable artifacts:
 - `proof.bundle.json`
 
 Credentialed deploys are not performed silently. A deploy result is recorded
-only through an explicit TEL receipt step. The `claude_review` stage is the
+only through an explicit TEL receipt step. `tel_deploy --live-tel` verifies a
+Vercel deployment through TEL and stores `tel.deploy.raw.json`; without that
+flag it only records a supplied receipt. The `claude_review` stage is the
 first live execution lane: by default it calls `claude --print`, stores
 `taste.validation.raw.md`, writes `taste.validation.json`, and blocks deploy
 unlock if the review fails its threshold. The `kimi_implementation` stage also

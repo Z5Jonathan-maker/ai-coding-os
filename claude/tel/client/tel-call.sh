@@ -54,7 +54,7 @@ esac
 
 SERVICE="${1:-}"
 ACTION="${2:-}"
-ARGS_JSON="${3:-{}}"
+ARGS_JSON="${3:-"{}"}"
 
 [ -z "$SERVICE" ] || [ -z "$ACTION" ] && {
   echo "usage: $0 [--dry-run] <service> <action> '<args-json>'" >&2

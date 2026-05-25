@@ -66,7 +66,7 @@ cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
-cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --deploy-url <url> --provider vercel --git-sha <sha> --rollback-token <token>
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --live-tel --deployment <vercel-url-or-id>
 ```
 
 This command creates the mission artifact spine for the actual wedge:
@@ -88,8 +88,11 @@ passed with `--artifact`, invokes `router-ask --purpose design` for the
 `kimi_implementation` stage by default, invokes `claude --print` for the
 `claude_review` stage by default, blocks deploy unlock when the review fails
 the taste threshold, and writes `deploy.receipt.json` only from explicit deploy
-receipt fields. Portable checks use explicitly labeled offline fixtures for
-live-lane stages.
+receipt fields or an explicit TEL verification call. `--live-tel` uses
+`~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
+`tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.
+`--tel-dry-run` verifies TEL policy/request shape without calling Vercel.
+Portable checks use explicitly labeled offline fixtures for live-lane stages.
 
 ## Same-Brief Competitive Benchmark
 

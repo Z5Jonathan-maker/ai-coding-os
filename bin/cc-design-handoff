@@ -254,10 +254,10 @@ function actionPacket(handoff, phase) {
     tel_deploy: {
       blocks_execution: true,
       requires_human_approval: true,
-      command: '~/.Codex/tel/client/tel-call.sh vercel deploy <args-json>',
+      command: 'cc-design-handoff execute --phase tel_deploy --live-tel --deployment <vercel-url-or-id>',
       prompt: [
         'Deploy only after human approval and passing review.',
-        'Record deploy URL, provider, git SHA, rollback token/undo instructions, and verification result.',
+        'Verify the deployment through TEL, then record URL, provider, git SHA, rollback token/undo instructions, and verification result.',
       ].join('\n'),
       expected_artifact: 'deploy.receipt.json',
     },
@@ -809,6 +809,7 @@ function writeStageArtifact(dir, handoff, phase) {
 }
 
 function writeDeployReceipt(dir, handoff) {
+  if (has('live-tel')) return writeTelDeployReceipt(dir, handoff);
   const url = value('deploy-url', '');
   if (!url) return '';
   const receipt = {
@@ -823,6 +824,59 @@ function writeDeployReceipt(dir, handoff) {
     credential_boundary: 'TEL',
     live_tel_call: false,
     note: 'Receipt records an approved deploy result. It does not expose credentials or perform a deploy by itself.',
+  };
+  writeJson(path.join(dir, 'deploy.receipt.json'), receipt);
+  return 'deploy.receipt.json';
+}
+
+function writeTelDeployReceipt(dir, handoff) {
+  const provider = value('provider', 'vercel');
+  if (provider !== 'vercel') throw new Error(`TEL deploy verification only supports provider=vercel, got ${provider}`);
+  const deployment = value('deployment', value('deployment-id', value('deploy-url', '')));
+  if (!deployment) return '';
+  const dryRun = has('tel-dry-run');
+  const argsJson = JSON.stringify({ idOrUrl: deployment });
+  const telArgs = [
+    ...(dryRun ? ['--dry-run'] : []),
+    'vercel',
+    'get_deployment',
+    argsJson,
+  ];
+  const client = path.join(os.homedir(), '.Codex', 'tel', 'client', 'tel-call.sh');
+  const res = run(client, telArgs, { timeout: 120000, maxBuffer: 1024 * 1024 * 8 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'tel.deploy.raw.json'), `${output}\n`);
+  const parsed = extractJson(output);
+  if (res.status !== 0 || !parsed?.ok) {
+    throw new Error(output || `TEL ${provider}.get_deployment exited ${res.status}`);
+  }
+  const result = parsed.result || {};
+  const receipt = {
+    schema: 'ai-coding-os.deploy-receipt.v1',
+    mission_id: handoff.mission_id,
+    ts: now(),
+    provider,
+    deployment,
+    url: value('deploy-url', result.url || result.inspectorUrl || ''),
+    git_sha: value('git-sha', result.meta?.githubCommitSha || result.gitSource?.sha || ''),
+    rollback_token: value('rollback-token', parsed.undo_token || ''),
+    tel_policy: 'vercel.get_deployment',
+    credential_boundary: 'TEL',
+    tel_call: true,
+    live_tel_call: !dryRun,
+    tel_dry_run: dryRun,
+    tel_audit_id: parsed.audit_id || '',
+    tel_undo_token: parsed.undo_token || null,
+    tel_response_artifact: 'tel.deploy.raw.json',
+    verification: {
+      ok: true,
+      action: 'vercel.get_deployment',
+      state: result.state || result.readyState || null,
+      dry_run: dryRun,
+    },
+    note: dryRun
+      ? 'TEL dry-run verified policy and request shape without calling Vercel.'
+      : 'TEL verified the deployment through the credential boundary.',
   };
   writeJson(path.join(dir, 'deploy.receipt.json'), receipt);
   return 'deploy.receipt.json';

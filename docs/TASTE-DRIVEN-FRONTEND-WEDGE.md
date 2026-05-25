@@ -61,6 +61,7 @@ The sequential Image 2.0 asset decomposition gate is `cc-asset-kit-check`.
 
 ```sh
 cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
+cc-design-handoff list
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png

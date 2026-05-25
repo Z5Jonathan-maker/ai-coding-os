@@ -561,28 +561,19 @@ class CockpitProvider {
   }
 
   async pickDesignHandoffDir() {
-    const base = path.join(cwd(), '.ai', 'design-handoffs');
-    if (!fs.existsSync(base)) {
+    const result = await shellExec('cc-design-handoff list --json', { timeout: 12000 });
+    const payload = result.ok ? parseRouterJson(result.stdout || result.text) : {};
+    const missions = Array.isArray(payload.missions) ? payload.missions : [];
+    if (!missions.length) {
       vscode.window.showInformationMessage('No design handoff missions found in .ai/design-handoffs.');
       return '';
     }
-    const entries = fs.readdirSync(base, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => {
-        const dir = path.join(base, entry.name);
-        const file = path.join(dir, 'design-handoff.json');
-        if (!fs.existsSync(file)) return null;
-        const handoff = this.readDesignHandoff(dir);
-        return {
-          label: handoff.title || entry.name,
-          description: handoff.status || 'unknown',
-          detail: dir,
-          dir,
-          mtime: fs.statSync(file).mtimeMs,
-        };
-      })
-      .filter(Boolean)
-      .sort((a, b) => b.mtime - a.mtime);
+    const entries = missions.map((mission) => ({
+      label: mission.title || mission.mission_id || path.basename(mission.dir || ''),
+      description: mission.status || 'unknown',
+      detail: mission.dir,
+      dir: mission.dir,
+    }));
     const picked = await vscode.window.showQuickPick(entries, { placeHolder: 'Select a design handoff mission' });
     return picked?.dir || '';
   }

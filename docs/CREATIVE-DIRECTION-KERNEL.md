@@ -36,6 +36,7 @@ Start a mission spine with:
 
 ```sh
 cc-design-handoff "premium landing page brief"
+cc-design-handoff list
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png

@@ -8,7 +8,7 @@ const { spawnSync } = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
-const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'status', 'continue', 'approve'].includes(args[0]) ? args[0] : 'create';
+const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'list', 'status', 'continue', 'approve'].includes(args[0]) ? args[0] : 'create';
 
 function has(name) {
   return args.includes(`--${name}`);
@@ -385,6 +385,42 @@ function createHandoff() {
   }
 }
 
+function listMissions() {
+  const base = path.join(root, '.ai', 'design-handoffs');
+  const missions = fs.existsSync(base)
+    ? fs.readdirSync(base, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => {
+        const dir = path.join(base, entry.name);
+        const file = path.join(dir, 'design-handoff.json');
+        if (!fs.existsSync(file)) return null;
+        const handoff = readJson(file);
+        return {
+          mission_id: handoff.mission_id || entry.name,
+          title: handoff.title || entry.name,
+          status: handoff.status || 'unknown',
+          current_gate: handoff.current_gate || '',
+          dir,
+          updated_at: new Date(fs.statSync(file).mtimeMs).toISOString(),
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))
+    : [];
+
+  if (has('json')) {
+    console.log(JSON.stringify({ schema: 'ai-coding-os.design-handoff-list.v1', missions }, null, 2));
+    return;
+  }
+  console.log('# Design Handoff Missions\n');
+  for (const mission of missions) {
+    console.log(`- ${mission.title} :: ${mission.status}`);
+    console.log(`  ${mission.dir}`);
+  }
+  if (!missions.length) console.log('(none)');
+  console.log('\nStatus: design-handoff-list-ready');
+}
+
 function check() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-design-handoff.'));
   try {
@@ -417,6 +453,10 @@ function check() {
     if (status.status !== 0 || !/Status: design-handoff-status-ready/.test(status.stdout)) {
       throw new Error(`status failed: ${status.stdout || status.stderr}`);
     }
+    const listed = run(path.join(root, 'bin', 'cc-design-handoff'), ['list', '--json'], { timeout: 30000 });
+    if (listed.status !== 0) throw new Error(`list failed: ${listed.stdout || listed.stderr}`);
+    const parsedList = JSON.parse(listed.stdout);
+    if (!Array.isArray(parsedList.missions)) throw new Error('list did not return missions array');
     const firstContinue = run(path.join(root, 'bin', 'cc-design-handoff'), ['continue', '--dir', dir], { timeout: 30000 });
     if (firstContinue.status !== 0 || !/Status: design-handoff-continue-ready/.test(firstContinue.stdout)) {
       throw new Error(`continue failed: ${firstContinue.stdout || firstContinue.stderr}`);
@@ -573,6 +613,7 @@ function continueMission() {
 }
 
 if (has('check')) check();
+else if (subcommand === 'list') listMissions();
 else if (subcommand === 'status') showStatus();
 else if (subcommand === 'continue') continueMission();
 else if (subcommand === 'approve') approvePhase();

@@ -310,13 +310,13 @@ function actionPacket(handoff, phase) {
       expected_artifact: 'design.dna.json',
     },
     kimi_implementation: {
-      command: 'cc-design-handoff execute --phase kimi_implementation',
+      command: 'cc-design-handoff execute --phase kimi_implementation --target-repo <repo>',
       prompt: [
         'Implement the approved visual reference and asset kit as production UI.',
         'Use native text/buttons/forms in code. Do not reinvent the visual direction.',
         'Preserve responsive composition, accessibility, and browser-verifiable layout.',
       ].join('\n'),
-      expected_artifact: 'implementation.plan.json',
+      expected_artifact: 'implementation.result.json',
     },
     claude_review: {
       command: 'cc-design-handoff execute --phase claude_review',
@@ -499,6 +499,7 @@ function createHandoff() {
       'creative.asset-kit.json',
       'design.dna.json',
       'implementation.plan.json',
+      'implementation.result.json',
       'taste.validation.json',
       'codex.proof.json',
       'deploy.receipt.json',
@@ -714,18 +715,30 @@ function check() {
     if (!fs.existsSync(path.join(dir, 'design.dna.json'))) throw new Error('design.dna.json not written');
     const dna = readJson(path.join(dir, 'design.dna.json'));
     if (dna.source !== 'offline_fixture' || dna.live_lane_call !== false) throw new Error('offline design DNA fixture not labeled');
+    const targetRepo = path.join(temp, 'target-repo');
+    fs.mkdirSync(path.join(targetRepo, 'app'), { recursive: true });
+    fs.writeFileSync(path.join(targetRepo, 'app', 'page.tsx'), 'export default function Page() { return <main>Before</main>; }\n');
+    run('git', ['init'], { cwd: targetRepo, timeout: 30000 });
+    run('git', ['config', 'user.email', 'test@example.com'], { cwd: targetRepo, timeout: 30000 });
+    run('git', ['config', 'user.name', 'Test User'], { cwd: targetRepo, timeout: 30000 });
+    run('git', ['add', '.'], { cwd: targetRepo, timeout: 30000 });
+    run('git', ['commit', '-m', 'init'], { cwd: targetRepo, timeout: 30000 });
+    fs.writeFileSync(path.join(targetRepo, 'app', 'page.tsx'), 'export default function Page() { return <main>After</main>; }\n');
     const implementationExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
       dir,
       '--phase',
       'kimi_implementation',
+      '--target-repo',
+      targetRepo,
     ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
     if (implementationExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(implementationExec.stdout)) {
       throw new Error(`implementation execute failed: ${implementationExec.stdout || implementationExec.stderr}`);
     }
-    const impl = readJson(path.join(dir, 'implementation.plan.json'));
-    if (impl.source !== 'offline_fixture' || impl.live_lane_call !== false) throw new Error('offline implementation fixture not labeled');
+    const impl = readJson(path.join(dir, 'implementation.result.json'));
+    if (impl.source !== 'offline_fixture' || impl.live_lane_call !== false) throw new Error('offline implementation result fixture not labeled');
+    if (!impl.changed_files?.some((file) => file.includes('app/page.tsx'))) throw new Error('implementation result did not capture target changes');
     const reviewExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -736,6 +749,36 @@ function check() {
     if (reviewExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(reviewExec.stdout)) {
       throw new Error(`review execute failed: ${reviewExec.stdout || reviewExec.stderr}`);
     }
+    const validation = readJson(path.join(dir, 'taste.validation.json'));
+    if (validation.source !== 'offline_fixture' || validation.live_lane_call !== false) throw new Error('offline check did not label review fixture');
+    const prematureDeploy = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'tel_deploy',
+      '--deploy-url',
+      'https://example.vercel.app',
+      '--provider',
+      'vercel',
+      '--git-sha',
+      '0000000',
+    ], { timeout: 30000 });
+    if (prematureDeploy.status !== 0 || !/Status: design-handoff-execute-blocked/.test(prematureDeploy.stdout)) {
+      throw new Error(`premature deploy was not blocked: ${prematureDeploy.stdout || prematureDeploy.stderr}`);
+    }
+    const proofExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'codex_proof',
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
+    if (proofExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(proofExec.stdout)) {
+      throw new Error(`codex proof execute failed: ${proofExec.stdout || proofExec.stderr}`);
+    }
+    const codexProof = readJson(path.join(dir, 'codex.proof.json'));
+    if (codexProof.source !== 'offline_fixture' || codexProof.live_lane_call !== false) throw new Error('offline codex proof fixture not labeled');
     const deployExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -754,20 +797,6 @@ function check() {
     if (deployExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(deployExec.stdout)) {
       throw new Error(`deploy execute failed: ${deployExec.stdout || deployExec.stderr}`);
     }
-    const validation = readJson(path.join(dir, 'taste.validation.json'));
-    if (validation.source !== 'offline_fixture' || validation.live_lane_call !== false) throw new Error('offline check did not label review fixture');
-    const proofExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
-      'execute',
-      '--dir',
-      dir,
-      '--phase',
-      'codex_proof',
-    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
-    if (proofExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(proofExec.stdout)) {
-      throw new Error(`codex proof execute failed: ${proofExec.stdout || proofExec.stderr}`);
-    }
-    const codexProof = readJson(path.join(dir, 'codex.proof.json'));
-    if (codexProof.source !== 'offline_fixture' || codexProof.live_lane_call !== false) throw new Error('offline codex proof fixture not labeled');
     const receipt = readJson(path.join(dir, 'deploy.receipt.json'));
     if (receipt.provider !== 'vercel' || receipt.url !== 'https://example.vercel.app') throw new Error('deploy receipt invalid');
   } catch (err) {
@@ -894,7 +923,10 @@ function continueMission() {
 }
 
 function writeStageArtifact(dir, handoff, phase) {
-  const file = artifactPath(dir, phase.output);
+  const output = phase.id === 'kimi_implementation' && value('target-repo', '')
+    ? 'implementation.result.json'
+    : phase.output;
+  const file = artifactPath(dir, output);
   const common = {
     mission_id: handoff.mission_id,
     phase: phase.id,
@@ -1362,7 +1394,141 @@ function offlineKimiImplementation(handoff) {
   };
 }
 
+function gitSnapshot(repo) {
+  const abs = path.resolve(repo);
+  const inside = run('git', ['-C', abs, 'rev-parse', '--is-inside-work-tree'], { timeout: 30000 });
+  if (inside.status !== 0) {
+    return {
+      is_git_repo: false,
+      status_short: '',
+      changed_files: [],
+      head: null,
+      error: `${inside.stdout || ''}${inside.stderr || ''}`.trim(),
+    };
+  }
+  const status = run('git', ['-C', abs, 'status', '--short'], { timeout: 30000, maxBuffer: 1024 * 1024 * 4 });
+  const head = run('git', ['-C', abs, 'rev-parse', '--short', 'HEAD'], { timeout: 30000 });
+  const changedFiles = String(status.stdout || '')
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => line.length > 3 ? line.slice(3).trim() : line.trim())
+    .map((file) => file.includes(' -> ') ? file.split(' -> ').pop().trim() : file)
+    .filter(Boolean);
+  return {
+    is_git_repo: true,
+    status_short: String(status.stdout || '').trim(),
+    changed_files: changedFiles,
+    head: head.status === 0 ? head.stdout.trim() : null,
+  };
+}
+
+function commandAvailable(name) {
+  return run('/bin/zsh', ['-lc', `command -v ${name}`], { timeout: 30000 }).status === 0;
+}
+
+function writeKimiTargetPrompt(dir, handoff, targetRepo, before) {
+  const prompt = [
+    'You are the Kimi UI/browser implementation lane for a taste-driven frontend handoff.',
+    '',
+    'Implement the approved creative direction into the target repository.',
+    'Do not redesign from scratch. Preserve the approved visual direction, design DNA, asset kit, native text, accessibility, and responsive behavior.',
+    'Keep the change focused. Do not deploy. Run the target repo checks when obvious.',
+    '',
+    `Mission: ${handoff.mission_id}`,
+    `Request: ${handoff.request}`,
+    `Target repo: ${targetRepo}`,
+    `Target HEAD before: ${before.head || 'unknown'}`,
+    '',
+    'Mission artifact directory is attached as an additional workspace directory.',
+    'Read these inputs first:',
+    '- visual.target.png',
+    '- visual.reference.manifest.json',
+    '- creative.asset-kit.json',
+    '- design.dna.json',
+    '- implementation.plan.json when present',
+    '',
+    'When done, reply with JSON only:',
+    '{"schema":"ai-coding-os.implementation-result.v1","summary":"...","changed_files":["..."],"checks_run":["..."],"browser_proof":["..."],"risks":["..."]}',
+  ].join('\n');
+  fs.writeFileSync(path.join(dir, 'kimi.implementation.prompt.md'), `${prompt}\n`);
+  return prompt;
+}
+
+function offlineKimiTargetImplementation(dir, handoff, targetRepo, before) {
+  return {
+    schema: 'ai-coding-os.implementation-result.v1',
+    mission_id: handoff.mission_id,
+    phase: 'kimi_implementation',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'offline_fixture',
+    live_lane_call: false,
+    owner_lane: 'kimi-webbridge',
+    target_repo: targetRepo,
+    target_head_before: before.head,
+    target_head_after: before.head,
+    changed_files: before.changed_files,
+    checks_run: [],
+    browser_proof: [],
+    raw_output_artifact: null,
+    verdict: before.changed_files.length ? 'ready_for_claude_review' : 'blocked_no_target_changes',
+  };
+}
+
+function runKimiTargetImplementation(dir, handoff, targetRepo) {
+  const repo = path.resolve(targetRepo);
+  if (!fs.existsSync(repo)) return { ok: false, error: `target repo does not exist: ${repo}` };
+  const before = gitSnapshot(repo);
+  if (!before.is_git_repo) return { ok: false, error: `target repo is not a git repo: ${repo}` };
+  const prompt = writeKimiTargetPrompt(dir, handoff, repo, before);
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') {
+    return { ok: true, plan: offlineKimiTargetImplementation(dir, handoff, repo, before) };
+  }
+  if (!commandAvailable('kimi')) return { ok: false, error: 'kimi CLI not found in PATH' };
+
+  const res = run('kimi', [
+    '--work-dir',
+    repo,
+    '--add-dir',
+    dir,
+    '--print',
+    '--final-message-only',
+    '--afk',
+    '--yes',
+    '--prompt',
+    prompt,
+  ], { cwd: repo, timeout: 600000, maxBuffer: 1024 * 1024 * 12 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'implementation.raw.md'), `${output}\n`);
+  if (res.status !== 0) return { ok: false, error: output || `kimi exited ${res.status}` };
+
+  const after = gitSnapshot(repo);
+  const parsed = extractJson(output);
+  const result = parsed && typeof parsed === 'object' ? parsed : {
+    schema: 'ai-coding-os.implementation-result.v1',
+    summary: String(output || '').split('\n').map((line) => line.trim()).filter(Boolean).slice(0, 12).join('\n'),
+    raw_output_artifact: 'implementation.raw.md',
+  };
+  result.schema = result.schema || 'ai-coding-os.implementation-result.v1';
+  result.mission_id = handoff.mission_id;
+  result.phase = 'kimi_implementation';
+  result.request = handoff.request;
+  result.generated_at = now();
+  result.source = 'kimi-cli';
+  result.live_lane_call = true;
+  result.owner_lane = 'kimi-webbridge';
+  result.target_repo = repo;
+  result.target_head_before = before.head;
+  result.target_head_after = after.head;
+  result.changed_files = after.changed_files;
+  result.raw_output_artifact = 'implementation.raw.md';
+  result.verdict = after.changed_files.length ? 'ready_for_claude_review' : 'blocked_no_target_changes';
+  return { ok: true, plan: result };
+}
+
 function runKimiImplementation(dir, handoff) {
+  const targetRepo = value('target-repo', '');
+  if (targetRepo) return runKimiTargetImplementation(dir, handoff, targetRepo);
   if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, plan: offlineKimiImplementation(handoff) };
   const contextSummary = summarizeHandoffContext(dir, handoff, 'kimi_implementation', [
     'creative.asset-kit.json',
@@ -1416,6 +1582,7 @@ function runClaudeReview(dir, handoff) {
     'creative.asset-kit.json',
     'design.dna.json',
     'implementation.plan.json',
+    'implementation.result.json',
   ]);
   const prompt = [
     'You are the Claude review lane for a taste-driven frontend handoff.',
@@ -1463,6 +1630,37 @@ function executeStage() {
   const phase = phaseId ? phaseById(handoff, phaseId) : activePhase(handoff);
   if (!phase) {
     console.log('# Design Handoff Execute\n\nAll phases are complete.\n\nStatus: design-handoff-execute-ready');
+    return;
+  }
+  if (phase.status.startsWith('blocked_until_') && !has('force')) {
+    const artifact = 'next-action.json';
+    writeJson(path.join(dir, artifact), actionPacket(handoff, phase));
+    refreshProof(handoff, proof);
+    writeJson(files.handoff, handoff);
+    writeJson(files.proofBundle, proof);
+    appendTimeline(files, timeline, event(handoff.mission_id, requestStageFor(phase.id), `${phase.id} is blocked until its prerequisite phase completes.`, {
+      phase: phase.id,
+      phase_status: phase.status,
+      blocked: true,
+    }, [artifact], phase.owner_lane));
+    const result = {
+      schema: 'ai-coding-os.design-handoff-execute.v1',
+      mission_id: handoff.mission_id,
+      phase: phase.id,
+      artifact,
+      blocked: true,
+      status: 'blocked',
+    };
+    if (has('json')) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+    console.log('# Design Handoff Execute\n');
+    console.log(`Mission: ${handoff.mission_id}`);
+    console.log(`Phase: ${phase.id}`);
+    console.log(`Blocked: ${phase.status}`);
+    console.log(`Next: ${proof.next_required_action || nextActionFor(handoff)}`);
+    console.log('\nStatus: design-handoff-execute-blocked');
     return;
   }
   const providedArtifact = value('artifact', '');
@@ -1519,6 +1717,14 @@ function executeStage() {
       blocked = true;
       phase.status = 'blocked_review_failed';
       note = 'Claude review completed but did not pass the taste threshold.';
+    }
+  }
+  if (!blocked && phase.id === 'kimi_implementation' && artifact === 'implementation.result.json') {
+    const implementation = readJson(artifactPath(dir, artifact));
+    if (String(implementation.verdict || '').startsWith('blocked_')) {
+      blocked = true;
+      phase.status = 'blocked_kimi_no_changes';
+      note = 'Kimi implementation completed without target repo changes.';
     }
   }
   if (!blocked && phase.id === 'codex_proof') {

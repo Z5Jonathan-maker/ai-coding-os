@@ -92,11 +92,14 @@ locally derivable, records externally produced artifacts when passed with
 approved-reference asset at a time when `asset_decomposition --extract-asset
 <id> --image-api-ok` is supplied, invokes DeepSeek/cheap first to compress
 handoff context for expensive specialist lanes, invokes `router-ask --purpose
-design` for the `kimi_implementation` stage by default, invokes `claude
---print` for the `design_dna` and `claude_review` stages by default, blocks
-deploy unlock when the review fails the taste threshold, runs Codex local proof
-before deployment, and writes `deploy.receipt.json` only from explicit deploy
-receipt fields or an explicit TEL verification call.
+design` for the `kimi_implementation` stage by default, invokes the Kimi CLI
+against a real repository when `--target-repo <repo>` is supplied, records
+`implementation.result.json` with changed files, invokes `claude --print` for
+the `design_dna` and `claude_review` stages by default, blocks deploy unlock
+when the review fails the taste threshold, blocks deploy when Codex proof has
+not passed, runs Codex local proof before deployment, and writes
+`deploy.receipt.json` only from explicit deploy receipt fields or an explicit
+TEL verification call.
 `--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.

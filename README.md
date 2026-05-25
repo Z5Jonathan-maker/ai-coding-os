@@ -45,7 +45,7 @@ cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_r
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
-cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase kimi_implementation
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase kimi_implementation --target-repo /path/to/app
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase claude_review
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase codex_proof
 ```
@@ -59,6 +59,7 @@ Each mission writes portable artifacts:
 - `next-action.json`
 - `design.dna.json`
 - `implementation.plan.json`
+- `implementation.result.json`
 - `taste.validation.json`
 - `codex.proof.json`
 - `deploy.receipt.json`
@@ -79,8 +80,12 @@ Claude receive cleaner context with lower token waste. The `claude_review`
 stage calls `claude --print`, stores
 `taste.validation.raw.md`, writes `taste.validation.json`, and blocks deploy
 unlock if the review fails its threshold. The `kimi_implementation` stage also
-calls the live design route by default through `router-ask --purpose design`,
-stores `implementation.raw.md`, and writes `implementation.plan.json`.
+calls the live design route by default through `router-ask --purpose design`
+when no target repo is supplied, stores `implementation.raw.md`, and writes
+`implementation.plan.json`. With `--target-repo`, it invokes the Kimi CLI in
+that repo, attaches the mission artifact directory, writes
+`implementation.result.json`, captures changed files, and blocks the next stage
+if no target repo changes exist.
 `design_dna` also calls `claude --print` by default, stores
 `design.dna.raw.md`, and writes structured implementation constraints instead
 of a hardcoded taste template. `codex_proof` runs local integration proof,

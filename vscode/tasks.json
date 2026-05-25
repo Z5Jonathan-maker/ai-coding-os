@@ -44,7 +44,7 @@
     {
       "label": "AI: Explain Route",
       "type": "shell",
-      "command": "~/AI-SYSTEM-V2/scripts/intent-route.sh",
+      "command": "cc-route",
       "args": ["--dry-run", "${input:aiPrompt}"],
       "problemMatcher": []
     },
@@ -109,7 +109,7 @@
     {
       "label": "AI: Browser Check",
       "type": "shell",
-      "command": "~/AI-SYSTEM-V2/scripts/intent-route.sh",
+      "command": "cc-route",
       "args": ["--dry-run", "browser check ${input:aiUrl} with screenshot and UI validation"],
       "problemMatcher": []
     },

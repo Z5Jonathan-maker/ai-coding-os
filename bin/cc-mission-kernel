@@ -80,7 +80,7 @@ function readJson(file) {
 }
 
 function routeReceipt(task) {
-  const script = path.join(os.homedir(), 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+  const script = process.env.AI_INTENT_ROUTER || path.join(root, 'bin', 'cc-route');
   if (!fs.existsSync(script)) {
     return {
       schema: 'ai-coding-os.route-receipt.v1',

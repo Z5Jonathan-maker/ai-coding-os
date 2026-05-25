@@ -154,13 +154,14 @@ public clone. `cc-ai-checks` runs the source-controlled checks in `.ai/checks/`;
 `cc-permission-matrix` falls back to that trust profile when private local
 permission files are absent. `cc-token-ledger` reports router economics
 from existing usage telemetry, with a committed fixture fallback for public
-evaluators who do not have the private router log. `cc-router-smoke` and
-benchmark route checks use the live router when present and a labeled committed
-routing-contract fixture when it is not. `cc-router-receipt` and
-`cc-router-metrics` also fall back to committed fixture telemetry, so cockpit
-observability stays useful in public clones. `cc-provider-capacity` uses live
-provider probes on the maintainer machine and a labeled capacity fixture in
-public clones. `cc-mission-ledger` provides the
+evaluators who do not have the private router log. `cc-route` is the in-tree
+route decision engine backed by `ai-lanes.json`; `cc-router-smoke`, benchmark
+route checks, the Mission Kernel, Agent Runtime, quick demo, and workflow proof
+use it by default instead of private `AI-SYSTEM-V2` fixtures.
+`cc-router-receipt` and `cc-router-metrics` still fall back to committed fixture
+telemetry, so cockpit observability stays explicitly labeled in public clones.
+`cc-provider-capacity` uses live provider probes on the maintainer machine and a
+labeled capacity fixture in public clones. `cc-mission-ledger` provides the
 append-only continuation state used by the cockpit mission surface.
 `cc-cockpit-webview-smoke` proves the packaged cockpit still has required
 continuation/result surfaces and a clean npm audit. `cc-verify-product` is the

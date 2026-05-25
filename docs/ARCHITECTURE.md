@@ -9,10 +9,13 @@ Developer
       -> route receipts
       -> readiness and setup states
       -> browser/demo proof
-  -> cc-router / AI-SYSTEM-V2
-      -> lane classifier
+  -> cc-route + ai-lanes.json
+      -> in-tree lane classifier
       -> fallback chains
-      -> quota/cost/session receipts
+      -> dry-run route receipts
+  -> optional router-ask / AI-SYSTEM-V2 execution gateway
+      -> live provider invocation
+      -> quota/cost/session telemetry
   -> AI lanes
       -> Codex: code edits, local verification, integration
       -> Claude: architecture, hard debugging, security/final QA
@@ -28,7 +31,8 @@ Developer
 | Area | Source |
 |---|---|
 | Lane registry | `ai-lanes.json` |
-| Router implementation | `~/code/projects/cc-router` |
+| Route decision engine | `bin/cc-route` backed by `ai-lanes.json` |
+| Live execution gateway | `router-ask` / private `AI-SYSTEM-V2` install when available |
 | VS Code cockpit | `vscode/ai-cockpit/` |
 | Source-controlled AI checks | `.ai/checks/` |
 | Workspace trust profile | `.ai/trust.json` |
@@ -45,7 +49,7 @@ Developer
 ## Design Rules
 
 1. The cockpit is the user surface.
-2. The router is the engine.
+2. The in-tree router is the public decision engine.
 3. Lanes are capability boundaries, not model hype labels.
 4. Unsupported lane capabilities must be executable contract checks, not prose.
 5. Every fallback must be visible.
@@ -70,7 +74,7 @@ The cockpit should show:
 
 - product readiness
 - first-run/setup state
-- route receipt and metrics
+- route decision, receipt, and metrics
 - permission matrix
 - checkpoint visibility
 - context pressure
@@ -80,8 +84,9 @@ The cockpit should show:
 - native app status
 - demo mode
 
-It should not create a second router, model runtime, credential store, or hidden
-agent loop.
+It should not create a second model runtime, credential store, or hidden agent
+loop. Route decisions come from `cc-route`; live provider execution remains an
+adapter behind the command surface.
 
 ## Extension Points
 
@@ -90,7 +95,7 @@ New work should enter through one of:
 - new command in `bin/`
 - new cockpit card/action for an existing command
 - lane registry update with smoke/integrity coverage
-- router capability update in `cc-router`
+- router capability update in `cc-route` and `ai-lanes.json`
 - documentation update for a public setup or launch boundary
 
 Avoid adding new long-running daemons unless the capability cannot be represented

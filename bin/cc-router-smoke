@@ -2,13 +2,12 @@
 # cc-router-smoke — deterministic dry-run checks for the global model router.
 set -euo pipefail
 
-ROUTER="${AI_INTENT_ROUTER:-$HOME/AI-SYSTEM-V2/scripts/intent-route.sh}"
-fixture=0
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ROUTER="${AI_INTENT_ROUTER:-$ROOT/bin/cc-route}"
 
 if [ ! -x "$ROUTER" ]; then
-  fixture=1
-  printf 'Router unavailable: %s\n' "$ROUTER"
-  printf 'Using committed routing contract fixture.\n'
+  printf 'Router unavailable: %s\n' "$ROUTER" >&2
+  exit 1
 fi
 
 failures=0
@@ -23,11 +22,6 @@ check_route() {
   local classifier_class
   local quota_from
   local quota_rebalanced
-
-  if [ "$fixture" = 1 ]; then
-    printf 'ok   %s -> %s/%s (fixture)\n' "$prompt" "$expected_class" "$expected_platform"
-    return
-  fi
 
   receipt="$("$ROUTER" --dry-run "$prompt" 2>/dev/null | sed -n 's/^  Receipt:   //p' | tail -1)"
   actual_class="$(node -e 'const r=JSON.parse(process.argv[1]); process.stdout.write(r.final_class || "")' "$receipt")"

@@ -1,6 +1,6 @@
 # AI System Cockpit
 
-Native VS Code cockpit for AI-SYSTEM-V2.
+Native VS Code cockpit for the AI Coding OS command surface.
 
 ## Features
 
@@ -21,8 +21,8 @@ Native VS Code cockpit for AI-SYSTEM-V2.
 
 ## Requirements
 
-- Jonathan's AI-SYSTEM-V2 dotfiles installed.
-- `router-ask`, `cc-system-demo`, `cc-product-readiness`, `cc-router-metrics`, and related cockpit commands available on `PATH`.
+- This repo's `bin/` directory available on `PATH`.
+- `cc-route`, `router-ask`, `cc-system-demo`, `cc-product-readiness`, `cc-router-metrics`, and related cockpit commands available on `PATH`.
 - VS Code 1.96.0 or newer.
 - Provider accounts for the lanes you want to use. See `docs/PROVIDER-ACCOUNTS.md` at the repo root.
 

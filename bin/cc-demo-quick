@@ -2,11 +2,10 @@
 set -u
 
 DOTFILES="${DOTFILES:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
-ROUTER="${AI_INTENT_ROUTER:-$HOME/AI-SYSTEM-V2/scripts/intent-route.sh}"
+ROUTER="${AI_INTENT_ROUTER:-$DOTFILES/bin/cc-route}"
 tmp="${TMPDIR:-/tmp}/cc-demo-quick.$$"
 pass=0
 fail=0
-fixture=0
 
 cleanup() {
   rm -f "$tmp".*
@@ -31,19 +30,6 @@ run_quiet() {
 
 route_line() {
   local prompt="$1" log="$tmp.route"
-  if [ "$fixture" -eq 1 ]; then
-    local final platform selected classifier fallback
-    case "$prompt" in
-      *redesign*|*cinematic*|*hero*) final="design"; platform="kimi"; classifier="design"; selected="design -> kimi" ;;
-      *extract*|*metadata*|*JSON*) final="cheap"; platform="deepseek"; classifier="cheap"; selected="cheap -> deepseek" ;;
-      *security*|*trust-boundary*|*review*) final="precision"; platform="claude"; classifier="precision"; selected="precision -> claude" ;;
-      *) final="codex"; platform="codex"; classifier="codex"; selected="codex -> codex" ;;
-    esac
-    fallback="$selected -> design/kimi -> cheap/deepseek"
-    printf 'ok   %-18s -> %-22s classifier=%s fallback=%s (fixture)\n' "$final/$platform" "$selected" "$classifier" "$fallback"
-    pass=$((pass + 1))
-    return 0
-  fi
   if "$ROUTER" --dry-run "$prompt" >"$log" 2>/dev/null; then
     local selected fallback receipt classifier final platform
     selected="$(sed -n 's/^  Selected:  //p' "$log" | tail -1)"
@@ -69,8 +55,10 @@ printf 'Root: %s\n\n' "$DOTFILES"
 
 printf '## 1. Routing proof\n\n'
 if [ ! -x "$ROUTER" ]; then
-  fixture=1
-  printf 'Source: committed routing contract fixture; live route script unavailable at %s\n\n' "$ROUTER"
+  printf 'fail route source unavailable: %s\n' "$ROUTER"
+  fail=$((fail + 1))
+else
+  printf 'Source: in-tree route engine (%s)\n\n' "$ROUTER"
 fi
 route_line 'fix a failing TypeScript unit test and verify the bug is gone'
 route_line 'redesign the cockpit hero into the approved cinematic continuation surface'

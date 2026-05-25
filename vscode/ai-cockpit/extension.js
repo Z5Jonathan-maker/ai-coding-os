@@ -195,7 +195,7 @@ async function askPrompt(placeHolder) {
 async function explainRoute() {
   const prompt = await askPrompt('e.g. debug this auth bug and verify tests');
   if (!prompt) return;
-  runTerminal('AI Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(prompt)}`);
+  runTerminal('AI Explain Route', `cc-route --dry-run ${quote(prompt)}`);
 }
 
 async function savePlan() {
@@ -620,7 +620,7 @@ class CockpitProvider {
       ? `${routeTask}\n\n---\nCOCKPIT RUN POLICY\n${permission}`
       : routeTask;
     if (mode === 'explainRoute') {
-      this.runInlineStream('Explain Route', `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run ${quote(routeTask)}`);
+      this.runInlineStream('Explain Route', `cc-route --dry-run ${quote(routeTask)}`);
       return;
     }
     if (mode === 'savePlan') {

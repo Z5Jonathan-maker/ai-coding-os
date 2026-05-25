@@ -12,6 +12,7 @@ prompt="$*"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES="${DOTFILES:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 root="${AI_SYSTEM_ROOT:-$HOME/AI-SYSTEM-V2}"
+route_script="${AI_SYSTEM_ROUTE_SCRIPT:-$DOTFILES/bin/cc-route}"
 plans_dir="${CC_PLAN_DIR:-.ai/plans}"
 ts="$(date -u '+%Y%m%dT%H%M%SZ')"
 slug="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//; s/-$//' | cut -c1-64)"
@@ -26,16 +27,12 @@ mkdir -p "$plans_dir"
   printf 'Workspace: %s\n' "$PWD"
   printf 'Request: %s\n\n' "$prompt"
   printf '## Route Preview\n\n'
-  if [ -x "$root/scripts/intent-route.sh" ]; then
+  if [ -x "$route_script" ]; then
+    "$route_script" --dry-run "$prompt" || true
+  elif [ -x "$root/scripts/intent-route.sh" ]; then
     "$root/scripts/intent-route.sh" --dry-run "$prompt" || true
   else
-    printf 'Source: committed routing contract fixture; live route script unavailable at %s/scripts/intent-route.sh\n' "$root"
-    case "$prompt" in
-      *design*|*screenshot*|*browser*|*UI*|*hero*) printf 'Selected: design -> kimi\n' ;;
-      *extract*|*summarize*|*JSON*|*metadata*) printf 'Selected: cheap -> deepseek\n' ;;
-      *security*|*audit*|*review*|*architecture*|*debug*) printf 'Selected: precision -> claude\n' ;;
-      *) printf 'Selected: codex -> codex\n' ;;
-    esac
+    printf 'Route preview unavailable: %s\n' "$route_script"
   fi
   printf '\n## Plan\n\n'
 } >"$file"

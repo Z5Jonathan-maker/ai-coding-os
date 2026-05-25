@@ -36,14 +36,15 @@ Status: fresh-clone-ready
 
 Expected optional misses in a clean temp home:
 
-- `cc-router` clone is optional unless the evaluator wants the full local
-  router development checkout.
-- Routing smoke and benchmark route checks fall back to a labeled committed
-  routing-contract fixture when `AI-SYSTEM-V2` is not installed.
+- `cc-route` ships in this repo and is the default route-decision engine for
+  routing smoke, benchmark route checks, Mission Kernel, Agent Runtime, quick
+  demo, and workflow proof.
+- The private `cc-router`/`AI-SYSTEM-V2` checkout is optional unless the
+  evaluator wants the maintainer's full local execution gateway.
 - Token-ledger proof falls back to committed fixture telemetry when live router
   usage logs are not present.
 - Router receipt and metrics surfaces fall back to the same committed telemetry
-  fixture when the private router checkout is absent.
+  fixture when private router telemetry is absent.
 - Feedback-law proof falls back to `fixtures/feedback-laws` when the full local
   `AI-SYSTEM-V2` control plane is not installed.
 - VS Code extensions are optional until the real installer is run.

@@ -1,7 +1,7 @@
 ---
 name: System Demo
 description: Acceptance demo stays meaningful before VS Code user symlinks exist in a public clone.
-command: bash -lc 'home="$(mktemp -d)"; HOME="$home" AI_SYSTEM_ROOT=/tmp/no-ai AI_INTENT_ROUTER=/tmp/no-ai/intent-route.sh DOTFILES="$PWD" bin/cc-system-demo'
+command: bash -lc 'home="$(mktemp -d)"; HOME="$home" AI_SYSTEM_ROOT=/tmp/no-ai DOTFILES="$PWD" bin/cc-system-demo'
 expect: portable evaluator mode
 ---
 

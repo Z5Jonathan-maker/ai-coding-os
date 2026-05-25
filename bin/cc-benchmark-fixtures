@@ -8,7 +8,7 @@ const cp = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const fixturesDir = process.env.CC_BENCHMARK_FIXTURES_DIR || path.join(root, 'fixtures', 'benchmarks');
-const routeScript = process.env.AI_SYSTEM_ROUTE_SCRIPT || path.join(process.env.HOME || os.homedir(), 'AI-SYSTEM-V2', 'scripts', 'intent-route.sh');
+const routeScript = process.env.AI_SYSTEM_ROUTE_SCRIPT || path.join(root, 'bin', 'cc-route');
 const args = process.argv.slice(2);
 const json = args.includes('--json');
 const checkOnly = args.includes('--check');
@@ -60,20 +60,6 @@ function selectedFromManifest(manifest) {
   return m ? m[1] : 'codex';
 }
 
-function fixtureRoute(manifest) {
-  const selected = selectedFromManifest(manifest);
-  return [
-    `Selected:  ${selected} -> fixture`,
-    `Receipt:   ${JSON.stringify({
-      final_class: selected,
-      classifier_output: selected,
-      platform: selected === 'design' ? 'kimi' : selected === 'cheap' ? 'deepseek' : selected,
-      fixture: true
-    })}`,
-    'Status: route-fixture-ready'
-  ].join('\n');
-}
-
 function copyFixture(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   fs.cpSync(src, dest, {
@@ -120,7 +106,7 @@ function evaluate(dir) {
 
   res = fs.existsSync(routeScript)
     ? run(routeScript, ['--dry-run', manifest.prompt], { cwd: work })
-    : { ok: true, code: 0, text: fixtureRoute(manifest) };
+    : { ok: false, code: 1, text: `route script unavailable: ${routeScript}` };
   const routeOk = res.ok && routeMatches(res.text, manifest);
   step('route expectation', routeOk, res.text);
 

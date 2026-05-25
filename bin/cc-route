@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function value(name, aliases = []) {
+  for (const key of [name, ...aliases]) {
+    const i = args.indexOf(key);
+    if (i >= 0 && args[i + 1] && !args[i + 1].startsWith('-')) return args[i + 1];
+    const eq = args.find((arg) => arg.startsWith(`${key}=`));
+    if (eq) return eq.slice(key.length + 1);
+  }
+  return '';
+}
+
+function has(name, aliases = []) {
+  return [name, ...aliases].some((key) => args.includes(key));
+}
+
+function promptArgs() {
+  const skipNext = new Set(['--purpose', '--tier', '-p', '-t', '--session', '--session-id']);
+  const out = [];
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (skipNext.has(arg)) {
+      i += 1;
+    } else if (/^(purpose|tier|session|session_id)=/.test(arg)) {
+      continue;
+    } else if (!arg.startsWith('-')) {
+      out.push(arg);
+    }
+  }
+  return out.join(' ').trim();
+}
+
+function readLanes() {
+  const file = path.join(root, 'ai-lanes.json');
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  return data;
+}
+
+function platformFor(cls) {
+  return ({
+    image: 'chatgpt',
+    design: 'kimi',
+    cheap: 'deepseek',
+    precision: 'claude',
+    codex: 'codex',
+  })[cls] || 'codex';
+}
+
+function canonicalPurpose(purpose) {
+  const text = String(purpose || '').toLowerCase().replace(/[^a-z0-9_/-]+/g, '_');
+  if (!text) return '';
+  if (/kimi/.test(text)) return 'design';
+  if (/image|creative|style_reference|hero_asset|product_mockup|visual_concept/.test(text)) return 'image';
+  if (/design|ui|ux|browser|screenshot|web/.test(text)) return 'design';
+  if (/cheap|bulk|extract|summar|json|dedupe|classify/.test(text)) return 'cheap';
+  if (/precision|security|audit|architecture|review|qa|debug|reason/.test(text)) return 'precision';
+  if (/codex|code|fix|test|refactor|implement|verify/.test(text)) return 'codex';
+  return text;
+}
+
+function classify(prompt, purpose) {
+  const forced = canonicalPurpose(purpose);
+  if (['image', 'design', 'cheap', 'precision', 'codex'].includes(forced)) return { cls: forced, source: 'purpose' };
+
+  const text = String(prompt || '').toLowerCase();
+  if (/\b(approved|reference|image 2\.0).*\b(implement|build|responsive|website|section|layout)\b/.test(text)) {
+    return { cls: 'design', source: 'regex' };
+  }
+  if (/\b(multi-intent routing|routing module|cognitive lanes|large repository audit|architecture risks|with citations|long[-\s]?context)\b/.test(text)) {
+    return { cls: 'precision', source: 'regex' };
+  }
+  const rules = [
+    ['image', /\b(generate (an? )?image|create (an? )?image|generate.*(hero|background|logo|asset|mockup)|show me an example|visual concept|style reference|creative direction|canonical|product listing|image 2\.0)\b/],
+    ['design', /\b(redesign|design|ui\/ux|ui|ux|layout|landing page|dashboard|frontend|component|responsive|browser|screenshot|webbridge|click|open https?:|hero|hero background|approved image)\b/],
+    ['precision', /\b(security|audit|architecture|architectural|review|qa|debug|hard debug|root cause|race|distributed|auth race|trust|permission|policy|compliance|routing correctness|global config)\b/],
+    ['cheap', /\b(summarize|summary|extract|json|metadata|dedupe|classify|compress|bulk|transform)\b/],
+    ['codex', /\b(code|coding|repo|file|script|implement|fix|bug|test|lint|build|refactor|typescript|javascript|python|react|next\.js|api|schema)\b/],
+  ];
+  const hit = rules.find(([, regex]) => regex.test(text));
+  return { cls: hit ? hit[0] : 'precision', source: hit ? 'regex' : 'default' };
+}
+
+function fallbackFor(cls) {
+  const chains = {
+    image: ['image/chatgpt'],
+    design: ['design/kimi', 'precision/claude', 'codex/codex'],
+    cheap: ['cheap/deepseek', 'codex/codex', 'precision/claude'],
+    precision: ['precision/claude', 'codex/codex', 'design/kimi', 'cheap/deepseek'],
+    codex: ['codex/codex', 'precision/claude', 'cheap/deepseek'],
+  };
+  return (chains[cls] || chains.precision).map((entry) => {
+    const [klass, platform] = entry.split('/');
+    return { class: klass, platform, id: klass };
+  });
+}
+
+function laneExists(data, cls, platform) {
+  const byPlatform = { chatgpt: 'chatgpt-image', kimi: 'kimi-webbridge' };
+  const id = byPlatform[platform] || platform;
+  return Array.isArray(data.lanes) && data.lanes.some((lane) => lane.id === id || lane.id === platform || lane.id === cls);
+}
+
+function decision(prompt, purpose = '') {
+  const lanes = readLanes();
+  const classified = classify(prompt, purpose);
+  const cls = classified.cls;
+  const platform = platformFor(cls);
+  const fallbackChain = fallbackFor(cls);
+  return {
+    purpose: purpose || null,
+    flags: [],
+    session_id: value('--session', ['--session-id']) || null,
+    prompt_chars: prompt.length,
+    classifier_output: classified.source === 'purpose' ? null : cls,
+    classified_after_overrides: cls,
+    final_class: cls,
+    platform,
+    hard_floor: cls === 'precision',
+    quota_bypassed: true,
+    quota_rebalanced: false,
+    quota_from: null,
+    quota_to: null,
+    sticky_session: false,
+    sticky_applied: false,
+    sticky_from: null,
+    sticky_to: null,
+    sticky_reason: null,
+    cost_threshold: null,
+    fallback_chain: fallbackChain,
+    source: 'in-tree',
+    router: 'cc-route',
+    lane_known: laneExists(lanes, cls, platform),
+  };
+}
+
+function printDryRun(prompt, receipt, forced) {
+  const selected = `${receipt.final_class} \u2192 ${receipt.platform}`;
+  const fallback = receipt.fallback_chain.map((item) => `${item.class}/${item.platform}`).join(' \u2192 ');
+  console.log('\n╔══════════════════════════════════════════════════════════════╗');
+  console.log('║           DRY RUN — ROUTING DECISION                         ║');
+  console.log('╚══════════════════════════════════════════════════════════════╝\n');
+  console.log(`  Prompt:    "${prompt.slice(0, 80)}${prompt.length > 80 ? '...' : ''}"`);
+  console.log(`  Forced:    ${forced || '(auto-detect)'}`);
+  console.log(`  Selected:  ${selected}`);
+  console.log(`  Fallback:  ${fallback}`);
+  console.log(`  Receipt:   ${JSON.stringify(receipt)}`);
+  console.log('');
+}
+
+function main() {
+  if (has('--help', ['-h']) || args.length === 0) {
+    console.log('cc-route — in-tree AI Coding OS route decision CLI\n\nUsage: cc-route [--dry-run] [--purpose PURPOSE] <prompt>');
+    return;
+  }
+  const prompt = promptArgs();
+  if (!prompt) {
+    console.error('cc-route: missing prompt');
+    process.exit(2);
+  }
+  const purpose = value('--purpose', ['purpose', '--tier', 'tier', '-p', '-t']);
+  const receipt = decision(prompt, purpose);
+  if (has('--json')) {
+    console.log(JSON.stringify(receipt, null, 2));
+  } else {
+    printDryRun(prompt, receipt, purpose);
+  }
+}
+
+main();

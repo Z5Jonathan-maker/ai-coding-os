@@ -132,5 +132,9 @@ integrity is locked before the page is assembled.
 - Do not regenerate from scratch after a direction is approved; edit from the
   canonical reference.
 - Do not mix unrelated style references inside the same catalog batch.
-- Do not spend paid API image calls when ChatGPT Desktop/session generation is
-  the intended path.
+- Keep both generation paths available:
+  - ChatGPT subscription/manual packet: no Platform API billing; use ChatGPT
+    Desktop or logged-in ChatGPT web and save the approved asset into the
+    mission directory.
+  - Paid API automation: pass `--image-api-ok`; this uses `cc-image` and bills
+    through OpenAI Platform/API, not the ChatGPT subscription.

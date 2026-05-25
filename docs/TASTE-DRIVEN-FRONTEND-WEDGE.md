@@ -64,9 +64,9 @@ cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
 cc-design-handoff list
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
-cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image --image-api-ok
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
-cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase codex_proof --browser-url http://localhost:3000
@@ -88,9 +88,10 @@ approve it, then continue through asset decomposition, Kimi implementation,
 Claude review, Codex proof, and TEL deploy. `continue` emits a lane-specific action packet
 for the current phase. `execute` records concrete stage artifacts when they are
 locally derivable, records externally produced artifacts when passed with
-`--artifact`, invokes `cc-image` for `creative_reference` only when
+`--artifact`, writes a ChatGPT subscription/manual generation packet by default,
+invokes `cc-image` for `creative_reference` only when
 `--generate-image --image-api-ok` is supplied, invokes `cc-image` for one
-approved-reference asset at a time when `asset_decomposition --extract-asset
+approved-reference asset at a time only when `asset_decomposition --extract-asset
 <id> --image-api-ok` is supplied, invokes DeepSeek/cheap first to compress
 handoff context for expensive specialist lanes, invokes `router-ask --purpose
 design` for the `kimi_implementation` stage by default, invokes the Kimi CLI

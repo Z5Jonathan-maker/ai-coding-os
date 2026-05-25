@@ -464,7 +464,7 @@ function actionPacket(handoff, phase) {
     creative_reference: {
       blocks_execution: true,
       requires_human_approval: true,
-      command: 'cc-design-handoff execute --phase creative_reference --generate-image --image-api-ok',
+      command: 'cc-design-handoff execute --phase creative_reference --generate-image',
       prompt: [
         `Create a premium visual reference for: ${handoff.request}`,
         'Treat this as creative direction, not implementation.',
@@ -476,7 +476,7 @@ function actionPacket(handoff, phase) {
     asset_decomposition: {
       blocks_execution: true,
       requires_human_approval: true,
-      command: 'cc-design-handoff execute --phase asset_decomposition --extract-asset hero-background --image-api-ok',
+      command: 'cc-design-handoff execute --phase asset_decomposition --extract-asset hero-background',
       prompt: [
         'Using the approved visual.target.png in the same Image 2.0 thread, extract exactly one implementation asset at a time.',
         'Start with the hero background only. Wait for approval before extracting button, divider, banner, surface, or texture assets.',
@@ -1189,7 +1189,20 @@ function generateCreativeReference(dir, handoff) {
   }
 
   if (!has('image-api-ok')) {
-    writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phaseById(handoff, 'creative_reference')));
+    const packet = actionPacket(handoff, phaseById(handoff, 'creative_reference'));
+    writeJson(path.join(dir, 'visual.reference.request.json'), {
+      ...packet,
+      source: 'chatgpt_subscription_manual',
+      live_lane_call: false,
+      billing: 'chatgpt_subscription_or_manual_upload',
+      instructions: [
+        'Open ChatGPT Desktop or logged-in ChatGPT web.',
+        'Paste the prompt below into the existing/new Image 2.0 thread.',
+        'Save the approved output as visual.target.png in this mission directory.',
+        'Then run cc-design-handoff approve --phase creative_reference --artifact visual.target.png.',
+      ],
+      prompt,
+    });
     return '';
   }
 
@@ -1212,7 +1225,8 @@ function generateCreativeReference(dir, handoff) {
     schema: 'ai-coding-os.visual-reference-manifest.v1',
     mission_id: handoff.mission_id,
     generated_at: now(),
-    source: 'cc-image',
+    source: 'cc-image-api',
+    billing: 'openai_platform_api',
     live_lane_call: true,
     model: parsed?.model || 'gpt-image-2',
     output: 'visual.target.png',
@@ -1297,9 +1311,18 @@ function extractAsset(dir, handoff) {
   if (!has('image-api-ok')) {
     writeJson(path.join(dir, 'asset.extraction.request.json'), {
       ...actionPacket(handoff, phaseById(handoff, 'asset_decomposition')),
+      source: 'chatgpt_subscription_manual',
+      live_lane_call: false,
+      billing: 'chatgpt_subscription_or_manual_upload',
       asset_id: assetId,
       prompt,
-      note: 'Add --image-api-ok to spend image API credits for this extraction.',
+      instructions: [
+        'Use the same ChatGPT/Image 2.0 thread as the approved visual reference.',
+        'Paste the extraction prompt below.',
+        `Save the approved output as assets/${assetId}.png in this mission directory.`,
+        'Then approve creative.asset-kit.json or rerun extraction with --image-api-ok if you intentionally want API billing.',
+      ],
+      note: 'No API billing used. This is a ChatGPT subscription/manual generation packet.',
     });
     return '';
   }
@@ -1327,7 +1350,8 @@ function extractAsset(dir, handoff) {
     extraction_prompt: prompt,
     implementation_usage: 'Use as an approved visual primitive in the Kimi implementation pass.',
     approval_gate: 'human_approves_asset_before_next_extraction',
-    source: 'cc-image',
+    source: 'cc-image-api',
+    billing: 'openai_platform_api',
     live_lane_call: true,
     raw_output_artifact: `asset.${assetId}.raw.json`,
     run_dir: parsed?.runDir || '',
@@ -2028,7 +2052,19 @@ function executeStage() {
     if (!artifact) artifact = 'asset.extraction.request.json';
   } else if (phase.id === 'creative_reference' && !providedArtifact) {
     blocked = true;
-    writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phase));
+    const packet = actionPacket(handoff, phase);
+    writeJson(path.join(dir, 'visual.reference.request.json'), {
+      ...packet,
+      source: 'chatgpt_subscription_manual',
+      live_lane_call: false,
+      billing: 'chatgpt_subscription_or_manual_upload',
+      instructions: [
+        'Open ChatGPT Desktop or logged-in ChatGPT web.',
+        'Paste the prompt into Image 2.0.',
+        'Save the approved output as visual.target.png in this mission directory.',
+        'Then approve the creative_reference phase.',
+      ],
+    });
     phase.status = 'awaiting_external_artifact';
     note = 'Image 2.0 visual reference must be generated or attached before this phase can complete.';
     artifact = 'visual.reference.request.json';

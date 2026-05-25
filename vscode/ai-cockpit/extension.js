@@ -701,29 +701,27 @@ class CockpitProvider {
     let extra = '';
     if (picked.phase.id === 'creative_reference') {
       const action = await vscode.window.showQuickPick([
-        { label: 'Generate Image 2.0 reference', detail: 'Uses cc-image and may spend OpenAI image API credits.', generate: true },
-        { label: 'Write request packet only', detail: 'No paid image call.', generate: false },
+        { label: 'ChatGPT subscription packet', detail: 'No API billing. Writes prompt/instructions for ChatGPT Desktop or web.', mode: 'subscription' },
+        { label: 'Generate via paid API', detail: 'Uses cc-image and can spend OpenAI Platform API credits.', mode: 'api' },
       ], { placeHolder: 'Creative reference action' });
       if (!action) return;
-      if (action.generate) extra = ' --generate-image --image-api-ok';
+      extra = action.mode === 'api' ? ' --generate-image --image-api-ok' : ' --generate-image';
     } else if (picked.phase.id === 'asset_decomposition') {
       const action = await vscode.window.showQuickPick([
-        { label: 'Extract one visual asset', detail: 'Uses approved visual.target.png and may spend OpenAI image API credits.', extract: true },
-        { label: 'Write asset request packet only', detail: 'No paid image call.', extract: false },
+        { label: 'ChatGPT subscription packet', detail: 'No API billing. Writes one-at-a-time extraction prompt.', mode: 'subscription' },
+        { label: 'Extract via paid API', detail: 'Uses cc-image and can spend OpenAI Platform API credits.', mode: 'api' },
       ], { placeHolder: 'Asset decomposition action' });
       if (!action) return;
-      if (action.extract) {
-        const asset = await vscode.window.showInputBox({
-          prompt: 'Asset id to extract',
-          placeHolder: 'hero-background',
-          value: 'hero-background',
-          ignoreFocusOut: true,
-        });
-        if (!asset) return;
-        extra = ` --extract-asset ${quote(asset)} --image-api-ok`;
-      } else {
-        extra = ' --extract-asset hero-background';
-      }
+      const asset = await vscode.window.showInputBox({
+        prompt: 'Asset id to extract',
+        placeHolder: 'hero-background',
+        value: 'hero-background',
+        ignoreFocusOut: true,
+      });
+      if (!asset) return;
+      extra = action.mode === 'api'
+        ? ` --extract-asset ${quote(asset)} --image-api-ok`
+        : ` --extract-asset ${quote(asset)}`;
     } else if (picked.phase.id === 'tel_deploy') {
       const deployment = await vscode.window.showInputBox({
         prompt: 'Vercel deployment URL or id for TEL verification',

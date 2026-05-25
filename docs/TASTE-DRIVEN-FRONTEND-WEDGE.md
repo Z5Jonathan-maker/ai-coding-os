@@ -107,4 +107,6 @@ Portable checks use explicitly labeled offline fixtures for live-lane stages.
 AI Coding OS, v0, Lovable, and Bolt against the same brief. The benchmark is
 allowed to support product claims only with its honesty constraint intact: it is
 a same-brief artifact review unless current live competitor outputs are
-regenerated and attached.
+regenerated and attached. External tools cannot carry numeric scores until
+their current-run prompt, screenshot/source, and review artifacts are attached
+under `fixtures/frontend-wedge/premium-landing/competitor-artifacts/`.

@@ -106,6 +106,8 @@ The same-brief competitor benchmark lives at
 `fixtures/frontend-wedge/premium-landing/competitive.benchmark.json`. It
 compares this workflow against v0, Lovable, and Bolt as an artifact review. It
 is not a live SaaS benchmark unless fresh competitor outputs are attached.
+External competitors cannot carry numeric scores unless current-run prompt,
+screenshot/source, and review artifacts are present.
 
 ## VS Code Cockpit
 

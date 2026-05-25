@@ -4,6 +4,7 @@
   "brief": "Build a premium AI-native workspace landing experience from an approved cinematic creative reference, preserving visual direction through implementation and proof.",
   "same_brief_required": true,
   "method": "manual head-to-head review using the same brief, same scoring rubric, and saved artifacts or screenshots for every competitor",
+  "benchmark_status": "artifact_contract_only",
   "threshold_to_claim_win": 90,
   "dimensions": [
     "creative_fidelity",
@@ -18,6 +19,7 @@
     {
       "tool": "ai-coding-os",
       "artifact": "fixtures/frontend-wedge/premium-landing/workflow.json",
+      "capture_status": "captured_current_run",
       "score": 92,
       "evidence": [
         "creative reference, asset kit, design DNA, implementation plan, taste validation, and proof bundle are first-class artifacts",
@@ -27,28 +29,34 @@
     {
       "tool": "v0",
       "artifact": "fixtures/frontend-wedge/premium-landing/competitors/v0.md",
-      "score": 82,
+      "capture_dir": "fixtures/frontend-wedge/premium-landing/competitor-artifacts/v0",
+      "capture_status": "pending_external_capture",
+      "score": null,
       "evidence": [
-        "strong component generation and framework realism",
-        "weaker preservation of approved cinematic art direction without a separate design DNA artifact"
+        "pending same-brief run against current v0 output",
+        "numeric score blocked until prompt, screenshot/source, and review JSON are attached"
       ]
     },
     {
       "tool": "lovable",
       "artifact": "fixtures/frontend-wedge/premium-landing/competitors/lovable.md",
-      "score": 78,
+      "capture_dir": "fixtures/frontend-wedge/premium-landing/competitor-artifacts/lovable",
+      "capture_status": "pending_external_capture",
+      "score": null,
       "evidence": [
-        "fast full-app assembly",
-        "less explicit proof around visual fidelity, staged approvals, and cost-aware lane routing"
+        "pending same-brief run against current Lovable output",
+        "numeric score blocked until prompt, screenshot/source, and review JSON are attached"
       ]
     },
     {
       "tool": "bolt",
       "artifact": "fixtures/frontend-wedge/premium-landing/competitors/bolt.md",
-      "score": 76,
+      "capture_dir": "fixtures/frontend-wedge/premium-landing/competitor-artifacts/bolt",
+      "capture_status": "pending_external_capture",
+      "score": null,
       "evidence": [
-        "fast prototype execution",
-        "weaker creative-direction preservation and proof bundle semantics on the same brief"
+        "pending same-brief run against current Bolt output",
+        "numeric score blocked until prompt, screenshot/source, and review JSON are attached"
       ]
     }
   ],

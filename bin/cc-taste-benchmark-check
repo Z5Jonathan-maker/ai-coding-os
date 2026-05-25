@@ -32,6 +32,12 @@ function weightedScore(dimensions) {
   return { totalWeight, score: totalWeight ? totalScore / totalWeight : 0 };
 }
 
+function hasCapturedArtifact(dir) {
+  if (!dir || !fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return false;
+  const files = fs.readdirSync(dir);
+  return files.some((file) => /\.(png|jpe?g|webp|html|tsx?|jsx?|zip)$/i.test(file));
+}
+
 console.log('# Taste Benchmark Check\n');
 console.log(`Root: ${root}`);
 
@@ -74,16 +80,29 @@ for (const phrase of ['creative reference', 'design DNA', 'browser proof', 'tast
 const competitive = JSON.parse(fs.readFileSync(competitivePath, 'utf8'));
 expect(competitive.schema === 'ai-coding-os.competitive-frontend-benchmark.v1', 'competitive benchmark schema valid');
 expect(competitive.same_brief_required === true, 'competitive benchmark requires same brief');
+expect(['artifact_contract_only', 'captured_current_run'].includes(competitive.benchmark_status), 'competitive benchmark status explicit');
 for (const tool of ['ai-coding-os', 'v0', 'lovable', 'bolt']) {
   const entry = (competitive.entries || []).find((item) => item.tool === tool);
   expect(Boolean(entry), `competitive entry exists: ${tool}`);
   if (entry) {
-    expect(Number.isFinite(entry.score) && entry.score >= 0 && entry.score <= 100, `competitive score valid: ${tool}`);
     expect(Boolean(entry.artifact) && fs.existsSync(path.join(root, entry.artifact)), `competitive artifact exists: ${tool}`);
     expect(Array.isArray(entry.evidence) && entry.evidence.length >= 2, `competitive evidence present: ${tool}`);
+    expect(Boolean(entry.capture_status), `competitive capture status present: ${tool}`);
+    if (tool === 'ai-coding-os' || entry.capture_status === 'captured_current_run') {
+      expect(Number.isFinite(entry.score) && entry.score >= 0 && entry.score <= 100, `competitive score valid: ${tool}`);
+    } else {
+      expect(entry.score === null, `uncaptured competitor score blocked: ${tool}`);
+    }
+    if (tool !== 'ai-coding-os' && entry.capture_status === 'captured_current_run') {
+      const dir = path.join(root, entry.capture_dir || '');
+      expect(fs.existsSync(path.join(dir, 'prompt.md')), `captured prompt exists: ${tool}`);
+      expect(fs.existsSync(path.join(dir, 'review.json')), `captured review exists: ${tool}`);
+      expect(hasCapturedArtifact(dir), `captured screenshot/source exists: ${tool}`);
+    }
   }
 }
 expect((competitive.honesty_constraints || []).some((item) => /not a live SaaS benchmark/i.test(item)), 'competitive benchmark has honesty constraint');
+expect((competitive.entries || []).filter((item) => item.tool !== 'ai-coding-os').every((item) => item.capture_status === 'captured_current_run' || item.score === null), 'uncaptured competitors cannot be scored');
 
 console.log('\n## Score\n');
 console.log(`weighted=${score.toFixed(1)} threshold=${benchmark.threshold}`);

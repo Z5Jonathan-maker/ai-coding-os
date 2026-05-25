@@ -145,6 +145,7 @@ test('mission kernel overrides ledger for current repo continuation state', () =
       },
       proof: { commands: [{ command: 'cc-mission-kernel --check' }] },
       timeline: {
+        schema: 'ai-coding-os.agent-timeline.v1',
         events: [{
           ts: '2026-05-23T19:31:00Z',
           agent: 'codex',
@@ -202,6 +203,7 @@ test('mission kernel runtime state is surfaced before ledger fallback', () => {
       },
       proof: { commands: [{ command: 'cc-agent-runtime --check' }] },
       timeline: {
+        schema: 'ai-coding-os.agent-timeline.v1',
         events: [{
           ts: '2026-05-23T20:01:00Z',
           agent: 'codex',
@@ -230,6 +232,63 @@ test('mission kernel runtime state is surfaced before ledger fallback', () => {
   assert.equal(mission.feed[0].title, 'Runtime started for codex.');
   assert.match(mission.feed.map((item) => item.title).join('\n'), /Runtime Running \/ Acting \/ Launch/);
   assert.doesNotMatch(mission.lastSession, /Old ledger mission/);
+});
+
+test('mission kernel timeline must be replayable before it becomes cockpit momentum', () => {
+  const mission = buildMissionState({
+    diffSummary: JSON.stringify({
+      repo: '/tmp/project',
+      clean: true,
+      fileCount: 0,
+      totalAdded: 0,
+      totalRemoved: 0,
+    }),
+    contextMeterJson: '{}',
+    missionKernel: JSON.stringify({
+      mission: {
+        id: 'runtime-replay',
+        repo: '/tmp/project',
+        title: 'Replayable Runtime',
+        task: 'Only render timeline state when timestamps can replay safely.',
+        status: 'running',
+        runtime_status: 'running',
+        execution_status: 'acting',
+        startup_phase: 'launch',
+        route: 'codex -> codex',
+        next_action: 'Keep live state honest.',
+        updated_at: '2026-05-23T20:00:00Z',
+      },
+      proof: { commands: [{ command: 'cc-mission-events replay' }] },
+      timeline: {
+        schema: 'ai-coding-os.agent-timeline.v1',
+        events: [
+          {
+            ts: '2026-05-23T20:02:00Z',
+            agent: 'codex',
+            stage: 'tool.completed',
+            severity: 'info',
+            message: 'Tool completed.',
+            proof: ['exit=0'],
+          },
+          {
+            ts: '2026-05-23T20:01:00Z',
+            agent: 'codex',
+            stage: 'runtime.started',
+            severity: 'info',
+            message: 'Runtime started.',
+            proof: ['codex/codex'],
+          },
+        ],
+      },
+    }),
+    sessions: '{}',
+    route: '',
+    kimi: '',
+    providerCapacity: '',
+  }, { cwd: '/tmp/project' });
+
+  assert.doesNotMatch(JSON.stringify(mission.feed), /Tool completed|Runtime started/);
+  assert.match(JSON.stringify(mission.feed), /Runtime Running \/ Acting \/ Launch/);
 });
 
 test('mission ledger events become the first live feed items', () => {

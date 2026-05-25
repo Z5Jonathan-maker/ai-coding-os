@@ -33,6 +33,29 @@ function kernelProgress(mission) {
   return ({ planned: 18, running: 48, blocked: 36, verifying: 72, passed: 100, failed: 28 })[mission.status] || 42;
 }
 
+function replayableTimelineEvents(timeline) {
+  if (!timeline || timeline.schema !== 'ai-coding-os.agent-timeline.v1' || !Array.isArray(timeline.events)) return [];
+  let previous = 0;
+  for (const event of timeline.events) {
+    const parsed = Date.parse(event.ts || '');
+    if (Number.isNaN(parsed) || parsed < previous) return [];
+    previous = parsed;
+  }
+  return timeline.events;
+}
+
+function missionEventDisplay(stage, severity = 'info') {
+  const text = String(stage || '');
+  if (severity === 'error' || text.endsWith('.failed')) return { icon: '!', state: '' };
+  if (text.startsWith('permission.')) return { icon: 'P', state: text.endsWith('.replied') ? 'done' : 'active' };
+  if (text.startsWith('runtime.') || text.startsWith('tool.') || text.startsWith('verification.')) {
+    return { icon: 'A', state: text.endsWith('.completed') ? 'done' : 'active' };
+  }
+  if (text.startsWith('proof.') || text.startsWith('mission.') || text.startsWith('checkpoint.')) return { icon: 'C', state: 'done' };
+  if (text.startsWith('trust.') || text.startsWith('route.') || text.startsWith('context.') || text.startsWith('preflight.')) return { icon: 'R', state: 'done' };
+  return { icon: 'M', state: '' };
+}
+
 function matchingMission(payload, resolvedRepo) {
   const kernel = parseJson(payload.missionKernel, {});
   if (kernel && kernel.mission && kernel.mission.repo && !kernel.mission.stale) {
@@ -75,18 +98,23 @@ function matchingEvents(payload, resolvedRepo) {
   const kernel = parseJson(payload.missionKernel, {});
   if (kernel && kernel.mission && kernel.timeline && Array.isArray(kernel.timeline.events)) {
     if (kernel.mission.repo && path.resolve(kernel.mission.repo) === resolvedRepo) {
-      return kernel.timeline.events.slice(-4).reverse().map((event, index) => ({
-        type: 'event',
-        id: `${kernel.mission.id}:kernel:${index}`,
-        repo: kernel.mission.repo,
-        mission_id: kernel.mission.id,
-        stage: String(event.stage || 'act').toLowerCase(),
-        title: event.message || `${event.stage || 'mission'} event`,
-        body: Array.isArray(event.proof) && event.proof.length ? event.proof.join(', ') : event.agent || 'mission kernel',
-        proof: Array.isArray(event.proof) ? event.proof : [],
-        updated_at: event.ts || kernel.mission.updated_at,
-        stale: false,
-      }));
+      return replayableTimelineEvents(kernel.timeline).slice(-4).reverse().map((event, index) => {
+        const display = missionEventDisplay(event.stage, event.severity);
+        return {
+          type: 'event',
+          id: `${kernel.mission.id}:kernel:${index}`,
+          repo: kernel.mission.repo,
+          mission_id: kernel.mission.id,
+          stage: String(event.stage || 'mission').toLowerCase(),
+          icon: display.icon,
+          state: display.state,
+          title: event.message || `${event.stage || 'mission'} event`,
+          body: Array.isArray(event.proof) && event.proof.length ? event.proof.join(', ') : event.agent || 'mission kernel',
+          proof: Array.isArray(event.proof) ? event.proof : [],
+          updated_at: event.ts || kernel.mission.updated_at,
+          stale: false,
+        };
+      });
     }
   }
   const ledger = parseJson(payload.missionLedger, {});
@@ -191,8 +219,8 @@ function buildMissionState(payload, options = {}) {
     started: ledgerMission && ledgerMission.updated_at ? ledgerMission.updated_at : latestSession && latestSession.last_ts ? latestSession.last_ts : 'Now',
     feed: [
       ...ledgerEvents.map((event) => ({
-        icon: ({ plan: 'P', act: 'A', checkpoint: 'C', resume: 'R' })[event.stage] || 'M',
-        state: event.stage === 'checkpoint' ? 'done' : event.stage === 'act' ? 'active' : '',
+        icon: event.icon || ({ plan: 'P', act: 'A', checkpoint: 'C', resume: 'R' })[event.stage] || 'M',
+        state: event.state || (event.stage === 'checkpoint' ? 'done' : event.stage === 'act' ? 'active' : ''),
         title: compact(event.title, 90),
         body: compact(event.body || (event.proof || []).join(', ') || event.stage, 150),
         time: event.updated_at || 'now',

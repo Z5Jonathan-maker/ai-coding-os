@@ -68,8 +68,10 @@ calls `cc-image` only when `--image-api-ok` is supplied, then stores
 `asset_decomposition --extract-asset <id>` uses the approved visual reference
 to extract one asset at a time through `cc-image`, also gated by
 `--image-api-ok`, then updates `creative.asset-kit.json` and waits for
-approval. The `claude_review` stage is the
-first live execution lane: by default it calls `claude --print`, stores
+approval. Before expensive live specialist stages, DeepSeek/cheap compresses
+the mission artifacts into `handoff.context-summary.<stage>.json` so Kimi and
+Claude receive cleaner context with lower token waste. The `claude_review`
+stage calls `claude --print`, stores
 `taste.validation.raw.md`, writes `taste.validation.json`, and blocks deploy
 unlock if the review fails its threshold. The `kimi_implementation` stage also
 calls the live design route by default through `router-ask --purpose design`,

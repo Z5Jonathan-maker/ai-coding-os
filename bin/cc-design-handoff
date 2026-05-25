@@ -54,8 +54,8 @@ function run(cmd, cmdArgs, options = {}) {
   return spawnSync(cmd, cmdArgs, {
     cwd: options.cwd || root,
     encoding: 'utf8',
-    timeout: options.timeout || 30000,
-    maxBuffer: 1024 * 1024 * 4,
+      timeout: options.timeout || 30000,
+      maxBuffer: options.maxBuffer || 1024 * 1024 * 4,
     env: { ...process.env, DOTFILES: root, ...(options.env || {}) },
   });
 }
@@ -173,6 +173,70 @@ function readArtifact(dir, artifact, max = 12000) {
   const file = artifactPath(dir, artifact);
   if (!fs.existsSync(file)) return '';
   return fs.readFileSync(file, 'utf8').slice(0, max);
+}
+
+function summarizeHandoffContext(dir, handoff, stage, artifacts) {
+  const fallback = {
+    schema: 'ai-coding-os.handoff-context-summary.v1',
+    mission_id: handoff.mission_id,
+    stage,
+    request: handoff.request,
+    generated_at: now(),
+    source: process.env.CC_DESIGN_HANDOFF_OFFLINE === '1' ? 'offline_fixture' : 'raw_fallback',
+    live_lane_call: false,
+    summary: 'Raw artifacts supplied directly because the cheap context lane was unavailable or disabled.',
+    key_constraints: [],
+    artifacts: Object.fromEntries(artifacts.map((name) => [name, readArtifact(dir, name, 4000)])),
+  };
+  const out = path.join(dir, `handoff.context-summary.${stage}.json`);
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1' || has('skip-cheap-summary')) {
+    writeJson(out, fallback);
+    return fallback;
+  }
+
+  const prompt = [
+    'Compress these handoff artifacts for an expensive specialist lane. Return only valid JSON.',
+    '',
+    'Required JSON shape:',
+    '{"schema":"ai-coding-os.handoff-context-summary.v1","summary":"...","key_constraints":["..."],"visual_contract":["..."],"implementation_inputs":["..."],"risks":["..."]}',
+    '',
+    `Mission: ${handoff.mission_id}`,
+    `Stage: ${stage}`,
+    `Request: ${handoff.request}`,
+    '',
+    ...artifacts.flatMap((artifact) => [
+      `${artifact}:`,
+      readArtifact(dir, artifact),
+      '',
+    ]),
+  ].join('\n');
+
+  const res = run('router-ask', ['--purpose', 'cheap', '--json', prompt], { timeout: 120000, maxBuffer: 1024 * 1024 * 8 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, `handoff.context-summary.${stage}.raw.md`), `${raw}\n`);
+  if (res.status !== 0) {
+    fallback.error = raw || `router-ask cheap exited ${res.status}`;
+    writeJson(out, fallback);
+    return fallback;
+  }
+  const parsed = extractJson(raw);
+  const text = parsed?.text || parsed?.result || parsed?.output || raw;
+  const inner = typeof text === 'string' ? extractJson(text) : text;
+  const summary = inner && typeof inner === 'object' ? inner : {
+    schema: 'ai-coding-os.handoff-context-summary.v1',
+    summary: String(text || raw).slice(0, 4000),
+    key_constraints: [],
+  };
+  summary.schema = summary.schema || 'ai-coding-os.handoff-context-summary.v1';
+  summary.mission_id = handoff.mission_id;
+  summary.stage = stage;
+  summary.request = handoff.request;
+  summary.generated_at = now();
+  summary.source = 'router-ask-cheap';
+  summary.live_lane_call = true;
+  summary.raw_output_artifact = `handoff.context-summary.${stage}.raw.md`;
+  writeJson(out, summary);
+  return summary;
 }
 
 function writeTinyPng(file) {
@@ -1032,6 +1096,11 @@ function offlineDesignDna(handoff) {
 
 function runDesignDnaExtraction(dir, handoff) {
   if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, dna: offlineDesignDna(handoff) };
+  const contextSummary = summarizeHandoffContext(dir, handoff, 'design_dna', [
+    'creative.brief.json',
+    'visual.reference.manifest.json',
+    'creative.asset-kit.json',
+  ]);
   const prompt = [
     'You are the design DNA extraction lane for a taste-driven frontend handoff.',
     'Extract implementation-ready design DNA from the mission artifacts. Return only valid JSON.',
@@ -1042,14 +1111,8 @@ function runDesignDnaExtraction(dir, handoff) {
     `Mission: ${handoff.mission_id}`,
     `Request: ${handoff.request}`,
     '',
-    'creative.brief.json:',
-    readArtifact(dir, 'creative.brief.json'),
-    '',
-    'visual.reference.manifest.json:',
-    readArtifact(dir, 'visual.reference.manifest.json'),
-    '',
-    'creative.asset-kit.json:',
-    readArtifact(dir, 'creative.asset-kit.json'),
+    'DeepSeek context summary:',
+    JSON.stringify(contextSummary, null, 2),
   ].join('\n');
   const res = run('claude', ['--print', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });
   const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
@@ -1207,6 +1270,11 @@ function offlineKimiImplementation(handoff) {
 
 function runKimiImplementation(dir, handoff) {
   if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, plan: offlineKimiImplementation(handoff) };
+  const contextSummary = summarizeHandoffContext(dir, handoff, 'kimi_implementation', [
+    'creative.asset-kit.json',
+    'design.dna.json',
+    'next-action.json',
+  ]);
   const prompt = [
     'You are the Kimi design/browser implementation lane for a taste-driven frontend handoff.',
     'Create an implementation plan from the approved artifacts. Return only valid JSON.',
@@ -1217,14 +1285,8 @@ function runKimiImplementation(dir, handoff) {
     `Mission: ${handoff.mission_id}`,
     `Request: ${handoff.request}`,
     '',
-    'creative.asset-kit.json:',
-    readArtifact(dir, 'creative.asset-kit.json'),
-    '',
-    'design.dna.json:',
-    readArtifact(dir, 'design.dna.json'),
-    '',
-    'next-action.json:',
-    readArtifact(dir, 'next-action.json'),
+    'DeepSeek context summary:',
+    JSON.stringify(contextSummary, null, 2),
   ].join('\n');
 
   const res = run('router-ask', ['--purpose', 'design', '--json', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });
@@ -1255,6 +1317,12 @@ function runKimiImplementation(dir, handoff) {
 
 function runClaudeReview(dir, handoff) {
   if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, review: offlineClaudeReview(handoff) };
+  const contextSummary = summarizeHandoffContext(dir, handoff, 'claude_review', [
+    'design-handoff.json',
+    'creative.asset-kit.json',
+    'design.dna.json',
+    'implementation.plan.json',
+  ]);
   const prompt = [
     'You are the Claude review lane for a taste-driven frontend handoff.',
     'Review the mission artifacts below and return only valid JSON.',
@@ -1265,17 +1333,8 @@ function runClaudeReview(dir, handoff) {
     `Mission: ${handoff.mission_id}`,
     `Request: ${handoff.request}`,
     '',
-    'design-handoff.json:',
-    readArtifact(dir, 'design-handoff.json'),
-    '',
-    'creative.asset-kit.json:',
-    readArtifact(dir, 'creative.asset-kit.json'),
-    '',
-    'design.dna.json:',
-    readArtifact(dir, 'design.dna.json'),
-    '',
-    'implementation.plan.json:',
-    readArtifact(dir, 'implementation.plan.json'),
+    'DeepSeek context summary:',
+    JSON.stringify(contextSummary, null, 2),
   ].join('\n');
 
   const res = run('claude', ['--print', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });

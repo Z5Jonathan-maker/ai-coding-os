@@ -573,7 +573,41 @@ class CockpitProvider {
     }));
     const picked = await vscode.window.showQuickPick(phases, { placeHolder: 'Execute design handoff phase' });
     if (!picked) return;
-    this.runHandoffCommand('Creative Handoff Execute', `cc-design-handoff execute --dir ${quote(dir)} --phase ${quote(picked.phase.id)}`);
+    let extra = '';
+    if (picked.phase.id === 'creative_reference') {
+      const action = await vscode.window.showQuickPick([
+        { label: 'Generate Image 2.0 reference', detail: 'Uses cc-image and may spend OpenAI image API credits.', generate: true },
+        { label: 'Write request packet only', detail: 'No paid image call.', generate: false },
+      ], { placeHolder: 'Creative reference action' });
+      if (!action) return;
+      if (action.generate) extra = ' --generate-image --image-api-ok';
+    } else if (picked.phase.id === 'asset_decomposition') {
+      const action = await vscode.window.showQuickPick([
+        { label: 'Extract one visual asset', detail: 'Uses approved visual.target.png and may spend OpenAI image API credits.', extract: true },
+        { label: 'Write asset request packet only', detail: 'No paid image call.', extract: false },
+      ], { placeHolder: 'Asset decomposition action' });
+      if (!action) return;
+      if (action.extract) {
+        const asset = await vscode.window.showInputBox({
+          prompt: 'Asset id to extract',
+          placeHolder: 'hero-background',
+          value: 'hero-background',
+          ignoreFocusOut: true,
+        });
+        if (!asset) return;
+        extra = ` --extract-asset ${quote(asset)} --image-api-ok`;
+      } else {
+        extra = ' --extract-asset hero-background';
+      }
+    } else if (picked.phase.id === 'tel_deploy') {
+      const deployment = await vscode.window.showInputBox({
+        prompt: 'Vercel deployment URL or id for TEL verification',
+        placeHolder: 'project-git-sha.vercel.app',
+        ignoreFocusOut: true,
+      });
+      if (deployment) extra = ` --live-tel --deployment ${quote(deployment)}`;
+    }
+    this.runHandoffCommand('Creative Handoff Execute', `cc-design-handoff execute --dir ${quote(dir)} --phase ${quote(picked.phase.id)}${extra}`);
   }
 
   async pickDesignHandoffDir() {

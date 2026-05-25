@@ -8,6 +8,7 @@ const { spawnSync } = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
+const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'status', 'approve'].includes(args[0]) ? args[0] : 'create';
 
 function has(name) {
   return args.includes(`--${name}`);
@@ -21,7 +22,7 @@ function value(name, fallback = '') {
 function promptArgs() {
   const skip = new Set(['--out-dir', '--title']);
   const out = [];
-  for (let i = 0; i < args.length; i += 1) {
+  for (let i = subcommand === 'create' && args[0] === 'create' ? 1 : 0; i < args.length; i += 1) {
     if (skip.has(args[i])) i += 1;
     else if (!args[i].startsWith('--')) out.push(args[i]);
   }
@@ -96,6 +97,57 @@ function artifactsFor(dir) {
     timeline: path.join(dir, 'agent.timeline.json'),
     proofBundle: path.join(dir, 'proof.bundle.json'),
   };
+}
+
+function missionDir() {
+  const dir = value('dir', value('out-dir', ''));
+  if (!dir) {
+    console.error('cc-design-handoff: --dir required');
+    process.exit(2);
+  }
+  return path.resolve(dir);
+}
+
+function loadMission(dir) {
+  const files = artifactsFor(dir);
+  for (const file of [files.handoff, files.timeline, files.proofBundle]) {
+    if (!fs.existsSync(file)) {
+      console.error(`cc-design-handoff: missing ${path.basename(file)} in ${dir}`);
+      process.exit(1);
+    }
+  }
+  return {
+    files,
+    handoff: readJson(files.handoff),
+    timeline: readJson(files.timeline),
+    proof: readJson(files.proofBundle),
+  };
+}
+
+function phaseById(handoff, id) {
+  const phase = (handoff.phases || []).find((item) => item.id === id);
+  if (!phase) {
+    console.error(`cc-design-handoff: unknown phase ${id}`);
+    process.exit(2);
+  }
+  return phase;
+}
+
+function appendTimeline(files, timeline, entry) {
+  timeline.events.push(entry);
+  writeJson(files.timeline, timeline);
+  const validate = run(path.join(root, 'bin', 'cc-mission-events'), ['validate', '--file', files.timeline]);
+  if (validate.status !== 0) {
+    console.error(`${validate.stdout || ''}${validate.stderr || ''}`.trim());
+    process.exit(1);
+  }
+}
+
+function nextActionFor(handoff) {
+  const active = (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'));
+  if (active) return `Continue ${active.id} through ${active.owner_lane}.`;
+  const blocked = (handoff.phases || []).find((phase) => phase.status.startsWith('blocked_'));
+  return blocked ? `Resolve blocker for ${blocked.id}: ${blocked.status}.` : 'All handoff phases are approved or completed.';
 }
 
 function createHandoff() {
@@ -267,6 +319,32 @@ function check() {
     for (const stage of ['creative.reference.requested', 'approval.requested']) {
       if (!stages.includes(stage)) throw new Error(`missing event stage ${stage}`);
     }
+    const status = run(path.join(root, 'bin', 'cc-design-handoff'), ['status', '--dir', dir], { timeout: 30000 });
+    if (status.status !== 0 || !/Status: design-handoff-status-ready/.test(status.stdout)) {
+      throw new Error(`status failed: ${status.stdout || status.stderr}`);
+    }
+    const approval = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'approve',
+      '--dir',
+      dir,
+      '--phase',
+      'creative_reference',
+      '--artifact',
+      'visual.target.png',
+      '--note',
+      'Reference approved for asset decomposition',
+    ], { timeout: 30000 });
+    if (approval.status !== 0 || !/Status: design-handoff-approved/.test(approval.stdout)) {
+      throw new Error(`approval failed: ${approval.stdout || approval.stderr}`);
+    }
+    const approved = readJson(path.join(dir, 'design-handoff.json'));
+    if (phaseById(approved, 'creative_reference').status !== 'approved') throw new Error('creative_reference not approved');
+    if (phaseById(approved, 'asset_decomposition').status !== 'awaiting_work') throw new Error('asset_decomposition not unlocked');
+    if (phaseById(approved, 'design_dna').status !== 'awaiting_work') throw new Error('design_dna not unlocked');
+    const approvedTimeline = readJson(path.join(dir, 'agent.timeline.json'));
+    if (!approvedTimeline.events.some((item) => item.stage === 'creative.reference.approved')) {
+      throw new Error('approval event not appended');
+    }
   } catch (err) {
     console.error(`cc-design-handoff check failed: ${err.message}`);
     process.exit(1);
@@ -276,5 +354,86 @@ function check() {
   console.log('Status: design-handoff-check-ready');
 }
 
+function showStatus() {
+  const dir = missionDir();
+  const { handoff, timeline, proof } = loadMission(dir);
+  if (has('json')) {
+    console.log(JSON.stringify({ handoff, event_count: timeline.events.length, proof }, null, 2));
+    return;
+  }
+  console.log('# Design Handoff Status\n');
+  console.log(`Mission: ${handoff.mission_id}`);
+  console.log(`Title: ${handoff.title}`);
+  console.log(`Status: ${handoff.status}`);
+  console.log(`Current gate: ${handoff.current_gate}`);
+  console.log('\n## Phases\n');
+  for (const phase of handoff.phases || []) {
+    console.log(`- ${phase.id}: ${phase.status} (${phase.owner_lane})`);
+  }
+  console.log(`\nEvents: ${timeline.events.length}`);
+  console.log(`Next: ${proof.next_required_action || nextActionFor(handoff)}`);
+  console.log('\nStatus: design-handoff-status-ready');
+}
+
+function approvePhase() {
+  const dir = missionDir();
+  const phaseId = value('phase', 'creative_reference');
+  const artifact = value('artifact', '');
+  const note = value('note', `${phaseId} approved`);
+  const { files, handoff, timeline, proof } = loadMission(dir);
+  const phase = phaseById(handoff, phaseId);
+  phase.status = 'approved';
+  if (artifact) phase.approved_artifact = artifact;
+  phase.approved_at = now();
+  phase.approval_note = note;
+
+  const unlocks = {
+    creative_reference: ['asset_decomposition', 'design_dna'],
+    asset_decomposition: ['kimi_implementation'],
+    design_dna: ['kimi_implementation'],
+    kimi_implementation: ['claude_review'],
+    claude_review: ['tel_deploy'],
+  };
+  for (const id of unlocks[phaseId] || []) {
+    const next = phaseById(handoff, id);
+    if (next.status.startsWith('blocked_')) next.status = 'awaiting_work';
+  }
+
+  const pending = (handoff.phases || []).find((item) => !['approved', 'completed'].includes(item.status));
+  handoff.status = pending ? `awaiting_${pending.id}` : 'complete';
+  handoff.current_gate = pending?.approval_gate || nextActionFor(handoff);
+
+  proof.status = handoff.status;
+  proof.verdict = handoff.status === 'complete' ? 'ready_for_final_release_review' : 'not_shippable_until_remaining_phases_complete';
+  proof.next_required_action = handoff.current_gate;
+
+  writeJson(files.handoff, handoff);
+  writeJson(files.proofBundle, proof);
+  const stage = {
+    creative_reference: 'creative.reference.approved',
+    asset_decomposition: 'asset.approved',
+    design_dna: 'design.dna.extracted',
+    kimi_implementation: 'implementation.completed',
+    claude_review: 'taste.validated',
+    tel_deploy: 'deploy.completed',
+  }[phaseId] || 'approval.granted';
+  appendTimeline(files, timeline, event(handoff.mission_id, stage, note, {
+    phase: phaseId,
+    artifact: artifact || null,
+  }, artifact ? [artifact] : ['design-handoff.json'], phase.owner_lane));
+
+  if (has('json')) {
+    console.log(JSON.stringify({ schema: 'ai-coding-os.design-handoff-approval.v1', mission_id: handoff.mission_id, phase: phaseId, status: handoff.status }, null, 2));
+  } else {
+    console.log(`# Approved ${phaseId}\n`);
+    console.log(`Mission: ${handoff.mission_id}`);
+    console.log(`Status: ${handoff.status}`);
+    console.log(`Next: ${proof.next_required_action}`);
+    console.log('\nStatus: design-handoff-approved');
+  }
+}
+
 if (has('check')) check();
+else if (subcommand === 'status') showStatus();
+else if (subcommand === 'approve') approvePhase();
 else createHandoff();

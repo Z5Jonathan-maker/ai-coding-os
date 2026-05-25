@@ -22,6 +22,7 @@
     "onCommand:aiSystemCockpit.designHandoffStatus",
     "onCommand:aiSystemCockpit.designHandoffContinue",
     "onCommand:aiSystemCockpit.designHandoffApprove",
+    "onCommand:aiSystemCockpit.designHandoffExecute",
     "onView:aiSystemCockpit.dashboard"
   ],
   "main": "./extension.js",
@@ -39,6 +40,7 @@
       { "command": "aiSystemCockpit.designHandoffStatus", "title": "AI Cockpit: Creative Handoff Status" },
       { "command": "aiSystemCockpit.designHandoffContinue", "title": "AI Cockpit: Creative Handoff Continue" },
       { "command": "aiSystemCockpit.designHandoffApprove", "title": "AI Cockpit: Creative Handoff Approve Phase" },
+      { "command": "aiSystemCockpit.designHandoffExecute", "title": "AI Cockpit: Creative Handoff Execute Phase" },
       { "command": "aiSystemCockpit.researchExtract", "title": "AI Cockpit: Research / Extract" },
       { "command": "aiSystemCockpit.savePlan", "title": "AI Cockpit: Save Plan" },
       { "command": "aiSystemCockpit.reviewDiff", "title": "AI Cockpit: Review Diff" },
@@ -107,6 +109,7 @@
         { "command": "aiSystemCockpit.designHandoffStatus" },
         { "command": "aiSystemCockpit.designHandoffContinue" },
         { "command": "aiSystemCockpit.designHandoffApprove" },
+        { "command": "aiSystemCockpit.designHandoffExecute" },
         { "command": "aiSystemCockpit.researchExtract" },
         { "command": "aiSystemCockpit.savePlan" },
         { "command": "aiSystemCockpit.reviewDiff" },

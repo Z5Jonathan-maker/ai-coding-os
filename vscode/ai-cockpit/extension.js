@@ -89,6 +89,7 @@ function activate(context) {
     command('aiSystemCockpit.designHandoffStatus', () => provider.designHandoffStatus()),
     command('aiSystemCockpit.designHandoffContinue', () => provider.designHandoffContinue()),
     command('aiSystemCockpit.designHandoffApprove', () => provider.designHandoffApprove()),
+    command('aiSystemCockpit.designHandoffExecute', () => provider.designHandoffExecute()),
     command('aiSystemCockpit.fiveMinuteDemo', () => provider.runInlineStream('Five-Minute Demo', COMMANDS.fiveMinuteDemo)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
@@ -478,6 +479,7 @@ class CockpitProvider {
       designHandoffStatus: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffStatus'),
       designHandoffContinue: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffContinue'),
       designHandoffApprove: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffApprove'),
+      designHandoffExecute: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoffExecute'),
       researchExtract: () => vscode.commands.executeCommand('aiSystemCockpit.researchExtract'),
       savePlan: () => vscode.commands.executeCommand('aiSystemCockpit.savePlan'),
       reviewDiff: () => vscode.commands.executeCommand('aiSystemCockpit.reviewDiff'),
@@ -558,6 +560,20 @@ class CockpitProvider {
     });
     if (note === undefined) return;
     this.runHandoffCommand('Creative Handoff Approve', `cc-design-handoff approve --dir ${quote(dir)} --phase ${quote(picked.phase.id)} --artifact ${quote(artifact)} --note ${quote(note)}`);
+  }
+
+  async designHandoffExecute() {
+    const dir = await this.pickDesignHandoffDir();
+    if (!dir) return;
+    const handoff = this.readDesignHandoff(dir);
+    const phases = (handoff.phases || []).map((phase) => ({
+      label: phase.id,
+      description: `${phase.status} · ${phase.owner_lane}`,
+      phase,
+    }));
+    const picked = await vscode.window.showQuickPick(phases, { placeHolder: 'Execute design handoff phase' });
+    if (!picked) return;
+    this.runHandoffCommand('Creative Handoff Execute', `cc-design-handoff execute --dir ${quote(dir)} --phase ${quote(picked.phase.id)}`);
   }
 
   async pickDesignHandoffDir() {
@@ -900,6 +916,7 @@ class CockpitProvider {
         <button class="tool-button" data-command="reviewDiff"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H8l-3 3V5Z"/><path d="M9 9h6M9 12h4"/></svg><span>Review</span></button>
         <button class="tool-button" data-command="designHandoffContinue"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z"/></svg><span>Handoff</span></button>
         <button class="tool-button" data-command="designHandoffApprove"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><span>Approve</span></button>
+        <button class="tool-button" data-command="designHandoffExecute"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h9"/><path d="m11 5 7 7-7 7"/></svg><span>Execute</span></button>
       </div>
       <label class="check">
         <input id="includeContext" type="checkbox" checked>

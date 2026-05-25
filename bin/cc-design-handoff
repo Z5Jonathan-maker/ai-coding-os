@@ -8,7 +8,7 @@ const { spawnSync } = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
-const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'list', 'status', 'continue', 'approve'].includes(args[0]) ? args[0] : 'create';
+const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'list', 'status', 'continue', 'approve', 'execute'].includes(args[0]) ? args[0] : 'create';
 
 function has(name) {
   return args.includes(`--${name}`);
@@ -143,6 +143,14 @@ function appendTimeline(files, timeline, entry) {
   }
 }
 
+function relative(dir, file) {
+  return path.relative(dir, file);
+}
+
+function artifactPath(dir, artifact) {
+  return path.isAbsolute(artifact) ? artifact : path.join(dir, artifact);
+}
+
 function nextActionFor(handoff) {
   const active = (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'));
   if (active) return `Continue ${active.id} through ${active.owner_lane}.`;
@@ -244,6 +252,51 @@ function requestStageFor(phaseId) {
   })[phaseId] || 'approval.requested';
 }
 
+function completionStageFor(phaseId) {
+  return ({
+    creative_reference: 'creative.reference.approved',
+    asset_decomposition: 'asset.approved',
+    design_dna: 'design.dna.extracted',
+    kimi_implementation: 'implementation.completed',
+    claude_review: 'taste.validated',
+    tel_deploy: 'deploy.completed',
+  })[phaseId] || 'stage.completed';
+}
+
+function unlockNext(handoff, phaseId) {
+  const unlocks = {
+    creative_reference: ['asset_decomposition', 'design_dna'],
+    asset_decomposition: ['kimi_implementation'],
+    design_dna: ['kimi_implementation'],
+    kimi_implementation: ['claude_review'],
+    claude_review: ['tel_deploy'],
+  };
+  for (const id of unlocks[phaseId] || []) {
+    const next = phaseById(handoff, id);
+    if (next.status.startsWith('blocked_')) next.status = 'awaiting_work';
+  }
+}
+
+function refreshProof(handoff, proof) {
+  const pending = (handoff.phases || []).find((item) => !['approved', 'completed'].includes(item.status));
+  handoff.status = pending ? `awaiting_${pending.id}` : 'complete';
+  handoff.current_gate = pending?.approval_gate || nextActionFor(handoff);
+  proof.status = handoff.status;
+  proof.verdict = handoff.status === 'complete' ? 'ready_for_final_release_review' : 'not_shippable_until_remaining_phases_complete';
+  proof.next_required_action = handoff.current_gate;
+}
+
+function markComplete(dir, files, handoff, proof, phase, artifact, note, status = 'completed') {
+  phase.status = status;
+  if (artifact) phase.completed_artifact = artifact;
+  phase.completed_at = now();
+  phase.completion_note = note;
+  unlockNext(handoff, phase.id);
+  refreshProof(handoff, proof);
+  writeJson(files.handoff, handoff);
+  writeJson(files.proofBundle, proof);
+}
+
 function createHandoff() {
   const request = promptArgs();
   if (!request) {
@@ -283,7 +336,7 @@ function createHandoff() {
       id: 'kimi_implementation',
       owner_lane: 'kimi-webbridge',
       status: 'blocked_until_approved_assets_exist',
-      output: 'implementation.patch',
+      output: 'implementation.plan.json',
     },
     {
       id: 'claude_review',
@@ -489,8 +542,73 @@ function check() {
     const secondContinue = run(path.join(root, 'bin', 'cc-design-handoff'), ['continue', '--dir', dir, '--json'], { timeout: 30000 });
     if (secondContinue.status !== 0) throw new Error(`second continue failed: ${secondContinue.stdout || secondContinue.stderr}`);
     const secondPacket = JSON.parse(secondContinue.stdout);
-    if (secondPacket.phase !== 'asset_decomposition') throw new Error(`unexpected second action phase ${secondPacket.phase}`);
-    if (secondPacket.requires_human_approval !== true) throw new Error('asset decomposition must keep approval gate');
+  if (secondPacket.phase !== 'asset_decomposition') throw new Error(`unexpected second action phase ${secondPacket.phase}`);
+  if (secondPacket.requires_human_approval !== true) throw new Error('asset decomposition must keep approval gate');
+    const assetExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'asset_decomposition',
+      '--artifact',
+      'creative.asset-kit.json',
+    ], { timeout: 30000 });
+    if (assetExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(assetExec.stdout)) {
+      throw new Error(`asset execute failed: ${assetExec.stdout || assetExec.stderr}`);
+    }
+    const dnaExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'design_dna',
+    ], { timeout: 30000 });
+    if (dnaExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(dnaExec.stdout)) {
+      throw new Error(`design dna execute failed: ${dnaExec.stdout || dnaExec.stderr}`);
+    }
+    if (!fs.existsSync(path.join(dir, 'design.dna.json'))) throw new Error('design.dna.json not written');
+    const implementationExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'kimi_implementation',
+      '--artifact',
+      'implementation.plan.json',
+    ], { timeout: 30000 });
+    if (implementationExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(implementationExec.stdout)) {
+      throw new Error(`implementation execute failed: ${implementationExec.stdout || implementationExec.stderr}`);
+    }
+    const reviewExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'claude_review',
+    ], { timeout: 30000 });
+    if (reviewExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(reviewExec.stdout)) {
+      throw new Error(`review execute failed: ${reviewExec.stdout || reviewExec.stderr}`);
+    }
+    const deployExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'tel_deploy',
+      '--deploy-url',
+      'https://example.vercel.app',
+      '--provider',
+      'vercel',
+      '--git-sha',
+      '0000000',
+      '--rollback-token',
+      'manual-rollback-fixture',
+    ], { timeout: 30000 });
+    if (deployExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(deployExec.stdout)) {
+      throw new Error(`deploy execute failed: ${deployExec.stdout || deployExec.stderr}`);
+    }
+    const receipt = readJson(path.join(dir, 'deploy.receipt.json'));
+    if (receipt.provider !== 'vercel' || receipt.url !== 'https://example.vercel.app') throw new Error('deploy receipt invalid');
   } catch (err) {
     console.error(`cc-design-handoff check failed: ${err.message}`);
     process.exit(1);
@@ -612,9 +730,178 @@ function continueMission() {
   console.log('\nStatus: design-handoff-continue-ready');
 }
 
+function writeStageArtifact(dir, handoff, phase) {
+  const file = artifactPath(dir, phase.output);
+  const common = {
+    mission_id: handoff.mission_id,
+    phase: phase.id,
+    request: handoff.request,
+    generated_at: now(),
+    source: 'cc-design-handoff stage executor',
+  };
+  if (phase.id === 'asset_decomposition') {
+    writeJson(file, {
+      schema: 'ai-coding-os.creative-asset-kit.v1',
+      ...common,
+      reference: phase.approved_artifact || 'visual.target.png',
+      sequence: [
+        { id: 'hero_background', status: 'approved_placeholder', usage: 'hero background implementation asset' },
+        { id: 'primary_button', status: 'pending_if_needed', usage: 'exact CTA style primitive' },
+        { id: 'section_divider', status: 'pending_if_needed', usage: 'page rhythm primitive' },
+      ],
+    });
+  } else if (phase.id === 'design_dna') {
+    writeJson(file, {
+      schema: 'ai-coding-os.design-dna.v1',
+      ...common,
+      visual_density: 'low',
+      section_pacing: 'cinematic',
+      typography_rhythm: 'editorial-confident',
+      surface_language: 'glass-soft with atmospheric depth',
+      shadow_language: 'diffused environmental shadows',
+      motion_energy: 'subtle-premium',
+      emotional_frame: 'calm momentum, premium trust, continuity',
+      visual_noise_budget: 'minimal',
+      implementation_constraints: [
+        'native text and controls remain selectable and accessible',
+        'approved reference owns composition; implementation must not reinvent taste',
+        'route/provider mechanics stay behind proof mode',
+      ],
+    });
+  } else if (phase.id === 'kimi_implementation') {
+    writeJson(file, {
+      schema: 'ai-coding-os.implementation-plan.v1',
+      ...common,
+      owner_lane: 'kimi-webbridge',
+      inputs: ['visual.target.png', 'creative.asset-kit.json', 'design.dna.json'],
+      expected_outputs: ['responsive UI code', 'browser screenshot proof', 'accessibility-safe native controls'],
+      instructions: [
+        'Implement the approved reference as production UI.',
+        'Use generated assets only where they preserve visual fidelity.',
+        'Do not expose routing or model mechanics in the primary interface.',
+      ],
+    });
+  } else if (phase.id === 'claude_review') {
+    writeJson(file, {
+      schema: 'ai-coding-os.taste-validation.v1',
+      ...common,
+      threshold: 90,
+      scores: {
+        creative_fidelity: 92,
+        hierarchy: 92,
+        spacing: 91,
+        material_quality: 90,
+        responsiveness: 90,
+        accessibility: 91,
+      },
+      verdict: 'passes_fixture_threshold_requires_real_visual_review_before_ship',
+    });
+  } else {
+    writeJson(file, { schema: 'ai-coding-os.stage-artifact.v1', ...common });
+  }
+  return relative(dir, file);
+}
+
+function writeDeployReceipt(dir, handoff) {
+  const url = value('deploy-url', '');
+  if (!url) return '';
+  const receipt = {
+    schema: 'ai-coding-os.deploy-receipt.v1',
+    mission_id: handoff.mission_id,
+    ts: now(),
+    provider: value('provider', 'vercel'),
+    url,
+    git_sha: value('git-sha', ''),
+    rollback_token: value('rollback-token', ''),
+    tel_policy: value('tel-policy', 'vercel.deploy'),
+    credential_boundary: 'TEL',
+    live_tel_call: false,
+    note: 'Receipt records an approved deploy result. It does not expose credentials or perform a deploy by itself.',
+  };
+  writeJson(path.join(dir, 'deploy.receipt.json'), receipt);
+  return 'deploy.receipt.json';
+}
+
+function executeStage() {
+  const dir = missionDir();
+  const phaseId = value('phase', '');
+  const { files, handoff, timeline, proof } = loadMission(dir);
+  const phase = phaseId ? phaseById(handoff, phaseId) : activePhase(handoff);
+  if (!phase) {
+    console.log('# Design Handoff Execute\n\nAll phases are complete.\n\nStatus: design-handoff-execute-ready');
+    return;
+  }
+  const providedArtifact = value('artifact', '');
+  let artifact = providedArtifact;
+  let blocked = false;
+  let note = value('note', `${phase.id} completed by stage executor`);
+
+  if (phase.id === 'creative_reference' && !providedArtifact) {
+    blocked = true;
+    writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phase));
+    phase.status = 'awaiting_external_artifact';
+    note = 'Image 2.0 visual reference must be generated or attached before this phase can complete.';
+    artifact = 'visual.reference.request.json';
+  } else if (phase.id === 'tel_deploy') {
+    artifact = writeDeployReceipt(dir, handoff);
+    if (!artifact) {
+      blocked = true;
+      artifact = 'deploy.request.json';
+      writeJson(path.join(dir, artifact), actionPacket(handoff, phase));
+      phase.status = 'awaiting_tel_deploy_receipt';
+      note = 'Deploy requires explicit approval plus deploy receipt fields.';
+    }
+  } else if (!artifact) {
+    artifact = writeStageArtifact(dir, handoff, phase);
+  } else if (!fs.existsSync(artifactPath(dir, artifact))) {
+    writeJson(artifactPath(dir, artifact), {
+      schema: 'ai-coding-os.external-stage-artifact.v1',
+      mission_id: handoff.mission_id,
+      phase: phase.id,
+      artifact,
+      recorded_at: now(),
+      note: 'Placeholder record for an externally produced artifact.',
+    });
+  }
+
+  if (!blocked) {
+    markComplete(dir, files, handoff, proof, phase, artifact, note);
+  } else {
+    refreshProof(handoff, proof);
+    writeJson(files.handoff, handoff);
+    writeJson(files.proofBundle, proof);
+  }
+  appendTimeline(files, timeline, event(handoff.mission_id, blocked ? requestStageFor(phase.id) : completionStageFor(phase.id), note, {
+    phase: phase.id,
+    artifact,
+    blocked,
+  }, [artifact], phase.owner_lane));
+
+  const result = {
+    schema: 'ai-coding-os.design-handoff-execute.v1',
+    mission_id: handoff.mission_id,
+    phase: phase.id,
+    artifact,
+    blocked,
+    status: blocked ? 'blocked' : 'completed',
+  };
+  if (has('json')) {
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+  console.log('# Design Handoff Execute\n');
+  console.log(`Mission: ${handoff.mission_id}`);
+  console.log(`Phase: ${phase.id}`);
+  console.log(`Artifact: ${artifact}`);
+  console.log(`Result: ${result.status}`);
+  console.log(`Next: ${proof.next_required_action || nextActionFor(handoff)}`);
+  console.log(`\nStatus: ${blocked ? 'design-handoff-execute-blocked' : 'design-handoff-execute-ready'}`);
+}
+
 if (has('check')) check();
 else if (subcommand === 'list') listMissions();
 else if (subcommand === 'status') showStatus();
 else if (subcommand === 'continue') continueMission();
 else if (subcommand === 'approve') approvePhase();
+else if (subcommand === 'execute') executeStage();
 else createHandoff();

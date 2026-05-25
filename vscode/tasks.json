@@ -118,6 +118,13 @@
       "problemMatcher": []
     },
     {
+      "label": "AI: Creative Handoff Execute",
+      "type": "shell",
+      "command": "cc-design-handoff",
+      "args": ["execute", "--dir", "${input:designMissionDir}", "--phase", "${input:designPhase}"],
+      "problemMatcher": []
+    },
+    {
       "label": "AI: Research / Extract",
       "type": "shell",
       "command": "router-ask",

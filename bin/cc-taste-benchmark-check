@@ -6,6 +6,7 @@ const path = require('path');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const benchmarkPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'taste.benchmark.json');
+const competitivePath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'competitive.benchmark.json');
 let pass = 0;
 let fail = 0;
 
@@ -35,6 +36,7 @@ console.log('# Taste Benchmark Check\n');
 console.log(`Root: ${root}`);
 
 expect(fs.existsSync(benchmarkPath), 'taste benchmark fixture exists');
+expect(fs.existsSync(competitivePath), 'competitive benchmark fixture exists');
 const benchmark = JSON.parse(fs.readFileSync(benchmarkPath, 'utf8'));
 expect(benchmark.schema === 'ai-coding-os.taste-benchmark.v1', 'schema valid');
 expect(Number.isFinite(benchmark.threshold) && benchmark.threshold >= 80 && benchmark.threshold <= 100, 'threshold valid');
@@ -68,6 +70,20 @@ const doctrine = fs.readFileSync(path.join(root, 'docs', 'TASTE-DRIVEN-FRONTEND-
 for (const phrase of ['creative reference', 'design DNA', 'browser proof', 'taste validation']) {
   expect(doctrine.includes(phrase), `doctrine names ${phrase}`);
 }
+
+const competitive = JSON.parse(fs.readFileSync(competitivePath, 'utf8'));
+expect(competitive.schema === 'ai-coding-os.competitive-frontend-benchmark.v1', 'competitive benchmark schema valid');
+expect(competitive.same_brief_required === true, 'competitive benchmark requires same brief');
+for (const tool of ['ai-coding-os', 'v0', 'lovable', 'bolt']) {
+  const entry = (competitive.entries || []).find((item) => item.tool === tool);
+  expect(Boolean(entry), `competitive entry exists: ${tool}`);
+  if (entry) {
+    expect(Number.isFinite(entry.score) && entry.score >= 0 && entry.score <= 100, `competitive score valid: ${tool}`);
+    expect(Boolean(entry.artifact) && fs.existsSync(path.join(root, entry.artifact)), `competitive artifact exists: ${tool}`);
+    expect(Array.isArray(entry.evidence) && entry.evidence.length >= 2, `competitive evidence present: ${tool}`);
+  }
+}
+expect((competitive.honesty_constraints || []).some((item) => /not a live SaaS benchmark/i.test(item)), 'competitive benchmark has honesty constraint');
 
 console.log('\n## Score\n');
 console.log(`weighted=${score.toFixed(1)} threshold=${benchmark.threshold}`);

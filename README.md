@@ -1,237 +1,109 @@
-# AI Coding Operating System
+# Taste-Driven Frontend Handoff
 
 [![Public CI](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml/badge.svg)](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml)
 
-This repo is the local control plane for a multi-model AI coding system: a VS
-Code cockpit, deterministic router, model/tool lanes, health gates, permission
-surfaces, browser proof, and rebuildable macOS dotfiles.
+This repo packages an opinionated local AI workspace for one focused workflow:
 
-The product promise is simple: developers should not need to decide which AI
-tool to use first. They work from one cockpit; the system routes by capability,
-cost, trust boundary, and verification needs.
+```text
+describe the business outcome
+  -> generate or attach an approved visual reference
+  -> extract implementation assets
+  -> preserve design DNA
+  -> implement through the UI/browser lane
+  -> review taste and accessibility
+  -> record deploy proof
+```
 
-## Why This Exists
+The wedge is not "another chat IDE." It is a handoff system for preserving
+premium creative direction through production frontend implementation.
 
-Single-model IDE assistants are useful, but they collapse too many jobs into
-one lane. This system separates responsibilities:
+## Why It Exists
 
-| Lane | Role |
-|---|---|
-| Codex | Engineering execution, code edits, local verification |
-| Claude | Architecture, hard debugging, security/compliance review |
-| Kimi | Browser, UI, screenshots, visual/operator work |
-| DeepSeek | Cheap extraction, transforms, summaries, bulk passes |
-| ChatGPT image | Image generation/editing |
-| TEL | Credentialed actions with audit boundaries |
-| Playwright | Clean browser fallback and smoke tests |
+Most AI coding tools can generate UI. Fewer preserve taste. This system treats
+creative direction as a first-class execution layer:
 
-The result is not another chat wrapper. It is an AI coding operating system:
-cockpit, router, receipts, permissions, memory, browser proof, and packaging.
+- Image 2.0 / ChatGPT owns static visual direction and canonical assets.
+- Kimi owns browser/UI implementation from approved references.
+- Codex owns local engineering, checks, packaging, and proof.
+- Claude owns hard review, architecture, and taste/quality critique.
+- DeepSeek handles cheap transforms and extraction work.
+- TEL records credentialed deploy actions behind an audit boundary.
 
-## Current Product Status
+The user-facing idea is simple: approve the visual target first, then keep every
+later stage accountable to that target.
 
-- Internal system: strong and actively usable.
-- Public product: in a four-week hardening cycle.
-- Competitive audit: `audits/2026-05-23-competitive-ai-coding-audit.md`
-- Master plan: `docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`
-- Done-state: `.ai/ISA-sellable-open-source-ai-coding-system.md`
-- Product contract: `docs/PRODUCT-PACKAGING.md`
-- Competitive proof matrix: `docs/SUPERIORITY-MATRIX.md`
-- Extraction tracks: `docs/EXTRACTION-TRACKS.md`
-- Mission kernel: `docs/MISSION-KERNEL.md`
-- Mission events: `docs/MISSION-EVENTS.md`
-- Dogfood sessions: `docs/DOGFOOD-SESSIONS.md`
-- Cockpit state proof: `docs/media/cockpit/states/manifest.json`
-- Cockpit interaction proof: `docs/media/cockpit/interaction/manifest.json`
-- Cockpit visual baseline: `docs/media/cockpit/visual-baseline.json`
-- Six-hour dogfood report: `docs/DOGFOOD-REPORT-2026-05-24.md`
-- Mutating dogfood: `docs/MUTATING-DOGFOOD.md`
-- Mutating dogfood report: `docs/MUTATING-DOGFOOD-REPORT-2026-05-24.md`
-- Public-repo dogfood: `docs/PUBLIC-REPO-DOGFOOD.md`
-- Public-repo dogfood report: `docs/PUBLIC-REPO-DOGFOOD-REPORT-2026-05-24.md`
-- Third-party dogfood: `docs/THIRD-PARTY-DOGFOOD.md`
-- Third-party dogfood report: `docs/THIRD-PARTY-DOGFOOD-REPORT-2026-05-24.md`
-- Agent runtime adapter: `cc-agent-runtime --check`
-- Architecture map: `docs/ARCHITECTURE.md`
-- Evaluator quickstart: `docs/EVALUATOR-QUICKSTART.md`
-- Contribution guide: `CONTRIBUTING.md`
-- Portable CI: `docs/CI.md`
-- Security policy: `SECURITY.md`
-- License: `LICENSE`
-- License/support boundary: `docs/LICENSE-SUPPORT.md`
-- Known limitations: `docs/KNOWN-LIMITATIONS.md`
-- Roadmap: `docs/ROADMAP.md`
-- Release checklist: `docs/RELEASE-CHECKLIST.md`
-- Release notes: `docs/RELEASE-NOTES.md`
-- Release manifest: `docs/RELEASE-MANIFEST.md`
-- Fresh-clone verification: `docs/FRESH-CLONE-VERIFY.md`
-- Provider accounts: `docs/PROVIDER-ACCOUNTS.md`
-- Browser automation boundaries: `docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`
-- Quick demo: `docs/QUICK-DEMO.md`
-- Five-minute demo transcript: `docs/FIVE-MINUTE-DEMO-TRANSCRIPT.md`
-- Cockpit screenshot plan: `docs/COCKPIT-SCREENSHOT-PLAN.md`
+## Main Workflow
 
-## Evaluate In 90 Seconds
+```sh
+cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
+cc-design-handoff list
+cc-design-handoff status --dir .ai/design-handoffs/<mission>
+cc-design-handoff continue --dir .ai/design-handoffs/<mission>
+cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
+```
 
-For a quick human-facing proof, run:
+Each mission writes portable artifacts:
+
+- `creative.brief.json`
+- `route.receipt.json`
+- `design-handoff.json`
+- `agent.timeline.json`
+- `next-action.json`
+- `design.dna.json`
+- `implementation.plan.json`
+- `taste.validation.json`
+- `deploy.receipt.json`
+- `proof.bundle.json`
+
+Credentialed deploys are not performed silently. A deploy result is recorded
+only through an explicit TEL receipt step.
+
+## Proof Commands
+
+Fast proof:
 
 ```sh
 bin/cc-demo-quick
 ```
 
-Expected result:
-
-```text
-Status: quick-demo-ready
-```
-
-This shows representative routing, a public workflow fixture, benchmark proof,
-cockpit smoke, trust gate, and mission continuity without requiring a clean
-working tree.
-
-## Evaluate In 5 Minutes
-
-For a cold reviewer, the shortest serious proof path is:
+Focused wedge proof:
 
 ```sh
-bin/cc-evaluator-check
+bin/cc-design-handoff --check
+bin/cc-frontend-wedge-check
+bin/cc-taste-benchmark-check
+bin/cc-cockpit-webview-smoke
 ```
 
-On the maintainer machine, the full product proof is:
+Maintainer-machine readiness:
 
 ```sh
-cc-verify-product
-cc-ten-readiness
+bin/cc-ai-checks
+bin/cc-product-readiness
 ```
 
-These commands prove the install doctor, source-controlled AI checks, cockpit
-package, public demo fixture, 10-scenario benchmark suite, fresh-clone path,
-and release/readiness gates. The target result is `Status: product-verified`
-and `passed=10 failed=0`.
+The same-brief competitor benchmark lives at
+`fixtures/frontend-wedge/premium-landing/competitive.benchmark.json`. It
+compares this workflow against v0, Lovable, and Bolt as an artifact review. It
+is not a live SaaS benchmark unless fresh competitor outputs are attached.
 
-## Quick Proof
+## VS Code Cockpit
 
-```sh
-cc-verify-product
-cc-provider-capacity
-cc-token-ledger
-```
+The bundled VS Code cockpit exposes:
 
-Expected mature state: product verification is green, every live model lane is
-ready, and token economics are visible.
+- Creative Handoff create/status/continue/approve
+- primary continuation composer
+- permission mode selector
+- route preview
+- review/diff/context attachment
+- readiness and proof surfaces
 
-For focused checks:
+Install/update it through the normal dotfiles installer.
 
-```sh
-cc-ten-readiness
-cc-ai-checks
-cc-superiority-check
-cc-dogfood-session --check
-cc-mutating-dogfood --check
-cc-public-repo-dogfood --check
-cc-third-party-dogfood --check
-cc-agent-runtime --check
-cc-mission-events --check
-cc-mission-kernel --check
-cc-cockpit-webview-smoke
-cc-cockpit-state-proof --check
-cc-cockpit-interaction-proof --check
-cc-cockpit-visual-diff
-cc-benchmark-fixtures
-cc-fresh-clone-check
-cc-public-ci-check
-```
+## Install
 
-`cc-product-readiness` proves the local machine is ready. `cc-release-check`
-proves the distributable release path. `cc-fresh-clone-check` proves a clean
-clone can dry-run install, package, and run the public fixture without mutating a
-temp home. `cc-feedback-law-check` proves Mega Cycle feedback laws are loaded by
-autonomy preflight and exposed through the control plane, using the live
-`AI-SYSTEM-V2` install when present and a committed fixture when evaluating a
-public clone. `cc-ai-checks` runs the source-controlled checks in `.ai/checks/`;
-`cc-trust-profile` validates the repo-local autonomy policy in `.ai/trust.json`,
-`cc-trust-gate` enforces that policy before cockpit routing, and
-`cc-permission-matrix` falls back to that trust profile when private local
-permission files are absent. `cc-token-ledger` reports router economics
-from existing usage telemetry, with a committed fixture fallback for public
-evaluators who do not have the private router log. `cc-route` is the in-tree
-route decision engine backed by `ai-lanes.json`; `cc-router-smoke`, benchmark
-route checks, the Mission Kernel, Agent Runtime, quick demo, and workflow proof
-use it by default instead of private `AI-SYSTEM-V2` fixtures.
-`cc-router-receipt` and `cc-router-metrics` still fall back to committed fixture
-telemetry, so cockpit observability stays explicitly labeled in public clones.
-`cc-provider-capacity` uses live provider probes on the maintainer machine and a
-labeled capacity fixture in public clones. `cc-mission-ledger` provides the
-append-only continuation state used by the cockpit mission surface.
-`cc-cockpit-webview-smoke` proves the packaged cockpit still has required
-continuation/result surfaces and a clean npm audit. `cc-verify-product` is the
-single external-facing proof command that wraps first-run, source checks,
-13-scenario benchmark fixtures, cockpit smoke, package, demo, and fresh-clone validation.
-`cc-demo-quick` is the human-facing proof command for fast product
-comprehension while active development is in progress.
-`cc-superiority-check` keeps competitive claims against OpenHands, Claude Code,
-Cursor, Cline, OpenCode, Kimi, Codex, Windsurf, Devin, Octagents-style swarms,
-and token-router stacks tied to explicit proof commands and known gaps.
-`cc-mission-kernel` is the new mission object spine: mission, route receipt,
-trust decision, cost ledger, proof bundle, and agent timeline.
-`cc-agent-runtime` drives that spine from typed runtime adapters and proves a
-mission can write route, trust, cost, proof, result, and normalized timeline
-artifacts. It supports the default `local_process` adapter plus an opt-in
-temporary `worktree` adapter for isolated execution proof.
-`cc-mission-events` validates, appends, and replays the normalized runtime event
-language so cockpit state is based on durable events, not provider-specific
-logs.
-`cc-cockpit-state-proof` regenerates deterministic screenshots for
-continuation, running, success, blocked, permissions, and route-receipt states.
-`cc-cockpit-interaction-proof` runs the cockpit webview JavaScript in a real
-headless browser and proves keyboard submit, empty/loading/blocked states,
-permission switching, route-diagnostic rendering, and visual-regression
-metadata.
-`cc-cockpit-visual-diff` turns those screenshots into a pass/fail visual gate
-against committed baselines. Intentional visual changes require
-`cc-cockpit-visual-diff --update-baseline`.
-`cc-dogfood-session` runs sustained timed dogfood sessions that create Mission
-Kernel cycles, validate Mission Events, capture logs, and finish with product
-gates.
-`cc-mutating-dogfood` proves the isolated mutating path: failing tests, real
-edits, recovery, review evidence, Mission Events, and commits.
-`cc-public-repo-dogfood` raises that proof to a fresh public clone with a local
-branch, failing test, runtime repair, Mission Events, local commit, and public
-CI gate.
-`cc-third-party-dogfood` moves the mutating proof outside this repository: it
-clones an external public repo, pins upstream, captures a failing test, repairs
-through the runtime, validates Mission Events, commits locally, and reruns the
-third-party test gate.
-`cc-ten-readiness` is stricter: it layers public CI, evaluator checks,
-fresh-clone validation, source-controlled AI checks, feedback-law validation,
-benchmark fixtures, developer-day dogfood, product/release gates, portable
-launch docs, and the documented 10/10 product contract.
-
-The benchmark suite currently covers code fix, cheap extraction, UI design,
-browser proof, security review, long-context review, refactor cleanup, failing
-test repair, image-to-UI handoff, permission-denied trust behavior, and
-source-linked upstream issue replays. The repair, refactor, routing quality,
-and upstream issue fixtures are graded broken-first benchmarks with expected
-patches and final verification. The long-context fixture grades citation and
-top-risk reasoning across multiple files.
-
-## Cockpit Preview
-
-![AI Cockpit readiness preview](docs/media/cockpit/01-readiness.png)
-
-More launch media lives in `docs/media/cockpit/` and is regenerated with
-`cc-cockpit-capture`. Primary cockpit state proofs live in
-`docs/media/cockpit/states/` and are regenerated with
-`cc-cockpit-state-proof`. Interaction proof lives in
-`docs/media/cockpit/interaction/` and is regenerated with
-`cc-cockpit-interaction-proof`. The committed visual baseline lives at
-`docs/media/cockpit/visual-baseline.json` and is enforced by
-`cc-cockpit-visual-diff`.
-
-## Local Install
-
-Current install is optimized for macOS Apple Silicon while the public packaging
-is being hardened.
+Current install target is macOS Apple Silicon.
 
 ```sh
 git clone git@github.com:Z5Jonathan-maker/ai-coding-os.git ~/dotfiles
@@ -241,103 +113,37 @@ brew bundle install --file=~/dotfiles/Brewfile
 ~/dotfiles/install.sh
 ```
 
-`install.sh --dry-run` is non-mutating. It reports required tools, optional AI
-lanes, personal-machine services, planned symlinks, Brewfile drift, and VS Code
-extension drift.
+`install.sh --dry-run` is non-mutating and reports planned symlinks, required
+tools, optional lanes, Brewfile drift, and VS Code extension drift.
 
-## Repository Contents
+## What This Repo Contains
 
-macOS dotfiles and AI-system config are symlinked into `$HOME` via
-`install.sh`.
+- macOS dotfiles and install scripts
+- `ai-lanes.json` and in-tree `cc-route`
+- VS Code cockpit extension under `vscode/ai-cockpit/`
+- design handoff CLI and proof gates under `bin/`
+- fixtures for frontend wedge, taste benchmark, browser proof, and public CI
+- docs for architecture, install, security, limits, and reference studies
 
-## What's tracked
+Detailed docs are intentionally kept out of the README. Start with:
 
-| Source (in repo)              | Symlinked to                  |
-| ----------------------------- | ----------------------------- |
-| `zshrc`                       | `~/.zshrc`                    |
-| `zprofile`                    | `~/.zprofile`                 |
-| `gitconfig`                   | `~/.gitconfig`                |
-| `gitignore_global`            | `~/.gitignore_global`         |
-| `tmux.conf`                   | `~/.tmux.conf`                |
-| `ssh_config`                  | `~/.ssh/config`               |
-| `editorconfig`                | `~/.editorconfig`             |
-| `starship.toml`               | `~/.config/starship.toml`     |
-| `ghostty_config`              | `~/.config/ghostty/config`    |
-| `atuin/config.toml`           | `~/.config/atuin/config.toml` |
-| `git-config/allowed_signers`  | `~/.config/git/allowed_signers` |
-| `hammerspoon/init.lua`        | `~/.hammerspoon/init.lua`     |
-| `claude/CLAUDE.md`            | `~/.claude/CLAUDE.md`         |
-| `claude/settings.json`        | `~/.claude/settings.json`     |
-| `codex/AGENTS.md`             | `~/.Codex/AGENTS.md`          |
-| `vscode/settings.json`        | `~/Library/Application Support/Code/User/settings.json` |
-| `vscode/keybindings.json`     | `~/Library/Application Support/Code/User/keybindings.json` |
-| `vscode/tasks.json`           | `~/Library/Application Support/Code/User/tasks.json` |
-| `vscode/mcp.json`             | `~/Library/Application Support/Code/User/mcp.json` |
-| `vscode/ai-cockpit/`          | `~/.vscode/extensions/z5jonathan.ai-system-cockpit-0.1.0` |
-| `Brewfile`                    | (run `brew bundle install` against it) |
-| `npm-global-packages.txt`     | Small set of npm-only global CLIs restored by `install.sh` |
-| `vscode/extensions.txt`       | VS Code extensions restored by `install.sh` |
+- `docs/TASTE-DRIVEN-FRONTEND-WEDGE.md`
+- `docs/CREATIVE-DIRECTION-KERNEL.md`
+- `docs/ARCHITECTURE.md`
+- `docs/EVALUATOR-QUICKSTART.md`
+- `docs/KNOWN-LIMITATIONS.md`
+- `docs/REFERENCE-INDEX.md`
 
-## Usage
+## Boundaries
 
-```sh
-# Fresh Mac
-git clone git@github.com:Z5Jonathan-maker/ai-coding-os.git ~/dotfiles
-~/dotfiles/install.sh
-brew bundle install --file=~/dotfiles/Brewfile   # restore brew packages
-~/dotfiles/install.sh                            # restore links + npm globals
-```
+- This is not a universal autonomous software engineer.
+- This is not a live SaaS benchmark suite.
+- This does not ship credentials or provider accounts.
+- Public clones use labeled fixtures where private router/provider telemetry is
+  unavailable.
+- Live deploys and other credentialed actions require TEL policy and explicit
+  approval.
 
-`install.sh` is idempotent — re-running won't clobber existing symlinks, and backs up unrelated files before replacing them.
+## License
 
-VS Code is dotfile-managed too: User settings, keybindings, tasks, MCP
-config, native AI cockpit extension, and the extension manifest all live under `vscode/`. Run
-`~/dotfiles/install.sh` after changing that directory so the live editor
-matches the repo.
-
-The global operating doctrine lives at
-`docs/PROPRIETARY-SYSTEM-DOCTRINE.md`. It is the compact source for router,
-interface, autonomy, token, memory, and credential rules.
-
-The routing architecture study lives at `docs/ROUTER-WIRING-STUDY.md`.
-The executable lane contract lives in `ai-lanes.json` and is checked by
-`cc-lane-registry-check`.
-Video-derived reference notes live at
-`docs/archive/reference-studies/VIDEO-REFERENCE-STUDY-2026-05-20.md`.
-The product packaging contract lives at `docs/PRODUCT-PACKAGING.md`.
-The four-week open-source/product launch plan lives at
-`docs/FOUR-WEEK-PRODUCT-MASTER-PLAN.md`.
-Browser automation boundaries live at
-`docs/BROWSER-AUTOMATION-TRUTH-TABLE.md`.
-Disk readiness notes live at `docs/DISK-READINESS-AUDIT-2026-05-21.md`.
-VS Code cockpit notes live at `docs/VS-CODE-COCKPIT.md`.
-Cursor reference notes live at `docs/archive/reference-studies/CURSOR-REFERENCE-STUDY-2026-05-21.md`.
-Cline reference notes live at `docs/archive/reference-studies/CLINE-REFERENCE-STUDY-2026-05-21.md`.
-The cockpit now exposes Cline/Cursor-inspired control surfaces through
-`cc-permission-matrix`, `cc-checkpoints`, and `cc-router-receipt`.
-
-## Helper scripts (`bin/`)
-
-These are added to PATH via `zshrc`.
-
-- **`sync-dotfiles [msg]`** — stage + commit + push dotfiles in one call.
-- **`gh-auto-auth [scopes]`** — hands-off GitHub re-auth. Uses GitHub's device-code API and drives Chromium via Playwright to type the code and click Authorize. With a logged-in Playwright profile + 1Password browser extension, no human input needed.
-- **`gh-playwright-login`** — one-time setup for the above. Opens Chromium with a persistent profile so you can log into GitHub once (1Password handles the password + 2FA TOTP). After that, `gh-auto-auth` is fully autonomous.
-
-## Hands-off `gh` re-auth setup (one-time)
-
-```sh
-# 1. Open Chromium with persistent profile and log into GitHub
-gh-playwright-login
-
-# 2. After this, future re-auths are autonomous:
-gh-auto-auth
-```
-
-## What's intentionally NOT tracked
-
-- `~/.zsh_history` — machine-local (use atuin's sync if you want it portable)
-- `~/.fzf.zsh` — generated by fzf installer
-- `~/.claude/settings.local.json` — machine-local Claude overrides
-- `~/.ssh/id_ed25519{,.pub}` — generate per machine; register via `gh ssh-key add`
-- Secrets of any kind. If a credential is here by accident, rotate it.
+Apache-2.0. See `LICENSE` and `docs/LICENSE-SUPPORT.md`.

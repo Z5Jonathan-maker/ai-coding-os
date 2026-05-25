@@ -41,8 +41,12 @@ expect(exists('docs/CREATIVE-DIRECTION-KERNEL.md'), 'creative kernel doctrine ex
 expect(exists('docs/IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md'), 'Image 2.0 workflow exists');
 expect(fs.existsSync(workflowPath), 'workflow fixture exists');
 expect(fs.existsSync(tasteBenchmarkPath), 'taste benchmark fixture exists');
+expect(exists('fixtures/frontend-wedge/premium-landing/competitive.benchmark.json'), 'competitive benchmark fixture exists');
 
 const workflow = JSON.parse(fs.readFileSync(workflowPath, 'utf8'));
+const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+expect(/^# Taste-Driven Frontend Handoff/m.test(readme), 'README leads with wedge');
+expect(!/SUPERIORITY-MATRIX|cc-superiority-check|Competitive proof matrix/.test(readme), 'README demotes superiority/doc bloat');
 expect(workflow.schema === 'ai-coding-os.frontend-wedge-workflow.v1', 'workflow schema valid');
 expect(workflow.vertical === 'taste-driven frontend generation', 'single vertical declared');
 expect(workflow.dominant_user_action === 'describe the desired business outcome', 'dominant user action is singular');
@@ -89,6 +93,7 @@ expect(scores.length >= 6 && scores.every((score) => score >= validation.thresho
 const tasteBenchmark = JSON.parse(fs.readFileSync(tasteBenchmarkPath, 'utf8'));
 expect(tasteBenchmark.schema === 'ai-coding-os.taste-benchmark.v1', 'taste benchmark schema valid');
 expect(workflow.required_gates.includes('cc-taste-benchmark-check'), 'taste benchmark is a required wedge gate');
+expect(workflow.required_gates.includes('same-brief competitive benchmark versus v0/Lovable/Bolt'), 'same-brief competitor benchmark is required');
 
 console.log('\n## Summary\n');
 console.log(`passed=${pass} failed=${fail}`);

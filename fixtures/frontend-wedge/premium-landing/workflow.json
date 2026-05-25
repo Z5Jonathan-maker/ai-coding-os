@@ -52,6 +52,7 @@
     "cc-creative-kernel-check",
     "cc-asset-kit-check",
     "cc-taste-benchmark-check",
+    "same-brief competitive benchmark versus v0/Lovable/Bolt",
     "cc-benchmark-run image-to-ui-handoff",
     "cc-browser-visual-proof --check",
     "cc-cockpit-visual-diff"

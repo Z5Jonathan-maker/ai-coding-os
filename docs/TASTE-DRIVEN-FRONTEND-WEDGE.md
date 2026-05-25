@@ -65,6 +65,8 @@ cc-design-handoff list
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --deploy-url <url> --provider vercel --git-sha <sha> --rollback-token <token>
 ```
 
 This command creates the mission artifact spine for the actual wedge:
@@ -76,8 +78,19 @@ This command creates the mission artifact spine for the actual wedge:
 - `next-action.json`
 - `proof.bundle.json`
 
-It does not pretend to generate images or deploy. It opens the first approval
-gate: generate or attach `visual.target.png`, approve it, then continue through
-asset decomposition, Kimi implementation, Claude review, and TEL deploy.
-`continue` emits a lane-specific action packet for the current phase instead of
-pretending to call Image 2.0, Kimi, Claude, or TEL automatically.
+It does not pretend to generate images or trigger a credentialed deploy without
+approval. It opens the first approval gate: generate or attach
+`visual.target.png`, approve it, then continue through asset decomposition, Kimi
+implementation, Claude review, and TEL deploy. `continue` emits a lane-specific
+action packet for the current phase. `execute` records concrete stage artifacts
+when they are locally derivable, records externally produced artifacts when
+passed with `--artifact`, and writes `deploy.receipt.json` only from explicit
+deploy receipt fields.
+
+## Same-Brief Competitive Benchmark
+
+`fixtures/frontend-wedge/premium-landing/competitive.benchmark.json` compares
+AI Coding OS, v0, Lovable, and Bolt against the same brief. The benchmark is
+allowed to support product claims only with its honesty constraint intact: it is
+a same-brief artifact review unless current live competitor outputs are
+regenerated and attached.

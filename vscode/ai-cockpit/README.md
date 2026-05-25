@@ -7,7 +7,7 @@ Native VS Code cockpit for the AI Coding OS command surface.
 - Composer-first interface with one primary Run path and Auto as the default mode.
 - Optional modes for Code, Browser, Creative Handoff, Extract, and Route preview are tucked behind a mode drawer.
 - Creative Handoff starts the first-class wedge workflow: brief, route receipt, staged artifact manifest, proof bundle, and next-action packet.
-- Creative Handoff Status, Continue, and Approve use the local mission files in `.ai/design-handoffs/` so a visual reference can move through approval without manual command lookup.
+- Creative Handoff Status, Continue, Approve, and Execute use the local mission files in `.ai/design-handoffs/` so a visual reference can move through staged implementation without manual command lookup.
 - Startup-safe by default: the cockpit does not activate or auto-open until opened.
 - Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
 - Inline streaming route/output, creative handoff creation, diff review, repo index, and inspection reports.

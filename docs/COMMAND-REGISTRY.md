@@ -54,7 +54,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
 - `cc-creative-kernel-check` — verifies the Creative Direction Kernel, cognitive design routes, design DNA fields, and taste validation scores.
-- `cc-design-handoff` — create the first-class taste-driven frontend mission spine: Image 2.0 reference, asset approval, Kimi implementation, Claude review, TEL deploy gate, and proof bundle.
+- `cc-design-handoff` — create/list/status/continue/approve/execute the first-class taste-driven frontend mission spine: Image 2.0 reference, asset approval, design DNA, Kimi implementation packet, Claude review artifact, TEL deploy receipt, and proof bundle.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.
@@ -114,6 +114,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-verify-product` — single external-facing product proof: first-run, source checks, fixtures, cockpit smoke, package, demo, and fresh clone.
 - `cc-workflow-proof` — one-command route/readiness/repo-index/repo-map/diff proof packet; set `CC_WORKFLOW_PROOF_SKIP_READINESS=1` for portable fixture checks.
 - `code-stable` — launch VS Code through the verified `--disable-gpu` renderer-crash recovery path.
+- `intent-route.sh` — compatibility shim that execs in-tree `cc-route`.
 
 ## Claude/Codex workflow helpers
 

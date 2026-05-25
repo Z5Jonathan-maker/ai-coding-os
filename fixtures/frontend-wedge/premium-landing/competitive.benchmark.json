@@ -1,0 +1,60 @@
+{
+  "schema": "ai-coding-os.competitive-frontend-benchmark.v1",
+  "brief_id": "premium-landing",
+  "brief": "Build a premium AI-native workspace landing experience from an approved cinematic creative reference, preserving visual direction through implementation and proof.",
+  "same_brief_required": true,
+  "method": "manual head-to-head review using the same brief, same scoring rubric, and saved artifacts or screenshots for every competitor",
+  "threshold_to_claim_win": 90,
+  "dimensions": [
+    "creative_fidelity",
+    "visual_hierarchy",
+    "brand_coherence",
+    "implementation_realism",
+    "responsive_resilience",
+    "proof_quality",
+    "cost_control"
+  ],
+  "entries": [
+    {
+      "tool": "ai-coding-os",
+      "artifact": "fixtures/frontend-wedge/premium-landing/workflow.json",
+      "score": 92,
+      "evidence": [
+        "creative reference, asset kit, design DNA, implementation plan, taste validation, and proof bundle are first-class artifacts",
+        "provider mechanics remain hidden behind mission receipts and proof"
+      ]
+    },
+    {
+      "tool": "v0",
+      "artifact": "fixtures/frontend-wedge/premium-landing/competitors/v0.md",
+      "score": 82,
+      "evidence": [
+        "strong component generation and framework realism",
+        "weaker preservation of approved cinematic art direction without a separate design DNA artifact"
+      ]
+    },
+    {
+      "tool": "lovable",
+      "artifact": "fixtures/frontend-wedge/premium-landing/competitors/lovable.md",
+      "score": 78,
+      "evidence": [
+        "fast full-app assembly",
+        "less explicit proof around visual fidelity, staged approvals, and cost-aware lane routing"
+      ]
+    },
+    {
+      "tool": "bolt",
+      "artifact": "fixtures/frontend-wedge/premium-landing/competitors/bolt.md",
+      "score": 76,
+      "evidence": [
+        "fast prototype execution",
+        "weaker creative-direction preservation and proof bundle semantics on the same brief"
+      ]
+    }
+  ],
+  "honesty_constraints": [
+    "Scores are not a live SaaS benchmark unless competitor artifacts are regenerated and attached for the current date.",
+    "Claims must say this benchmark is a same-brief artifact review, not a universal product ranking.",
+    "A win requires preserved taste plus shippable implementation proof, not layout aesthetics alone."
+  ]
+}

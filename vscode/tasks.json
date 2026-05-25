@@ -20,6 +20,11 @@
       "id": "checkpointStep",
       "type": "promptString",
       "description": "Shadow checkpoint step number, 0 is latest"
+    },
+    {
+      "id": "designMissionDir",
+      "type": "promptString",
+      "description": "Design handoff mission directory"
     }
   ],
   "tasks": [
@@ -67,6 +72,27 @@
       "type": "shell",
       "command": "router-ask",
       "args": ["--purpose", "design", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Creative Handoff",
+      "type": "shell",
+      "command": "cc-design-handoff",
+      "args": ["create", "${input:aiPrompt}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Creative Handoff Continue",
+      "type": "shell",
+      "command": "cc-design-handoff",
+      "args": ["continue", "--dir", "${input:designMissionDir}"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AI: Creative Handoff Status",
+      "type": "shell",
+      "command": "cc-design-handoff",
+      "args": ["status", "--dir", "${input:designMissionDir}"],
       "problemMatcher": []
     },
     {

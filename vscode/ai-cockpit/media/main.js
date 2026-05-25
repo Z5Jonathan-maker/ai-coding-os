@@ -449,6 +449,7 @@
       autoRun: 'Auto',
       buildFix: 'Code',
       designBrowser: 'Design / Browser',
+      designHandoff: 'Creative Handoff',
       researchExtract: 'Research / Extract',
       explainRoute: 'Route Preview',
     }[mode] || 'AI';

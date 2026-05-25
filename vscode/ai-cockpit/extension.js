@@ -35,6 +35,7 @@ const COMMANDS = {
   diffHunksJson: 'cc-diff-hunks --json',
   workflowProof: 'cc-workflow-proof',
   browserProof: 'cc-browser-proof',
+  designHandoff: 'cc-design-handoff create',
   fiveMinuteDemo: 'cc-demo-five-minute --browser-url "data:text/html,%3Ctitle%3EAI%20Cockpit%20Demo%3C/title%3E%3Cbody%3Ecockpit%20demo%20mode%20proof%3C/body%3E" --max-chars 1200',
   reviewDiff: 'cc-review-diff',
   jobs: 'cc-jobs',
@@ -84,6 +85,7 @@ function activate(context) {
     command('aiSystemCockpit.diffHunks', () => showOutput(output, 'Diff Hunks', COMMANDS.diffHunks)),
     command('aiSystemCockpit.workflowProof', () => showOutput(output, 'Workflow Proof', COMMANDS.workflowProof)),
     command('aiSystemCockpit.browserProof', () => showOutput(output, 'Browser Proof', COMMANDS.browserProof)),
+    command('aiSystemCockpit.designHandoff', () => provider.promptDesignHandoff()),
     command('aiSystemCockpit.fiveMinuteDemo', () => provider.runInlineStream('Five-Minute Demo', COMMANDS.fiveMinuteDemo)),
     command('aiSystemCockpit.jobs', () => showOutput(output, 'Jobs', COMMANDS.jobs)),
     command('aiSystemCockpit.reviewDiff', () => provider.runInlineStream('Review Diff', COMMANDS.reviewDiff)),
@@ -469,6 +471,7 @@ class CockpitProvider {
       autoRun: () => vscode.commands.executeCommand('aiSystemCockpit.autoRun'),
       buildFix: () => vscode.commands.executeCommand('aiSystemCockpit.buildFix'),
       designBrowser: () => vscode.commands.executeCommand('aiSystemCockpit.designBrowser'),
+      designHandoff: () => vscode.commands.executeCommand('aiSystemCockpit.designHandoff'),
       researchExtract: () => vscode.commands.executeCommand('aiSystemCockpit.researchExtract'),
       savePlan: () => vscode.commands.executeCommand('aiSystemCockpit.savePlan'),
       reviewDiff: () => vscode.commands.executeCommand('aiSystemCockpit.reviewDiff'),
@@ -498,6 +501,18 @@ class CockpitProvider {
       return;
     }
     commands[message.command]?.();
+  }
+
+  async promptDesignHandoff() {
+    const prompt = await askPrompt('e.g. premium peptide landing page with cinematic hero and pricing');
+    if (!prompt) return;
+    const gate = shellExecSync(`cc-trust-gate --json --mode review --task ${quote(prompt)}`, { timeout: 12000 });
+    if (gate.status !== 0) {
+      this.output.appendLine(normalizeTrustGate(gate.text));
+      vscode.window.showWarningMessage('AI Cockpit blocked this design handoff by trust policy.');
+      return;
+    }
+    this.runInlineStream('Creative Handoff', `${COMMANDS.designHandoff} ${quote(prompt)}`);
   }
 
   async runInline(name, commandLine) {
@@ -636,10 +651,15 @@ class CockpitProvider {
       vscode.window.showWarningMessage('AI Cockpit blocked this task by trust policy. See Momentum for details.');
       return;
     }
+    if (mode === 'designHandoff') {
+      this.runInlineStream('Creative Handoff', `${COMMANDS.designHandoff} ${quote(routeTask)}`);
+      return;
+    }
     const modes = {
       autoRun: ['Auto', null],
       buildFix: ['Code', null],
       designBrowser: ['Design / Browser', 'design'],
+      designHandoff: ['Creative Handoff', 'creative_handoff'],
       researchExtract: ['Research / Extract', 'cheap'],
     };
     const [label, purpose] = modes[mode] || modes.buildFix;
@@ -767,6 +787,7 @@ class CockpitProvider {
     <div class="chips" id="chips"></div>
     <div class="composer-pills" aria-label="Primary context controls">
       <button class="pill active" data-mode="autoRun" aria-pressed="true"><span>Auto</span><small>Intelligent</small></button>
+      <button class="pill" data-mode="designHandoff" aria-pressed="false"><span>Creative</span><small>Handoff</small></button>
       <button class="pill" data-command="pickFile"><span>Attach</span><small>Files</small></button>
       <button class="pill" data-command="attachDiff"><span>Context</span><small>Diff + file</small></button>
     </div>
@@ -783,6 +804,7 @@ class CockpitProvider {
             <button class="mode active" data-mode="autoRun" aria-pressed="true">Auto</button>
             <button class="mode" data-mode="buildFix" aria-pressed="false">Code</button>
             <button class="mode" data-mode="designBrowser" aria-pressed="false">Browser</button>
+            <button class="mode" data-mode="designHandoff" aria-pressed="false">Creative</button>
             <button class="mode" data-mode="researchExtract" aria-pressed="false">Extract</button>
             <button class="mode" data-mode="explainRoute" aria-pressed="false">Route</button>
           </div>

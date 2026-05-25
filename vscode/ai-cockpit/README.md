@@ -5,10 +5,11 @@ Native VS Code cockpit for the AI Coding OS command surface.
 ## Features
 
 - Composer-first interface with one primary Run path and Auto as the default mode.
-- Optional modes for Code, Browser, Extract, and Route preview are tucked behind a mode drawer.
+- Optional modes for Code, Browser, Creative Handoff, Extract, and Route preview are tucked behind a mode drawer.
+- Creative Handoff starts the first-class wedge workflow: brief, route receipt, staged artifact manifest, proof bundle, and next-action packet.
 - Startup-safe by default: the cockpit does not activate or auto-open until opened.
 - Current file or selected code context can be attached to prompts, with extra files and git diff available as chips.
-- Inline streaming route/output, diff review, repo index, and inspection reports.
+- Inline streaming route/output, creative handoff creation, diff review, repo index, and inspection reports.
 - Native inline edit command: captures the current selection or line, routes to
   Codex, opens a VS Code diff preview, then applies only after explicit approval.
 - Full cockpit opens beside the active editor and preserves workspace context.
@@ -22,7 +23,7 @@ Native VS Code cockpit for the AI Coding OS command surface.
 ## Requirements
 
 - This repo's `bin/` directory available on `PATH`.
-- `cc-route`, `router-ask`, `cc-system-demo`, `cc-product-readiness`, `cc-router-metrics`, and related cockpit commands available on `PATH`.
+- `cc-route`, `cc-design-handoff`, `router-ask`, `cc-system-demo`, `cc-product-readiness`, `cc-router-metrics`, and related cockpit commands available on `PATH`.
 - VS Code 1.96.0 or newer.
 - Provider accounts for the lanes you want to use. See `docs/PROVIDER-ACCOUNTS.md` at the repo root.
 

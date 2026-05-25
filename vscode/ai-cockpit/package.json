@@ -18,6 +18,7 @@
   "activationEvents": [
     "onCommand:aiSystemCockpit.open",
     "onCommand:aiSystemCockpit.status",
+    "onCommand:aiSystemCockpit.designHandoff",
     "onView:aiSystemCockpit.dashboard"
   ],
   "main": "./extension.js",
@@ -31,6 +32,7 @@
       { "command": "aiSystemCockpit.autoRun", "title": "AI Cockpit: Auto Run" },
       { "command": "aiSystemCockpit.buildFix", "title": "AI Cockpit: Code" },
       { "command": "aiSystemCockpit.designBrowser", "title": "AI Cockpit: Design / Browser" },
+      { "command": "aiSystemCockpit.designHandoff", "title": "AI Cockpit: Creative Handoff" },
       { "command": "aiSystemCockpit.researchExtract", "title": "AI Cockpit: Research / Extract" },
       { "command": "aiSystemCockpit.savePlan", "title": "AI Cockpit: Save Plan" },
       { "command": "aiSystemCockpit.reviewDiff", "title": "AI Cockpit: Review Diff" },
@@ -95,6 +97,7 @@
         { "command": "aiSystemCockpit.autoRun" },
         { "command": "aiSystemCockpit.buildFix" },
         { "command": "aiSystemCockpit.designBrowser" },
+        { "command": "aiSystemCockpit.designHandoff" },
         { "command": "aiSystemCockpit.researchExtract" },
         { "command": "aiSystemCockpit.savePlan" },
         { "command": "aiSystemCockpit.reviewDiff" },

@@ -4,6 +4,7 @@ This file keeps secondary proof and reference material out of the README.
 
 ## Product
 
+- `OPERATING-MODES.md`
 - `TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `CREATIVE-DIRECTION-KERNEL.md`
 - `IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md`
@@ -30,6 +31,8 @@ This file keeps secondary proof and reference material out of the README.
 - `SUPERIORITY-MATRIX.md` is an internal competitive-evidence ledger. It is not
   public positioning copy and must keep its "plausible, not fully proven"
   constraint.
+- `audits/2026-05-25-full-stack-ruthless-audit.md` is the current hard truth
+  checkpoint: keep the project, reduce naming inflation, prove the live seams.
 - Reference studies live in `docs/archive/reference-studies/`.
 
 ## Release

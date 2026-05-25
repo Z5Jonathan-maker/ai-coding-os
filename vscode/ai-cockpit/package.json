@@ -1,7 +1,7 @@
 {
   "name": "ai-system-cockpit",
   "displayName": "AI System Cockpit",
-  "description": "Native VS Code cockpit for AI-SYSTEM-V2 routing, readiness, checkpoints, permissions, and lane execution.",
+  "description": "Native VS Code cockpit for local AI handoff missions, route planning, readiness, permissions, and proof receipts.",
   "version": "0.1.0",
   "publisher": "z5jonathan",
   "license": "Apache-2.0",

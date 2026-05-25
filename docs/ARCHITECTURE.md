@@ -1,4 +1,4 @@
-# ARCHITECTURE.md
+# Architecture
 
 ## System Shape
 
@@ -13,7 +13,7 @@ Developer
       -> in-tree lane classifier
       -> fallback chains
       -> dry-run route receipts
-  -> optional router-ask / AI-SYSTEM-V2 execution gateway
+  -> optional router-ask / full-stack execution gateway
       -> live provider invocation
       -> quota/cost/session telemetry
   -> AI lanes
@@ -31,15 +31,15 @@ Developer
 | Area | Source |
 |---|---|
 | Lane registry | `ai-lanes.json` |
-| Route decision engine | `bin/cc-route` backed by `ai-lanes.json` |
-| Live execution gateway | `router-ask` / private `AI-SYSTEM-V2` install when available |
+| Route planner | `bin/cc-route` backed by `ai-lanes.json`; dry-run classifier, not model execution |
+| Live execution gateway | `router-ask` / configured provider CLIs when available |
 | VS Code cockpit | `vscode/ai-cockpit/` |
 | Source-controlled AI checks | `.ai/checks/` |
 | Workspace trust profile | `.ai/trust.json` |
 | Trust gate | `bin/cc-trust-gate` before cockpit routing |
 | Mission continuation ledger | `~/.Codex/state/missions.jsonl` via `bin/cc-mission-ledger` |
 | Public setup doctor | `bin/cc-first-run` |
-| Product readiness gate | `bin/cc-product-readiness` |
+| Maintainer readiness gate | `bin/cc-product-readiness` |
 | Five-minute demo | `bin/cc-demo-five-minute` |
 | Browser proof | `bin/cc-browser-proof` |
 | Benchmark fixtures | `fixtures/benchmarks/` via `bin/cc-benchmark-fixtures` |
@@ -49,22 +49,25 @@ Developer
 ## Design Rules
 
 1. The cockpit is the user surface.
-2. The in-tree router is the public decision engine.
+2. The in-tree route planner is the public decision surface.
 3. Lanes are capability boundaries, not model hype labels.
 4. Unsupported lane capabilities must be executable contract checks, not prose.
 5. Every fallback must be visible.
-5. Every launch claim needs a command that proves it.
-6. Credentials stay out of transcripts and git.
-7. Reference projects are harvested only for named gaps.
-8. Static visual direction comes from Image 2.0; functional UI execution comes from Kimi.
+6. Every launch claim needs a command or artifact that proves it.
+7. Credentials stay out of transcripts and git.
+8. Reference projects are harvested only for named gaps.
+9. Static visual direction comes from Image 2.0; functional UI execution comes from Kimi.
 
 ## Active Control Plane
 
-The active control plane is local-first:
+The active control plane is local-first and has two modes. Public mode contains
+the planner, contracts, fixtures, cockpit, and proof shells. Maintainer mode
+adds the configured provider CLIs, Kimi WebBridge, TEL credentials, and private
+telemetry. See `docs/OPERATING-MODES.md`.
 
 - dotfiles own shell/editor/command setup
 - `install.sh --dry-run` reports setup without mutating home
-- `cc-product-readiness` is the release gate
+- `cc-product-readiness` is the maintainer-machine readiness gate
 - `cc-demo-five-minute` is the public proof path
 - `cc-package-cockpit` creates the distributable VSIX
 
@@ -85,7 +88,7 @@ The cockpit should show:
 - demo mode
 
 It should not create a second model runtime, credential store, or hidden agent
-loop. Route decisions come from `cc-route`; live provider execution remains an
+loop. Route planning comes from `cc-route`; live provider execution remains an
 adapter behind the command surface.
 
 ## Extension Points

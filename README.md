@@ -1,43 +1,28 @@
-# Taste-Driven Frontend Handoff
+# Taste-Driven Frontend Handoff Runner
 
 [![Public CI](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml/badge.svg)](https://github.com/Z5Jonathan-maker/ai-coding-os/actions/workflows/public-ci.yml)
 
-This repo packages an opinionated local AI workspace for one focused workflow:
+This repo is an opinionated macOS AI coding workspace for one primary job:
+preserve approved visual direction through frontend implementation. Mechanically,
+it is a local phase runner, receipt system, and VS Code cockpit around the flow:
 
 ```text
-describe the business outcome
-  -> generate or attach an approved visual reference
-  -> extract implementation assets
-  -> preserve design DNA
-  -> implement through the UI/browser lane
-  -> review taste and accessibility
-  -> prove local integration with Codex
-  -> record deploy proof
+brief -> visual reference -> asset kit -> design DNA -> implementation
+      -> review -> local proof -> deploy receipt
 ```
 
-The wedge is not "another chat IDE." It is a handoff system for preserving
-premium creative direction through production frontend implementation.
+It is not a hosted AI IDE and it is not a universal autonomous engineer. The
+public repo contains the planner, phase machine, cockpit, trust/TEL contracts,
+fixtures, and proof gates. Full live execution depends on local provider tools
+and accounts such as `router-ask`, Kimi, Claude, Codex, DeepSeek, Image 2.0,
+Kimi WebBridge, and TEL policies.
 
-## Why It Exists
+## What Runs
 
-Most AI coding tools can generate UI. Fewer preserve taste. This system treats
-creative direction as a first-class execution layer:
-
-- Image 2.0 / ChatGPT owns static visual direction and canonical assets.
-- Kimi owns browser/UI implementation from approved references.
-- Codex owns local engineering, checks, packaging, and proof.
-- Claude owns hard review, architecture, and taste/quality critique.
-- DeepSeek handles cheap transforms and extraction work.
-- TEL records credentialed deploy actions behind an audit boundary.
-
-The user-facing idea is simple: approve the visual target first, then keep every
-later stage accountable to that target.
-
-## Main Workflow
+Main workflow:
 
 ```sh
-cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
-cc-design-handoff list
+cc-design-handoff "premium landing page with a cinematic hero and pricing"
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image --image-api-ok
@@ -50,101 +35,80 @@ cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase claude_rev
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase codex_proof
 ```
 
-Each mission writes portable artifacts:
+Each mission writes durable artifacts instead of relying on chat scrollback:
 
-- `creative.brief.json`
-- `route.receipt.json`
 - `design-handoff.json`
-- `agent.timeline.json`
+- `route.receipt.json`
 - `next-action.json`
+- `agent.timeline.json`
+- `creative.brief.json`
+- `visual.reference.manifest.json`
+- `creative.asset-kit.json`
 - `design.dna.json`
-- `implementation.plan.json`
 - `implementation.result.json`
 - `taste.validation.json`
 - `codex.proof.json`
 - `deploy.receipt.json`
 - `proof.bundle.json`
 
-Credentialed deploys are not performed silently. A deploy result is recorded
-only through an explicit TEL receipt step. `tel_deploy --live-tel` verifies a
-Vercel deployment through TEL and stores `tel.deploy.raw.json`; without that
-flag it only records a supplied receipt. Deploy receipts require passing
-`codex.proof.json` and embed both the implementation target summary and Codex
-proof summary, so the deployed URL is tied back to repo state and local gates.
-`creative_reference --generate-image` calls `cc-image` only when `--image-api-ok`
-is supplied, then stores
-`visual.reference.manifest.json` and waits for human approval.
-`asset_decomposition --extract-asset <id>` uses the approved visual reference
-to extract one asset at a time through `cc-image`, also gated by
-`--image-api-ok`, then updates `creative.asset-kit.json` and waits for
-approval. Before expensive live specialist stages, DeepSeek/cheap compresses
-the mission artifacts into `handoff.context-summary.<stage>.json` so Kimi and
-Claude receive cleaner context with lower token waste. The `claude_review`
-stage calls `claude --print`, stores
-`taste.validation.raw.md`, writes `taste.validation.json`, and blocks deploy
-unlock if the review fails its threshold. The `kimi_implementation` stage also
-calls the live design route by default through `router-ask --purpose design`
-when no target repo is supplied, stores `implementation.raw.md`, and writes
-`implementation.plan.json`. With `--target-repo`, it invokes the Kimi CLI in
-that repo, attaches the mission artifact directory, writes
-`implementation.result.json`, captures changed files, and blocks the next stage
-if no target repo changes exist.
-`design_dna` also calls `claude --print` by default, stores
-`design.dna.raw.md`, and writes structured implementation constraints instead
-of a hardcoded taste template. `codex_proof` runs local integration proof,
-records git state and required gates in `codex.proof.json`, and blocks TEL
-deploy until local proof passes.
+## What Is In This Repo
+
+- `bin/cc-design-handoff` — phase runner for the handoff workflow.
+- `bin/cc-route` — deterministic route planner/classifier backed by
+  `ai-lanes.json`. It prints dry-run receipts; it is not the live executor.
+- `bin/cc-agent-runtime` — local/worktree runtime adapter that writes mission
+  proof bundles.
+- `vscode/ai-cockpit/` — VS Code webview cockpit over the local commands and
+  handoff state.
+- `claude/tel/` — Trusted Execution Layer server/policy code for credentialed
+  actions.
+- `.ai/checks/` and `fixtures/` — portable contract checks and benchmark
+  fixtures.
+- dotfiles and macOS setup files used by the maintainer stack.
+
+## What Is External
+
+The full private daily-driver stack uses tools that are not fully vendored here:
+
+- `router-ask` / `cc-router` for live model execution and telemetry
+- Kimi CLI and Kimi WebBridge for browser/UI work
+- Claude CLI for design DNA and review stages
+- Codex CLI for engineering execution and proof
+- DeepSeek API wrapper for cheap compression/extraction
+- ChatGPT/Image 2.0 or `cc-image` for visual references and asset extraction
+- local TEL credentials and service policies for deploy verification
+
+Public clones can run the planner, fixtures, cockpit smoke, and offline checks.
+Maintainer machines with those provider tools can run the full live workflow.
 
 ## Proof Commands
 
-Fast proof:
+Portable checks:
 
 ```sh
-bin/cc-demo-quick
-```
-
-Focused wedge proof:
-
-```sh
+bin/cc-public-ci-check
 bin/cc-design-handoff --check
-bin/cc-frontend-wedge-check
-bin/cc-taste-benchmark-check
-bin/cc-competitive-benchmark check
+bin/cc-agent-runtime --check
 bin/cc-cockpit-webview-smoke
+bin/cc-competitive-benchmark check
 ```
 
-Maintainer-machine readiness:
+Maintainer/full-stack checks:
 
 ```sh
 bin/cc-ai-checks
 bin/cc-product-readiness
+bin/cc-kimi-status
 ```
 
-The same-brief competitor benchmark lives at
-`fixtures/frontend-wedge/premium-landing/competitive.benchmark.json`. It
-compares this workflow against v0, Lovable, and Bolt as an artifact review. It
-is not a live SaaS benchmark unless fresh competitor outputs are attached.
-External competitors cannot carry numeric scores unless current-run prompt,
-screenshot/source, and review artifacts are present. Use
-`cc-competitive-benchmark create|attach|score|check` to manage that evidence
-instead of editing benchmark scores by hand.
-
-## VS Code Cockpit
-
-The bundled VS Code cockpit exposes:
-
-- Creative Handoff create/status/continue/approve
-- primary continuation composer
-- permission mode selector
-- route preview
-- review/diff/context attachment
-- readiness and proof surfaces
-
-Install/update it through the normal dotfiles installer.
+The competitor benchmark contract lives at
+`fixtures/frontend-wedge/premium-landing/competitive.benchmark.json`. It is
+currently an artifact contract unless fresh same-brief v0/Lovable/Bolt outputs
+are attached.
 
 ## Install
 
-Current install target is macOS Apple Silicon.
+Current target: macOS Apple Silicon.
 
 ```sh
 git clone git@github.com:Z5Jonathan-maker/ai-coding-os.git ~/dotfiles
@@ -154,37 +118,24 @@ brew bundle install --file=~/dotfiles/Brewfile
 ~/dotfiles/install.sh
 ```
 
-`install.sh --dry-run` is non-mutating and reports planned symlinks, required
-tools, optional lanes, Brewfile drift, and VS Code extension drift.
+`install.sh --dry-run` is non-mutating and reports symlinks, required tools,
+optional lanes, Brewfile drift, and VS Code extension drift.
 
-## What This Repo Contains
+## Start Here
 
-- macOS dotfiles and install scripts
-- `ai-lanes.json` and in-tree `cc-route`
-- VS Code cockpit extension under `vscode/ai-cockpit/`
-- design handoff CLI and proof gates under `bin/`
-- fixtures for frontend wedge, taste benchmark, browser proof, and public CI
-- docs for architecture, install, security, limits, and reference studies
-
-Detailed docs are intentionally kept out of the README. Start with:
-
-- `docs/TASTE-DRIVEN-FRONTEND-WEDGE.md`
-- `docs/CREATIVE-DIRECTION-KERNEL.md`
+- `docs/OPERATING-MODES.md`
 - `docs/ARCHITECTURE.md`
+- `docs/TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `docs/EVALUATOR-QUICKSTART.md`
 - `docs/KNOWN-LIMITATIONS.md`
-- `docs/REFERENCE-INDEX.md`
+- `docs/COMMAND-REGISTRY.md`
 
 ## Boundaries
 
-- This is not a universal autonomous software engineer.
-- This is not a live SaaS benchmark suite.
-- This does not ship credentials or provider accounts.
-- Public clones use labeled fixtures where private router/provider telemetry is
-  unavailable.
-- Live deploys and other credentialed actions require TEL policy and explicit
-  approval.
+- This is local-first and macOS-first.
+- Public clones do not include provider accounts or credentials.
+- `cc-route` plans routes; live execution is delegated to external adapters.
+- Fixture checks prove contracts, not market superiority.
+- Credentialed actions require TEL policy and explicit approval.
 
-## License
-
-Apache-2.0. See `LICENSE` and `docs/LICENSE-SUPPORT.md`.
+Apache-2.0. See `LICENSE`.

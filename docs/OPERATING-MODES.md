@@ -59,6 +59,7 @@ quality, and whether the cockpit reduces cognitive load.
 Check the live seam with:
 
 ```sh
+cc-doctor
 cc-maintainer-stack
 cc-maintainer-stack --strict
 ```

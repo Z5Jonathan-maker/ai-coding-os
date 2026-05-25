@@ -96,6 +96,7 @@ bin/cc-competitive-benchmark check
 Maintainer/full-stack checks:
 
 ```sh
+bin/cc-doctor
 bin/cc-ai-checks
 bin/cc-product-readiness
 bin/cc-maintainer-stack

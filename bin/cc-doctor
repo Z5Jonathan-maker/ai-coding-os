@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+set -u
+
+ROOT="${DOTFILES_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+ROUTER="${CC_ROUTER_ROOT:-${ROUTER_ROOT:-$HOME/code/projects/cc-router}}"
+full=0
+json=0
+
+for arg in "$@"; do
+  case "$arg" in
+  --full) full=1 ;;
+  --json) json=1 ;;
+  -h | --help)
+    cat <<'EOF'
+Usage: cc-doctor [--full] [--json]
+
+Daily-driver health report for the local AI coding stack. Default mode is fast
+and non-mutating. --full also runs public CI and source-controlled AI checks.
+EOF
+    exit 0
+    ;;
+  *)
+    echo "cc-doctor: unknown option $arg" >&2
+    exit 2
+    ;;
+  esac
+done
+
+rows=()
+blockers=0
+warnings=0
+
+add_row() {
+  local name="$1" status="$2" detail="$3"
+  rows+=("$name	$status	$detail")
+  case "$status" in
+  ok) ;;
+  warn) warnings=$((warnings + 1)) ;;
+  *) blockers=$((blockers + 1)) ;;
+  esac
+}
+
+run_status() {
+  local name="$1" cmd="$2" ok_pattern="$3" warn_pattern="${4:-}"
+  local tmp
+  tmp="$(mktemp)"
+  if eval "$cmd" >"$tmp" 2>&1 && grep -Eq "$ok_pattern" "$tmp"; then
+    add_row "$name" ok "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
+  elif [ -n "$warn_pattern" ] && grep -Eq "$warn_pattern" "$tmp"; then
+    add_row "$name" warn "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
+  else
+    add_row "$name" fail "$(sed -n '1,4p' "$tmp" | tr '\n' ' ' | cut -c1-220)"
+  fi
+  rm -f "$tmp"
+}
+
+git_state() {
+  local repo="$1" label="$2" porcelain upstream ahead behind
+  if ! git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    add_row "$label" fail "not a git repo: $repo"
+    return
+  fi
+  porcelain="$(git -C "$repo" status --porcelain 2>/dev/null)"
+  if [ -n "$porcelain" ]; then
+    add_row "$label" fail "$(printf '%s\n' "$porcelain" | wc -l | tr -d ' ') dirty paths"
+    return
+  fi
+  upstream="$(git -C "$repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+  if [ -z "$upstream" ]; then
+    add_row "$label" warn "clean; no upstream configured"
+    return
+  fi
+  git -C "$repo" fetch --quiet >/dev/null 2>&1 || {
+    add_row "$label" warn "clean; fetch failed"
+    return
+  }
+  ahead="$(git -C "$repo" rev-list --count "$upstream"..HEAD 2>/dev/null || printf '?')"
+  behind="$(git -C "$repo" rev-list --count HEAD.."$upstream" 2>/dev/null || printf '?')"
+  if [ "$ahead" = 0 ] && [ "$behind" = 0 ]; then
+    add_row "$label" ok "clean and synced"
+  else
+    add_row "$label" fail "clean but ahead=$ahead behind=$behind"
+  fi
+}
+
+handoff_state() {
+  node - "$ROOT" <<'NODE'
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[2];
+const base = path.join(root, '.ai', 'design-handoffs');
+const terminal = new Set(['completed', 'approved', 'skipped']);
+if (!fs.existsSync(base)) {
+  console.log('ok\tno design handoffs');
+  process.exit(0);
+}
+const dirs = fs.readdirSync(base, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => path.join(base, d.name));
+if (!dirs.length) {
+  console.log('ok\tno design handoffs');
+  process.exit(0);
+}
+let active = 0;
+let blocked = 0;
+let broken = 0;
+for (const dir of dirs) {
+  const file = path.join(dir, 'design-handoff.json');
+  if (!fs.existsSync(file)) {
+    broken += 1;
+    continue;
+  }
+  try {
+    const handoff = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const phases = Array.isArray(handoff.phases) ? handoff.phases : [];
+    const statuses = phases.map(p => String(p.status || ''));
+    if (statuses.some(s => s.startsWith('blocked'))) blocked += 1;
+    if (statuses.some(s => !terminal.has(s))) active += 1;
+  } catch (_) {
+    broken += 1;
+  }
+}
+if (broken) console.log(`fail\t${broken} broken handoff directories`);
+else if (blocked) console.log(`warn\t${blocked} blocked handoff missions, ${active} active`);
+else if (active) console.log(`warn\t${active} active handoff missions`);
+else console.log(`ok\t${dirs.length} handoff missions closed`);
+NODE
+}
+
+mission_ledger_state() {
+  local out
+  out="$("$ROOT/bin/cc-mission-ledger" 2>&1 | sed -n '1,12p' | tr '\n' ' ' | cut -c1-220)"
+  if printf '%s' "$out" | grep -q 'status=ready'; then
+    add_row "Mission ledger" ok "$out"
+  else
+    add_row "Mission ledger" warn "${out:-no ledger output}"
+  fi
+}
+
+run_status "Maintainer stack" "$ROOT/bin/cc-maintainer-stack --strict" 'Status: maintainer-stack-ready'
+run_status "Product readiness" "$ROOT/bin/cc-product-readiness" 'Status: product-ready'
+git_state "$ROOT" "dotfiles git"
+[ -d "$ROUTER" ] && git_state "$ROUTER" "router git" || add_row "router git" fail "missing router root: $ROUTER"
+
+handoff_line="$(handoff_state)"
+handoff_status="${handoff_line%%$'\t'*}"
+handoff_detail="${handoff_line#*$'\t'}"
+add_row "Design handoffs" "$handoff_status" "$handoff_detail"
+mission_ledger_state
+
+if [ "$full" -eq 1 ]; then
+  run_status "Public CI" "$ROOT/bin/cc-public-ci-check" 'passed=24 failed=0'
+  run_status "AI checks" "$ROOT/bin/cc-ai-checks" 'Status: ai-checks-ready'
+fi
+
+if [ "$json" -eq 1 ]; then
+  printf '{"schema":"ai-coding-os.doctor.v1","blockers":%s,"warnings":%s,"full":%s,"rows":[' "$blockers" "$warnings" "$full"
+  first=1
+  for row in "${rows[@]}"; do
+    IFS=$'\t' read -r name status detail <<<"$row"
+    [ "$first" -eq 1 ] || printf ','
+    first=0
+    node -e 'const [name,status,detail]=process.argv.slice(1); process.stdout.write(JSON.stringify({name,status,detail}))' "$name" "$status" "$detail"
+  done
+  printf ']}\n'
+else
+  printf '# AI Coding Doctor\n\n'
+  printf 'Root:   %s\n' "$ROOT"
+  printf 'Router: %s\n\n' "$ROUTER"
+  for row in "${rows[@]}"; do
+    IFS=$'\t' read -r name status detail <<<"$row"
+    printf '%-18s %-5s %s\n' "$name" "$status" "$detail"
+  done
+  printf '\nSummary: blockers=%s warnings=%s\n' "$blockers" "$warnings"
+  if [ "$blockers" -eq 0 ]; then
+    printf 'Status: doctor-ready\n'
+  else
+    printf 'Status: doctor-blocked\n'
+  fi
+fi
+
+[ "$blockers" -eq 0 ]

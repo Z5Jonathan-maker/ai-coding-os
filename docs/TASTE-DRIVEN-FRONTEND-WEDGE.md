@@ -66,6 +66,8 @@ cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
+cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --live-tel --deployment <vercel-url-or-id>
 ```
@@ -86,11 +88,13 @@ Claude review, and TEL deploy. `continue` emits a lane-specific action packet
 for the current phase. `execute` records concrete stage artifacts when they are
 locally derivable, records externally produced artifacts when passed with
 `--artifact`, invokes `cc-image` for `creative_reference` only when
-`--generate-image --image-api-ok` is supplied, invokes `router-ask --purpose
-design` for the `kimi_implementation` stage by default, invokes `claude
---print` for the `claude_review` stage by default, blocks deploy unlock when
-the review fails the taste threshold, and writes `deploy.receipt.json` only
-from explicit deploy receipt fields or an explicit TEL verification call.
+`--generate-image --image-api-ok` is supplied, invokes `cc-image` for one
+approved-reference asset at a time when `asset_decomposition --extract-asset
+<id> --image-api-ok` is supplied, invokes `router-ask --purpose design` for the
+`kimi_implementation` stage by default, invokes `claude --print` for the
+`claude_review` stage by default, blocks deploy unlock when the review fails
+the taste threshold, and writes `deploy.receipt.json` only from explicit deploy
+receipt fields or an explicit TEL verification call.
 `--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.

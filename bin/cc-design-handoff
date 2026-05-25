@@ -176,6 +176,7 @@ function readArtifact(dir, artifact, max = 12000) {
 }
 
 function writeTinyPng(file) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/azl3H0AAAAASUVORK5CYII=',
     'base64'
@@ -227,6 +228,7 @@ function actionPacket(handoff, phase) {
     asset_decomposition: {
       blocks_execution: true,
       requires_human_approval: true,
+      command: 'cc-design-handoff execute --phase asset_decomposition --extract-asset hero-background --image-api-ok',
       prompt: [
         'Using the approved visual.target.png in the same Image 2.0 thread, extract exactly one implementation asset at a time.',
         'Start with the hero background only. Wait for approval before extracting button, divider, banner, surface, or texture assets.',
@@ -596,11 +598,25 @@ function check() {
       dir,
       '--phase',
       'asset_decomposition',
+      '--extract-asset',
+      'hero-background',
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_IMAGE_OFFLINE: '1' } });
+    if (assetExec.status !== 0 || !/Status: design-handoff-execute-blocked/.test(assetExec.stdout)) {
+      throw new Error(`asset execute failed: ${assetExec.stdout || assetExec.stderr}`);
+    }
+    const kit = readJson(path.join(dir, 'creative.asset-kit.json'));
+    if (kit.assets?.[0]?.source !== 'offline_fixture' || kit.assets?.[0]?.live_lane_call !== false) throw new Error('offline asset fixture not labeled');
+    const assetApproval = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'approve',
+      '--dir',
+      dir,
+      '--phase',
+      'asset_decomposition',
       '--artifact',
       'creative.asset-kit.json',
     ], { timeout: 30000 });
-    if (assetExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(assetExec.stdout)) {
-      throw new Error(`asset execute failed: ${assetExec.stdout || assetExec.stderr}`);
+    if (assetApproval.status !== 0 || !/Status: design-handoff-approved/.test(assetApproval.stdout)) {
+      throw new Error(`asset approval failed: ${assetApproval.stdout || assetApproval.stderr}`);
     }
     const dnaExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
@@ -888,6 +904,118 @@ function generateCreativeReference(dir, handoff) {
   return 'visual.target.png';
 }
 
+function assetExtractionPrompt(assetId, handoff) {
+  const prompts = {
+    'hero-background': 'Extract only the hero background from the approved reference. Remove all text, UI labels, buttons, and icons. Preserve lighting, atmosphere, depth, and composition-safe negative space for native HTML overlay.',
+    'primary-button-style': 'Extract only the primary button visual primitive from the approved reference. Preserve material, glow, radius, shadow, and interaction feel. No surrounding layout.',
+    'section-divider': 'Extract only the section divider or transition texture from the approved reference. Preserve rhythm and atmosphere. No text.',
+    'feature-banner-background': 'Extract only the banner background/surface from the approved reference. Preserve premium lighting and hierarchy-safe empty space. No text.',
+  };
+  return [
+    prompts[assetId] || `Extract only the ${assetId} implementation asset from the approved reference. No text. Preserve the approved visual direction.`,
+    `Mission request: ${handoff.request}`,
+    'Return a clean implementation asset that Kimi can place behind native text and controls.',
+  ].join('\n');
+}
+
+function upsertAssetKit(dir, handoff, asset) {
+  const file = path.join(dir, 'creative.asset-kit.json');
+  const kit = fs.existsSync(file) ? readJson(file) : {
+    schema: 'ai-coding-os.creative-asset-kit.v1',
+    mission_id: handoff.mission_id,
+    phase: 'asset_decomposition',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'cc-design-handoff asset extractor',
+    mode: 'sequential_approved_extraction',
+    owner_lane: 'chatgpt-image',
+    canonical_reference: { path: 'visual.target.png', owner_lane: 'chatgpt-image' },
+    rules: {
+      extract_one_asset_at_a_time: true,
+      approval_required_before_next_asset: true,
+      use_same_image_thread_after_reference_approval: true,
+      implementation_model_must_not_reinvent_visual_direction: true,
+      native_text_and_interactions_stay_in_code: true,
+      do_not_parallelize_extraction_requests: true,
+    },
+    assets: [],
+    handoff_to_kimi: {
+      include: ['canonical_reference', 'approved_assets', 'design.dna.json', 'implementation.plan.json'],
+    },
+  };
+  const assets = Array.isArray(kit.assets) ? kit.assets : [];
+  const next = { sequence: assets.find((item) => item.id === asset.id)?.sequence || assets.length + 1, ...asset };
+  const index = assets.findIndex((item) => item.id === asset.id);
+  if (index >= 0) assets[index] = next;
+  else assets.push(next);
+  kit.assets = assets.sort((a, b) => Number(a.sequence) - Number(b.sequence));
+  kit.updated_at = now();
+  writeJson(file, kit);
+  return 'creative.asset-kit.json';
+}
+
+function extractAsset(dir, handoff) {
+  const assetId = slug(value('extract-asset', value('asset', 'hero-background')));
+  const assetPath = path.join('assets', `${assetId}.png`);
+  const output = path.join(dir, assetPath);
+  const prompt = assetExtractionPrompt(assetId, handoff);
+
+  if (process.env.CC_DESIGN_HANDOFF_IMAGE_OFFLINE === '1') {
+    writeTinyPng(output);
+    return upsertAssetKit(dir, handoff, {
+      id: assetId,
+      role: assetId.replace(/-/g, ' '),
+      asset_type: 'image',
+      path: assetPath,
+      extraction_prompt: prompt,
+      implementation_usage: 'Use as an approved visual primitive in the Kimi implementation pass.',
+      approval_gate: 'human_approves_asset_before_next_extraction',
+      source: 'offline_fixture',
+      live_lane_call: false,
+    });
+  }
+
+  if (!has('image-api-ok')) {
+    writeJson(path.join(dir, 'asset.extraction.request.json'), {
+      ...actionPacket(handoff, phaseById(handoff, 'asset_decomposition')),
+      asset_id: assetId,
+      prompt,
+      note: 'Add --image-api-ok to spend image API credits for this extraction.',
+    });
+    return '';
+  }
+
+  const res = run(path.join(root, 'bin', 'cc-image'), [
+    '--json',
+    '--no-open',
+    '-r',
+    path.join(dir, 'visual.target.png'),
+    '-s',
+    value('image-size', '1536x1024'),
+    '-o',
+    output,
+    prompt,
+  ], { timeout: 300000, maxBuffer: 1024 * 1024 * 8 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, `asset.${assetId}.raw.json`), `${raw}\n`);
+  if (res.status !== 0) throw new Error(raw || `cc-image exited ${res.status}`);
+  const parsed = extractJson(raw);
+  return upsertAssetKit(dir, handoff, {
+    id: assetId,
+    role: assetId.replace(/-/g, ' '),
+    asset_type: 'image',
+    path: assetPath,
+    extraction_prompt: prompt,
+    implementation_usage: 'Use as an approved visual primitive in the Kimi implementation pass.',
+    approval_gate: 'human_approves_asset_before_next_extraction',
+    source: 'cc-image',
+    live_lane_call: true,
+    raw_output_artifact: `asset.${assetId}.raw.json`,
+    run_dir: parsed?.runDir || '',
+    manifest_path: parsed?.manifestPath || '',
+  });
+}
+
 function writeDeployReceipt(dir, handoff) {
   if (has('live-tel')) return writeTelDeployReceipt(dir, handoff);
   const url = value('deploy-url', '');
@@ -1133,6 +1261,14 @@ function executeStage() {
       ? 'Image reference generated. Human approval is required before asset extraction.'
       : 'Image generation requires --image-api-ok because it can spend OpenAI image API credits.';
     if (!artifact) artifact = 'visual.reference.request.json';
+  } else if (phase.id === 'asset_decomposition' && has('extract-asset')) {
+    artifact = extractAsset(dir, handoff);
+    blocked = true;
+    phase.status = artifact ? 'awaiting_asset_approval' : 'awaiting_external_artifact';
+    note = artifact
+      ? 'One implementation asset was extracted. Human approval is required before the next extraction or implementation handoff.'
+      : 'Asset extraction requires --image-api-ok because it can spend OpenAI image API credits.';
+    if (!artifact) artifact = 'asset.extraction.request.json';
   } else if (phase.id === 'creative_reference' && !providedArtifact) {
     blocked = true;
     writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phase));

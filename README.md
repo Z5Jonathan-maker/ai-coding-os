@@ -41,6 +41,8 @@ cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
+cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
 ```
 
@@ -62,7 +64,11 @@ only through an explicit TEL receipt step. `tel_deploy --live-tel` verifies a
 Vercel deployment through TEL and stores `tel.deploy.raw.json`; without that
 flag it only records a supplied receipt. `creative_reference --generate-image`
 calls `cc-image` only when `--image-api-ok` is supplied, then stores
-`visual.reference.manifest.json` and waits for human approval. The `claude_review` stage is the
+`visual.reference.manifest.json` and waits for human approval.
+`asset_decomposition --extract-asset <id>` uses the approved visual reference
+to extract one asset at a time through `cc-image`, also gated by
+`--image-api-ok`, then updates `creative.asset-kit.json` and waits for
+approval. The `claude_review` stage is the
 first live execution lane: by default it calls `claude --print`, stores
 `taste.validation.raw.md`, writes `taste.validation.json`, and blocks deploy
 unlock if the review fails its threshold. The `kimi_implementation` stage also

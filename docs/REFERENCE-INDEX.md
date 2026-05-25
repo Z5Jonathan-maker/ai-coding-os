@@ -8,6 +8,7 @@ This file keeps secondary proof and reference material out of the README.
 - `GLOSSARY.md`
 - `EXTERNAL-CONTRACTS.md`
 - `PHASE-CHECKPOINTS.md`
+- `BROWSER-IN-LOOP-PROOF.md`
 - `TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `CREATIVE-DIRECTION-KERNEL.md`
 - `IMAGE-2-CREATIVE-DIRECTION-WORKFLOW.md`

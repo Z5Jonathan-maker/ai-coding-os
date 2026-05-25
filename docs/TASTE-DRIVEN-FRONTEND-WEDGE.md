@@ -69,6 +69,7 @@ cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_r
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase codex_proof --browser-url http://localhost:3000
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --live-tel --deployment <vercel-url-or-id>
 ```
 

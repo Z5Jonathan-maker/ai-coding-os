@@ -19,6 +19,17 @@ function value(name, fallback = '') {
   return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
 }
 
+function values(name) {
+  const out = [];
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] === `--${name}` && args[i + 1] && !args[i + 1].startsWith('--')) {
+      out.push(args[i + 1]);
+      i += 1;
+    }
+  }
+  return out;
+}
+
 function promptArgs() {
   const skip = new Set(['--out-dir', '--title']);
   const out = [];
@@ -373,10 +384,10 @@ function actionPacket(handoff, phase) {
       expected_artifact: 'taste.validation.json',
     },
     codex_proof: {
-      command: 'cc-design-handoff execute --phase codex_proof',
+      command: 'cc-design-handoff execute --phase codex_proof --browser-url <url>',
       prompt: [
         'Run local integration proof after Claude review.',
-        'Record git state, changed files, required gates, and final shippability verdict before any TEL deploy.',
+        'Record git state, changed files, required gates, browser-in-loop proof when a URL is supplied, and final shippability verdict before any TEL deploy.',
       ].join('\n'),
       expected_artifact: 'codex.proof.json',
     },
@@ -819,12 +830,17 @@ function check() {
       dir,
       '--phase',
       'codex_proof',
+      '--browser-url',
+      'data:text/html,<title>handoff proof</title><main>ok</main>',
     ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
     if (proofExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(proofExec.stdout)) {
       throw new Error(`codex proof execute failed: ${proofExec.stdout || proofExec.stderr}`);
     }
     const codexProof = readJson(path.join(dir, 'codex.proof.json'));
-    if (codexProof.source !== 'offline_fixture' || codexProof.live_lane_call !== false) throw new Error('offline codex proof fixture not labeled');
+    if (codexProof.live_lane_call !== false) throw new Error('offline codex proof fixture not labeled');
+    if (!codexProof.browser_in_loop?.required) throw new Error('browser-in-loop proof was not required');
+    if (!codexProof.browser_in_loop?.proofs?.[0]?.ok) throw new Error('browser-in-loop proof did not pass');
+    if (!fs.existsSync(path.join(dir, 'browser.proof.1.json'))) throw new Error('browser proof artifact not written');
     const deployExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -1434,6 +1450,71 @@ function runProofCommand(commandLine, timeout = 120000) {
   };
 }
 
+function browserProofUrls(dir) {
+  const urls = values('browser-url').flatMap((item) => item.split(',')).map((item) => item.trim()).filter(Boolean);
+  const implementationFile = path.join(dir, 'implementation.result.json');
+  if (fs.existsSync(implementationFile)) {
+    const implementation = readJson(implementationFile);
+    for (const item of implementation.browser_proof || []) {
+      if (typeof item === 'string' && /^(https?:|data:|file:)/.test(item)) urls.push(item);
+      else if (item && typeof item.url === 'string') urls.push(item.url);
+    }
+  }
+  return Array.from(new Set(urls));
+}
+
+function runBrowserProofs(dir, handoff) {
+  const urls = browserProofUrls(dir);
+  if (!urls.length) return [];
+  return urls.map((url, index) => {
+    const artifact = `browser.proof.${index + 1}.json`;
+    if (process.env.CC_DESIGN_HANDOFF_BROWSER_OFFLINE === '1' || process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') {
+      const proof = {
+        healthy: true,
+        mode: 'offline_fixture',
+        url,
+        session: `${handoff.mission_id}-browser-${index + 1}`,
+        proof: {
+          nonce: `offline-${index + 1}`,
+          origin: url,
+          content: 'offline browser proof fixture',
+          truncated: false,
+        },
+      };
+      writeJson(path.join(dir, artifact), proof);
+      return {
+        command: `cc-browser-proof --json --url ${JSON.stringify(url)}`,
+        ok: true,
+        exit_code: 0,
+        artifact,
+        output: 'offline browser proof fixture',
+      };
+    }
+    const res = run(path.join(root, 'bin', 'cc-browser-proof'), [
+      '--json',
+      '--url',
+      url,
+      '--session',
+      `${handoff.mission_id}-browser-${index + 1}`,
+      '--max-chars',
+      value('browser-max-chars', '8000'),
+    ], { timeout: 120000, maxBuffer: 1024 * 1024 * 8 });
+    const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+    fs.writeFileSync(path.join(dir, artifact), `${raw}\n`);
+    const parsed = extractJson(raw);
+    const healthy = parsed?.healthy === true;
+    return {
+      command: `cc-browser-proof --json --url ${url}`,
+      ok: res.status === 0 && healthy,
+      exit_code: res.status || 0,
+      artifact,
+      mode: parsed?.mode || 'unknown',
+      healthy,
+      output: raw.slice(0, 12000),
+    };
+  });
+}
+
 function offlineCodexProof(handoff) {
   return {
     schema: 'ai-coding-os.codex-proof.v1',
@@ -1454,13 +1535,15 @@ function offlineCodexProof(handoff) {
 }
 
 function runCodexProof(dir, handoff) {
-  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, proof: offlineCodexProof(handoff) };
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1' && !browserProofUrls(dir).length) return { ok: true, proof: offlineCodexProof(handoff) };
   const commands = [
     'git status --short',
     'git diff --stat',
     'bin/cc-frontend-wedge-check',
     'bin/cc-taste-benchmark-check',
   ].map((cmd) => runProofCommand(cmd));
+  const browserProofs = runBrowserProofs(dir, handoff);
+  commands.push(...browserProofs);
   const statusOutput = commands.find((item) => item.command === 'git status --short')?.output || '';
   const changedFiles = statusOutput.split('\n').map((line) => line.trim()).filter(Boolean);
   const failed = commands.filter((item) => !item.ok);
@@ -1473,10 +1556,19 @@ function runCodexProof(dir, handoff) {
       request: handoff.request,
       generated_at: now(),
       source: 'codex-local',
-      live_lane_call: true,
+      live_lane_call: process.env.CC_DESIGN_HANDOFF_OFFLINE === '1' ? false : true,
       verdict: failed.length ? 'blocked_failed_local_proof' : 'ready_for_tel_deploy_gate',
       changed_files: changedFiles,
       commands,
+      browser_in_loop: {
+        required: browserProofs.length > 0,
+        proofs: browserProofs.map((item) => ({
+          artifact: item.artifact,
+          ok: item.ok,
+          mode: item.mode || null,
+          healthy: item.healthy ?? null,
+        })),
+      },
       required_next_gate: failed.length ? 'fix_failed_codex_proof_commands' : 'human_approves_credentialed_deploy',
     },
   };

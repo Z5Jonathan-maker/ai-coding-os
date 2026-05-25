@@ -98,6 +98,7 @@ Maintainer/full-stack checks:
 ```sh
 bin/cc-ai-checks
 bin/cc-product-readiness
+bin/cc-maintainer-stack
 bin/cc-kimi-status
 ```
 

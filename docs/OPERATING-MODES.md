@@ -56,6 +56,13 @@ In this mode the same handoff phases can call real specialist lanes:
 Maintainer mode should be judged by daily-use reliability, latency, proof
 quality, and whether the cockpit reduces cognitive load.
 
+Check the live seam with:
+
+```sh
+cc-maintainer-stack
+cc-maintainer-stack --strict
+```
+
 ## Quality Standard
 
 The system is internal, but it is held to public-product quality because that is

@@ -79,6 +79,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-launchd-install` — render and install LaunchAgents with the current user's home path.
 - `cc-launchd-inventory` — classify tracked LaunchAgents as rendered, template, or local-only.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
+- `cc-maintainer-stack` — non-mutating seam report for live maintainer-only tools: router-ask, provider CLIs, Kimi WebBridge, cc-router, cc-image, and TEL client.
 - `cc-agent-runtime` — thin mission runtime adapter that turns a typed `AgentRunInput` into Mission Kernel route, trust, cost, proof, result, and timeline artifacts; supports `local_process` and isolated `worktree` adapters.
 - `cc-mission-events` — validate, append, and replay normalized Mission Kernel timeline events and complete runtime run stages.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).

@@ -3,6 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const benchmarkPath = path.join(root, 'fixtures', 'frontend-wedge', 'premium-landing', 'taste.benchmark.json');
@@ -43,6 +44,8 @@ console.log(`Root: ${root}`);
 
 expect(fs.existsSync(benchmarkPath), 'taste benchmark fixture exists');
 expect(fs.existsSync(competitivePath), 'competitive benchmark fixture exists');
+const cliCheck = spawnSync(path.join(root, 'bin', 'cc-competitive-benchmark'), ['check', '--json'], { encoding: 'utf8' });
+expect(cliCheck.status === 0, 'competitive benchmark CLI check passes', `${cliCheck.stdout || ''}${cliCheck.stderr || ''}`);
 const benchmark = JSON.parse(fs.readFileSync(benchmarkPath, 'utf8'));
 expect(benchmark.schema === 'ai-coding-os.taste-benchmark.v1', 'schema valid');
 expect(Number.isFinite(benchmark.threshold) && benchmark.threshold >= 80 && benchmark.threshold <= 100, 'threshold valid');

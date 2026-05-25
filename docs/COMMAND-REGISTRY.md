@@ -51,6 +51,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-cockpit-visual-diff` — cockpit screenshot visual-regression gate with decoded PNG pixel samples, perceptual hash, luma scoring, and diagnostic file-hash/byte drift.
 - `cc-cockpit-walkthrough-check` — tracked cockpit walkthrough MP4 and source-frame manifest proof.
 - `cc-cockpit-webview-smoke` — static webview/package smoke gate for cockpit continuation UI, result stream, assets, startup-safe activation, and npm audit.
+- `cc-competitive-benchmark` — create, attach, score, and validate same-brief competitor evidence for the taste-driven frontend wedge.
 - `cc-context-meter` — context-window pressure, diff size, output reserve, available-token estimate; supports `--json`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
 - `cc-creative-kernel-check` — verifies the Creative Direction Kernel, cognitive design routes, design DNA fields, and taste validation scores.

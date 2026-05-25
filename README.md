@@ -109,6 +109,7 @@ Focused wedge proof:
 bin/cc-design-handoff --check
 bin/cc-frontend-wedge-check
 bin/cc-taste-benchmark-check
+bin/cc-competitive-benchmark check
 bin/cc-cockpit-webview-smoke
 ```
 
@@ -124,7 +125,9 @@ The same-brief competitor benchmark lives at
 compares this workflow against v0, Lovable, and Bolt as an artifact review. It
 is not a live SaaS benchmark unless fresh competitor outputs are attached.
 External competitors cannot carry numeric scores unless current-run prompt,
-screenshot/source, and review artifacts are present.
+screenshot/source, and review artifacts are present. Use
+`cc-competitive-benchmark create|attach|score|check` to manage that evidence
+instead of editing benchmark scores by hand.
 
 ## VS Code Cockpit
 

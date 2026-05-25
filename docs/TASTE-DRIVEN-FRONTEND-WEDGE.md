@@ -117,3 +117,14 @@ a same-brief artifact review unless current live competitor outputs are
 regenerated and attached. External tools cannot carry numeric scores until
 their current-run prompt, screenshot/source, and review artifacts are attached
 under `fixtures/frontend-wedge/premium-landing/competitor-artifacts/`.
+`cc-competitive-benchmark` is the evidence manager:
+
+```sh
+cc-competitive-benchmark create "premium peptide landing page"
+cc-competitive-benchmark attach --tool v0 --prompt prompt.md --screenshot v0.png --review review.json
+cc-competitive-benchmark score --tool v0
+cc-competitive-benchmark check
+```
+
+The check blocks unsupported external scores and requires prompt, review, and
+screenshot/source/code evidence before an external competitor can be scored.

@@ -616,7 +616,8 @@ class CockpitProvider {
         message.prompt,
         Boolean(message.includeContext),
         message.contextBlock || '',
-        message.permissionMode || 'review'
+        message.permissionMode || 'review',
+        message.executionMode || 'execute'
       );
       return;
     }
@@ -873,16 +874,17 @@ class CockpitProvider {
     });
   }
 
-  runPrompt(mode, prompt, includeContext = false, contextBlock = '', permissionMode = 'review') {
+  runPrompt(mode, prompt, includeContext = false, contextBlock = '', permissionMode = 'review', executionMode = 'execute') {
     const clean = String(prompt || '').trim();
     if (!clean) {
       vscode.window.showInformationMessage('Enter a prompt in the AI Cockpit first.');
       return;
     }
     const permission = permissionInstruction(permissionMode);
+    const execution = executionInstruction(executionMode);
     const routeTask = includeContext && contextBlock ? `${clean}${contextBlock}` : clean;
-    const runTask = permission
-      ? `${routeTask}\n\n---\nCOCKPIT RUN POLICY\n${permission}`
+    const runTask = permission || execution
+      ? `${routeTask}\n\n---\nCOCKPIT RUN POLICY\n${[execution, permission].filter(Boolean).join('\n')}`
       : routeTask;
     if (mode === 'explainRoute') {
       this.runInlineStream('Explain Route', `cc-route --dry-run ${quote(routeTask)}`);
@@ -1060,6 +1062,13 @@ class CockpitProvider {
           </div>
         </div>
         <div class="control-group permission-control">
+          <div class="control-label" id="executionSummary">Workflow: Execute</div>
+          <div class="modebar workflowbar" role="group" aria-label="Workflow mode">
+            <button class="mode" data-execution-mode="plan" aria-pressed="false">Plan</button>
+            <button class="mode active" data-execution-mode="execute" aria-pressed="true">Execute</button>
+            <button class="mode" data-execution-mode="review" aria-pressed="false">Review</button>
+            <button class="mode" data-execution-mode="debug" aria-pressed="false">Debug</button>
+          </div>
           <div class="control-label" id="permissionSummary">Authority: Review</div>
           <div class="permissionbar" role="group" aria-label="Permission mode">
             <button class="permission" data-permission="ask" aria-pressed="false"><strong>Ask</strong><span>Confirm writes</span></button>
@@ -1296,6 +1305,16 @@ function permissionInstruction(mode) {
     autopilot: 'Cockpit permission mode: Autopilot. Continue through safe local implementation and verification without extra prompts; still stop for paid, credential, destructive, or cross-user actions.',
   };
   return modes[mode] || modes.review;
+}
+
+function executionInstruction(mode) {
+  const modes = {
+    plan: 'Cockpit workflow mode: Plan. Produce a concise implementation plan and required checks before mutating files.',
+    execute: 'Cockpit workflow mode: Execute. Make the smallest correct change, then run the relevant verification.',
+    review: 'Cockpit workflow mode: Review. Inspect diffs, risks, missing tests, and regressions before proposing changes.',
+    debug: 'Cockpit workflow mode: Debug. Reproduce first, isolate root cause, then patch and verify.',
+  };
+  return modes[mode] || modes.execute;
 }
 
 function normalizeTrustGate(text) {

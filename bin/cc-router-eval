@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+const fixture = process.env.CC_ROUTER_EVAL_FIXTURE || path.join(root, 'fixtures', 'router', 'eval.json');
+
+function has(name) { return args.includes(`--${name}`); }
+function run(prompt) {
+  const res = spawnSync(path.join(root, 'bin', 'cc-route'), ['--json', prompt], {
+    cwd: root,
+    encoding: 'utf8',
+    timeout: 15000,
+    maxBuffer: 1024 * 1024,
+  });
+  if (res.status !== 0) return { ok: false, error: `${res.stdout || ''}${res.stderr || ''}`.trim() };
+  try { return { ok: true, receipt: JSON.parse(res.stdout) }; } catch (err) { return { ok: false, error: err.message }; }
+}
+
+function main() {
+  const data = JSON.parse(fs.readFileSync(fixture, 'utf8'));
+  const cases = data.cases || [];
+  const results = cases.map((item) => {
+    const routed = run(item.prompt);
+    const actual = routed.receipt?.final_class || '';
+    const platform = routed.receipt?.platform || '';
+    return {
+      id: item.id,
+      prompt: item.prompt,
+      expected_class: item.expected_class,
+      expected_platform: item.expected_platform || '',
+      actual_class: actual,
+      actual_platform: platform,
+      ok: routed.ok && actual === item.expected_class && (!item.expected_platform || platform === item.expected_platform),
+      error: routed.error || null,
+    };
+  });
+  const passed = results.filter((r) => r.ok).length;
+  const failed = results.length - passed;
+  if (has('json')) {
+    console.log(JSON.stringify({ schema: 'ai-coding-os.router-eval.v1', fixture, passed, failed, results }, null, 2));
+  } else {
+    console.log('# Router Eval\n');
+    for (const r of results) {
+      console.log(`${r.ok ? 'ok  ' : 'fail'} ${r.id} expected=${r.expected_class}/${r.expected_platform || '*'} actual=${r.actual_class}/${r.actual_platform}`);
+    }
+    console.log(`\nScore: ${passed}/${results.length}`);
+    console.log(failed ? 'Status: router-eval-blocked' : 'Status: router-eval-ready');
+  }
+  process.exit(failed ? 1 : 0);
+}
+
+main();

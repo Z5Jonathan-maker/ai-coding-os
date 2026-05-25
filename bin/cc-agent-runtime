@@ -17,7 +17,7 @@ const command = args[0] && !args[0].startsWith('--') ? args[0] : 'run';
 const runtimeStatuses = ['starting', 'running', 'paused', 'error', 'missing'];
 const executionStatuses = ['queued', 'planning', 'acting', 'waiting_permission', 'verifying', 'done', 'failed'];
 const startupPhases = ['preflight', 'trust_check', 'route', 'context_pack', 'launch', 'ready', 'error'];
-const adapterTypes = ['local_process', 'worktree'];
+const adapterTypes = ['local_process', 'worktree', 'docker'];
 const requiredEvents = [
   'preflight.started',
   'trust.decided',
@@ -185,6 +185,19 @@ function changedFiles(cwd) {
 }
 
 function adapterWorkdir(input) {
+  if (input.adapter_type === 'docker') {
+    return {
+      cwd: input.cwd,
+      repo: input.repo,
+      cleanup: () => null,
+      setup: null,
+      metadata: {
+        adapter_type: 'docker',
+        available: spawnSync('docker', ['--version'], { encoding: 'utf8' }).status === 0,
+        image: value('docker-image', 'alpine:3.20'),
+      },
+    };
+  }
   if (input.adapter_type !== 'worktree') {
     return {
       cwd: input.cwd,
@@ -392,7 +405,14 @@ function runAdapter(input) {
       if (!adapter.setup.ok) runtimeErrors.push(adapter.setup.output || `worktree setup exited ${adapter.setup.status}`);
     }
 
-    const adapterCommand = input.command || value('command', `printf 'agent-runtime:%s\\n' ${quote(input.mission_id)}`);
+    let adapterCommand = input.command || value('command', `printf 'agent-runtime:%s\\n' ${quote(input.mission_id)}`);
+    if (input.adapter_type === 'docker') {
+      if (!adapter.metadata.available) {
+        runtimeErrors.push('docker adapter requested but docker is not available');
+      } else {
+        adapterCommand = `docker run --rm -v ${quote(input.repo)}:/workspace -w /workspace ${quote(adapter.metadata.image || 'alpine:3.20')} /bin/sh -lc ${quote(adapterCommand)}`;
+      }
+    }
     event('tool.requested', 'Shell tool requested.', [adapterCommand]);
     const exec = runtimeErrors.length ? { ok: false, status: 1, command: adapterCommand, output: 'adapter setup failed; tool skipped' } : runShell(adapterCommand, { cwd: adapter.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
     commands.push({ kind: 'adapter', command: adapterCommand, exit_code: exec.status, ok: exec.ok, output: exec.output });
@@ -530,6 +550,17 @@ function check() {
       console.error('worktree adapter leaked fixture into source repo');
       process.exit(1);
     }
+    validateInput(buildInput({
+      mission_id: 'agent-runtime-docker-contract-check',
+      title: 'Agent runtime docker contract check',
+      task: 'Validate docker adapter contract shape',
+      repo: root,
+      cwd: root,
+      adapter_type: 'docker',
+      parent_mission_id: null,
+      command: 'printf docker-runtime-fixture',
+      verify_command: 'true',
+    }));
   } finally {
     if (originalDir == null) delete process.env.CC_MISSION_KERNEL_DIR;
     else process.env.CC_MISSION_KERNEL_DIR = originalDir;

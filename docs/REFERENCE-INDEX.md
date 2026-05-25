@@ -11,6 +11,8 @@ This file keeps secondary proof and reference material out of the README.
 - `MISSION-GIT-STATE.md`
 - `MISSION-CONDENSER.md`
 - `TRIGGERED-MICROAGENTS.md`
+- `ROUTER-EVAL.md`
+- `MCP-SERVER.md`
 - `BROWSER-IN-LOOP-PROOF.md`
 - `TASTE-DRIVEN-FRONTEND-WEDGE.md`
 - `CREATIVE-DIRECTION-KERNEL.md`

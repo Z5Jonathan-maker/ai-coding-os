@@ -196,6 +196,41 @@ function updateContextSummary(dir, proof) {
   return proof.context_summary;
 }
 
+function updateCostLedger(dir, handoff, proof) {
+  const res = run(path.join(root, 'bin', 'cc-token-ledger'), ['--json'], { timeout: 30000, maxBuffer: 1024 * 1024 * 4 });
+  const raw = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  if (res.status !== 0) {
+    proof.cost_ledger = {
+      artifact: null,
+      status: 'unavailable',
+      error: raw || `cc-token-ledger exited ${res.status}`,
+      updated_at: now(),
+    };
+    return proof.cost_ledger;
+  }
+  const parsed = extractJson(raw) || {};
+  const ledger = {
+    schema: 'ai-coding-os.mission-cost-ledger.v1',
+    mission_id: handoff.mission_id,
+    generated_at: now(),
+    source: parsed.source || '',
+    fixture: Boolean(parsed.fixture),
+    window: parsed.window || 0,
+    totals: parsed.totals || {},
+    by_lane: parsed.by_lane || {},
+    by_platform: parsed.by_platform || {},
+  };
+  writeJson(path.join(dir, 'cost.ledger.json'), ledger);
+  proof.cost_ledger = {
+    artifact: 'cost.ledger.json',
+    source: ledger.source,
+    estimated_cost_usd: ledger.totals.cost ?? null,
+    tokens: ledger.totals.tokens ?? null,
+    updated_at: ledger.generated_at,
+  };
+  return proof.cost_ledger;
+}
+
 function triggeredMicroagents(handoff, phase, promptText) {
   if (has('no-microagents') || process.env.CC_DESIGN_HANDOFF_NO_MICROAGENTS === '1') return [];
   const res = run(path.join(root, 'bin', 'cc-triggered-microagents'), [
@@ -896,6 +931,7 @@ function check() {
     if (!implPhase.git_ledger?.length) throw new Error('mission git ledger missing from implementation phase');
     const proofAfterImpl = readJson(path.join(dir, 'proof.bundle.json'));
     if (proofAfterImpl.context_summary?.artifact !== 'mission.context-summary.json') throw new Error('mission condenser summary missing from proof bundle');
+    if (proofAfterImpl.cost_ledger?.artifact !== 'cost.ledger.json') throw new Error('mission cost ledger missing from proof bundle');
     const reviewExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -2059,6 +2095,7 @@ function executeStage() {
   }
   addCheckpointRecord(phase, createPhaseCheckpoint(root, handoff, phase, 'post'));
   updateContextSummary(dir, proof);
+  updateCostLedger(dir, handoff, proof);
   addMissionGitRecord(phase, proof, recordMissionGit(root, dir, handoff, phase, artifact));
   if (phase.id === 'kimi_implementation' && targetRepo) {
     addMissionGitRecord(phase, proof, recordMissionGit(targetRepo, targetRepo, handoff, phase, ''));
@@ -2075,6 +2112,7 @@ function executeStage() {
     checkpoints: phase.checkpoints || [],
     git_ledger: phase.git_ledger || [],
     context_summary: proof.context_summary || null,
+    cost_ledger: proof.cost_ledger || null,
     status: blocked ? 'blocked' : 'completed',
   };
   if (has('json')) {

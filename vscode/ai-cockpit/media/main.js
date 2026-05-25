@@ -2,6 +2,7 @@
   const vscode = acquireVsCodeApi();
   const $ = (id) => document.getElementById(id);
   let selectedMode = 'autoRun';
+  let executionMode = 'execute';
   let permissionMode = 'review';
   let contextBlock = '';
   let attached = [];
@@ -71,6 +72,17 @@
       return;
     }
 
+    const executionButton = event.target.closest('button[data-execution-mode]');
+    if (executionButton) {
+      executionMode = executionButton.dataset.executionMode;
+      document.querySelectorAll('button[data-execution-mode]').forEach((button) => {
+        button.classList.toggle('active', button.dataset.executionMode === executionMode);
+        button.setAttribute('aria-pressed', String(button.dataset.executionMode === executionMode));
+      });
+      $('executionSummary').textContent = `Workflow: ${executionButton.textContent.trim()}`;
+      return;
+    }
+
     const resultAction = event.target.closest('button[data-result-action]');
     if (resultAction) {
       const action = resultAction.dataset.resultAction;
@@ -98,6 +110,7 @@
         command: 'runPrompt',
         mode: selectedMode,
         prompt,
+        executionMode,
         permissionMode,
         includeContext: $('includeContext').checked,
         contextBlock: fullContext(),
@@ -126,6 +139,7 @@
         command: 'runPrompt',
         mode: runButton.dataset.run,
         prompt,
+        executionMode,
         permissionMode,
         includeContext: includeContextChecked(),
         contextBlock: fullContext(),
@@ -141,6 +155,7 @@
         command: 'runPrompt',
         mode: selectedMode,
         prompt,
+        executionMode,
         permissionMode,
         includeContext: includeContextChecked(),
         contextBlock: fullContext(),
@@ -171,6 +186,7 @@
         command: 'runPrompt',
         mode: selectedMode,
         prompt,
+        executionMode,
         permissionMode,
         includeContext: includeContextChecked(),
         contextBlock: fullContext(),

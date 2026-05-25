@@ -1,0 +1,30 @@
+{
+  "schema": "ai-coding-os.router-eval-fixture.v1",
+  "cases": [
+    { "id": "image-hero", "prompt": "Generate a cinematic hero background reference image for a biotech landing page", "expected_class": "image", "expected_platform": "chatgpt" },
+    { "id": "image-product", "prompt": "Create canonical product listing images from this brand reference", "expected_class": "image", "expected_platform": "chatgpt" },
+    { "id": "design-kimi", "prompt": "Implement the approved reference image as a responsive landing page", "expected_class": "design", "expected_platform": "kimi" },
+    { "id": "browser-proof", "prompt": "Open the local website in browser and screenshot the checkout layout", "expected_class": "design", "expected_platform": "kimi" },
+    { "id": "ui-polish", "prompt": "Redesign the cockpit UI spacing and visual hierarchy", "expected_class": "design", "expected_platform": "kimi" },
+    { "id": "security-review", "prompt": "Audit this auth flow for security and trust policy risks", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "architecture", "prompt": "Review the runtime architecture and identify race conditions", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "compliance", "prompt": "Check RUO compliance copy and regulated health claims", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "bulk-json", "prompt": "Extract this transcript into compact JSON metadata", "expected_class": "cheap", "expected_platform": "deepseek" },
+    { "id": "summary", "prompt": "Summarize these 40 markdown files into one concise brief", "expected_class": "cheap", "expected_platform": "deepseek" },
+    { "id": "dedupe", "prompt": "Deduplicate these routing fixture rows", "expected_class": "cheap", "expected_platform": "deepseek" },
+    { "id": "code-fix", "prompt": "Fix the failing TypeScript test in the repo", "expected_class": "codex", "expected_platform": "codex" },
+    { "id": "script", "prompt": "Implement a shell script and run its tests", "expected_class": "codex", "expected_platform": "codex" },
+    { "id": "api", "prompt": "Add an API schema migration and update backend logic", "expected_class": "codex", "expected_platform": "codex" },
+    { "id": "long-context", "prompt": "Perform a large repository audit with citations and architecture risks", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "route-correctness", "prompt": "Debug routing correctness and fallback chains", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "visual-concept", "prompt": "Show me an example of a premium SaaS dashboard direction", "expected_class": "image", "expected_platform": "chatgpt" },
+    { "id": "k2-webbridge", "prompt": "Use WebBridge to click through the app and verify the modal", "expected_class": "design", "expected_platform": "kimi" },
+    { "id": "compression", "prompt": "Compress this context packet into a smaller summary", "expected_class": "cheap", "expected_platform": "deepseek" },
+    { "id": "refactor", "prompt": "Refactor the Node runtime adapter and update checks", "expected_class": "codex", "expected_platform": "codex" },
+    { "id": "canonical-assets", "prompt": "Generate canonical brand assets and product mockups", "expected_class": "image", "expected_platform": "chatgpt" },
+    { "id": "frontend-component", "prompt": "Build this React component from the approved image reference", "expected_class": "design", "expected_platform": "kimi" },
+    { "id": "hard-debug", "prompt": "Find the root cause of this distributed auth race", "expected_class": "precision", "expected_platform": "claude" },
+    { "id": "json-transform", "prompt": "Transform these rows into normalized JSON", "expected_class": "cheap", "expected_platform": "deepseek" },
+    { "id": "verify-code", "prompt": "Verify the code changes and run local proof commands", "expected_class": "codex", "expected_platform": "codex" }
+  ]
+}

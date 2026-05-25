@@ -10,6 +10,7 @@ const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const fixtureLog = process.env.CC_TOKEN_LEDGER_FIXTURE || path.join(root, 'fixtures', 'router', 'tier-usage.jsonl');
 const windowSize = Number.parseInt(process.env.CC_TOKEN_LEDGER_WINDOW || '100', 10);
 const checkOnly = process.argv.includes('--check');
+const jsonOnly = process.argv.includes('--json');
 
 const tokenPricePerM = {
   chat: 0,
@@ -122,6 +123,19 @@ if (!rows.length) {
 }
 
 const { totals, byLane, byPlatform } = summarize(rows);
+
+if (jsonOnly) {
+  console.log(JSON.stringify({
+    schema: 'ai-coding-os.token-ledger.v1',
+    source,
+    fixture,
+    window: totals.calls,
+    totals,
+    by_lane: byLane,
+    by_platform: byPlatform,
+  }, null, 2));
+  process.exit(0);
+}
 
 if (!checkOnly) {
   console.log('# Token Ledger\n');

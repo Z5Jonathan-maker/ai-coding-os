@@ -1,0 +1,83 @@
+#!/usr/bin/env node
+'use strict';
+
+const { spawnSync } = require('child_process');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function run(command, timeout = 20000) {
+  const res = spawnSync('/bin/zsh', ['-lc', command], {
+    cwd: root,
+    encoding: 'utf8',
+    timeout,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root },
+  });
+  return { ok: res.status === 0, code: res.status, text: `${res.stdout || ''}${res.stderr || ''}`.trim() };
+}
+
+const tools = {
+  doctor: {
+    description: 'Run the daily-driver health report.',
+    inputSchema: { type: 'object', properties: {} },
+    call: () => run('bin/cc-doctor', 60000).text,
+  },
+  route_plan: {
+    description: 'Return an in-tree route receipt for a prompt.',
+    inputSchema: { type: 'object', properties: { prompt: { type: 'string' } }, required: ['prompt'] },
+    call: (input) => run(`bin/cc-route --json ${JSON.stringify(input.prompt || '')}`, 15000).text,
+  },
+  design_handoff_status: {
+    description: 'Return status for a design handoff directory.',
+    inputSchema: { type: 'object', properties: { dir: { type: 'string' } }, required: ['dir'] },
+    call: (input) => run(`bin/cc-design-handoff status --json --dir ${JSON.stringify(input.dir || '')}`, 20000).text,
+  },
+};
+
+function respond(id, result) {
+  process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', id, result })}\n`);
+}
+
+function error(id, code, message) {
+  process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } })}\n`);
+}
+
+function handle(msg) {
+  if (msg.method === 'initialize') {
+    respond(msg.id, { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'ai-coding-os', version: '0.1.0' } });
+  } else if (msg.method === 'tools/list') {
+    respond(msg.id, { tools: Object.entries(tools).map(([name, tool]) => ({ name, description: tool.description, inputSchema: tool.inputSchema })) });
+  } else if (msg.method === 'tools/call') {
+    const name = msg.params?.name;
+    const tool = tools[name];
+    if (!tool) return error(msg.id, -32602, `unknown tool: ${name}`);
+    const text = tool.call(msg.params?.arguments || {});
+    respond(msg.id, { content: [{ type: 'text', text }] });
+  } else if (msg.id != null) {
+    error(msg.id, -32601, `unknown method: ${msg.method}`);
+  }
+}
+
+function check() {
+  const listed = Object.keys(tools);
+  if (!listed.includes('doctor') || !listed.includes('route_plan') || !listed.includes('design_handoff_status')) throw new Error('missing tools');
+  console.log('Status: mcp-server-ready');
+}
+
+if (args.includes('--check')) check();
+else {
+  let buffer = '';
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', (chunk) => {
+    buffer += chunk;
+    let idx;
+    while ((idx = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, idx).trim();
+      buffer = buffer.slice(idx + 1);
+      if (!line) continue;
+      try { handle(JSON.parse(line)); } catch (err) { error(null, -32700, err.message); }
+    }
+  });
+}

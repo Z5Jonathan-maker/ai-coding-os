@@ -89,6 +89,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).
 - `cc-mission-condenser` — OpenHands-inspired mission context condenser that keeps first/recent events and writes `mission.context-summary.json`.
 - `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
+- `cc-mcp-server` — stdio MCP surface exposing doctor, route planning, and design handoff status to external agents.
 - `cc-mutating-dogfood` — isolated mutating coding-session proof with failing tests, real edits, recovery, review evidence, Mission Events, and commits.
 - `cc-native-app-status` — installed native AI app versions and role map.
 - `cc-package-cockpit` — validate and package the native VS Code cockpit as a VSIX.
@@ -100,6 +101,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-repo-map` — Aider-inspired ranked repo map with entrypoints, changed files, symbols, scores, and `--json` output.
 - `cc-repo-index` — compact workspace index for cockpit context and repo inspection.
 - `cc-route` — in-tree route-decision CLI backed by `ai-lanes.json`; emits router-compatible dry-run receipts without private `AI-SYSTEM-V2`.
+- `cc-router-eval` — 25-case private routing eval harness for lane-classifier drift.
 - `cc-router-receipt` — latest router decision, fallback, quota, token receipt.
 - `cc-router-degradation-check` — degraded-provider replay fixture plus live dry-run fallback-chain shape check.
 - `cc-router-metrics` — router usage, fallback, failure, token, and session metrics.

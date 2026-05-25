@@ -80,7 +80,7 @@ function classify(prompt, purpose) {
     ['image', /\b(generate (an? )?image|create (an? )?image|generate.*(hero|background|logo|asset|mockup)|show me an example|visual concept|style reference|creative direction|canonical|product listing|image 2\.0)\b/],
     ['design', /\b(redesign|design|ui\/ux|ui|ux|layout|landing page|dashboard|frontend|component|responsive|browser|screenshot|webbridge|click|open https?:|hero|hero background|approved image)\b/],
     ['precision', /\b(security|audit|architecture|architectural|review|qa|debug|hard debug|root cause|race|distributed|auth race|trust|permission|policy|compliance|routing correctness|global config)\b/],
-    ['cheap', /\b(summarize|summary|extract|json|metadata|dedupe|classify|compress|bulk|transform)\b/],
+    ['cheap', /\b(summarize|summary|extract|json|metadata|dedupe|deduplicate|classify|compress|bulk|transform)\b/],
     ['codex', /\b(code|coding|repo|file|script|implement|fix|bug|test|lint|build|refactor|typescript|javascript|python|react|next\.js|api|schema)\b/],
   ];
   const hit = rules.find(([, regex]) => regex.test(text));

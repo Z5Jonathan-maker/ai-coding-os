@@ -67,13 +67,14 @@ Current:
 - `worktree`: temporary git worktree execution for risky or long-running
   missions. The source repo stays untouched; changed files are captured from
   the isolated worktree before cleanup.
+- `docker`: container adapter contract. If Docker/OrbStack is available, the
+  command runs inside an ephemeral container with the repo mounted at
+  `/workspace`. If Docker is unavailable, the adapter fails loudly instead of
+  silently falling back to host execution.
 
 Future-compatible:
 
-- `sandbox`: optional container or VM boundary for untrusted repo tasks
-
-Do not add Docker-first runtime complexity until dogfood proof shows local
-process isolation is insufficient.
+- `remote`: optional remote runtime boundary for long-running or cloud tasks.
 
 ## Usage
 

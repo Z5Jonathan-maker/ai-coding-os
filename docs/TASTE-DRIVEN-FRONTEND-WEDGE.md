@@ -62,6 +62,7 @@ The sequential Image 2.0 asset decomposition gate is `cc-asset-kit-check`.
 ```sh
 cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
+cc-design-handoff continue --dir .ai/design-handoffs/<mission>
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
 ```
 
@@ -71,8 +72,11 @@ This command creates the mission artifact spine for the actual wedge:
 - `route.receipt.json`
 - `design-handoff.json`
 - `agent.timeline.json`
+- `next-action.json`
 - `proof.bundle.json`
 
 It does not pretend to generate images or deploy. It opens the first approval
 gate: generate or attach `visual.target.png`, approve it, then continue through
 asset decomposition, Kimi implementation, Claude review, and TEL deploy.
+`continue` emits a lane-specific action packet for the current phase instead of
+pretending to call Image 2.0, Kimi, Claude, or TEL automatically.

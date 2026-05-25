@@ -8,7 +8,7 @@ const { spawnSync } = require('child_process');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
-const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'status', 'approve'].includes(args[0]) ? args[0] : 'create';
+const subcommand = args[0] && !args[0].startsWith('--') && ['create', 'status', 'continue', 'approve'].includes(args[0]) ? args[0] : 'create';
 
 function has(name) {
   return args.includes(`--${name}`);
@@ -148,6 +148,100 @@ function nextActionFor(handoff) {
   if (active) return `Continue ${active.id} through ${active.owner_lane}.`;
   const blocked = (handoff.phases || []).find((phase) => phase.status.startsWith('blocked_'));
   return blocked ? `Resolve blocker for ${blocked.id}: ${blocked.status}.` : 'All handoff phases are approved or completed.';
+}
+
+function activePhase(handoff) {
+  return (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'))
+    || (handoff.phases || []).find((phase) => phase.status.startsWith('blocked_'))
+    || null;
+}
+
+function actionPacket(handoff, phase) {
+  const base = {
+    schema: 'ai-coding-os.design-handoff-action.v1',
+    mission_id: handoff.mission_id,
+    phase: phase?.id || 'complete',
+    owner_lane: phase?.owner_lane || 'codex',
+    status: phase?.status || 'complete',
+    blocks_execution: false,
+    requires_human_approval: false,
+    command: null,
+    prompt: '',
+    expected_artifact: phase?.output || null,
+  };
+  if (!phase) {
+    return { ...base, prompt: 'All phases are complete. Run final product/release review before shipping.' };
+  }
+  const packets = {
+    creative_reference: {
+      blocks_execution: true,
+      requires_human_approval: true,
+      prompt: [
+        `Create a premium visual reference for: ${handoff.request}`,
+        'Treat this as creative direction, not implementation.',
+        'Output one strong full reference image first. Do not extract assets yet.',
+        'After approval, keep the same image thread for sequential asset extraction.',
+      ].join('\n'),
+      expected_artifact: 'visual.target.png',
+    },
+    asset_decomposition: {
+      blocks_execution: true,
+      requires_human_approval: true,
+      prompt: [
+        'Using the approved visual.target.png in the same Image 2.0 thread, extract exactly one implementation asset at a time.',
+        'Start with the hero background only. Wait for approval before extracting button, divider, banner, surface, or texture assets.',
+        'Update creative.asset-kit.json with sequence, prompt, usage, and approval gate for each asset.',
+      ].join('\n'),
+      expected_artifact: 'creative.asset-kit.json',
+    },
+    design_dna: {
+      blocks_execution: true,
+      prompt: [
+        'Analyze the approved visual reference and asset kit.',
+        'Extract design DNA: visual density, section pacing, typography rhythm, surface language, shadow language, motion energy, emotional frame, and visual noise budget.',
+      ].join('\n'),
+      expected_artifact: 'design.dna.json',
+    },
+    kimi_implementation: {
+      command: 'router-ask purpose=ui_design < approved design handoff packet',
+      prompt: [
+        'Implement the approved visual reference and asset kit as production UI.',
+        'Use native text/buttons/forms in code. Do not reinvent the visual direction.',
+        'Preserve responsive composition, accessibility, and browser-verifiable layout.',
+      ].join('\n'),
+      expected_artifact: 'implementation.patch',
+    },
+    claude_review: {
+      command: 'router-ask purpose=precision < taste validation packet',
+      prompt: [
+        'Review implementation against visual.target.png, creative.asset-kit.json, and design.dna.json.',
+        'Score creative fidelity, hierarchy, rhythm, material quality, motion, responsiveness, accessibility, and implementation realism.',
+      ].join('\n'),
+      expected_artifact: 'taste.validation.json',
+    },
+    tel_deploy: {
+      blocks_execution: true,
+      requires_human_approval: true,
+      command: '~/.Codex/tel/client/tel-call.sh vercel deploy <args-json>',
+      prompt: [
+        'Deploy only after human approval and passing review.',
+        'Record deploy URL, provider, git SHA, rollback token/undo instructions, and verification result.',
+      ].join('\n'),
+      expected_artifact: 'deploy.receipt.json',
+    },
+  };
+  return { ...base, ...(packets[phase.id] || { prompt: nextActionFor(handoff) }) };
+}
+
+function requestStageFor(phaseId) {
+  return ({
+    creative_reference: 'creative.reference.requested',
+    asset_decomposition: 'asset.extraction.requested',
+    design_dna: 'design.dna.extracted',
+    kimi_implementation: 'implementation.requested',
+    claude_review: 'taste.requested',
+    tel_deploy: 'deploy.requested',
+  })[phaseId] || 'approval.requested';
 }
 
 function createHandoff() {
@@ -323,6 +417,13 @@ function check() {
     if (status.status !== 0 || !/Status: design-handoff-status-ready/.test(status.stdout)) {
       throw new Error(`status failed: ${status.stdout || status.stderr}`);
     }
+    const firstContinue = run(path.join(root, 'bin', 'cc-design-handoff'), ['continue', '--dir', dir], { timeout: 30000 });
+    if (firstContinue.status !== 0 || !/Status: design-handoff-continue-ready/.test(firstContinue.stdout)) {
+      throw new Error(`continue failed: ${firstContinue.stdout || firstContinue.stderr}`);
+    }
+    const firstPacket = readJson(path.join(dir, 'next-action.json'));
+    if (firstPacket.phase !== 'creative_reference') throw new Error(`unexpected first action phase ${firstPacket.phase}`);
+    if (firstPacket.owner_lane !== 'chatgpt-image') throw new Error(`unexpected first action lane ${firstPacket.owner_lane}`);
     const approval = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'approve',
       '--dir',
@@ -345,6 +446,11 @@ function check() {
     if (!approvedTimeline.events.some((item) => item.stage === 'creative.reference.approved')) {
       throw new Error('approval event not appended');
     }
+    const secondContinue = run(path.join(root, 'bin', 'cc-design-handoff'), ['continue', '--dir', dir, '--json'], { timeout: 30000 });
+    if (secondContinue.status !== 0) throw new Error(`second continue failed: ${secondContinue.stdout || secondContinue.stderr}`);
+    const secondPacket = JSON.parse(secondContinue.stdout);
+    if (secondPacket.phase !== 'asset_decomposition') throw new Error(`unexpected second action phase ${secondPacket.phase}`);
+    if (secondPacket.requires_human_approval !== true) throw new Error('asset decomposition must keep approval gate');
   } catch (err) {
     console.error(`cc-design-handoff check failed: ${err.message}`);
     process.exit(1);
@@ -433,7 +539,41 @@ function approvePhase() {
   }
 }
 
+function continueMission() {
+  const dir = missionDir();
+  const { files, handoff, timeline, proof } = loadMission(dir);
+  const phase = activePhase(handoff);
+  const packet = actionPacket(handoff, phase);
+  const packetFile = path.join(dir, 'next-action.json');
+  writeJson(packetFile, packet);
+  proof.next_action_packet = path.relative(dir, packetFile);
+  proof.next_required_action = packet.prompt.split('\n')[0] || nextActionFor(handoff);
+  writeJson(files.proofBundle, proof);
+  appendTimeline(files, timeline, event(handoff.mission_id, requestStageFor(packet.phase), `Next handoff action prepared for ${packet.phase}.`, {
+    phase: packet.phase,
+    owner_lane: packet.owner_lane,
+    expected_artifact: packet.expected_artifact,
+    requires_human_approval: packet.requires_human_approval,
+  }, ['next-action.json'], packet.owner_lane));
+
+  if (has('json')) {
+    console.log(JSON.stringify(packet, null, 2));
+    return;
+  }
+  console.log('# Design Handoff Continue\n');
+  console.log(`Mission: ${handoff.mission_id}`);
+  console.log(`Phase: ${packet.phase}`);
+  console.log(`Lane: ${packet.owner_lane}`);
+  console.log(`Expected artifact: ${packet.expected_artifact || '(none)'}`);
+  if (packet.command) console.log(`Command: ${packet.command}`);
+  if (packet.requires_human_approval) console.log('Approval: required');
+  console.log('\n## Prompt / Action\n');
+  console.log(packet.prompt);
+  console.log('\nStatus: design-handoff-continue-ready');
+}
+
 if (has('check')) check();
 else if (subcommand === 'status') showStatus();
+else if (subcommand === 'continue') continueMission();
 else if (subcommand === 'approve') approvePhase();
 else createHandoff();

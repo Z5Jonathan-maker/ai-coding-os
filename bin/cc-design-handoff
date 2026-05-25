@@ -175,6 +175,13 @@ function readArtifact(dir, artifact, max = 12000) {
   return fs.readFileSync(file, 'utf8').slice(0, max);
 }
 
+function writeTinyPng(file) {
+  fs.writeFileSync(file, Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMB/azl3H0AAAAASUVORK5CYII=',
+    'base64'
+  ));
+}
+
 function nextActionFor(handoff) {
   const active = (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'));
   if (active) return `Continue ${active.id} through ${active.owner_lane}.`;
@@ -208,6 +215,7 @@ function actionPacket(handoff, phase) {
     creative_reference: {
       blocks_execution: true,
       requires_human_approval: true,
+      command: 'cc-design-handoff execute --phase creative_reference --generate-image --image-api-ok',
       prompt: [
         `Create a premium visual reference for: ${handoff.request}`,
         'Treat this as creative direction, not implementation.',
@@ -541,6 +549,20 @@ function check() {
     const firstPacket = readJson(path.join(dir, 'next-action.json'));
     if (firstPacket.phase !== 'creative_reference') throw new Error(`unexpected first action phase ${firstPacket.phase}`);
     if (firstPacket.owner_lane !== 'chatgpt-image') throw new Error(`unexpected first action lane ${firstPacket.owner_lane}`);
+    const imageExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'creative_reference',
+      '--generate-image',
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_IMAGE_OFFLINE: '1' } });
+    if (imageExec.status !== 0 || !/Status: design-handoff-execute-blocked/.test(imageExec.stdout)) {
+      throw new Error(`image execute failed: ${imageExec.stdout || imageExec.stderr}`);
+    }
+    const imageManifest = readJson(path.join(dir, 'visual.reference.manifest.json'));
+    if (imageManifest.source !== 'offline_fixture' || imageManifest.live_lane_call !== false) throw new Error('offline image fixture not labeled');
+    if (!fs.existsSync(path.join(dir, 'visual.target.png'))) throw new Error('offline visual target not written');
     const approval = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'approve',
       '--dir',
@@ -808,6 +830,64 @@ function writeStageArtifact(dir, handoff, phase) {
   return relative(dir, file);
 }
 
+function generateCreativeReference(dir, handoff) {
+  const out = path.join(dir, 'visual.target.png');
+  const prompt = [
+    `Create one premium frontend creative-direction reference image for: ${handoff.request}`,
+    'This is a visual target for implementation, not a finished website screenshot.',
+    'Prioritize cinematic composition, premium spacing, strong hierarchy, native-code-friendly text zones, and one clear continuation/action surface.',
+    'Avoid dense dashboards, generic SaaS cards, visible routing/model mechanics, and baked-in body copy that should be native HTML.',
+  ].join('\n');
+
+  if (process.env.CC_DESIGN_HANDOFF_IMAGE_OFFLINE === '1') {
+    writeTinyPng(out);
+    writeJson(path.join(dir, 'visual.reference.manifest.json'), {
+      schema: 'ai-coding-os.visual-reference-manifest.v1',
+      mission_id: handoff.mission_id,
+      generated_at: now(),
+      source: 'offline_fixture',
+      live_lane_call: false,
+      output: 'visual.target.png',
+      prompt,
+    });
+    return 'visual.target.png';
+  }
+
+  if (!has('image-api-ok')) {
+    writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phaseById(handoff, 'creative_reference')));
+    return '';
+  }
+
+  const res = run(path.join(root, 'bin', 'cc-image'), [
+    '--json',
+    '--no-open',
+    '-p',
+    value('image-preset', 'hero_banner'),
+    '-s',
+    value('image-size', '1536x1024'),
+    '-o',
+    out,
+    prompt,
+  ], { timeout: 300000, maxBuffer: 1024 * 1024 * 8 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'visual.reference.raw.json'), `${output}\n`);
+  if (res.status !== 0) throw new Error(output || `cc-image exited ${res.status}`);
+  const parsed = extractJson(output);
+  writeJson(path.join(dir, 'visual.reference.manifest.json'), {
+    schema: 'ai-coding-os.visual-reference-manifest.v1',
+    mission_id: handoff.mission_id,
+    generated_at: now(),
+    source: 'cc-image',
+    live_lane_call: true,
+    model: parsed?.model || 'gpt-image-2',
+    output: 'visual.target.png',
+    run_dir: parsed?.runDir || '',
+    manifest_path: parsed?.manifestPath || '',
+    prompt,
+  });
+  return 'visual.target.png';
+}
+
 function writeDeployReceipt(dir, handoff) {
   if (has('live-tel')) return writeTelDeployReceipt(dir, handoff);
   const url = value('deploy-url', '');
@@ -1045,7 +1125,15 @@ function executeStage() {
   let blocked = false;
   let note = value('note', `${phase.id} completed by stage executor`);
 
-  if (phase.id === 'creative_reference' && !providedArtifact) {
+  if (phase.id === 'creative_reference' && has('generate-image')) {
+    artifact = generateCreativeReference(dir, handoff);
+    blocked = true;
+    phase.status = artifact ? 'awaiting_human_approval' : 'awaiting_external_artifact';
+    note = artifact
+      ? 'Image reference generated. Human approval is required before asset extraction.'
+      : 'Image generation requires --image-api-ok because it can spend OpenAI image API credits.';
+    if (!artifact) artifact = 'visual.reference.request.json';
+  } else if (phase.id === 'creative_reference' && !providedArtifact) {
     blocked = true;
     writeJson(path.join(dir, 'visual.reference.request.json'), actionPacket(handoff, phase));
     phase.status = 'awaiting_external_artifact';

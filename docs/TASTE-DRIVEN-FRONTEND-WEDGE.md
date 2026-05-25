@@ -64,6 +64,7 @@ cc-design-handoff "premium peptide landing page with cinematic hero and pricing"
 cc-design-handoff list
 cc-design-handoff status --dir .ai/design-handoffs/<mission>
 cc-design-handoff continue --dir .ai/design-handoffs/<mission>
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase creative_reference --generate-image --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_reference --artifact visual.target.png
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase tel_deploy --live-tel --deployment <vercel-url-or-id>
@@ -78,17 +79,19 @@ This command creates the mission artifact spine for the actual wedge:
 - `next-action.json`
 - `proof.bundle.json`
 
-It does not pretend to generate images or trigger a credentialed deploy without
-approval. It opens the first approval gate: generate or attach
-`visual.target.png`, approve it, then continue through asset decomposition, Kimi
-implementation, Claude review, and TEL deploy. `continue` emits a lane-specific
-action packet for the current phase. `execute` records concrete stage artifacts
-when they are locally derivable, records externally produced artifacts when
-passed with `--artifact`, invokes `router-ask --purpose design` for the
-`kimi_implementation` stage by default, invokes `claude --print` for the
-`claude_review` stage by default, blocks deploy unlock when the review fails
-the taste threshold, and writes `deploy.receipt.json` only from explicit deploy
-receipt fields or an explicit TEL verification call. `--live-tel` uses
+It does not trigger image API calls or credentialed deploys without approval.
+It opens the first approval gate: generate or attach `visual.target.png`,
+approve it, then continue through asset decomposition, Kimi implementation,
+Claude review, and TEL deploy. `continue` emits a lane-specific action packet
+for the current phase. `execute` records concrete stage artifacts when they are
+locally derivable, records externally produced artifacts when passed with
+`--artifact`, invokes `cc-image` for `creative_reference` only when
+`--generate-image --image-api-ok` is supplied, invokes `router-ask --purpose
+design` for the `kimi_implementation` stage by default, invokes `claude
+--print` for the `claude_review` stage by default, blocks deploy unlock when
+the review fails the taste threshold, and writes `deploy.receipt.json` only
+from explicit deploy receipt fields or an explicit TEL verification call.
+`--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.
 `--tel-dry-run` verifies TEL policy/request shape without calling Vercel.

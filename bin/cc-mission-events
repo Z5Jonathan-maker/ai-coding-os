@@ -47,6 +47,8 @@ const optionalStages = [
   'approval.granted',
   'taste.requested',
   'taste.validated',
+  'proof.requested',
+  'proof.completed',
   'deploy.requested',
   'deploy.completed',
   'runtime.paused',

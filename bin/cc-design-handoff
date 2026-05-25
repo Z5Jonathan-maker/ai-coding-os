@@ -326,6 +326,14 @@ function actionPacket(handoff, phase) {
       ].join('\n'),
       expected_artifact: 'taste.validation.json',
     },
+    codex_proof: {
+      command: 'cc-design-handoff execute --phase codex_proof',
+      prompt: [
+        'Run local integration proof after Claude review.',
+        'Record git state, changed files, required gates, and final shippability verdict before any TEL deploy.',
+      ].join('\n'),
+      expected_artifact: 'codex.proof.json',
+    },
     tel_deploy: {
       blocks_execution: true,
       requires_human_approval: true,
@@ -347,6 +355,7 @@ function requestStageFor(phaseId) {
     design_dna: 'design.dna.extracted',
     kimi_implementation: 'implementation.requested',
     claude_review: 'taste.requested',
+    codex_proof: 'proof.requested',
     tel_deploy: 'deploy.requested',
   })[phaseId] || 'approval.requested';
 }
@@ -358,6 +367,7 @@ function completionStageFor(phaseId) {
     design_dna: 'design.dna.extracted',
     kimi_implementation: 'implementation.completed',
     claude_review: 'taste.validated',
+    codex_proof: 'proof.completed',
     tel_deploy: 'deploy.completed',
   })[phaseId] || 'stage.completed';
 }
@@ -368,7 +378,8 @@ function unlockNext(handoff, phaseId) {
     asset_decomposition: ['kimi_implementation'],
     design_dna: ['kimi_implementation'],
     kimi_implementation: ['claude_review'],
-    claude_review: ['tel_deploy'],
+    claude_review: ['codex_proof'],
+    codex_proof: ['tel_deploy'],
   };
   for (const id of unlocks[phaseId] || []) {
     const next = phaseById(handoff, id);
@@ -444,9 +455,15 @@ function createHandoff() {
       output: 'taste.validation.json',
     },
     {
+      id: 'codex_proof',
+      owner_lane: 'codex',
+      status: 'blocked_until_review_passes',
+      output: 'codex.proof.json',
+    },
+    {
       id: 'tel_deploy',
       owner_lane: 'tel',
-      status: 'blocked_until_review_passes_and_human_approves',
+      status: 'blocked_until_codex_proof_and_human_approves',
       output: 'deploy.receipt.json',
       approval_gate: 'human_approves_credentialed_deploy',
     },
@@ -483,6 +500,7 @@ function createHandoff() {
       'design.dna.json',
       'implementation.plan.json',
       'taste.validation.json',
+      'codex.proof.json',
       'deploy.receipt.json',
       'proof.bundle.json',
     ],
@@ -593,7 +611,7 @@ function check() {
     }
     const handoff = readJson(path.join(dir, 'design-handoff.json'));
     const ids = new Set(handoff.phases.map((phase) => phase.id));
-    for (const id of ['creative_reference', 'asset_decomposition', 'design_dna', 'kimi_implementation', 'claude_review', 'tel_deploy']) {
+    for (const id of ['creative_reference', 'asset_decomposition', 'design_dna', 'kimi_implementation', 'claude_review', 'codex_proof', 'tel_deploy']) {
       if (!ids.has(id)) throw new Error(`missing phase ${id}`);
     }
     const timeline = readJson(path.join(dir, 'agent.timeline.json'));
@@ -738,6 +756,18 @@ function check() {
     }
     const validation = readJson(path.join(dir, 'taste.validation.json'));
     if (validation.source !== 'offline_fixture' || validation.live_lane_call !== false) throw new Error('offline check did not label review fixture');
+    const proofExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
+      'execute',
+      '--dir',
+      dir,
+      '--phase',
+      'codex_proof',
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
+    if (proofExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(proofExec.stdout)) {
+      throw new Error(`codex proof execute failed: ${proofExec.stdout || proofExec.stderr}`);
+    }
+    const codexProof = readJson(path.join(dir, 'codex.proof.json'));
+    if (codexProof.source !== 'offline_fixture' || codexProof.live_lane_call !== false) throw new Error('offline codex proof fixture not labeled');
     const receipt = readJson(path.join(dir, 'deploy.receipt.json'));
     if (receipt.provider !== 'vercel' || receipt.url !== 'https://example.vercel.app') throw new Error('deploy receipt invalid');
   } catch (err) {
@@ -787,7 +817,8 @@ function approvePhase() {
     asset_decomposition: ['kimi_implementation'],
     design_dna: ['kimi_implementation'],
     kimi_implementation: ['claude_review'],
-    claude_review: ['tel_deploy'],
+    claude_review: ['codex_proof'],
+    codex_proof: ['tel_deploy'],
   };
   for (const id of unlocks[phaseId] || []) {
     const next = phaseById(handoff, id);
@@ -810,6 +841,7 @@ function approvePhase() {
     design_dna: 'design.dna.extracted',
     kimi_implementation: 'implementation.completed',
     claude_review: 'taste.validated',
+    codex_proof: 'proof.completed',
     tel_deploy: 'deploy.completed',
   }[phaseId] || 'approval.granted';
   appendTimeline(files, timeline, event(handoff.mission_id, stage, note, {
@@ -893,6 +925,10 @@ function writeStageArtifact(dir, handoff, phase) {
     const result = runClaudeReview(dir, handoff);
     if (!result.ok) throw new Error(`claude_review failed: ${result.error}`);
     writeJson(file, { ...common, ...result.review });
+  } else if (phase.id === 'codex_proof') {
+    const result = runCodexProof(dir, handoff);
+    if (!result.ok) throw new Error(`codex_proof failed: ${result.error}`);
+    writeJson(file, { ...common, ...result.proof });
   } else {
     writeJson(file, { schema: 'ai-coding-os.stage-artifact.v1', ...common });
   }
@@ -1247,6 +1283,64 @@ function offlineClaudeReview(handoff) {
   };
 }
 
+function runProofCommand(commandLine, timeout = 120000) {
+  const res = run('/bin/zsh', ['-lc', commandLine], { timeout, maxBuffer: 1024 * 1024 * 8 });
+  return {
+    command: commandLine,
+    ok: res.status === 0,
+    exit_code: res.status || 0,
+    output: `${res.stdout || ''}${res.stderr || ''}`.trim().slice(0, 12000),
+  };
+}
+
+function offlineCodexProof(handoff) {
+  return {
+    schema: 'ai-coding-os.codex-proof.v1',
+    mission_id: handoff.mission_id,
+    phase: 'codex_proof',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'offline_fixture',
+    live_lane_call: false,
+    verdict: 'fixture_passes_for_portable_check_only',
+    commands: [
+      { command: 'git status --short', ok: true, exit_code: 0 },
+      { command: 'cc-frontend-wedge-check', ok: true, exit_code: 0 },
+      { command: 'cc-taste-benchmark-check', ok: true, exit_code: 0 },
+    ],
+    changed_files: [],
+  };
+}
+
+function runCodexProof(dir, handoff) {
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, proof: offlineCodexProof(handoff) };
+  const commands = [
+    'git status --short',
+    'git diff --stat',
+    'bin/cc-frontend-wedge-check',
+    'bin/cc-taste-benchmark-check',
+  ].map((cmd) => runProofCommand(cmd));
+  const statusOutput = commands.find((item) => item.command === 'git status --short')?.output || '';
+  const changedFiles = statusOutput.split('\n').map((line) => line.trim()).filter(Boolean);
+  const failed = commands.filter((item) => !item.ok);
+  return {
+    ok: true,
+    proof: {
+      schema: 'ai-coding-os.codex-proof.v1',
+      mission_id: handoff.mission_id,
+      phase: 'codex_proof',
+      request: handoff.request,
+      generated_at: now(),
+      source: 'codex-local',
+      live_lane_call: true,
+      verdict: failed.length ? 'blocked_failed_local_proof' : 'ready_for_tel_deploy_gate',
+      changed_files: changedFiles,
+      commands,
+      required_next_gate: failed.length ? 'fix_failed_codex_proof_commands' : 'human_approves_credentialed_deploy',
+    },
+  };
+}
+
 function offlineKimiImplementation(handoff) {
   return {
     schema: 'ai-coding-os.implementation-plan.v1',
@@ -1425,6 +1519,14 @@ function executeStage() {
       blocked = true;
       phase.status = 'blocked_review_failed';
       note = 'Claude review completed but did not pass the taste threshold.';
+    }
+  }
+  if (!blocked && phase.id === 'codex_proof') {
+    const codexProof = readJson(artifactPath(dir, artifact));
+    if (String(codexProof.verdict || '').startsWith('blocked_')) {
+      blocked = true;
+      phase.status = 'blocked_codex_proof_failed';
+      note = 'Codex proof completed but local gates did not pass.';
     }
   }
 

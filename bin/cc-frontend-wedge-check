@@ -58,6 +58,7 @@ const expectedPhases = [
   ['implementation_plan', 'kimi-webbridge'],
   ['browser_proof', 'codex'],
   ['taste_validation', 'claude'],
+  ['codex_proof', 'codex'],
   ['release_proof', 'codex'],
 ];
 const phases = workflow.phases || [];

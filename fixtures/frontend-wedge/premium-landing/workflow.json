@@ -35,6 +35,11 @@
       "artifact": "fixtures/creative-kernel/premium-saas/taste.validation.json"
     },
     {
+      "id": "codex_proof",
+      "owner_lane": "codex",
+      "artifact": "fixtures/creative-kernel/premium-saas/final.proof.bundle.json"
+    },
+    {
       "id": "release_proof",
       "owner_lane": "codex",
       "artifact": "fixtures/creative-kernel/premium-saas/final.proof.bundle.json"

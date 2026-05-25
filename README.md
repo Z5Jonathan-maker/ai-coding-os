@@ -11,6 +11,7 @@ describe the business outcome
   -> preserve design DNA
   -> implement through the UI/browser lane
   -> review taste and accessibility
+  -> prove local integration with Codex
   -> record deploy proof
 ```
 
@@ -44,6 +45,9 @@ cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase creative_r
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase asset_decomposition --extract-asset hero-background --image-api-ok
 cc-design-handoff approve --dir .ai/design-handoffs/<mission> --phase asset_decomposition --artifact creative.asset-kit.json
 cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase design_dna
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase kimi_implementation
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase claude_review
+cc-design-handoff execute --dir .ai/design-handoffs/<mission> --phase codex_proof
 ```
 
 Each mission writes portable artifacts:
@@ -56,6 +60,7 @@ Each mission writes portable artifacts:
 - `design.dna.json`
 - `implementation.plan.json`
 - `taste.validation.json`
+- `codex.proof.json`
 - `deploy.receipt.json`
 - `proof.bundle.json`
 
@@ -78,7 +83,9 @@ calls the live design route by default through `router-ask --purpose design`,
 stores `implementation.raw.md`, and writes `implementation.plan.json`.
 `design_dna` also calls `claude --print` by default, stores
 `design.dna.raw.md`, and writes structured implementation constraints instead
-of a hardcoded taste template.
+of a hardcoded taste template. `codex_proof` runs local integration proof,
+records git state and required gates in `codex.proof.json`, and blocks TEL
+deploy until local proof passes.
 
 ## Proof Commands
 

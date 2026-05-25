@@ -84,7 +84,7 @@ This command creates the mission artifact spine for the actual wedge:
 It does not trigger image API calls or credentialed deploys without approval.
 It opens the first approval gate: generate or attach `visual.target.png`,
 approve it, then continue through asset decomposition, Kimi implementation,
-Claude review, and TEL deploy. `continue` emits a lane-specific action packet
+Claude review, Codex proof, and TEL deploy. `continue` emits a lane-specific action packet
 for the current phase. `execute` records concrete stage artifacts when they are
 locally derivable, records externally produced artifacts when passed with
 `--artifact`, invokes `cc-image` for `creative_reference` only when
@@ -94,9 +94,9 @@ approved-reference asset at a time when `asset_decomposition --extract-asset
 handoff context for expensive specialist lanes, invokes `router-ask --purpose
 design` for the `kimi_implementation` stage by default, invokes `claude
 --print` for the `design_dna` and `claude_review` stages by default, blocks
-deploy unlock when the review fails the taste threshold, and writes
-`deploy.receipt.json` only from explicit deploy receipt fields or an explicit
-TEL verification call.
+deploy unlock when the review fails the taste threshold, runs Codex local proof
+before deployment, and writes `deploy.receipt.json` only from explicit deploy
+receipt fields or an explicit TEL verification call.
 `--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.

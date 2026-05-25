@@ -78,7 +78,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-launchd-inventory` — classify tracked LaunchAgents as rendered, template, or local-only.
 - `cc-loop-quality` — autonomous loop depth, memory, and anti-pattern status.
 - `cc-agent-runtime` — thin mission runtime adapter that turns a typed `AgentRunInput` into Mission Kernel route, trust, cost, proof, result, and timeline artifacts.
-- `cc-mission-events` — validate normalized Mission Kernel timeline events and complete runtime run stages.
+- `cc-mission-events` — validate, append, and replay normalized Mission Kernel timeline events and complete runtime run stages.
 - `cc-mission-kernel` — create, list, read, and validate mission artifact bundles (`mission.json`, route receipt, trust decision, cost ledger, proof bundle, agent timeline).
 - `cc-mission-ledger` — append-only current-mission and Plan/Act/Checkpoint/Resume event ledger for cockpit continuation state; supports `record`, `event`, `list --json`, and `--check`.
 - `cc-mutating-dogfood` — isolated mutating coding-session proof with failing tests, real edits, recovery, review evidence, Mission Events, and commits.

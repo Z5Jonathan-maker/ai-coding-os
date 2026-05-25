@@ -18,10 +18,10 @@ const requiredRunStages = [
   'trust.decided',
   'route.selected',
   'context.attached',
-  'runtime.started',
-  'tool.requested',
   'permission.requested',
   'permission.replied',
+  'runtime.started',
+  'tool.requested',
   'tool.completed',
   'verification.started',
   'verification.completed',
@@ -51,6 +51,13 @@ function value(name, fallback = '') {
   return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : fallback;
 }
 
+function listValue(name) {
+  return value(name, '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
@@ -78,12 +85,36 @@ function eventKind(stage) {
   return String(stage || '').split('.')[0] || 'mission';
 }
 
+function now() {
+  return new Date().toISOString();
+}
+
 function timelinePath() {
   const explicit = value('file', '');
   if (explicit) return path.resolve(explicit);
   const dir = value('mission-dir', '');
   if (dir) return path.join(path.resolve(dir), 'agent.timeline.json');
   return path.join(root, '.ai', 'missions', value('mission-id', ''), 'agent.timeline.json');
+}
+
+function missionIdFromPath(file) {
+  const explicit = value('mission-id', '');
+  if (explicit) return explicit;
+  const missionDir = value('mission-dir', '');
+  if (missionDir) {
+    const missionFile = path.join(path.resolve(missionDir), 'mission.json');
+    if (fs.existsSync(missionFile)) return readJson(missionFile).id || path.basename(path.resolve(missionDir));
+    return path.basename(path.resolve(missionDir));
+  }
+  return path.basename(path.dirname(file)) || 'mission';
+}
+
+function parseData() {
+  const raw = value('data-json', '');
+  if (!raw) return {};
+  const parsed = JSON.parse(raw);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('--data-json must be a JSON object');
+  return parsed;
 }
 
 function validateTimeline(timeline, options = {}) {
@@ -94,6 +125,7 @@ function validateTimeline(timeline, options = {}) {
   if (errors.length) return errors;
 
   const seen = new Set();
+  let previousTs = 0;
   timeline.events.forEach((event, index) => {
     const where = `events[${index}]`;
     for (const key of ['schema', 'mission_id', 'ts', 'agent', 'stage', 'kind', 'message', 'proof', 'data', 'severity']) {
@@ -101,7 +133,10 @@ function validateTimeline(timeline, options = {}) {
     }
     if (event.schema !== 'ai-coding-os.timeline-event.v1') errors.push(`${where} schema mismatch`);
     if (event.mission_id !== timeline.mission_id) errors.push(`${where} mission_id mismatch`);
-    if (Number.isNaN(Date.parse(event.ts || ''))) errors.push(`${where} invalid ts`);
+    const parsedTs = Date.parse(event.ts || '');
+    if (Number.isNaN(parsedTs)) errors.push(`${where} invalid ts`);
+    else if (parsedTs < previousTs) errors.push(`${where} ts is earlier than previous event`);
+    else previousTs = parsedTs;
     if (!allowedStages.has(event.stage)) errors.push(`${where} unknown stage ${event.stage}`);
     if (event.kind !== eventKind(event.stage)) errors.push(`${where} kind must match stage prefix`);
     if (!Array.isArray(event.proof)) errors.push(`${where} proof must be array`);
@@ -111,8 +146,12 @@ function validateTimeline(timeline, options = {}) {
   });
 
   if (options.completeRun) {
+    let cursor = -1;
     for (const stage of requiredRunStages) {
       if (!seen.has(stage)) errors.push(`missing required run stage ${stage}`);
+      const next = timeline.events.findIndex((event, index) => index > cursor && event.stage === stage);
+      if (next === -1) errors.push(`required run stage out of order ${stage}`);
+      else cursor = next;
     }
   }
   return errors;
@@ -132,6 +171,67 @@ function validate() {
   console.log('Status: mission-events-valid');
 }
 
+function appendEvent() {
+  const stage = value('stage', '');
+  if (!allowedStages.has(stage)) throw new Error(`unknown stage ${stage || '(missing)'}`);
+  const file = timelinePath();
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const missionId = missionIdFromPath(file);
+  const timeline = fs.existsSync(file)
+    ? readJson(file)
+    : { schema: 'ai-coding-os.agent-timeline.v1', mission_id: missionId, events: [] };
+  if (timeline.mission_id !== missionId) throw new Error(`mission_id mismatch: ${timeline.mission_id} !== ${missionId}`);
+  timeline.events.push({
+    schema: 'ai-coding-os.timeline-event.v1',
+    mission_id: missionId,
+    ts: value('ts', now()),
+    agent: value('agent', 'codex'),
+    stage,
+    kind: eventKind(stage),
+    message: value('message', stage),
+    proof: listValue('proof'),
+    data: parseData(),
+    severity: value('severity', stage.endsWith('.failed') ? 'error' : 'info'),
+  });
+  const errors = validateTimeline(timeline);
+  if (errors.length) {
+    console.error(errors.join('\n'));
+    process.exit(1);
+  }
+  writeJson(file, timeline);
+  console.log('Status: mission-event-appended');
+}
+
+function replay() {
+  const file = timelinePath();
+  if (!file || !fs.existsSync(file)) {
+    console.error(`missing timeline: ${file}`);
+    process.exit(1);
+  }
+  const timeline = readJson(file);
+  const errors = validateTimeline(timeline, { completeRun: has('complete-run') });
+  if (errors.length) {
+    console.error(errors.join('\n'));
+    process.exit(1);
+  }
+  if (has('json')) {
+    console.log(JSON.stringify({
+      schema: 'ai-coding-os.timeline-replay.v1',
+      mission_id: timeline.mission_id,
+      event_count: timeline.events.length,
+      stages: timeline.events.map((event) => event.stage),
+      events: timeline.events,
+    }, null, 2));
+    return;
+  }
+  console.log(`Mission: ${timeline.mission_id}`);
+  timeline.events.forEach((event, index) => {
+    const proof = event.proof.length ? ` [${event.proof.join(', ')}]` : '';
+    console.log(`${String(index + 1).padStart(2, '0')} ${event.ts} ${event.stage} ${event.message}${proof}`);
+  });
+  console.log('Status: mission-events-replayed');
+}
+
 function check() {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-mission-events.'));
   try {
@@ -149,6 +249,32 @@ function check() {
       console.error(errors.join('\n'));
       process.exit(1);
     }
+    const replayResult = run(`bin/cc-mission-events replay --file ${JSON.stringify(file)} --complete-run`, {
+      timeout: 30000,
+    });
+    if (!replayResult.ok || !/Status: mission-events-replayed/.test(replayResult.text)) {
+      console.error(replayResult.text || 'replay failed');
+      process.exit(1);
+    }
+    const appendDir = path.join(temp, 'append-check');
+    const appendFile = path.join(appendDir, 'agent.timeline.json');
+    const appendResult = run([
+      'bin/cc-mission-events append',
+      `--file ${JSON.stringify(appendFile)}`,
+      '--mission-id append-check',
+      '--stage checkpoint.created',
+      '--message "Append-only fixture"',
+      '--proof checkpoint',
+    ].join(' '), { timeout: 30000 });
+    if (!appendResult.ok) {
+      console.error(appendResult.text);
+      process.exit(1);
+    }
+    const appendErrors = validateTimeline(readJson(appendFile));
+    if (appendErrors.length) {
+      console.error(appendErrors.join('\n'));
+      process.exit(1);
+    }
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
@@ -163,12 +289,15 @@ function printSchema() {
     optional_stages: optionalStages,
     required_fields: ['schema', 'mission_id', 'ts', 'agent', 'stage', 'kind', 'message', 'proof', 'data', 'severity'],
     severities: [...severities],
+    commands: ['validate', 'append', 'replay', 'schema'],
   }, null, 2));
 }
 
 try {
   if (has('check')) check();
   else if (command === 'validate') validate();
+  else if (command === 'append') appendEvent();
+  else if (command === 'replay') replay();
   else if (command === 'schema') printSchema();
   else {
     console.error(`cc-mission-events: unknown command: ${command}`);

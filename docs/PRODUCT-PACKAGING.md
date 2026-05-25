@@ -63,8 +63,9 @@ trust tier, and safety boundary.
 - **Agent runtime adapter:** `cc-agent-runtime` turns a typed `AgentRunInput`
   into Mission Kernel route, trust, cost, proof, `AgentRunResult`, and
   normalized timeline events.
-- **Mission event contract:** `cc-mission-events` validates the runtime event
-  language before the cockpit renders continuity from it.
+- **Mission event contract:** `cc-mission-events` validates, appends, and
+  replays the runtime event language before the cockpit renders continuity from
+  it.
 - **Sustained dogfood runner:** `cc-dogfood-session` runs multi-cycle timed
   sessions with Mission Kernel runs, event validation, provider/context/router
   logs, and final product gates.

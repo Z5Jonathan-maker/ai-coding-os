@@ -8,4 +8,5 @@ expect: Status: mission-events-ready
 This check prevents fake cockpit state. It runs the runtime adapter against a
 temporary mission, then validates that the timeline contains first-class
 events for preflight, trust, route, context, runtime, permission, tool,
-verification, proof, and completion.
+verification, proof, and completion. It also proves timelines are replayable
+and that single events can be appended through the normalized event contract.

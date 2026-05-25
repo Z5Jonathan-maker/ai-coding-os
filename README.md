@@ -176,8 +176,9 @@ trust decision, cost ledger, proof bundle, and agent timeline.
 `cc-agent-runtime` drives that spine from a typed runtime adapter and proves a
 mission can write route, trust, cost, proof, result, and normalized timeline
 artifacts.
-`cc-mission-events` validates the normalized runtime event language so cockpit
-state is based on durable events, not provider-specific logs.
+`cc-mission-events` validates, appends, and replays the normalized runtime event
+language so cockpit state is based on durable events, not provider-specific
+logs.
 `cc-cockpit-state-proof` regenerates deterministic screenshots for
 continuation, running, success, blocked, permissions, and route-receipt states.
 `cc-cockpit-interaction-proof` runs the cockpit webview JavaScript in a real

@@ -1,0 +1,73 @@
+# RUNTIME-ADAPTER.md
+
+The runtime adapter is the thin execution boundary between AI Coding OS missions
+and any provider-specific worker.
+
+Provider implementations adapt into this contract. The contract must not adapt
+around provider-specific event shapes.
+
+## Required Inputs
+
+Every adapter receives an `AgentRunInput` with:
+
+- `mission_id`
+- `task`
+- `repo`
+- `cwd`
+- `agent`
+- `lane`
+- `provider`
+- `model`
+- `permission_mode`
+- `tools_allowed`
+- `tools_denied`
+- `requires_browser`
+- `requires_visual_proof`
+- `budget`
+- `timeout_ms`
+- `parent_mission_id`
+
+## Required Outputs
+
+Every adapter must write the Mission Kernel artifact bundle:
+
+- `mission.json`
+- `route.receipt.json`
+- `trust.decision.json`
+- `cost.ledger.json`
+- `proof.bundle.json`
+- `agent.timeline.json`
+
+## Lifecycle Split
+
+Mission state is split deliberately:
+
+- `status`: product-level mission state
+- `startup_phase`: preflight, trust check, route, context pack, launch, ready, error
+- `runtime_status`: starting, running, paused, error, missing
+- `execution_status`: queued, planning, acting, waiting permission, verifying, done, failed
+
+This mirrors the proven OpenHands runtime pattern without importing its whole
+runtime surface.
+
+## Event Rule
+
+`agent.timeline.json` is the source of truth for runtime continuity. Events must
+be appendable, replayable, timestamp-ordered, and provider-neutral.
+
+The cockpit may render provider-specific details only as expanded proof. Primary
+state comes from Mission Events.
+
+## Adapter Types
+
+Current:
+
+- `local_process`: bounded shell execution through `cc-agent-runtime`
+
+Future-compatible:
+
+- `worktree`: isolated git worktree execution
+- `sandbox`: optional container or VM boundary for untrusted repo tasks
+
+Do not add Docker-first runtime complexity until dogfood proof shows local
+process isolation is insufficient.

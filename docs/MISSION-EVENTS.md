@@ -36,10 +36,10 @@ A complete runtime run must include:
 - `trust.decided`
 - `route.selected`
 - `context.attached`
-- `runtime.started`
-- `tool.requested`
 - `permission.requested`
 - `permission.replied`
+- `runtime.started`
+- `tool.requested`
 - `tool.completed`
 - `verification.started`
 - `verification.completed`
@@ -72,11 +72,31 @@ Validate a timeline:
 cc-mission-events validate --file .ai/missions/<mission-id>/agent.timeline.json
 ```
 
+Append a normalized event:
+
+```sh
+cc-mission-events append \
+  --mission-dir .ai/missions/<mission-id> \
+  --stage checkpoint.created \
+  --message "Checkpoint created" \
+  --proof checkpoint
+```
+
+Replay a timeline as a human-readable mission trace:
+
+```sh
+cc-mission-events replay --mission-dir .ai/missions/<mission-id>
+```
+
 Require complete runtime stages:
 
 ```sh
 cc-mission-events validate --file .ai/missions/<mission-id>/agent.timeline.json --complete-run
 ```
+
+Complete-run validation also enforces nondecreasing timestamps and lifecycle
+ordering. If the cockpit can replay the timeline, it is allowed to render the
+mission as live state.
 
 Run the gate:
 

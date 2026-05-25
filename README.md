@@ -68,8 +68,11 @@ Each mission writes portable artifacts:
 Credentialed deploys are not performed silently. A deploy result is recorded
 only through an explicit TEL receipt step. `tel_deploy --live-tel` verifies a
 Vercel deployment through TEL and stores `tel.deploy.raw.json`; without that
-flag it only records a supplied receipt. `creative_reference --generate-image`
-calls `cc-image` only when `--image-api-ok` is supplied, then stores
+flag it only records a supplied receipt. Deploy receipts require passing
+`codex.proof.json` and embed both the implementation target summary and Codex
+proof summary, so the deployed URL is tied back to repo state and local gates.
+`creative_reference --generate-image` calls `cc-image` only when `--image-api-ok`
+is supplied, then stores
 `visual.reference.manifest.json` and waits for human approval.
 `asset_decomposition --extract-asset <id>` uses the approved visual reference
 to extract one asset at a time through `cc-image`, also gated by

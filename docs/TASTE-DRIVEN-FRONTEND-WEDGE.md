@@ -99,7 +99,9 @@ the `design_dna` and `claude_review` stages by default, blocks deploy unlock
 when the review fails the taste threshold, blocks deploy when Codex proof has
 not passed, runs Codex local proof before deployment, and writes
 `deploy.receipt.json` only from explicit deploy receipt fields or an explicit
-TEL verification call.
+TEL verification call. Every deploy receipt embeds the implementation target
+summary plus Codex proof summary so release proof is tied to changed files,
+target repo state, and local gate results.
 `--live-tel` uses
 `~/.Codex/tel/client/tel-call.sh vercel get_deployment`, stores
 `tel.deploy.raw.json`, and writes `tel_call: true` in `deploy.receipt.json`.

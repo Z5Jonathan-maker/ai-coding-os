@@ -1212,6 +1212,8 @@ function runDesignDnaExtraction(dir, handoff) {
 }
 
 function writeDeployReceipt(dir, handoff) {
+  const deployContext = deployProofContext(dir);
+  if (!deployContext.ok && !has('force')) throw new Error(deployContext.error);
   if (has('live-tel')) return writeTelDeployReceipt(dir, handoff);
   const url = value('deploy-url', '');
   if (!url) return '';
@@ -1226,13 +1228,72 @@ function writeDeployReceipt(dir, handoff) {
     tel_policy: value('tel-policy', 'vercel.deploy'),
     credential_boundary: 'TEL',
     live_tel_call: false,
+    implementation: deployContext.implementation,
+    codex_proof: deployContext.codex_proof,
     note: 'Receipt records an approved deploy result. It does not expose credentials or perform a deploy by itself.',
   };
   writeJson(path.join(dir, 'deploy.receipt.json'), receipt);
   return 'deploy.receipt.json';
 }
 
+function deployProofContext(dir) {
+  const implementationFile = path.join(dir, 'implementation.result.json');
+  const codexFile = path.join(dir, 'codex.proof.json');
+  const implementation = fs.existsSync(implementationFile) ? readJson(implementationFile) : null;
+  const codexProof = fs.existsSync(codexFile) ? readJson(codexFile) : null;
+  if (!codexProof) {
+    return {
+      ok: false,
+      error: 'codex.proof.json is required before deploy receipt can be recorded',
+      implementation: implementationSummary(implementation),
+      codex_proof: null,
+    };
+  }
+  if (String(codexProof.verdict || '').startsWith('blocked_')) {
+    return {
+      ok: false,
+      error: `Codex proof is not deploy-ready: ${codexProof.verdict}`,
+      implementation: implementationSummary(implementation),
+      codex_proof: codexProofSummary(codexProof),
+    };
+  }
+  return {
+    ok: true,
+    implementation: implementationSummary(implementation),
+    codex_proof: codexProofSummary(codexProof),
+  };
+}
+
+function implementationSummary(implementation) {
+  if (!implementation) return null;
+  return {
+    artifact: 'implementation.result.json',
+    target_repo: implementation.target_repo || '',
+    target_head_before: implementation.target_head_before || '',
+    target_head_after: implementation.target_head_after || '',
+    changed_files: implementation.changed_files || [],
+    verdict: implementation.verdict || '',
+  };
+}
+
+function codexProofSummary(proof) {
+  if (!proof) return null;
+  return {
+    artifact: 'codex.proof.json',
+    source: proof.source || '',
+    verdict: proof.verdict || '',
+    changed_files: proof.changed_files || [],
+    commands: (proof.commands || []).map((command) => ({
+      command: command.command,
+      ok: command.ok,
+      exit_code: command.exit_code,
+    })),
+  };
+}
+
 function writeTelDeployReceipt(dir, handoff) {
+  const deployContext = deployProofContext(dir);
+  if (!deployContext.ok && !has('force')) throw new Error(deployContext.error);
   const provider = value('provider', 'vercel');
   if (provider !== 'vercel') throw new Error(`TEL deploy verification only supports provider=vercel, got ${provider}`);
   const deployment = value('deployment', value('deployment-id', value('deploy-url', '')));
@@ -1271,6 +1332,8 @@ function writeTelDeployReceipt(dir, handoff) {
     tel_audit_id: parsed.audit_id || '',
     tel_undo_token: parsed.undo_token || null,
     tel_response_artifact: 'tel.deploy.raw.json',
+    implementation: deployContext.implementation,
+    codex_proof: deployContext.codex_proof,
     verification: {
       ok: true,
       action: 'vercel.get_deployment',

@@ -444,6 +444,7 @@ This keeps the product simple while extracting the part OpenHands actually got
 right: autonomous execution is durable state plus evented proof, not a chat box.
 
 Implementation status: landed natively through `cc-mission-events append`,
-`cc-mission-events replay`, lifecycle ordering validation, and
-`docs/RUNTIME-ADAPTER.md`. No OpenHands runtime code or Docker-first surface was
+`cc-mission-events replay`, lifecycle ordering validation,
+`docs/RUNTIME-ADAPTER.md`, and an opt-in `cc-agent-runtime --adapter worktree`
+execution boundary. No OpenHands runtime code or Docker-first surface was
 imported.

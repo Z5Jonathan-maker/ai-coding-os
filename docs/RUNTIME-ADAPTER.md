@@ -18,6 +18,7 @@ Every adapter receives an `AgentRunInput` with:
 - `lane`
 - `provider`
 - `model`
+- `adapter_type`
 - `permission_mode`
 - `tools_allowed`
 - `tools_denied`
@@ -63,11 +64,33 @@ state comes from Mission Events.
 Current:
 
 - `local_process`: bounded shell execution through `cc-agent-runtime`
+- `worktree`: temporary git worktree execution for risky or long-running
+  missions. The source repo stays untouched; changed files are captured from
+  the isolated worktree before cleanup.
 
 Future-compatible:
 
-- `worktree`: isolated git worktree execution
 - `sandbox`: optional container or VM boundary for untrusted repo tasks
 
 Do not add Docker-first runtime complexity until dogfood proof shows local
 process isolation is insufficient.
+
+## Usage
+
+Default local process run:
+
+```sh
+cc-agent-runtime run --title "Router reliability pass" --task "Fix fallback behavior and verify tests"
+```
+
+Isolated worktree run:
+
+```sh
+cc-agent-runtime run \
+  --adapter worktree \
+  --title "Risky refactor proof" \
+  --task "Prove this change in an isolated worktree before touching the active repo"
+```
+
+`cc-agent-runtime --check` validates both adapter types and fails if the
+worktree path leaks files into the source repository.

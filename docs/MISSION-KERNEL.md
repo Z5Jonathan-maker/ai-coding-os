@@ -164,6 +164,12 @@ Run a mission through the local runtime adapter:
 cc-agent-runtime run --title "Router reliability pass" --task "Fix fallback behavior and verify tests"
 ```
 
+Run a mission through an isolated git worktree:
+
+```sh
+cc-agent-runtime run --adapter worktree --title "Risky refactor proof" --task "Verify the change away from the active working tree"
+```
+
 Validate the runtime adapter contract:
 
 ```sh
@@ -190,6 +196,11 @@ The adapter writes:
 - cost snapshot from `cc-token-ledger`
 - normalized timeline events
 - typed `AgentRunResult` inside `proof.bundle.json`
+
+The default adapter is `local_process`. The opt-in `worktree` adapter creates a
+temporary detached git worktree, runs the command and verification there,
+records changed files from the isolated tree, then removes the worktree. This
+adds OpenHands-style execution separation without adding a Docker-first runtime.
 
 This is the native extraction from OpenHands conversation/runtime separation,
 Cline task/tool permission state, and OpenCode session/provider/permission

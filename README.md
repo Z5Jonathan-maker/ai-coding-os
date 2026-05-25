@@ -173,9 +173,10 @@ Cursor, Cline, OpenCode, Kimi, Codex, Windsurf, Devin, Octagents-style swarms,
 and token-router stacks tied to explicit proof commands and known gaps.
 `cc-mission-kernel` is the new mission object spine: mission, route receipt,
 trust decision, cost ledger, proof bundle, and agent timeline.
-`cc-agent-runtime` drives that spine from a typed runtime adapter and proves a
+`cc-agent-runtime` drives that spine from typed runtime adapters and proves a
 mission can write route, trust, cost, proof, result, and normalized timeline
-artifacts.
+artifacts. It supports the default `local_process` adapter plus an opt-in
+temporary `worktree` adapter for isolated execution proof.
 `cc-mission-events` validates, appends, and replays the normalized runtime event
 language so cockpit state is based on durable events, not provider-specific
 logs.

@@ -17,6 +17,7 @@ const command = args[0] && !args[0].startsWith('--') ? args[0] : 'run';
 const runtimeStatuses = ['starting', 'running', 'paused', 'error', 'missing'];
 const executionStatuses = ['queued', 'planning', 'acting', 'waiting_permission', 'verifying', 'done', 'failed'];
 const startupPhases = ['preflight', 'trust_check', 'route', 'context_pack', 'launch', 'ready', 'error'];
+const adapterTypes = ['local_process', 'worktree'];
 const requiredEvents = [
   'preflight.started',
   'trust.decided',
@@ -95,6 +96,22 @@ function runShell(cmd, options = {}) {
   };
 }
 
+function runGit(args, options = {}) {
+  const res = spawnSync('git', args, {
+    cwd: options.cwd || root,
+    encoding: 'utf8',
+    timeout: options.timeout || 30000,
+    maxBuffer: 1024 * 1024 * 4,
+    env: { ...process.env, DOTFILES: root },
+  });
+  return {
+    ok: res.status === 0,
+    status: res.status == null ? 124 : res.status,
+    command: `git ${args.join(' ')}`,
+    output: `${res.stdout || ''}${res.stderr || ''}`.trim().slice(0, 4000),
+  };
+}
+
 function writeJson(file, data) {
   fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
 }
@@ -167,6 +184,41 @@ function changedFiles(cwd) {
   return res.status === 0 ? res.stdout.split('\n').map((x) => x.trim()).filter(Boolean) : [];
 }
 
+function adapterWorkdir(input) {
+  if (input.adapter_type !== 'worktree') {
+    return {
+      cwd: input.cwd,
+      repo: input.repo,
+      cleanup: () => null,
+      setup: null,
+      metadata: { adapter_type: input.adapter_type },
+    };
+  }
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'cc-agent-worktree.'));
+  const worktree = path.join(parent, input.mission_id);
+  const setup = runGit(['worktree', 'add', '--detach', worktree, 'HEAD'], { cwd: input.repo, timeout: 60000 });
+  const relativeCwd = path.relative(input.repo, input.cwd);
+  const cwd = relativeCwd && !relativeCwd.startsWith('..') && !path.isAbsolute(relativeCwd)
+    ? path.join(worktree, relativeCwd)
+    : worktree;
+  return {
+    cwd,
+    repo: worktree,
+    setup,
+    metadata: {
+      adapter_type: input.adapter_type,
+      source_repo: input.repo,
+      worktree_path: worktree,
+      worktree_cwd: cwd,
+    },
+    cleanup: () => {
+      const removed = runGit(['worktree', 'remove', '--force', worktree], { cwd: input.repo, timeout: 60000 });
+      fs.rmSync(parent, { recursive: true, force: true });
+      return removed;
+    },
+  };
+}
+
 function buildInput(overrides = {}) {
   const title = value('title', 'Agent runtime mission');
   const task = value('task', title);
@@ -184,6 +236,7 @@ function buildInput(overrides = {}) {
     lane: value('lane', 'codex'),
     provider: value('provider', 'codex'),
     model: value('model', 'codex'),
+    adapter_type: value('adapter', value('adapter-type', 'local_process')),
     permission_mode: value('permission-mode', 'review'),
     tools_allowed: listValue('tools-allowed'),
     tools_denied: listValue('tools-denied'),
@@ -201,12 +254,13 @@ function buildInput(overrides = {}) {
 }
 
 function validateInput(input) {
-  const missing = ['mission_id', 'task', 'repo', 'cwd', 'agent', 'lane', 'provider', 'model', 'permission_mode', 'budget', 'timeout_ms', 'parent_mission_id']
+  const missing = ['mission_id', 'task', 'repo', 'cwd', 'agent', 'lane', 'provider', 'model', 'adapter_type', 'permission_mode', 'budget', 'timeout_ms', 'parent_mission_id']
     .filter((key) => !Object.prototype.hasOwnProperty.call(input, key));
   if (!Array.isArray(input.tools_allowed)) missing.push('tools_allowed');
   if (!Array.isArray(input.tools_denied)) missing.push('tools_denied');
   if (typeof input.requires_browser !== 'boolean') missing.push('requires_browser');
   if (typeof input.requires_visual_proof !== 'boolean') missing.push('requires_visual_proof');
+  if (!adapterTypes.includes(input.adapter_type)) missing.push(`adapter_type:${input.adapter_type}`);
   return missing;
 }
 
@@ -227,8 +281,9 @@ function validateBundle(dir) {
   if (!runtimeStatuses.includes(mission.runtime_status)) errors.push('invalid runtime_status');
   if (!executionStatuses.includes(mission.execution_status)) errors.push('invalid execution_status');
   if (!startupPhases.includes(mission.startup_phase)) errors.push('invalid startup_phase');
+  if (!adapterTypes.includes(mission.runtime_adapter || 'local_process')) errors.push('invalid runtime_adapter');
   if (result.schema !== 'ai-coding-os.agent-run-result.v1') errors.push('missing AgentRunResult');
-  for (const key of ['mission_id', 'agent', 'lane', 'provider', 'model', 'status', 'changed_files', 'commands', 'screenshots', 'artifacts', 'tokens', 'cost', 'permission_requests', 'errors', 'next_action', 'verdict']) {
+  for (const key of ['mission_id', 'agent', 'lane', 'provider', 'model', 'adapter_type', 'status', 'changed_files', 'commands', 'screenshots', 'artifacts', 'tokens', 'cost', 'permission_requests', 'errors', 'runtime', 'next_action', 'verdict']) {
     if (result[key] == null) errors.push(`result missing ${key}`);
   }
   const stages = new Set(Array.isArray(timeline.events) ? timeline.events.map((event) => event.stage) : []);
@@ -249,6 +304,7 @@ function runAdapter(input) {
   const commands = [];
   const permissionRequests = [];
   const runtimeErrors = [];
+  let adapter = null;
 
   function event(stage, message, proof = []) {
     timeline.push({
@@ -278,6 +334,7 @@ function runAdapter(input) {
       execution_status: 'queued',
       startup_phase: 'preflight',
       route: `${input.lane}/${input.provider}`,
+      runtime_adapter: input.adapter_type,
       permission_mode: input.permission_mode,
       parent_mission_id: input.parent_mission_id,
       created_at: existing.created_at || timestamp,
@@ -322,16 +379,22 @@ function runAdapter(input) {
       blockers: trust.hits,
     });
   } else {
-    const request = { reason: 'local shell adapter run', mode: input.permission_mode, response: trust.decision === 'review' ? 'once' : 'always' };
+    const request = { reason: `${input.adapter_type} shell adapter run`, mode: input.permission_mode, response: trust.decision === 'review' ? 'once' : 'always' };
     permissionRequests.push(request);
     event('permission.requested', 'Runtime requested shell adapter permission.', [request.reason]);
     event('permission.replied', `Permission response: ${request.response}`, []);
     missionPatch({ startup_phase: 'launch', runtime_status: 'running', execution_status: 'acting' });
-    event('runtime.started', `Runtime started for ${input.agent}.`, [`${input.provider}/${input.model}`]);
+    adapter = adapterWorkdir(input);
+    event('runtime.started', `Runtime started for ${input.agent}.`, [`${input.provider}/${input.model}`, input.adapter_type]);
+    if (adapter.setup) {
+      commands.push({ kind: 'adapter_setup', command: adapter.setup.command, exit_code: adapter.setup.status, ok: adapter.setup.ok, output: adapter.setup.output });
+      event('checkpoint.created', adapter.setup.ok ? 'Worktree runtime created.' : 'Worktree runtime failed to start.', [adapter.metadata.worktree_path]);
+      if (!adapter.setup.ok) runtimeErrors.push(adapter.setup.output || `worktree setup exited ${adapter.setup.status}`);
+    }
 
     const adapterCommand = input.command || value('command', `printf 'agent-runtime:%s\\n' ${quote(input.mission_id)}`);
     event('tool.requested', 'Shell tool requested.', [adapterCommand]);
-    const exec = runShell(adapterCommand, { cwd: input.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
+    const exec = runtimeErrors.length ? { ok: false, status: 1, command: adapterCommand, output: 'adapter setup failed; tool skipped' } : runShell(adapterCommand, { cwd: adapter.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
     commands.push({ kind: 'adapter', command: adapterCommand, exit_code: exec.status, ok: exec.ok, output: exec.output });
     event('tool.completed', exec.ok ? 'Shell tool completed.' : 'Shell tool failed.', [`exit=${exec.status}`]);
     if (!exec.ok) runtimeErrors.push(exec.output || `command exited ${exec.status}`);
@@ -339,15 +402,21 @@ function runAdapter(input) {
     missionPatch({ status: 'verifying', execution_status: 'verifying', startup_phase: exec.ok ? 'ready' : 'error', runtime_status: exec.ok ? 'running' : 'error' });
     event('verification.started', 'Runtime verification started.', []);
     const verifyCommand = input.verify_command || value('verify-command', 'true');
-    const verification = runShell(verifyCommand, { cwd: input.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
+    const verification = runtimeErrors.length ? { ok: false, status: 1, command: verifyCommand, output: 'adapter execution failed; verification skipped' } : runShell(verifyCommand, { cwd: adapter.cwd, timeout: input.timeout_ms, missionId: input.mission_id });
     commands.push({ kind: 'verification', command: verifyCommand, exit_code: verification.status, ok: verification.ok, output: verification.output });
     event('verification.completed', verification.ok ? 'Runtime verification passed.' : 'Runtime verification failed.', [`exit=${verification.status}`]);
     if (!verification.ok) runtimeErrors.push(verification.output || `verification exited ${verification.status}`);
   }
 
+  const files = changedFiles(adapter && adapter.cwd ? adapter.cwd : input.cwd);
+  const cleanupResult = adapter && adapter.cleanup ? adapter.cleanup() : null;
+  if (cleanupResult) {
+    commands.push({ kind: 'adapter_cleanup', command: cleanupResult.command, exit_code: cleanupResult.status, ok: cleanupResult.ok, output: cleanupResult.output });
+    event('checkpoint.created', cleanupResult.ok ? 'Runtime adapter cleanup completed.' : 'Runtime adapter cleanup failed.', [input.adapter_type]);
+    if (!cleanupResult.ok) runtimeErrors.push(cleanupResult.output || `adapter cleanup exited ${cleanupResult.status}`);
+  }
   const finalStatus = runtimeErrors.length ? 'failed' : trust.decision === 'deny' ? 'blocked' : 'completed';
   const verdict = finalStatus === 'completed' ? 'passed' : finalStatus === 'blocked' ? 'blocked' : 'failed';
-  const files = changedFiles(input.cwd);
   const result = {
     schema: 'ai-coding-os.agent-run-result.v1',
     mission_id: input.mission_id,
@@ -355,6 +424,7 @@ function runAdapter(input) {
     lane: input.lane,
     provider: input.provider,
     model: input.model,
+    adapter_type: input.adapter_type,
     status: finalStatus,
     changed_files: files,
     commands,
@@ -371,6 +441,7 @@ function runAdapter(input) {
     cost: { source: 'cc-token-ledger', estimated_cost_usd: null },
     permission_requests: permissionRequests,
     errors: runtimeErrors,
+    runtime: adapter ? adapter.metadata : { adapter_type: input.adapter_type },
     next_action: runtimeErrors.length ? 'Inspect the failed command output and rerun this mission.' : 'Mission proof is ready for review.',
     verdict,
   };
@@ -429,6 +500,34 @@ function check() {
     const errors = validateBundle(output.dir);
     if (errors.length) {
       console.error(errors.join('\n'));
+      process.exit(1);
+    }
+    const isolated = runAdapter(buildInput({
+      mission_id: 'agent-runtime-worktree-check',
+      title: 'Agent runtime worktree check',
+      task: 'Validate isolated worktree runtime adapter contract',
+      repo: root,
+      cwd: root,
+      adapter_type: 'worktree',
+      context: 'fixture context',
+      tools_allowed: ['shell'],
+      tools_denied: ['paid_action'],
+      parent_mission_id: null,
+      command: 'printf isolated-runtime-fixture > .cc-agent-runtime-worktree-fixture',
+      verify_command: 'test -f .cc-agent-runtime-worktree-fixture',
+    }));
+    const isolatedErrors = validateBundle(isolated.dir);
+    if (isolatedErrors.length) {
+      console.error(isolatedErrors.join('\n'));
+      process.exit(1);
+    }
+    const isolatedProof = readJson(path.join(isolated.dir, 'proof.bundle.json'));
+    if (isolatedProof.result.adapter_type !== 'worktree') {
+      console.error('worktree adapter result missing');
+      process.exit(1);
+    }
+    if (fs.existsSync(path.join(root, '.cc-agent-runtime-worktree-fixture'))) {
+      console.error('worktree adapter leaked fixture into source repo');
       process.exit(1);
     }
   } finally {

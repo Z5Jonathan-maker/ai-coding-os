@@ -62,7 +62,8 @@ trust tier, and safety boundary.
   and agent timeline. The cockpit can read this before falling back to ledgers.
 - **Agent runtime adapter:** `cc-agent-runtime` turns a typed `AgentRunInput`
   into Mission Kernel route, trust, cost, proof, `AgentRunResult`, and
-  normalized timeline events.
+  normalized timeline events. It supports local process execution and opt-in
+  temporary git worktree isolation.
 - **Mission event contract:** `cc-mission-events` validates, appends, and
   replays the runtime event language before the cockpit renders continuity from
   it.
@@ -269,8 +270,9 @@ Installed system is 100% when:
     benchmark fixtures
 22. `cc-mission-kernel --check` proves mission artifacts have a documented,
     schema-validated object model for cockpit continuity and proof bundles
-23. `cc-agent-runtime --check` proves a harmless typed runtime run can create
-    route, trust, cost, proof, result, and timeline artifacts
+23. `cc-agent-runtime --check` proves harmless typed runtime runs can create
+    route, trust, cost, proof, result, and timeline artifacts through both
+    local process and isolated worktree adapters
 24. `cc-mission-events --check` proves the runtime emits normalized lifecycle
     events for preflight, trust, route, context, runtime, permission, tool,
     verification, proof, and completion

@@ -26,6 +26,9 @@
     "onView:aiSystemCockpit.dashboard"
   ],
   "main": "./extension.js",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
   "contributes": {
     "commands": [
       { "command": "aiSystemCockpit.open", "title": "AI Cockpit: Open" },

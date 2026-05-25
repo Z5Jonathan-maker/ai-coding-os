@@ -84,11 +84,12 @@ approval. It opens the first approval gate: generate or attach
 implementation, Claude review, and TEL deploy. `continue` emits a lane-specific
 action packet for the current phase. `execute` records concrete stage artifacts
 when they are locally derivable, records externally produced artifacts when
-passed with `--artifact`, invokes `claude --print` for the `claude_review`
-stage by default, blocks deploy unlock when the review fails the taste
-threshold, and writes `deploy.receipt.json` only from explicit deploy receipt
-fields. Portable checks use an explicitly labeled offline fixture for the
-Claude review stage.
+passed with `--artifact`, invokes `router-ask --purpose design` for the
+`kimi_implementation` stage by default, invokes `claude --print` for the
+`claude_review` stage by default, blocks deploy unlock when the review fails
+the taste threshold, and writes `deploy.receipt.json` only from explicit deploy
+receipt fields. Portable checks use explicitly labeled offline fixtures for
+live-lane stages.
 
 ## Same-Brief Competitive Benchmark
 

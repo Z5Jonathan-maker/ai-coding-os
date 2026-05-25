@@ -597,12 +597,12 @@ function check() {
       dir,
       '--phase',
       'kimi_implementation',
-      '--artifact',
-      'implementation.plan.json',
-    ], { timeout: 30000 });
+    ], { timeout: 30000, env: { CC_DESIGN_HANDOFF_OFFLINE: '1' } });
     if (implementationExec.status !== 0 || !/Status: design-handoff-execute-ready/.test(implementationExec.stdout)) {
       throw new Error(`implementation execute failed: ${implementationExec.stdout || implementationExec.stderr}`);
     }
+    const impl = readJson(path.join(dir, 'implementation.plan.json'));
+    if (impl.source !== 'offline_fixture' || impl.live_lane_call !== false) throw new Error('offline implementation fixture not labeled');
     const reviewExec = run(path.join(root, 'bin', 'cc-design-handoff'), [
       'execute',
       '--dir',
@@ -795,18 +795,9 @@ function writeStageArtifact(dir, handoff, phase) {
       ],
     });
   } else if (phase.id === 'kimi_implementation') {
-    writeJson(file, {
-      schema: 'ai-coding-os.implementation-plan.v1',
-      ...common,
-      owner_lane: 'kimi-webbridge',
-      inputs: ['visual.target.png', 'creative.asset-kit.json', 'design.dna.json'],
-      expected_outputs: ['responsive UI code', 'browser screenshot proof', 'accessibility-safe native controls'],
-      instructions: [
-        'Implement the approved reference as production UI.',
-        'Use generated assets only where they preserve visual fidelity.',
-        'Do not expose routing or model mechanics in the primary interface.',
-      ],
-    });
+    const result = runKimiImplementation(dir, handoff);
+    if (!result.ok) throw new Error(`kimi_implementation failed: ${result.error}`);
+    writeJson(file, { ...common, ...result.plan });
   } else if (phase.id === 'claude_review') {
     const result = runClaudeReview(dir, handoff);
     if (!result.ok) throw new Error(`claude_review failed: ${result.error}`);
@@ -865,6 +856,75 @@ function offlineClaudeReview(handoff) {
     },
     verdict: 'fixture_passes_threshold_for_portable_check_only',
   };
+}
+
+function offlineKimiImplementation(handoff) {
+  return {
+    schema: 'ai-coding-os.implementation-plan.v1',
+    mission_id: handoff.mission_id,
+    phase: 'kimi_implementation',
+    request: handoff.request,
+    generated_at: now(),
+    source: 'offline_fixture',
+    live_lane_call: false,
+    owner_lane: 'kimi-webbridge',
+    inputs: ['visual.target.png', 'creative.asset-kit.json', 'design.dna.json'],
+    expected_outputs: ['responsive UI code', 'browser screenshot proof', 'accessibility-safe native controls'],
+    implementation_steps: [
+      'Implement the approved reference as production UI.',
+      'Use generated assets only where they preserve visual fidelity.',
+      'Keep provider mechanics outside the primary interface.',
+    ],
+    verification: ['desktop screenshot', 'mobile screenshot', 'accessibility smoke', 'visual fidelity review'],
+  };
+}
+
+function runKimiImplementation(dir, handoff) {
+  if (process.env.CC_DESIGN_HANDOFF_OFFLINE === '1') return { ok: true, plan: offlineKimiImplementation(handoff) };
+  const prompt = [
+    'You are the Kimi design/browser implementation lane for a taste-driven frontend handoff.',
+    'Create an implementation plan from the approved artifacts. Return only valid JSON.',
+    '',
+    'Required JSON shape:',
+    '{"schema":"ai-coding-os.implementation-plan.v1","owner_lane":"kimi-webbridge","inputs":["..."],"implementation_steps":["..."],"files_to_touch":["..."],"responsive_checks":["..."],"browser_proof":["..."],"risks":["..."]}',
+    '',
+    `Mission: ${handoff.mission_id}`,
+    `Request: ${handoff.request}`,
+    '',
+    'creative.asset-kit.json:',
+    readArtifact(dir, 'creative.asset-kit.json'),
+    '',
+    'design.dna.json:',
+    readArtifact(dir, 'design.dna.json'),
+    '',
+    'next-action.json:',
+    readArtifact(dir, 'next-action.json'),
+  ].join('\n');
+
+  const res = run('router-ask', ['--purpose', 'design', '--json', prompt], { timeout: 180000, maxBuffer: 1024 * 1024 * 8 });
+  const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
+  fs.writeFileSync(path.join(dir, 'implementation.raw.md'), `${output}\n`);
+  if (res.status !== 0) {
+    return { ok: false, error: output || `router-ask exited ${res.status}` };
+  }
+  const parsed = extractJson(output);
+  const text = parsed?.text || parsed?.result || parsed?.output || output;
+  const inner = typeof text === 'string' ? extractJson(text) : text;
+  const plan = inner && typeof inner === 'object' ? inner : {
+    schema: 'ai-coding-os.implementation-plan.v1',
+    owner_lane: 'kimi-webbridge',
+    implementation_steps: String(text || output).split('\n').map((line) => line.trim()).filter(Boolean).slice(0, 20),
+    raw_output_artifact: 'implementation.raw.md',
+  };
+  plan.schema = plan.schema || 'ai-coding-os.implementation-plan.v1';
+  plan.mission_id = handoff.mission_id;
+  plan.phase = 'kimi_implementation';
+  plan.request = handoff.request;
+  plan.generated_at = now();
+  plan.source = 'router-ask-design';
+  plan.live_lane_call = true;
+  plan.raw_output_artifact = 'implementation.raw.md';
+  return { ok: true, plan };
 }
 
 function runClaudeReview(dir, handoff) {

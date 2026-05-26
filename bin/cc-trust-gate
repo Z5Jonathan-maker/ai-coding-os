@@ -92,6 +92,12 @@ function localRiskDecision(task) {
       reason: 'Credential creation, rotation, reset, or revocation requires TEL or explicit review.',
       pattern: /\b(create|rotate|reset|revoke|change)\b.*\b(api[-_ ]?key|secret|token|credential|password)\b/i,
     },
+    {
+      decision: 'review',
+      id: 'dependency_or_system_install',
+      reason: 'Installing dependencies, global tools, extensions, or LaunchAgents requires explicit review.',
+      pattern: /\b(brew|npm|pnpm|yarn|pipx?|uv|gem|cargo|code|launchctl)\s+(install|add|load|bootstrap|--install)\b|\binstall\s+(-g|--global|extension|launchagent|plist|dependency|package|tool)\b/i,
+    },
   ];
   for (const rule of rules) {
     if (rule.pattern.test(task)) hits.push({ id: rule.id, reason: rule.reason, decision: rule.decision });

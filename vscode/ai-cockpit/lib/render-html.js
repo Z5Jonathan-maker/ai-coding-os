@@ -5,6 +5,7 @@ const vscode = require('vscode');
 function renderCockpitHtml(webview, extensionUri, variant = 'sidebar') {
   const nonce = String(Date.now());
   const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'style.css'));
+  const utilsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'utils.js'));
   const jsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'media', 'main.js'));
   return `<!doctype html>
 <html lang="en">
@@ -355,6 +356,7 @@ function renderCockpitHtml(webview, extensionUri, variant = 'sidebar') {
   <button data-command="openSettings">Settings</button>
 </footer>
 
+<script nonce="${nonce}" src="${utilsUri}"></script>
 <script nonce="${nonce}" src="${jsUri}"></script>
 </body>
 </html>`;

@@ -51,6 +51,7 @@ node_syntax() {
     node --check "$file" || bad=1
   done < <(find -L vscode/ai-cockpit/lib -type f -name '*.js' -print 2>/dev/null | sort)
   node --check vscode/ai-cockpit/extension.js || bad=1
+  node --check vscode/ai-cockpit/media/utils.js || bad=1
   node --check vscode/ai-cockpit/media/main.js || bad=1
   node -e 'JSON.parse(require("fs").readFileSync("vscode/ai-cockpit/package.json", "utf8"))' || bad=1
   return "$bad"
@@ -235,8 +236,8 @@ source_size_budget() {
     bad=1
   fi
   lines="$(wc -l <vscode/ai-cockpit/media/main.js | tr -d ' ')"
-  if [ "$lines" -gt 1100 ]; then
-    printf 'vscode/ai-cockpit/media/main.js too large: %s lines (max 1100); extract a module instead\n' "$lines"
+  if [ "$lines" -gt 980 ]; then
+    printf 'vscode/ai-cockpit/media/main.js too large: %s lines (max 980); extract a module instead\n' "$lines"
     bad=1
   fi
   lines="$(wc -l <vscode/ai-cockpit/media/style.css | tr -d ' ')"

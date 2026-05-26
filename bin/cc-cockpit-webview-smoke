@@ -36,6 +36,8 @@ const inlineEdit = read('lib/inline-edit.js');
 const renderer = read('lib/render-html.js');
 const extSource = `${ext}\n${registry}\n${inlineEdit}\n${renderer}`;
 const js = read('media/main.js');
+const utils = read('media/utils.js');
+const jsSource = `${js}\n${utils}`;
 const css = read('media/style.css');
 const audit = auditOk();
 
@@ -50,7 +52,7 @@ add('panel preserves editor context', ext.includes('vscode.ViewColumn.Beside') &
 add('advanced controls collapsed', extSource.includes('class="context-drawer"') && css.includes('.context-drawer'));
 add('continuation UI ids present', ['continueTitle', 'continueBody', 'continueSafety', 'detailTitle', 'detailProgressBar'].every((id) => extSource.includes(`id="${id}"`)));
 add('primary run path present', extSource.includes('data-run-selected="true"') && js.includes('activeMissionPrompt'));
-add('creative handoff command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.designHandoff') && extSource.includes('cc-design-handoff create') && ext.includes("mode === 'designHandoff'") && js.includes("designHandoff: 'Creative Handoff'"));
+add('creative handoff command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.designHandoff') && extSource.includes('cc-design-handoff create') && ext.includes("mode === 'designHandoff'") && jsSource.includes("designHandoff: 'Creative Handoff'"));
 add('creative handoff resume controls wired', ['aiSystemCockpit.designHandoffStatus', 'aiSystemCockpit.designHandoffContinue', 'aiSystemCockpit.designHandoffApprove', 'aiSystemCockpit.designHandoffExecute'].every((id) => JSON.stringify(pkg.contributes.commands || {}).includes(id)) && ext.includes('pickDesignHandoffDir') && extSource.includes('data-command="designHandoffContinue"') && extSource.includes('data-command="designHandoffApprove"') && extSource.includes('data-command="designHandoffExecute"'));
 add('creative mode state rendered', extSource.includes('readLatestDesignHandoffState') && extSource.includes('id="handoffStages"') && extSource.includes('id="handoffArtifacts"') && js.includes('renderDesignHandoff') && js.includes('renderHandoffStages') && css.includes('.creative-surface') && css.includes('.handoff-stage'));
 add('visual edit spine wired', ext.includes('saveVisualAnnotation') && ext.includes('askVisualAnnotationNote') && ext.includes('routeVisualAnnotation') && extSource.includes('id="visualPreview"') && extSource.includes('id="visualAnnotationLayer"') && js.includes('bindVisualAnnotationLayer') && js.includes('routeVisualAnnotation') && css.includes('.visual-edit-surface'));
@@ -59,7 +61,7 @@ add('visual edit csp constrained', !/frame-src[^"]*https:/.test(extSource) && !/
 add('trust gate enforced before routing', ext.includes('cc-trust-gate --json --mode') && ext.includes('normalizeTrustGate') && ext.indexOf('cc-trust-gate --json --mode') < ext.indexOf('this.runInlineStream(label'));
 add('result stream visible', extSource.includes('result-panel') && js.includes('renderTranscript'));
 add('no stale demo workstreams', !/DoseCraft landing page|Router reliability pass|Browser auth setup/.test(ext));
-add('assets present', ['media/main.js', 'media/style.css', 'media/cockpit.svg', 'lib/mission-state.js'].every(has));
+add('assets present', ['media/main.js', 'media/utils.js', 'media/style.css', 'media/cockpit.svg', 'lib/mission-state.js'].every(has));
 add('material CSS present', css.includes('.workspace-rail') && css.includes('.mission-feed') && css.includes('.result-panel'));
 
 console.log('# Cockpit Webview Smoke\n');

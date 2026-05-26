@@ -13,11 +13,17 @@ claude/tel/.venv/
 .ai/plans/
 memory/
 
-# Mega-brain learnings: transcripts/articles stay local-only.
-# Keep _README.md, _INDEX.md, _COMPOUND_INDEX.md, manifests committed.
-claude/wiki/learnings/_archive/
-claude/wiki/learnings/mentor-*/[a-z0-9]*.md
-claude/wiki/learnings/dosecraft-research/[0-9]*.md
+# Mega-brain learnings: corpus bodies stay local-only.
+# Keep only navigation indexes, per-corpus READMEs, and manifests committed.
+claude/wiki/learnings/**
+!claude/wiki/learnings/
+!claude/wiki/learnings/**/
+!claude/wiki/learnings/_INDEX.md
+!claude/wiki/learnings/_COMPOUND_INDEX.md
+!claude/wiki/learnings/**/_README.md
+!claude/wiki/learnings/_compound-index.json
+!claude/wiki/learnings/**/_manifest.json
+claude/wiki/learnings/_archive/**
 
 # Cloned external repo — corpus content stays local-only (same as mentor-* / dosecraft-research)
 claude/wiki/learnings/jailbreak-corpus/

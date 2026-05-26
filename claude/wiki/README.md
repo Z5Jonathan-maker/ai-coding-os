@@ -36,6 +36,10 @@ Per CLAUDE.md mandate: **if knowledge is not stored in the wiki, it does not exi
 | [logs/optimization-log.md](logs/optimization-log.md) | What got faster/better + the change that did it |
 | [workflows/](workflows/) | Per-workflow detail files (one per recipe, when too long for templates.md) |
 
+## Local-only learning corpora
+
+`learnings/` can hold large transcript, article, and research corpora on the local machine. Git tracks only corpus navigation files: root indexes, per-corpus `_README.md`, and `_manifest.json` files. Do not re-add generated body files from `learnings/`; they are intentionally ignored to keep the repo usable as an operating layer instead of a content dump.
+
 ## Synchronization with CLAUDE.md
 
 The CLAUDE.md routing tables are the **fast lookup** loaded into every session.

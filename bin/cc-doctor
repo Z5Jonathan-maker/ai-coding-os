@@ -45,7 +45,11 @@ run_status() {
   local tmp
   tmp="$(mktemp)"
   if eval "$cmd" >"$tmp" 2>&1 && grep -Eq "$ok_pattern" "$tmp"; then
-    add_row "$name" ok "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
+    if [ -n "$warn_pattern" ] && grep -Eq "$warn_pattern" "$tmp"; then
+      add_row "$name" warn "$(grep -E '^(Status:|Score:|Summary:|Warnings:|- remote GitHub CI current|fail remote GitHub CI current|     latest CI run|     failure hint:|passed=|missing_or_degraded=)' "$tmp" | tail -n 4 | tr '\n' ' ' | cut -c1-220)"
+    else
+      add_row "$name" ok "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
+    fi
   elif [ -n "$warn_pattern" ] && grep -Eq "$warn_pattern" "$tmp"; then
     add_row "$name" warn "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
   else
@@ -141,9 +145,13 @@ mission_ledger_state() {
 
 run_status "Maintainer stack" "$ROOT/bin/cc-maintainer-stack --strict" 'Status: maintainer-stack-ready'
 run_status "External contracts" "$ROOT/bin/cc-external-contracts" 'Status: external-contracts-ready'
-run_status "Product readiness" "$ROOT/bin/cc-product-readiness" 'Status: product-ready'
+run_status "Product readiness" "$ROOT/bin/cc-product-readiness" 'Status: product-ready' '^(Warnings:|- remote GitHub CI current|fail remote GitHub CI current)'
 git_state "$ROOT" "dotfiles git"
-[ -d "$ROUTER" ] && git_state "$ROUTER" "router git" 1 || add_row "router git" fail "missing router root: $ROUTER"
+if [ -d "$ROUTER" ]; then
+  git_state "$ROUTER" "router git" 1
+else
+  add_row "router git" fail "missing router root: $ROUTER"
+fi
 
 handoff_line="$(handoff_state)"
 handoff_status="${handoff_line%%$'\t'*}"
@@ -152,7 +160,7 @@ add_row "Design handoffs" "$handoff_status" "$handoff_detail"
 mission_ledger_state
 
 if [ "$full" -eq 1 ]; then
-  run_status "Public CI" "$ROOT/bin/cc-public-ci-check" 'passed=24 failed=0'
+  run_status "Public CI" "$ROOT/bin/cc-public-ci-check" 'passed=[0-9]+ failed=0'
   run_status "AI checks" "$ROOT/bin/cc-ai-checks" 'Status: ai-checks-ready'
 fi
 

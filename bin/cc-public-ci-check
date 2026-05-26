@@ -214,6 +214,16 @@ local_noise_not_tracked() {
   return "$bad"
 }
 
+source_size_budget() {
+  local bad=0 lines
+  lines="$(wc -l <bin/cc-design-handoff | tr -d ' ')"
+  if [ "$lines" -gt 1800 ]; then
+    printf 'bin/cc-design-handoff too large: %s lines (max 1800); extract a module instead\n' "$lines"
+    bad=1
+  fi
+  return "$bad"
+}
+
 cd "$ROOT" || exit 1
 
 printf '# Public CI Check\n\n'
@@ -244,6 +254,7 @@ run "License alignment" license_alignment
 run "Launch media present" media_artifacts
 run "No personal path leaks" personal_path_leaks
 run "No local-only corpus noise" local_noise_not_tracked
+run "Source size budget" source_size_budget
 
 printf '\n## Summary\n\n'
 printf 'passed=%s failed=%s\n' "$pass" "$fail"

@@ -187,6 +187,33 @@ personal_path_leaks() {
   return "$bad"
 }
 
+local_noise_not_tracked() {
+  local bad=0 file
+  while IFS= read -r file; do
+    case "$file" in
+    claude/wiki/learnings/_INDEX.md | \
+      claude/wiki/learnings/_COMPOUND_INDEX.md | \
+      claude/wiki/learnings/_compound-index.json | \
+      claude/wiki/learnings/*/_README.md | \
+      claude/wiki/learnings/*/_manifest.json)
+      ;;
+    claude/wiki/learnings/*)
+      printf 'local learning corpus tracked: %s\n' "$file"
+      bad=1
+      ;;
+    audits/20*.md | \
+      claude/audits/digest-*.md | \
+      claude/audits/drift-*.md | \
+      claude/audits/memory-health-*.md | \
+      claude/audits/mcp-probe-*.md)
+      printf 'dated local audit report tracked: %s\n' "$file"
+      bad=1
+      ;;
+    esac
+  done < <(git ls-files claude/wiki/learnings audits claude/audits)
+  return "$bad"
+}
+
 cd "$ROOT" || exit 1
 
 printf '# Public CI Check\n\n'
@@ -216,6 +243,7 @@ run "TEL policy proof" "$ROOT/bin/cc-tel-policy-check"
 run "License alignment" license_alignment
 run "Launch media present" media_artifacts
 run "No personal path leaks" personal_path_leaks
+run "No local-only corpus noise" local_noise_not_tracked
 
 printf '\n## Summary\n\n'
 printf 'passed=%s failed=%s\n' "$pass" "$fail"

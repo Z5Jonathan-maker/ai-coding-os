@@ -47,16 +47,36 @@ synced_if_configured() {
 
 remote_ci_current() {
   command -v gh >/dev/null 2>&1 || return 1
-  local repo head run_head run_status run_conclusion
-  repo="$(git -C "$DOTFILES" config --get remote.origin.url | sed -E 's#^https://github.com/##; s#^git@github.com:##; s#\\.git$##')" || return 1
+  local repo head run_id run_head run_status run_conclusion run_url run_row log_hint
+  repo="$(git -C "$DOTFILES" config --get remote.origin.url | sed -E 's#^https://github.com/##; s#^git@github.com:##; s#\.git$##')" || return 1
   [ -n "$repo" ] || return 1
   head="$(git -C "$DOTFILES" rev-parse HEAD)" || return 1
-  read -r run_head run_status run_conclusion <<EOF
-$(gh run list --repo "$repo" --workflow ci.yml --branch main --limit 1 --json headSha,status,conclusion --jq '.[0] | [.headSha,.status,.conclusion] | @tsv' 2>/dev/null)
+  run_row="$(gh run list --repo "$repo" --workflow ci.yml --branch main --limit 1 --json databaseId,headSha,status,conclusion,url --jq '.[0] | [.databaseId,.headSha,.status,.conclusion,.url] | @tsv' 2>&1)" || {
+    printf 'gh run list failed: %s\n' "$run_row"
+    return 1
+  }
+  [ -n "$run_row" ] || {
+    printf 'no ci.yml runs found for %s main\n' "$repo"
+    return 1
+  }
+  read -r run_id run_head run_status run_conclusion run_url <<EOF
+$run_row
 EOF
-  [ "$run_head" = "$head" ] || return 1
-  [ "$run_status" = "completed" ] || return 1
-  [ "$run_conclusion" = "success" ]
+  if [ "$run_head" != "$head" ]; then
+    printf 'latest CI run is stale: run=%s head=%s expected=%s url=%s\n' "$run_id" "$run_head" "$head" "$run_url"
+    return 1
+  fi
+  if [ "$run_status" != "completed" ]; then
+    printf 'latest CI run is not complete: run=%s status=%s url=%s\n' "$run_id" "$run_status" "$run_url"
+    return 1
+  fi
+  if [ "$run_conclusion" != "success" ]; then
+    printf 'latest CI run failed: run=%s conclusion=%s url=%s\n' "$run_id" "$run_conclusion" "$run_url"
+    log_hint="$(gh run view "$run_id" --repo "$repo" --log-failed 2>/dev/null | grep -Eim1 'account is suspended|billing|requested URL returned error|403|resource not accessible' || true)"
+    [ -n "$log_hint" ] || log_hint="$(gh run view "$run_id" --repo "$repo" --log-failed 2>/dev/null | grep -Eim1 'checkout|fatal:' || true)"
+    [ -z "$log_hint" ] || printf 'failure hint: %s\n' "$log_hint"
+    return 1
+  fi
 }
 
 disk_ready() {

@@ -17,7 +17,7 @@ developer-grade public launch.
   2026-05-23: code fix, extraction, UI design, browser proof, security review,
   long context, refactor, failing test repair, image-to-UI handoff, and
   permission denial.
-- Keep `.github/workflows/public-ci.yml` runnable through the configurable
+- Keep `.github/workflows/ci.yml` runnable through the configurable
   `PUBLIC_CI_RUNNER` path. Done 2026-05-23: hosted Ubuntu is the primary path,
   with `imac-dotfiles` retained as backup.
 - Attach the `cc-release-bundle` tarball and checksum to the public GitHub

@@ -18,7 +18,7 @@ passed=24 failed=0
 
 ## GitHub Actions Status
 
-The workflow file exists at `.github/workflows/public-ci.yml` and supports both
+The workflow file exists at `.github/workflows/ci.yml` and supports both
 push and manual `workflow_dispatch` runs.
 
 The workflow currently runs on the default GitHub-hosted Ubuntu runner. The
@@ -36,7 +36,7 @@ Leave that variable unset for GitHub-hosted Ubuntu. Set it to
 Trigger a run:
 
 ```sh
-gh workflow run public-ci.yml --repo Z5Jonathan-maker/ai-coding-os
+gh workflow run ci.yml --repo Z5Jonathan-maker/ai-coding-os
 ```
 
 Check backup runner status:

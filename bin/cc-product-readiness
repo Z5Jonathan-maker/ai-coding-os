@@ -52,7 +52,7 @@ remote_ci_current() {
   [ -n "$repo" ] || return 1
   head="$(git -C "$DOTFILES" rev-parse HEAD)" || return 1
   read -r run_head run_status run_conclusion <<EOF
-$(gh run list --repo "$repo" --workflow public-ci.yml --branch main --limit 1 --json headSha,status,conclusion --jq '.[0] | [.headSha,.status,.conclusion] | @tsv' 2>/dev/null)
+$(gh run list --repo "$repo" --workflow ci.yml --branch main --limit 1 --json headSha,status,conclusion --jq '.[0] | [.headSha,.status,.conclusion] | @tsv' 2>/dev/null)
 EOF
   [ "$run_head" = "$head" ] || return 1
   [ "$run_status" = "completed" ] || return 1

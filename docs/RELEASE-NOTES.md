@@ -36,7 +36,7 @@ cc-release-bundle v0.1.0-rc8: bundle + portable .sha256 generated
 
 ## Known External Constraint
 
-`.github/workflows/public-ci.yml` is enabled and dispatchable, but cloud
+`.github/workflows/ci.yml` is enabled and dispatchable, but cloud
 execution is blocked by the GitHub account billing / spending-limit state. The
 local portable gate passes.
 

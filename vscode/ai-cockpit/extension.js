@@ -7,6 +7,13 @@ const os = require('os');
 const path = require('path');
 const { ACTIONS, COMMANDS, HANDOFF_COMMANDS, OUTPUT_COMMANDS } = require('./lib/command-registry');
 const { buildMissionState } = require('./lib/mission-state');
+const {
+  cleanBoundedText,
+  isInsideVisualAnnotationBase,
+  readVisualAnnotationReceipts,
+  validAnnotationPayload,
+  writeVisualAnnotationReceipt,
+} = require('./lib/visual-annotations');
 
 function activate(context) {
   const output = vscode.window.createOutputChannel('AI Cockpit');
@@ -194,92 +201,6 @@ function readJsonFile(file, fallback = {}) {
   }
 }
 
-function visualAnnotationBase() {
-  return path.join(cwd(), '.ai', 'visual-annotations');
-}
-
-function isInsideVisualAnnotationBase(file) {
-  const relative = path.relative(visualAnnotationBase(), path.resolve(file));
-  return Boolean(relative && !relative.startsWith('..') && !path.isAbsolute(relative));
-}
-
-function readVisualAnnotationReceipts(limit = 12, missionDir = '') {
-  const base = visualAnnotationBase();
-  if (!fs.existsSync(base)) return [];
-  return fs.readdirSync(base)
-    .filter((name) => name.endsWith('.json'))
-    .sort()
-    .reverse()
-    .slice(0, Math.max(limit * 4, limit))
-    .map((name) => {
-      const file = path.join(base, name);
-      const receipt = readJsonFile(file, null);
-      if (!receipt) return null;
-      return {
-        ...receipt,
-        file,
-        relativeFile: path.relative(cwd(), file),
-        mtime: fs.statSync(file).mtimeMs,
-      };
-    })
-    .filter((receipt) => {
-      if (!receipt) return false;
-      if (!missionDir) return true;
-      return !receipt.mission_dir || receipt.mission_dir === missionDir || receipt.mission_dir === path.relative(cwd(), missionDir);
-    })
-    .sort((a, b) => b.mtime - a.mtime)
-    .slice(0, limit)
-    .map(({ mtime, ...receipt }) => receipt);
-}
-
-function writeVisualAnnotationReceipt(payload = {}) {
-  const dir = visualAnnotationBase();
-  fs.mkdirSync(dir, { recursive: true });
-  const createdAt = new Date().toISOString();
-  const id = `visual-annotation-${createdAt.replace(/[:.]/g, '-')}`;
-  const note = cleanBoundedText(payload.note, 4000);
-  const url = cleanBoundedText(payload.url, 2048);
-  const receipt = {
-    schema: 'ai-coding-os.visual-annotation.v1',
-    id,
-    created_at: createdAt,
-    repo: cwd(),
-    status: 'captured',
-    selection_kind: payload.selection_kind || 'region',
-    url,
-    note,
-    rect: payload.rect || {},
-    viewport: payload.viewport || {},
-    selector: payload.selector || null,
-    route_hint: payload.routeHint || payload.route_hint || 'design/kimi',
-    mission_id: payload.missionId || payload.mission_id || '',
-    mission_dir: payload.missionDir || payload.mission_dir || '',
-    source: 'vscode.ai-cockpit.visual-edit',
-  };
-  const file = path.join(dir, `${id}.json`);
-  fs.writeFileSync(file, `${JSON.stringify(receipt, null, 2)}\n`);
-  return { file, receipt };
-}
-
-function cleanBoundedText(value, limit) {
-  return String(value || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').slice(0, limit);
-}
-
-function validAnnotationPayload(payload = {}) {
-  const note = cleanBoundedText(payload.note, 4000).trim();
-  const rect = payload.rect && typeof payload.rect === 'object' ? payload.rect : {};
-  const hasRect = Number(rect.width) > 0 && Number(rect.height) > 0;
-  const url = cleanBoundedText(payload.url, 2048);
-  let validUrl = false;
-  try {
-    const parsed = new URL(url);
-    validUrl = ['http:', 'https:', 'about:'].includes(parsed.protocol);
-  } catch (_) {
-    validUrl = false;
-  }
-  return { ok: Boolean(note && hasRect && validUrl), note, url, hasRect, validUrl };
-}
-
 function readLatestDesignHandoffState(webview) {
   const base = path.join(cwd(), '.ai', 'design-handoffs');
   const empty = {
@@ -293,7 +214,7 @@ function readLatestDesignHandoffState(webview) {
     phases: [],
     artifacts: [],
     events: [],
-    visualAnnotations: readVisualAnnotationReceipts(8),
+    visualAnnotations: readVisualAnnotationReceipts(cwd(), 8),
   };
   if (!fs.existsSync(base)) return empty;
 
@@ -377,7 +298,7 @@ function readLatestDesignHandoffState(webview) {
       time: event.ts || '',
       proof: event.proof || [],
     })),
-    visualAnnotations: readVisualAnnotationReceipts(8, dir),
+    visualAnnotations: readVisualAnnotationReceipts(cwd(), 8, dir),
   };
 }
 
@@ -664,7 +585,7 @@ class CockpitProvider {
         vscode.window.showWarningMessage('Visual annotation needs a valid URL, selected region, and note.');
         return;
       }
-      const saved = writeVisualAnnotationReceipt(message.payload || {});
+      const saved = writeVisualAnnotationReceipt(cwd(), message.payload || {});
       const relative = path.relative(cwd(), saved.file);
       this.view?.webview.postMessage({
         type: 'result',
@@ -743,7 +664,7 @@ class CockpitProvider {
 
   markVisualAnnotationRouted(file) {
     const absolute = path.isAbsolute(file) ? file : path.join(cwd(), file);
-    if (!isInsideVisualAnnotationBase(absolute)) return;
+    if (!isInsideVisualAnnotationBase(cwd(), absolute)) return;
     const receipt = readJsonFile(absolute, null);
     if (!receipt) return;
     receipt.status = 'routed';
@@ -754,7 +675,7 @@ class CockpitProvider {
   deleteVisualAnnotation(annotation) {
     const file = annotation.file || annotation.relativeFile || '';
     const absolute = path.isAbsolute(file) ? file : path.join(cwd(), file);
-    if (!isInsideVisualAnnotationBase(absolute) || !fs.existsSync(absolute)) {
+    if (!isInsideVisualAnnotationBase(cwd(), absolute) || !fs.existsSync(absolute)) {
       vscode.window.showWarningMessage('Visual annotation delete blocked: invalid receipt path.');
       return;
     }

@@ -46,7 +46,7 @@ run_status() {
   tmp="$(mktemp)"
   if eval "$cmd" >"$tmp" 2>&1 && grep -Eq "$ok_pattern" "$tmp"; then
     if [ -n "$warn_pattern" ] && grep -Eq "$warn_pattern" "$tmp"; then
-      add_row "$name" warn "$(grep -E '^(Status:|Score:|Summary:|Warnings:|- remote GitHub CI current|fail remote GitHub CI current|     latest CI run|     failure hint:|passed=|missing_or_degraded=)' "$tmp" | tail -n 8 | tr '\n' ' ' | cut -c1-320)"
+      add_row "$name" warn "$(grep -E '^(Status:|Score:|Summary:|Warnings:|- remote GitHub CI current|fail remote GitHub CI current|     latest CI run|     failure hint:|passed=|missing_or_degraded=)' "$tmp" | tail -n 8 | tr '\n' ' ' | cut -c1-420)"
     else
       add_row "$name" ok "$(grep -E '^(Status:|Score:|Summary:|passed=|missing_or_degraded=)' "$tmp" | tail -n 1)"
     fi

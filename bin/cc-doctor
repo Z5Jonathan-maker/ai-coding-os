@@ -110,6 +110,8 @@ if (!dirs.length) {
 let active = 0;
 let blocked = 0;
 let broken = 0;
+const activeNames = [];
+const blockedNames = [];
 for (const dir of dirs) {
   const file = path.join(dir, 'design-handoff.json');
   if (!fs.existsSync(file)) {
@@ -118,17 +120,25 @@ for (const dir of dirs) {
   }
   try {
     const handoff = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const name = String(handoff.title || handoff.id || path.basename(dir));
     const phases = Array.isArray(handoff.phases) ? handoff.phases : [];
     const statuses = phases.map(p => String(p.status || ''));
-    if (statuses.some(s => s.startsWith('blocked'))) blocked += 1;
-    if (statuses.some(s => !terminal.has(s))) active += 1;
+    const blockedPhase = phases.find(p => String(p.status || '').startsWith('blocked'));
+    if (blockedPhase) {
+      blocked += 1;
+      blockedNames.push(`${name}:${blockedPhase.id || blockedPhase.name || blockedPhase.phase || blockedPhase.status}`);
+    }
+    if (statuses.some(s => !terminal.has(s))) {
+      active += 1;
+      activeNames.push(name);
+    }
   } catch (_) {
     broken += 1;
   }
 }
 if (broken) console.log(`fail\t${broken} broken handoff directories`);
-else if (blocked) console.log(`warn\t${blocked} blocked handoff missions, ${active} active`);
-else if (active) console.log(`warn\t${active} active handoff missions`);
+else if (blocked) console.log(`warn\t${blocked} blocked, ${active} active: ${blockedNames.slice(0, 3).join(', ')}`);
+else if (active) console.log(`warn\t${active} active: ${activeNames.slice(0, 3).join(', ')}`);
 else console.log(`ok\t${dirs.length} handoff missions closed`);
 NODE
 }

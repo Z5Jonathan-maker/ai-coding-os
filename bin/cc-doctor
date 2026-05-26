@@ -115,9 +115,10 @@ const blockedNames = [];
 function runnableCommand(command, dir, phase) {
   if (!command || command.includes(' --dir ')) return command || '';
   if (!command.startsWith('cc-design-handoff ')) return command;
-  const safeCommand = ['creative_reference', 'asset_decomposition'].includes(String(phase || ''))
-    ? command.replace(/\s+--image-api-ok\b/g, '')
-    : command;
+  const imagePhase = ['creative_reference', 'asset_decomposition'].includes(String(phase || ''));
+  let safeCommand = imagePhase ? command.replace(/\s+--image-api-ok\b/g, '') : command;
+  if (imagePhase && !safeCommand.includes(' --copy-prompt')) safeCommand += ' --copy-prompt';
+  if (imagePhase && !safeCommand.includes(' --open-chatgpt')) safeCommand += ' --open-chatgpt';
   return safeCommand.replace(/^(cc-design-handoff\s+\S+)/, `$1 --dir ${JSON.stringify(dir)}`);
 }
 for (const dir of dirs) {

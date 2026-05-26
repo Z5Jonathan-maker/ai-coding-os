@@ -112,6 +112,14 @@ let blocked = 0;
 let broken = 0;
 const activeNames = [];
 const blockedNames = [];
+function runnableCommand(command, dir, phase) {
+  if (!command || command.includes(' --dir ')) return command || '';
+  if (!command.startsWith('cc-design-handoff ')) return command;
+  const safeCommand = ['creative_reference', 'asset_decomposition'].includes(String(phase || ''))
+    ? command.replace(/\s+--image-api-ok\b/g, '')
+    : command;
+  return safeCommand.replace(/^(cc-design-handoff\s+\S+)/, `$1 --dir ${JSON.stringify(dir)}`);
+}
 for (const dir of dirs) {
   const file = path.join(dir, 'design-handoff.json');
   if (!fs.existsSync(file)) {
@@ -136,7 +144,7 @@ for (const dir of dirs) {
     if (blockedPhase) {
       blocked += 1;
       if (nextAction && nextAction.phase) {
-        const command = nextAction.command ? ` -> ${nextAction.command}` : '';
+        const command = nextAction.command ? ` -> ${runnableCommand(nextAction.command, dir, nextAction.phase)}` : '';
         blockedNames.push(`${name}:${nextAction.phase}/${nextAction.status || 'needs_action'}${command}`);
       } else {
         blockedNames.push(`${name}:${blockedPhase.id || blockedPhase.name || blockedPhase.phase || blockedPhase.status}`);

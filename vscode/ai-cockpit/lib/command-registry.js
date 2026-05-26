@@ -36,7 +36,7 @@ const COMMANDS = {
 
 const ACTIONS = [
   ['autoRun', 'Auto', null],
-  ['buildFix', 'Code', null],
+  ['buildFix', 'Code', 'codex'],
   ['designBrowser', 'Design / Browser', 'design'],
   ['researchExtract', 'Research / Extract', 'cheap'],
 ];

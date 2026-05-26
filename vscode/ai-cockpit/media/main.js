@@ -1,5 +1,6 @@
 (function () {
   const vscode = acquireVsCodeApi();
+  const persisted = vscode.getState() || {};
   const $ = (id) => document.getElementById(id);
   const {
     clamp,
@@ -12,17 +13,16 @@
     round,
     topKey,
   } = window.CockpitUtils;
-  let selectedMode = 'autoRun';
-  let executionMode = 'execute';
-  let permissionMode = 'review';
-  let contextBlock = '';
-  let attached = [];
-  let activePrompt = '';
+  let selectedMode = persisted.selectedMode || 'autoRun';
+  let executionMode = persisted.executionMode || 'execute';
+  let permissionMode = persisted.permissionMode || 'review';
+  let contextBlock = persisted.contextBlock || '';
+  let attached = Array.isArray(persisted.attached) ? persisted.attached : [];
+  let activePrompt = persisted.activePrompt || '';
   let annotateMode = false;
   let annotationStart = null;
   let pendingAnnotation = null;
   let visualAnnotations = [];
-
   function renderChips() {
     $('chips').innerHTML = '';
     attached.forEach((item, index) => {
@@ -32,16 +32,49 @@
       chip.textContent = `${item.label} ×`;
       chip.addEventListener('click', () => {
         attached.splice(index, 1);
+        persistState();
         renderChips();
       });
       $('chips').appendChild(chip);
     });
   }
-
+  function persistState() {
+    vscode.setState({
+      selectedMode,
+      executionMode,
+      permissionMode,
+      contextBlock,
+      attached,
+      activePrompt,
+      prompt: $('prompt')?.value || '',
+    });
+  }
+  function syncPressedState(selector, dataName, value) {
+    document.querySelectorAll(selector).forEach((button) => {
+      const active = button.dataset[dataName] === value;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  }
+  function restoreControls() {
+    syncPressedState('button[data-mode]', 'mode', selectedMode);
+    syncPressedState('button[data-permission]', 'permission', permissionMode);
+    syncPressedState('button[data-execution-mode]', 'executionMode', executionMode);
+    const modeButton = document.querySelector(`button[data-mode="${selectedMode}"]`);
+    const permissionButton = document.querySelector(`button[data-permission="${permissionMode}"]`);
+    const executionButton = document.querySelector(`button[data-execution-mode="${executionMode}"]`);
+    if ($('modeSummary') && modeButton) $('modeSummary').textContent = `Mode: ${modeButton.textContent.trim()}`;
+    if ($('permissionSummary') && permissionButton) {
+      const label = permissionButton.querySelector('strong')?.textContent || permissionButton.textContent;
+      $('permissionSummary').textContent = `Authority: ${label.trim()}`;
+    }
+    if ($('executionSummary') && executionButton) $('executionSummary').textContent = `Workflow: ${executionButton.textContent.trim()}`;
+    if ($('prompt') && persisted.prompt) $('prompt').value = persisted.prompt;
+    renderChips();
+  }
   function fullContext() {
     return [contextBlock].concat(attached.map(item => item.block)).filter(Boolean).join('');
   }
-
   function activeMissionPrompt() {
     const active = document.querySelector('.workstream.active[data-workstream]');
     if (!active) return '';
@@ -51,53 +84,41 @@
     const focus = active.dataset.focusBody || active.dataset.focus || $('continueBody')?.textContent || 'continue the next best step';
     return `Continue ${title}. ${focus}`;
   }
-
   function promptForRun() {
     const typed = String($('prompt')?.value || '').trim();
     const prompt = typed || activeMissionPrompt();
     if (prompt && !typed && $('prompt')) $('prompt').value = prompt;
     return prompt;
   }
-
   function includeContextChecked() {
     return Boolean($('includeContext')?.checked);
   }
-
   document.addEventListener('click', (event) => {
     const modeButton = event.target.closest('button[data-mode]');
     if (modeButton) {
       selectedMode = modeButton.dataset.mode;
-      document.querySelectorAll('button[data-mode]').forEach((button) => {
-        button.classList.toggle('active', button.dataset.mode === selectedMode);
-        button.setAttribute('aria-pressed', String(button.dataset.mode === selectedMode));
-      });
+      syncPressedState('button[data-mode]', 'mode', selectedMode);
       $('modeSummary').textContent = `Mode: ${modeButton.textContent}`;
+      persistState();
       return;
     }
-
     const permissionButton = event.target.closest('button[data-permission]');
     if (permissionButton) {
       permissionMode = permissionButton.dataset.permission;
-      document.querySelectorAll('button[data-permission]').forEach((button) => {
-        button.classList.toggle('active', button.dataset.permission === permissionMode);
-        button.setAttribute('aria-pressed', String(button.dataset.permission === permissionMode));
-      });
+      syncPressedState('button[data-permission]', 'permission', permissionMode);
       const label = permissionButton.querySelector('strong')?.textContent || permissionButton.textContent;
       $('permissionSummary').textContent = `Authority: ${label.trim()}`;
+      persistState();
       return;
     }
-
     const executionButton = event.target.closest('button[data-execution-mode]');
     if (executionButton) {
       executionMode = executionButton.dataset.executionMode;
-      document.querySelectorAll('button[data-execution-mode]').forEach((button) => {
-        button.classList.toggle('active', button.dataset.executionMode === executionMode);
-        button.setAttribute('aria-pressed', String(button.dataset.executionMode === executionMode));
-      });
+      syncPressedState('button[data-execution-mode]', 'executionMode', executionMode);
       $('executionSummary').textContent = `Workflow: ${executionButton.textContent.trim()}`;
+      persistState();
       return;
     }
-
     const resultAction = event.target.closest('button[data-result-action]');
     if (resultAction) {
       const action = resultAction.dataset.resultAction;
@@ -105,6 +126,7 @@
         vscode.postMessage({ command: 'copyResult', text: $('result').textContent || '' });
       } else if (action === 'clear') {
         activePrompt = '';
+        persistState();
         setRunning(false);
         $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'Momentum' : 'Result';
         renderTranscript('Ready', '');
@@ -113,17 +135,14 @@
       }
       return;
     }
-
     if (event.target.closest('#visualPreviewLoad')) {
       loadVisualPreview();
       return;
     }
-
     if (event.target.closest('#visualAnnotateToggle')) {
       toggleAnnotateMode();
       return;
     }
-
     const visualRoute = event.target.closest('button[data-visual-route]');
     if (visualRoute) {
       const index = Number(visualRoute.dataset.visualRoute || -1);
@@ -134,7 +153,6 @@
       }
       return;
     }
-
     const visualDelete = event.target.closest('button[data-visual-delete]');
     if (visualDelete) {
       const index = Number(visualDelete.dataset.visualDelete || -1);
@@ -142,7 +160,6 @@
       if (annotation) vscode.postMessage({ command: 'deleteVisualAnnotation', payload: annotation });
       return;
     }
-
     const workstreamButton = event.target.closest('button[data-workstream-prompt]');
     if (workstreamButton) {
       const article = workstreamButton.closest('.workstream');
@@ -150,6 +167,7 @@
       const prompt = workstreamButton.dataset.workstreamPrompt || '';
       $('prompt').value = prompt;
       startTranscript(selectedMode, prompt);
+      persistState();
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
@@ -161,24 +179,22 @@
       });
       return;
     }
-
     const workstream = event.target.closest('.workstream[data-workstream]');
     if (workstream) {
       selectWorkstream(workstream);
       return;
     }
-
     const button = event.target.closest('button[data-command]');
     if (button) {
       clearTranscriptPrompt();
       vscode.postMessage({ command: button.dataset.command });
       return;
     }
-
     const runButton = event.target.closest('button[data-run]');
     if (runButton) {
       const prompt = promptForRun();
       startTranscript(runButton.dataset.run, prompt);
+      persistState();
       vscode.postMessage({
         command: 'runPrompt',
         mode: runButton.dataset.run,
@@ -190,11 +206,11 @@
       });
       return;
     }
-
     const selectedRun = event.target.closest('button[data-run-selected]');
     if (selectedRun) {
       const prompt = promptForRun();
       startTranscript(selectedMode, prompt);
+      persistState();
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
@@ -206,7 +222,6 @@
       });
       return;
     }
-
     const inlineButton = event.target.closest('button[data-inline-command]');
     if (!inlineButton) return;
     clearTranscriptPrompt();
@@ -216,17 +231,20 @@
       commandLine: inlineButton.dataset.inlineCommand,
     });
   });
-
   window.addEventListener('load', () => {
+    restoreControls();
     setTimeout(() => $('prompt')?.focus(), 0);
     bindVisualAnnotationLayer();
   });
-
+  document.addEventListener('input', (event) => {
+    if (event.target && event.target.id === 'prompt') persistState();
+  });
   document.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
       const prompt = promptForRun();
       startTranscript(selectedMode, prompt);
+      persistState();
       vscode.postMessage({
         command: 'runPrompt',
         mode: selectedMode,
@@ -243,7 +261,6 @@
       $('prompt').select();
     }
   });
-
   window.addEventListener('message', (event) => {
     const message = event.data;
     if (message.type === 'loading') {
@@ -254,10 +271,12 @@
     if (message.type === 'context') {
       contextBlock = message.payload && message.payload.block ? message.payload.block : '';
       $('context').textContent = message.payload && message.payload.label ? message.payload.label : 'No active editor';
+      persistState();
       return;
     }
     if (message.type === 'appendContext') {
       attached.push(message.payload);
+      persistState();
       renderChips();
       return;
     }
@@ -268,7 +287,6 @@
       return;
     }
     if (message.type !== 'state') return;
-
     const { readiness, context, route, metrics, providerCapacity, permissions, checkpoints, disk, product, firstRun, contextMeter, contextMeterJson, contextSnapshot, diffSummary, sessions, pulse, nativeApps, kimi, repoMap, mission, designHandoff } = message.payload;
     const health = deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity);
     contextBlock = context && context.block ? context.block : '';
@@ -302,7 +320,6 @@
     $('jobs').textContent = message.payload.jobs || 'No jobs available.';
     $('lanes').textContent = message.payload.lanes || 'No lane registry available.';
   });
-
   window.addEventListener('message', (event) => {
     const message = event.data;
     if (message.type !== 'result') return;
@@ -310,7 +327,6 @@
     renderTranscript(message.payload.title, message.payload.body);
     setRunning(Boolean(message.payload.running));
   });
-
   function startTranscript(mode, prompt) {
     activePrompt = String(prompt || '').trim();
     if (!activePrompt) return;
@@ -318,7 +334,6 @@
     $('resultTitle').textContent = document.body.classList.contains('panel-mode') ? 'In motion' : 'Working';
     renderTranscript(modeLabel(mode), 'Running...');
   }
-
   function setRunning(running) {
     document.body.classList.toggle('is-running', running);
     const stop = $('stopRun');
@@ -335,7 +350,6 @@
     if (activeAgent) activeAgent.textContent = running ? 'Workspace is continuing this mission.' : `Workspace is handling ${focus.toLowerCase()}.`;
     if (activeAgentNote) activeAgentNote.textContent = running ? 'Routing context, files, and next action now.' : focusBody;
   }
-
   function renderMissionState(mission) {
     if (!mission || typeof mission !== 'object') return;
     setText('continueTitle', mission.title);
@@ -351,17 +365,14 @@
     setText('detailRoute', mission.route);
     setText('detailStarted', mission.started);
     setText('detailProgress', `${Number(mission.progress || 0)}%`);
-
     const progressBar = $('detailProgressBar');
     if (progressBar) progressBar.style.width = `${clamp(Number(mission.progress || 0), 0, 100)}%`;
-
     document.querySelectorAll('.home-intro h2, .workstream.active .stream-title strong').forEach((node) => {
       node.textContent = mission.title || 'Current workspace';
     });
     document.querySelectorAll('.home-intro p, .workstream.active .stream-main p').forEach((node) => {
       node.textContent = mission.nextStep || mission.summary || 'Continue the current workspace.';
     });
-
     const active = document.querySelector('.workstream.active[data-workstream]');
     if (active) {
       active.dataset.workstream = mission.title || 'Current workspace';
@@ -387,14 +398,11 @@
       }
       if (meta[2]) meta[2].textContent = mission.route || 'Auto';
     }
-
     document.querySelectorAll('.workstream:not(.active)').forEach((node) => {
       node.style.display = 'none';
     });
-
     renderMissionFeed(mission.feed);
   }
-
   function renderMissionFeed(feed) {
     const container = document.querySelector('.mission-feed');
     if (!container || !Array.isArray(feed) || !feed.length) return;
@@ -424,7 +432,6 @@
       preview.querySelector('small').textContent = first.body || 'Mission state is derived from local signals.';
     }
   }
-
   function renderDesignHandoff(handoff) {
     const surface = document.querySelector('.creative-surface');
     if (!surface) return;
@@ -439,13 +446,11 @@
     setText('handoffProgress', `${progress}%`);
     const bar = $('handoffProgressBar');
     if (bar) bar.style.width = `${progress}%`;
-
     renderHandoffStages(data.phases || [], data.activePhase);
     renderHandoffArtifacts(data.artifacts || []);
     renderHandoffEvents(data.events || []);
     renderVisualAnnotations(data.visualAnnotations || []);
   }
-
   function loadVisualPreview() {
     const input = $('visualPreviewUrl');
     const frame = $('visualPreview');
@@ -456,7 +461,6 @@
     frame.src = url;
     toggleAnnotateMode(false);
   }
-
   function toggleAnnotateMode(force) {
     annotateMode = typeof force === 'boolean' ? force : !annotateMode;
     const layer = $('visualAnnotationLayer');
@@ -472,7 +476,6 @@
       button.textContent = annotateMode ? 'Annotating' : 'Annotate';
     }
   }
-
   function bindVisualAnnotationLayer() {
     const layer = $('visualAnnotationLayer');
     if (!layer) return;
@@ -504,14 +507,12 @@
       vscode.postMessage({ command: 'askVisualAnnotationNote', payload: pendingAnnotation });
     });
   }
-
   function pointInBounds(event, bounds) {
     return {
       x: clamp(event.clientX - bounds.left, 0, bounds.width),
       y: clamp(event.clientY - bounds.top, 0, bounds.height),
     };
   }
-
   function normalizedRect(start, end, bounds) {
     const left = Math.min(start.x, end.x);
     const top = Math.min(start.y, end.y);
@@ -528,7 +529,6 @@
       height_percent: round((height / Math.max(1, bounds.height)) * 100),
     };
   }
-
   function updateDraftAnnotation(start, end, bounds) {
     const draft = document.querySelector('.visual-annotation-rect.draft');
     if (!draft) return;
@@ -540,11 +540,9 @@
       height: `${rect.height}px`,
     });
   }
-
   function clearDraftAnnotation() {
     document.querySelectorAll('.visual-annotation-rect.draft').forEach((node) => node.remove());
   }
-
   function annotationPayload(rect) {
     const frame = $('visualPreview');
     const surface = document.querySelector('.creative-surface');
@@ -562,7 +560,6 @@
       selection_kind: 'region',
     };
   }
-
   function saveVisualAnnotation(rect, note, base = {}) {
     const payload = {
       ...base,
@@ -580,7 +577,6 @@
     renderVisualAnnotations(visualAnnotations);
     vscode.postMessage({ command: 'saveVisualAnnotation', payload });
   }
-
   function renderVisualAnnotations(list) {
     const container = $('visualAnnotations');
     if (!container) return;
@@ -628,7 +624,6 @@
       container.appendChild(node);
     });
   }
-
   function renderHandoffStages(phases, activePhase) {
     const container = $('handoffStages');
     if (!container) return;
@@ -650,18 +645,14 @@
       const status = document.createElement('span');
       status.textContent = phase.status || 'pending';
       top.append(title, status);
-
       const meta = document.createElement('p');
       meta.textContent = `${phase.owner || 'codex'}${phase.artifact ? ` -> ${phase.artifact}` : ''}`;
-
       const proof = document.createElement('small');
       proof.textContent = phase.artifactExists ? 'Artifact present' : phase.output ? 'Awaiting artifact' : (phase.approvalGate || 'Ready');
-
       node.append(top, meta, proof);
       container.appendChild(node);
     });
   }
-
   function renderHandoffArtifacts(artifacts) {
     const container = $('handoffArtifacts');
     if (!container) return;
@@ -686,7 +677,6 @@
       container.appendChild(node);
     });
   }
-
   function renderHandoffEvents(events) {
     const container = $('handoffEvents');
     if (!container) return;
@@ -705,14 +695,12 @@
       container.appendChild(node);
     });
   }
-
   function selectWorkstream(workstream) {
     document.querySelectorAll('.workstream').forEach((item) => {
       const active = item === workstream;
       item.classList.toggle('active', active);
       item.setAttribute('aria-selected', String(active));
     });
-
     setText('detailTitle', workstream.dataset.workstream);
     setText('detailDescription', workstream.dataset.summary);
     setText('detailFocus', workstream.dataset.focus);
@@ -725,40 +713,33 @@
     setText('continueChanges', streamMeta(workstream, 'Changes'));
     setText('continueTests', streamMeta(workstream, 'Tests'));
     setText('continueSafety', safetyText(workstream));
-
     const progress = clamp(Number(workstream.dataset.progress || 0), 0, 100);
     setText('detailProgress', `${progress}%`);
     const progressBar = $('detailProgressBar');
     if (progressBar) progressBar.style.width = `${progress}%`;
   }
-
   function setText(id, value) {
     const node = $(id);
     if (node && value) node.textContent = value;
   }
-
   function streamMeta(workstream, label) {
     const meta = Array.from(workstream.querySelectorAll('.stream-meta')).find((item) => {
       return item.querySelector('span')?.textContent.trim() === label;
     });
     return meta?.querySelector('strong')?.textContent.trim() || '';
   }
-
   function safetyText(workstream) {
     const status = streamMeta(workstream, 'Tests').toLowerCase();
     if (status.includes('fail')) return 'Needs attention';
     if (status.includes('warn')) return 'Review before ship';
     return 'Safe to continue';
   }
-
   function clearTranscriptPrompt() {
     activePrompt = '';
   }
-
   function renderTranscript(title, body) {
     const result = $('result');
     result.innerHTML = '';
-
     if (!activePrompt && !String(body || '').trim()) {
       const empty = document.createElement('div');
       empty.className = 'empty-state';
@@ -766,33 +747,26 @@
       result.appendChild(empty);
       return;
     }
-
     const panelMode = document.body.classList.contains('panel-mode');
     if (activePrompt) {
       result.appendChild(messageNode(panelMode ? 'Intent' : 'You', activePrompt, 'user'));
     }
-
     const cleaned = cleanOutput(title, body);
     result.appendChild(messageNode(panelMode ? 'Momentum' : title || 'AI', cleaned, 'assistant'));
     result.scrollTop = result.scrollHeight;
   }
-
   function messageNode(role, body, kind) {
     const node = document.createElement('article');
     node.className = `message ${kind || 'assistant'}`;
-
     const roleEl = document.createElement('div');
     roleEl.className = 'message-role';
     roleEl.textContent = role || 'AI';
-
     const bodyEl = document.createElement('div');
     bodyEl.className = 'message-body';
     bodyEl.textContent = String(body || '').trim() || '(no output)';
-
     node.append(roleEl, bodyEl);
     return node;
   }
-
   function deriveHealth(readiness, product, firstRun, kimi, route, providerCapacity) {
     const productKnown = /Status:\s*product-ready|Status:\s*not product-ready|Blockers:/i.test(product || '');
     const productReady = /Status:\s*product-ready/.test(product || '');
@@ -853,7 +827,6 @@
         : readiness.body,
     };
   }
-
   function renderContextMeter(data) {
     const used = clamp(Number(data.usedPercent || 0), 0, 100);
     const reserve = clamp(Number(data.reservedPercent || 0), 0, 100 - used);
@@ -866,7 +839,6 @@
     $('contextReserveBar').style.width = `${reserve}%`;
     $('contextUsedBar').className = data.status === 'high' ? 'danger' : data.status === 'medium' ? 'caution' : '';
   }
-
   function renderStatusGrid(route, diff, context, providerCapacity) {
     const routeMatch = String(route || '').match(/Latest:\s*([^\n|]+)/);
     $('routePill').textContent = routeMatch ? routeMatch[1].trim().slice(0, 18) : 'Auto';
@@ -880,7 +852,6 @@
         ? 'Degraded'
         : 'Check';
   }
-
   function renderDiffSummary(data) {
     $('diffFiles').textContent = Number(data.fileCount || 0).toLocaleString();
     $('diffAdded').textContent = `+${Number(data.totalAdded || 0).toLocaleString()}`;
@@ -900,7 +871,6 @@
       hunkLines.length ? `\nHunks:\n${hunkLines.join('\n')}` : '',
     ].filter(Boolean).join('\n');
   }
-
   function renderContextSnapshot(data) {
     const providers = Array.isArray(data.providers) ? data.providers : [];
     if (!providers.length) {
@@ -917,7 +887,6 @@
       return `${provider.id.padEnd(12)} included=${marker.padEnd(3)} items=${String(count).padStart(3)} source=${provider.source || '-'}`;
     }).join('\n');
   }
-
   function renderSessions(data) {
     const sessions = Array.isArray(data.sessions) ? data.sessions : [];
     if (!sessions.length) {
@@ -942,7 +911,6 @@
       ].join('');
     }).join('\n\n');
   }
-
   function renderRepoMap(data) {
     const top = Array.isArray(data.top) ? data.top : [];
     if (!top.length) {
@@ -958,5 +926,4 @@
     });
     $('repoMap').textContent = [head, ...lines].join('\n');
   }
-
 }());

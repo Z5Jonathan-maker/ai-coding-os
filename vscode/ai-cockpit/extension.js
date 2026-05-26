@@ -641,11 +641,7 @@ class CockpitProvider {
   }
 
   runPrompt(mode, prompt, includeContext = false, contextBlock = '', permissionMode = 'review', executionMode = 'execute') {
-    const clean = String(prompt || '').trim();
-    if (!clean) {
-      vscode.window.showInformationMessage('Enter a prompt in the AI Cockpit first.');
-      return;
-    }
+    const clean = String(prompt || '').trim() || 'Continue the current workspace. Inspect live repo state, choose the next safest useful action, and verify before reporting done.';
     const permission = permissionInstruction(permissionMode);
     const execution = executionInstruction(executionMode);
     const routeTask = includeContext && contextBlock ? `${clean}${contextBlock}` : clean;
@@ -675,7 +671,7 @@ class CockpitProvider {
     }
     const modes = {
       autoRun: ['Auto', null],
-      buildFix: ['Code', null],
+      buildFix: ['Code', 'codex'],
       designBrowser: ['Design / Browser', 'design'],
       designHandoff: ['Creative Handoff', 'creative_handoff'],
       researchExtract: ['Research / Extract', 'cheap'],

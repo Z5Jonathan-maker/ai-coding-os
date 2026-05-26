@@ -132,7 +132,8 @@ for (const dir of dirs) {
     const name = String(handoff.title || handoff.id || path.basename(dir));
     const phases = Array.isArray(handoff.phases) ? handoff.phases : [];
     const statuses = phases.map(p => String(p.status || ''));
-    const blockedPhase = phases.find(p => String(p.status || '').startsWith('blocked'));
+    const activePhase = phases.find(p => !terminal.has(String(p.status || '')));
+    const blockedPhase = activePhase && String(activePhase.status || '').startsWith('blocked') ? activePhase : null;
     const actionFile = path.join(dir, 'next-action.json');
     let nextAction = null;
     if (fs.existsSync(actionFile)) {
@@ -153,7 +154,7 @@ for (const dir of dirs) {
     }
     if (statuses.some(s => !terminal.has(s))) {
       active += 1;
-      activeNames.push(name);
+      activeNames.push(`${name}:${activePhase?.id || 'unknown'}/${activePhase?.status || 'needs_action'}`);
     }
   } catch (_) {
     broken += 1;

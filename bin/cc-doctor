@@ -136,7 +136,8 @@ for (const dir of dirs) {
     if (blockedPhase) {
       blocked += 1;
       if (nextAction && nextAction.phase) {
-        blockedNames.push(`${name}:${nextAction.phase}/${nextAction.status || 'needs_action'}`);
+        const command = nextAction.command ? ` -> ${nextAction.command}` : '';
+        blockedNames.push(`${name}:${nextAction.phase}/${nextAction.status || 'needs_action'}${command}`);
       } else {
         blockedNames.push(`${name}:${blockedPhase.id || blockedPhase.name || blockedPhase.phase || blockedPhase.status}`);
       }

@@ -47,6 +47,9 @@ node_syntax() {
   while IFS= read -r file; do
     node --check "$file" || bad=1
   done < <(find -L lib -type f -name '*.js' -print 2>/dev/null | sort)
+  while IFS= read -r file; do
+    node --check "$file" || bad=1
+  done < <(find -L vscode/ai-cockpit/lib -type f -name '*.js' -print 2>/dev/null | sort)
   node --check vscode/ai-cockpit/extension.js || bad=1
   node --check vscode/ai-cockpit/media/main.js || bad=1
   node -e 'JSON.parse(require("fs").readFileSync("vscode/ai-cockpit/package.json", "utf8"))' || bad=1
@@ -219,6 +222,21 @@ source_size_budget() {
   lines="$(wc -l <bin/cc-design-handoff | tr -d ' ')"
   if [ "$lines" -gt 1520 ]; then
     printf 'bin/cc-design-handoff too large: %s lines (max 1520); extract a module instead\n' "$lines"
+    bad=1
+  fi
+  lines="$(wc -l <vscode/ai-cockpit/extension.js | tr -d ' ')"
+  if [ "$lines" -gt 1550 ]; then
+    printf 'vscode/ai-cockpit/extension.js too large: %s lines (max 1550); extract a module instead\n' "$lines"
+    bad=1
+  fi
+  lines="$(wc -l <vscode/ai-cockpit/media/main.js | tr -d ' ')"
+  if [ "$lines" -gt 1100 ]; then
+    printf 'vscode/ai-cockpit/media/main.js too large: %s lines (max 1100); extract a module instead\n' "$lines"
+    bad=1
+  fi
+  lines="$(wc -l <vscode/ai-cockpit/media/style.css | tr -d ' ')"
+  if [ "$lines" -gt 3000 ]; then
+    printf 'vscode/ai-cockpit/media/style.css too large: %s lines (max 3000); reduce or split cockpit styles\n' "$lines"
     bad=1
   fi
   return "$bad"

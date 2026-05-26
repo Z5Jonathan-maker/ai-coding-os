@@ -31,6 +31,8 @@ function auditOk() {
 
 const pkg = JSON.parse(read('package.json'));
 const ext = read('extension.js');
+const registry = read('lib/command-registry.js');
+const extSource = `${ext}\n${registry}`;
 const js = read('media/main.js');
 const css = read('media/style.css');
 const audit = auditOk();
@@ -40,13 +42,13 @@ add('lockfile present', has('package-lock.json'));
 add('npm audit clean', audit.ok, audit.detail);
 add('activity bar contribution', JSON.stringify(pkg.contributes || {}).includes('aiSystemCockpit.dashboard'));
 add('startup-safe activation', !JSON.stringify(pkg.activationEvents || []).includes('onStartupFinished'));
-add('mission ledger command wired', ext.includes("missionLedger: 'cc-mission-ledger list 10 --json'"));
+add('mission ledger command wired', extSource.includes("missionLedger: 'cc-mission-ledger list 10 --json'"));
 add('inline edit command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.inlineEdit') && ext.includes('function runInlineEdit'));
 add('panel preserves editor context', ext.includes('vscode.ViewColumn.Beside') && !ext.includes('enterFocusLayout'));
 add('advanced controls collapsed', ext.includes('class="context-drawer"') && css.includes('.context-drawer'));
 add('continuation UI ids present', ['continueTitle', 'continueBody', 'continueSafety', 'detailTitle', 'detailProgressBar'].every((id) => ext.includes(`id="${id}"`)));
 add('primary run path present', ext.includes('data-run-selected="true"') && js.includes('activeMissionPrompt'));
-add('creative handoff command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.designHandoff') && ext.includes('cc-design-handoff create') && ext.includes("mode === 'designHandoff'") && js.includes("designHandoff: 'Creative Handoff'"));
+add('creative handoff command wired', JSON.stringify(pkg.contributes.commands || {}).includes('aiSystemCockpit.designHandoff') && extSource.includes('cc-design-handoff create') && ext.includes("mode === 'designHandoff'") && js.includes("designHandoff: 'Creative Handoff'"));
 add('creative handoff resume controls wired', ['aiSystemCockpit.designHandoffStatus', 'aiSystemCockpit.designHandoffContinue', 'aiSystemCockpit.designHandoffApprove', 'aiSystemCockpit.designHandoffExecute'].every((id) => JSON.stringify(pkg.contributes.commands || {}).includes(id)) && ext.includes('pickDesignHandoffDir') && ext.includes('data-command="designHandoffContinue"') && ext.includes('data-command="designHandoffApprove"') && ext.includes('data-command="designHandoffExecute"'));
 add('creative mode state rendered', ext.includes('readLatestDesignHandoffState') && ext.includes('id="handoffStages"') && ext.includes('id="handoffArtifacts"') && js.includes('renderDesignHandoff') && js.includes('renderHandoffStages') && css.includes('.creative-surface') && css.includes('.handoff-stage'));
 add('visual edit spine wired', ext.includes('saveVisualAnnotation') && ext.includes('askVisualAnnotationNote') && ext.includes('routeVisualAnnotation') && ext.includes('id="visualPreview"') && ext.includes('id="visualAnnotationLayer"') && js.includes('bindVisualAnnotationLayer') && js.includes('routeVisualAnnotation') && css.includes('.visual-edit-surface'));

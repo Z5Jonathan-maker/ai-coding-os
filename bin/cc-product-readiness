@@ -89,6 +89,7 @@ check 'triggered microagents select context' "$DOTFILES/bin/cc-triggered-microag
 check 'MCP server surface available' "$DOTFILES/bin/cc-mcp-server --check"
 check 'system demo passes' "$DOTFILES/bin/cc-system-demo"
 check 'external evaluator passes' "$DOTFILES/bin/cc-evaluator-check"
+check 'fresh clone validation passes' "CC_FRESH_CLONE_SOURCE='$DOTFILES' '$DOTFILES/bin/cc-fresh-clone-check'"
 check 'first-run doctor passes' "$DOTFILES/install.sh --dry-run"
 check 'VS Code cockpit extension installed' extension_ready
 check 'VS Code cockpit package command present' "command -v cc-package-cockpit"

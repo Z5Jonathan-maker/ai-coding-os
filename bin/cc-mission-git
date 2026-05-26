@@ -87,7 +87,7 @@ cmd_record() {
     rel_dir="$(relpath "$dir")"
     case "$rel_dir" in
     ..*) : ;;
-    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -- "$rel_dir" ;;
+    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -f -- "$rel_dir" ;;
     esac
   fi
   for item in "${artifact[@]}"; do
@@ -97,7 +97,7 @@ cmd_record() {
     rel_item="$(relpath "$item")"
     case "$rel_item" in
     ..*) : ;;
-    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -- "$rel_item" ;;
+    *) GIT_INDEX_FILE="$index" git -C "$repo" add -A -f -- "$rel_item" ;;
     esac
   done
 
@@ -144,6 +144,7 @@ cmd_check() {
   git -C "$tmp" config user.name "Test User"
   mkdir -p "$tmp/.ai/design-handoffs/demo"
   printf '{}\n' >"$tmp/README.md"
+  printf '.ai/design-handoffs/\n' >"$tmp/.gitignore"
   git -C "$tmp" add README.md
   git -C "$tmp" commit -m init >/dev/null
   cat >"$tmp/.ai/design-handoffs/demo/design-handoff.json" <<'JSON'

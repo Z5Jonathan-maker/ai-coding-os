@@ -224,6 +224,11 @@ source_size_budget() {
     printf 'bin/cc-design-handoff too large: %s lines (max 800); extract a module instead\n' "$lines"
     bad=1
   fi
+  lines="$(wc -l <bin/cc-agent-runtime | tr -d ' ')"
+  if [ "$lines" -gt 550 ]; then
+    printf 'bin/cc-agent-runtime too large: %s lines (max 550); extract a module instead\n' "$lines"
+    bad=1
+  fi
   lines="$(wc -l <vscode/ai-cockpit/extension.js | tr -d ' ')"
   if [ "$lines" -gt 820 ]; then
     printf 'vscode/ai-cockpit/extension.js too large: %s lines (max 820); extract a module instead\n' "$lines"

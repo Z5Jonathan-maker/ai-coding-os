@@ -1,40 +1,143 @@
 #!/usr/bin/env bash
-# cc-grant-access — guides user through the Accessibility toggles for
-# Hammerspoon + Rectangle. The toggle itself requires Touch ID (no
-# automation path on Sequoia), but this script:
-#   1. Opens System Settings to the right pane
-#   2. Sends a native macOS notification with summary
-#   3. Prints the apps to add + their bundle IDs (helpful if user
-#      needs to pick them from a file dialog)
+# cc-grant-access — opens the exact macOS privacy panes needed for the
+# local AI cockpit and native app automation.
 #
-# After the toggles, those apps' window-management hotkeys + global
-# triggers actually work.
+# macOS TCC grants cannot be silently enabled from a shell. This command can
+# reset stale denied prompts, open the right panes, and print the exact apps
+# that need toggles. The final toggle/Touch ID approval is intentionally
+# user-controlled by macOS.
 set -euo pipefail
 
-# 1. Open the pane
-/usr/bin/osascript <<'AS'
+usage() {
+  cat <<'EOF'
+Usage:
+  cc-grant-access [--status] [--reset] [--open]
+
+Default: --status --open
+
+Grants to verify manually in System Settings:
+  Accessibility: Codex, Terminal, Visual Studio Code, Safari, Google Chrome, ChatGPT, Kimi, Hammerspoon, Rectangle
+  Screen Recording: Codex, Terminal, Visual Studio Code, Safari, Google Chrome, ChatGPT, Kimi
+  Automation: Codex/Terminal/VS Code may ask to control Safari, Chrome, System Events, ChatGPT
+  Input Monitoring: Codex or Terminal if keyboard injection is blocked
+
+EOF
+}
+
+want_status=0
+want_reset=0
+want_open=0
+
+if [ "$#" -eq 0 ]; then
+  want_status=1
+  want_open=1
+fi
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --status) want_status=1 ;;
+    --reset) want_reset=1 ;;
+    --open) want_open=1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'Unknown flag: %s\n\n' "$1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
+app_path() {
+  local name="$1"
+  local root direct
+  for root in /Applications /System/Applications /System/Applications/Utilities; do
+    direct="$root/$name.app"
+    if [ -d "$direct" ]; then
+      printf '%s\n' "$direct"
+      return
+    fi
+  done
+  for root in /Applications /System/Applications /System/Applications/Utilities; do
+    find "$root" -maxdepth 1 -iname "*$name*.app" -print -quit 2>/dev/null
+  done | head -1
+}
+
+bundle_id() {
+  local app="$1"
+  /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" 2>/dev/null || printf '?'
+}
+
+print_app() {
+  local label="$1"
+  local match="$2"
+  local app
+  app="$(app_path "$match")"
+  if [ -z "$app" ]; then
+    printf '  %-20s missing\n' "$label:"
+    return
+  fi
+  printf '  %-20s %s  bundle=%s\n' "$label:" "$app" "$(bundle_id "$app")"
+}
+
+tcc_query() {
+  local db="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+  [ -r "$db" ] || return 0
+  sqlite3 "$db" "
+select service, client, auth_value, auth_reason, last_modified
+from access
+where service in (
+  'kTCCServiceAccessibility',
+  'kTCCServiceScreenCapture',
+  'kTCCServiceAppleEvents',
+  'kTCCServiceListenEvent'
+)
+and (
+  client like '%codex%' or client like '%Terminal%' or client like '%VSCode%' or
+  client like '%Safari%' or client like '%Chrome%' or client like '%ChatGPT%' or
+  client like '%Kimi%' or client like '%Hammerspoon%' or client like '%Rectangle%'
+)
+order by service, client;
+" 2>/dev/null | sed 's/|/  /g'
+}
+
+open_pane() {
+  local anchor="$1"
+  /usr/bin/osascript >/dev/null 2>&1 <<AS || open "x-apple.systempreferences:com.apple.preference.security?${anchor}" >/dev/null 2>&1 || true
 tell application "System Settings"
   activate
-  reveal anchor "Privacy_Accessibility" of pane id "com.apple.settings.PrivacySecurity.extension"
+  reveal anchor "${anchor}" of pane id "com.apple.settings.PrivacySecurity.extension"
 end tell
 AS
+}
 
-# 2. Native notification (Notification Center)
-/usr/bin/osascript -e 'display notification "Toggle Hammerspoon + Rectangle in the open pane (Touch ID required per app)." with title "Accessibility setup" sound name "Glass"'
+if [ "$want_reset" -eq 1 ]; then
+  printf '# Resetting stale Codex TCC prompts\n\n'
+  for svc in AppleEvents Accessibility ScreenCapture ListenEvent; do
+    tccutil reset "$svc" com.openai.codex 2>/dev/null || true
+  done
+  printf 'Status: reset-complete\n\n'
+fi
 
-# 3. Print app + bundle ID list to terminal for reference
-echo
-echo "Apps to grant Accessibility (toggle each ON in the open pane):"
-for app in Hammerspoon Rectangle; do
-  app_path="/Applications/${app}.app"
-  if [ -d "$app_path" ]; then
-    bundle=$(grep -A1 'CFBundleIdentifier' "$app_path/Contents/Info.plist" 2>/dev/null \
-      | grep -oE '<string>[^<]+</string>' | sed 's|<[^>]*>||g' | head -1)
-    printf '  %-12s %s   (bundle: %s)\n' "$app:" "$app_path" "${bundle:-?}"
-  else
-    printf '  %-12s NOT FOUND at %s\n' "$app:" "$app_path"
-  fi
-done
-echo
-echo "After toggling each: re-launch the app for the grant to take effect."
-echo "Verify Hammerspoon: osascript -e 'tell application \"Hammerspoon\" to execute lua code \"return tostring(hs.accessibilityState(false))\"'"
+if [ "$want_status" -eq 1 ]; then
+  printf '# macOS AI Automation Permissions\n\n'
+  printf 'Required app toggles:\n'
+  print_app 'Codex' 'Codex'
+  print_app 'Terminal' 'Terminal'
+  print_app 'VS Code' 'Visual Studio Code'
+  print_app 'Safari' 'Safari'
+  print_app 'Google Chrome' 'Google Chrome'
+  print_app 'ChatGPT' 'ChatGPT'
+  print_app 'Kimi' 'Kimi'
+  print_app 'Hammerspoon' 'Hammerspoon'
+  print_app 'Rectangle' 'Rectangle'
+  printf '\nCurrent TCC records for relevant apps:\n'
+  tcc_query || true
+  printf '\nImportant: auth_value 2 means allowed; 0 means denied/not allowed.\n'
+  printf 'Status: access-status-ready\n\n'
+fi
+
+if [ "$want_open" -eq 1 ]; then
+  open_pane 'Privacy_Accessibility'
+  open_pane 'Privacy_ScreenCapture'
+  open_pane 'Privacy_Automation'
+  open_pane 'Privacy_ListenEvent'
+  /usr/bin/osascript -e 'display notification "Enable Codex, Terminal, VS Code, Safari, Chrome, ChatGPT, and Kimi where shown. Unlock first if the Mac is at the login screen." with title "AI automation permissions" sound name "Glass"' >/dev/null 2>&1 || true
+  printf 'Opened privacy panes: Accessibility, Screen Recording, Automation, Input Monitoring\n'
+fi

@@ -140,7 +140,7 @@ useful, delete it or move it out of `bin/`.
 ## Browser, auth, and local app helpers
 
 - `cc-browse-mcp` — browser-use MCP stdio shim.
-- `cc-grant-access` — guide macOS Accessibility permission setup.
+- `cc-grant-access` — open macOS AI automation permission panes and report TCC status.
 - `cc-new-editorial` — scaffold editorial site projects.
 - `cc-sudoers-install` — assisted sudoers install flow.
 - `gh-auto-auth` — GitHub device-code auth automation.

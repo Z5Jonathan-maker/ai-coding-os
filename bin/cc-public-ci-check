@@ -220,8 +220,8 @@ local_noise_not_tracked() {
 source_size_budget() {
   local bad=0 lines
   lines="$(wc -l <bin/cc-design-handoff | tr -d ' ')"
-  if [ "$lines" -gt 1000 ]; then
-    printf 'bin/cc-design-handoff too large: %s lines (max 1000); extract a module instead\n' "$lines"
+  if [ "$lines" -gt 800 ]; then
+    printf 'bin/cc-design-handoff too large: %s lines (max 800); extract a module instead\n' "$lines"
     bad=1
   fi
   lines="$(wc -l <vscode/ai-cockpit/extension.js | tr -d ' ')"

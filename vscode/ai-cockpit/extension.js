@@ -470,13 +470,17 @@ class CockpitProvider {
     if (picked.phase.id === 'creative_reference') {
       const action = await vscode.window.showQuickPick([
         { label: 'ChatGPT subscription packet', detail: 'No API billing. Writes prompt/instructions for ChatGPT Desktop or web.', mode: 'subscription' },
+        { label: 'Copy prompt + open ChatGPT', detail: 'No API billing. Copies the prompt and opens ChatGPT for subscription generation.', mode: 'subscription_open' },
         { label: 'Generate via paid API', detail: 'Uses cc-image and can spend OpenAI Platform API credits.', mode: 'api' },
       ], { placeHolder: 'Creative reference action' });
       if (!action) return;
-      extra = action.mode === 'api' ? ' --generate-image --image-api-ok' : ' --generate-image';
+      extra = action.mode === 'api'
+        ? ' --generate-image --image-api-ok'
+        : ` --generate-image${action.mode === 'subscription_open' ? ' --copy-prompt --open-chatgpt' : ''}`;
     } else if (picked.phase.id === 'asset_decomposition') {
       const action = await vscode.window.showQuickPick([
         { label: 'ChatGPT subscription packet', detail: 'No API billing. Writes one-at-a-time extraction prompt.', mode: 'subscription' },
+        { label: 'Copy prompt + open ChatGPT', detail: 'No API billing. Copies one-asset prompt and opens ChatGPT.', mode: 'subscription_open' },
         { label: 'Extract via paid API', detail: 'Uses cc-image and can spend OpenAI Platform API credits.', mode: 'api' },
       ], { placeHolder: 'Asset decomposition action' });
       if (!action) return;
@@ -489,7 +493,7 @@ class CockpitProvider {
       if (!asset) return;
       extra = action.mode === 'api'
         ? ` --extract-asset ${quote(asset)} --image-api-ok`
-        : ` --extract-asset ${quote(asset)}`;
+        : ` --extract-asset ${quote(asset)}${action.mode === 'subscription_open' ? ' --copy-prompt --open-chatgpt' : ''}`;
     } else if (picked.phase.id === 'tel_deploy') {
       const deployment = await vscode.window.showInputBox({
         prompt: 'Vercel deployment URL or id for TEL verification',

@@ -135,6 +135,7 @@ integrity is locked before the page is assembled.
 - Keep both generation paths available:
   - ChatGPT subscription/manual packet: no Platform API billing; use ChatGPT
     Desktop or logged-in ChatGPT web and save the approved asset into the
-    mission directory.
+    mission directory. Add `--copy-prompt --open-chatgpt` to copy the prompt
+    and open ChatGPT without invoking the paid Platform API.
   - Paid API automation: pass `--image-api-ok`; this uses `cc-image` and bills
     through OpenAI Platform/API, not the ChatGPT subscription.

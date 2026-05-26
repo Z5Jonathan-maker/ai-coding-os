@@ -59,7 +59,7 @@ add('visual edit spine wired', ext.includes('saveVisualAnnotation') && ext.inclu
 add('visual edit host input', !js.includes('window.prompt') && ext.includes('vscode.window.showInputBox') && js.includes("message.type === 'visualAnnotationNote'"));
 add('visual edit csp constrained', !/frame-src[^"]*https:/.test(extSource) && !/img-src[^"]*https:/.test(extSource) && !extSource.includes('allow-same-origin') && extSource.includes('frame-src http://localhost:* http://127.0.0.1:*'));
 add('trust gate enforced before routing', ext.includes('cc-trust-gate --json --mode') && ext.includes('normalizeTrustGate') && ext.indexOf('cc-trust-gate --json --mode') < ext.indexOf('this.runInlineStream(label'));
-add('result stream visible', extSource.includes('result-panel') && js.includes('renderTranscript'));
+add('result stream visible', extSource.includes('result-panel') && js.includes('renderTranscript') && !/\.panel-mode\s+\.result-panel\s*\{[^}]*display\s*:\s*none/i.test(css));
 add('no stale demo workstreams', !/DoseCraft landing page|Router reliability pass|Browser auth setup/.test(ext));
 add('assets present', ['media/main.js', 'media/utils.js', 'media/style.css', 'media/cockpit.svg', 'lib/mission-state.js'].every(has));
 add('material CSS present', css.includes('.workspace-rail') && css.includes('.mission-feed') && css.includes('.result-panel'));

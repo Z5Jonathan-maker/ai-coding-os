@@ -26,13 +26,13 @@ function renderCockpitHtml(webview, extensionUri, variant = 'sidebar') {
     </div>
   </div>
   <nav class="rail-nav">
-    <button class="active" aria-label="Home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Home</span></button>
-    <button aria-label="Workspaces"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v16"/></svg><span>Workspaces</span></button>
-    <button aria-label="Agents"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6l5-3-5-3Z"/><path d="M6 21v-6l-5 3 5 3Z"/><path d="M18 21v-6l5 3-5 3Z"/><path d="M12 9v3M8 16l4-4 4 4"/></svg><span>Agents</span></button>
-    <button aria-label="Browser"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/></svg><span>Browser</span></button>
-    <button aria-label="Code"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 4-4 16"/></svg><span>Code</span></button>
-    <button aria-label="Assets"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="m8 15 2.5-3 2 2.4L15 11l1 4"/></svg><span>Assets</span></button>
-    <button aria-label="Knowledge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg><span>Knowledge</span></button>
+    <button class="active" data-command="refresh" aria-label="Home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Home</span></button>
+    <button data-command="sessionLedger" aria-label="Workspaces"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 4v16"/></svg><span>Workspaces</span></button>
+    <button data-command="jobs" aria-label="Agents"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v6l5-3-5-3Z"/><path d="M6 21v-6l-5 3 5 3Z"/><path d="M18 21v-6l5 3-5 3Z"/><path d="M12 9v3M8 16l4-4 4 4"/></svg><span>Agents</span></button>
+    <button data-command="browserProof" aria-label="Browser"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/></svg><span>Browser</span></button>
+    <button data-command="reviewDiff" aria-label="Code"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 4-4 16"/></svg><span>Code</span></button>
+    <button data-command="designHandoffStatus" aria-label="Assets"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="m8 15 2.5-3 2 2.4L15 11l1 4"/></svg><span>Assets</span></button>
+    <button data-command="repoMap" aria-label="Knowledge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4"/><path d="M12 11v10"/></svg><span>Knowledge</span></button>
   </nav>
   <div class="rail-status">
     <span>System status</span>

@@ -5,6 +5,25 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
+const {
+  activePhase,
+  artifactPath,
+  artifactsFor,
+  completionStageFor,
+  event,
+  extractJson,
+  nextActionFor,
+  now,
+  readArtifact,
+  readJson,
+  refreshProof,
+  relative,
+  requestStageFor,
+  slug,
+  unlockNext,
+  writeJson,
+} = require('../lib/design-handoff/core');
+const { buildActionPacket } = require('../lib/design-handoff/actions');
 
 const root = process.env.DOTFILES || path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
@@ -38,27 +57,6 @@ function promptArgs() {
     else if (!args[i].startsWith('--')) out.push(args[i]);
   }
   return out.join(' ').trim();
-}
-
-function slug(text) {
-  return String(text || 'design-handoff')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 72) || 'design-handoff';
-}
-
-function now() {
-  return new Date().toISOString();
-}
-
-function writeJson(file, data) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
-}
-
-function readJson(file) {
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
 function run(cmd, cmdArgs, options = {}) {
@@ -244,24 +242,6 @@ function triggeredMicroagents(handoff, phase, promptText) {
   return (extractJson(res.stdout || '')?.selected || []).slice(0, 5);
 }
 
-function extractJson(text) {
-  const raw = String(text || '').trim();
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch (_) {
-    const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
-    if (fenced) {
-      try { return JSON.parse(fenced[1]); } catch (_) {}
-    }
-    const object = raw.match(/\{[\s\S]*\}/);
-    if (object) {
-      try { return JSON.parse(object[0]); } catch (_) {}
-    }
-  }
-  return null;
-}
-
 function route(prompt, purpose) {
   const res = run(path.join(root, 'bin', 'cc-route'), ['--json', '--purpose', purpose, prompt]);
   if (res.status !== 0) {
@@ -274,31 +254,6 @@ function route(prompt, purpose) {
     };
   }
   return JSON.parse(res.stdout);
-}
-
-function event(missionId, stage, message, data = {}, proof = [], agent = '') {
-  return {
-    schema: 'ai-coding-os.timeline-event.v1',
-    mission_id: missionId,
-    ts: now(),
-    agent: agent || String(stage).split('.')[0],
-    stage,
-    kind: String(stage).split('.')[0],
-    message,
-    proof,
-    data,
-    severity: 'info',
-  };
-}
-
-function artifactsFor(dir) {
-  return {
-    creativeBrief: path.join(dir, 'creative.brief.json'),
-    routeReceipt: path.join(dir, 'route.receipt.json'),
-    handoff: path.join(dir, 'design-handoff.json'),
-    timeline: path.join(dir, 'agent.timeline.json'),
-    proofBundle: path.join(dir, 'proof.bundle.json'),
-  };
 }
 
 function missionDir() {
@@ -343,20 +298,6 @@ function appendTimeline(files, timeline, entry) {
     console.error(`${validate.stdout || ''}${validate.stderr || ''}`.trim());
     process.exit(1);
   }
-}
-
-function relative(dir, file) {
-  return path.relative(dir, file);
-}
-
-function artifactPath(dir, artifact) {
-  return path.isAbsolute(artifact) ? artifact : path.join(dir, artifact);
-}
-
-function readArtifact(dir, artifact, max = 12000) {
-  const file = artifactPath(dir, artifact);
-  if (!fs.existsSync(file)) return '';
-  return fs.readFileSync(file, 'utf8').slice(0, max);
 }
 
 function summarizeHandoffContext(dir, handoff, stage, artifacts) {
@@ -431,155 +372,8 @@ function writeTinyPng(file) {
   ));
 }
 
-function nextActionFor(handoff) {
-  const active = (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'));
-  if (active) return `Continue ${active.id} through ${active.owner_lane}.`;
-  const blocked = (handoff.phases || []).find((phase) => phase.status.startsWith('blocked_'));
-  return blocked ? `Resolve blocker for ${blocked.id}: ${blocked.status}.` : 'All handoff phases are approved or completed.';
-}
-
-function activePhase(handoff) {
-  return (handoff.phases || []).find((phase) => !['approved', 'completed'].includes(phase.status) && !phase.status.startsWith('blocked_'))
-    || (handoff.phases || []).find((phase) => phase.status.startsWith('blocked_'))
-    || null;
-}
-
 function actionPacket(handoff, phase) {
-  const base = {
-    schema: 'ai-coding-os.design-handoff-action.v1',
-    mission_id: handoff.mission_id,
-    phase: phase?.id || 'complete',
-    owner_lane: phase?.owner_lane || 'codex',
-    status: phase?.status || 'complete',
-    blocks_execution: false,
-    requires_human_approval: false,
-    command: null,
-    prompt: '',
-    expected_artifact: phase?.output || null,
-  };
-  if (!phase) {
-    return { ...base, prompt: 'All phases are complete. Run final product/release review before shipping.' };
-  }
-  const packets = {
-    creative_reference: {
-      blocks_execution: true,
-      requires_human_approval: true,
-      command: 'cc-design-handoff execute --phase creative_reference --generate-image',
-      prompt: [
-        `Create a premium visual reference for: ${handoff.request}`,
-        'Treat this as creative direction, not implementation.',
-        'Output one strong full reference image first. Do not extract assets yet.',
-        'After approval, keep the same image thread for sequential asset extraction.',
-      ].join('\n'),
-      expected_artifact: 'visual.target.png',
-    },
-    asset_decomposition: {
-      blocks_execution: true,
-      requires_human_approval: true,
-      command: 'cc-design-handoff execute --phase asset_decomposition --extract-asset hero-background',
-      prompt: [
-        'Using the approved visual.target.png in the same Image 2.0 thread, extract exactly one implementation asset at a time.',
-        'Start with the hero background only. Wait for approval before extracting button, divider, banner, surface, or texture assets.',
-        'Update creative.asset-kit.json with sequence, prompt, usage, and approval gate for each asset.',
-      ].join('\n'),
-      expected_artifact: 'creative.asset-kit.json',
-    },
-    design_dna: {
-      blocks_execution: true,
-      command: 'cc-design-handoff execute --phase design_dna',
-      prompt: [
-        'Analyze the approved visual reference and asset kit.',
-        'Extract design DNA: visual density, section pacing, typography rhythm, surface language, shadow language, motion energy, emotional frame, and visual noise budget.',
-      ].join('\n'),
-      expected_artifact: 'design.dna.json',
-    },
-    kimi_implementation: {
-      command: 'cc-design-handoff execute --phase kimi_implementation --target-repo <repo>',
-      prompt: [
-        'Implement the approved visual reference and asset kit as production UI.',
-        'Use native text/buttons/forms in code. Do not reinvent the visual direction.',
-        'Preserve responsive composition, accessibility, and browser-verifiable layout.',
-      ].join('\n'),
-      expected_artifact: 'implementation.result.json',
-    },
-    claude_review: {
-      command: 'cc-design-handoff execute --phase claude_review',
-      prompt: [
-        'Review implementation against visual.target.png, creative.asset-kit.json, and design.dna.json.',
-        'Score creative fidelity, hierarchy, rhythm, material quality, motion, responsiveness, accessibility, and implementation realism.',
-      ].join('\n'),
-      expected_artifact: 'taste.validation.json',
-    },
-    codex_proof: {
-      command: 'cc-design-handoff execute --phase codex_proof --browser-url <url>',
-      prompt: [
-        'Run local integration proof after Claude review.',
-        'Record git state, changed files, required gates, browser-in-loop proof when a URL is supplied, and final shippability verdict before any TEL deploy.',
-      ].join('\n'),
-      expected_artifact: 'codex.proof.json',
-    },
-    tel_deploy: {
-      blocks_execution: true,
-      requires_human_approval: true,
-      command: 'cc-design-handoff execute --phase tel_deploy --live-tel --deployment <vercel-url-or-id>',
-      prompt: [
-        'Deploy only after human approval and passing review.',
-        'Verify the deployment through TEL, then record URL, provider, git SHA, rollback token/undo instructions, and verification result.',
-      ].join('\n'),
-      expected_artifact: 'deploy.receipt.json',
-    },
-  };
-  const packet = { ...base, ...(packets[phase.id] || { prompt: nextActionFor(handoff) }) };
-  packet.selected_context = triggeredMicroagents(handoff, phase, packet.prompt);
-  return packet;
-}
-
-function requestStageFor(phaseId) {
-  return ({
-    creative_reference: 'creative.reference.requested',
-    asset_decomposition: 'asset.extraction.requested',
-    design_dna: 'design.dna.extracted',
-    kimi_implementation: 'implementation.requested',
-    claude_review: 'taste.requested',
-    codex_proof: 'proof.requested',
-    tel_deploy: 'deploy.requested',
-  })[phaseId] || 'approval.requested';
-}
-
-function completionStageFor(phaseId) {
-  return ({
-    creative_reference: 'creative.reference.approved',
-    asset_decomposition: 'asset.approved',
-    design_dna: 'design.dna.extracted',
-    kimi_implementation: 'implementation.completed',
-    claude_review: 'taste.validated',
-    codex_proof: 'proof.completed',
-    tel_deploy: 'deploy.completed',
-  })[phaseId] || 'stage.completed';
-}
-
-function unlockNext(handoff, phaseId) {
-  const unlocks = {
-    creative_reference: ['asset_decomposition', 'design_dna'],
-    asset_decomposition: ['kimi_implementation'],
-    design_dna: ['kimi_implementation'],
-    kimi_implementation: ['claude_review'],
-    claude_review: ['codex_proof'],
-    codex_proof: ['tel_deploy'],
-  };
-  for (const id of unlocks[phaseId] || []) {
-    const next = phaseById(handoff, id);
-    if (next.status.startsWith('blocked_')) next.status = 'awaiting_work';
-  }
-}
-
-function refreshProof(handoff, proof) {
-  const pending = (handoff.phases || []).find((item) => !['approved', 'completed'].includes(item.status));
-  handoff.status = pending ? `awaiting_${pending.id}` : 'complete';
-  handoff.current_gate = pending?.approval_gate || nextActionFor(handoff);
-  proof.status = handoff.status;
-  proof.verdict = handoff.status === 'complete' ? 'ready_for_final_release_review' : 'not_shippable_until_remaining_phases_complete';
-  proof.next_required_action = handoff.current_gate;
+  return buildActionPacket(handoff, phase, (prompt) => triggeredMicroagents(handoff, phase, prompt));
 }
 
 function markComplete(dir, files, handoff, proof, phase, artifact, note, status = 'completed') {

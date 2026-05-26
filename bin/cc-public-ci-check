@@ -44,6 +44,9 @@ node_syntax() {
     *node*) node --check "$file" || bad=1 ;;
     esac
   done < <(find -L bin -maxdepth 1 -type f -perm -111 -print | sort)
+  while IFS= read -r file; do
+    node --check "$file" || bad=1
+  done < <(find -L lib -type f -name '*.js' -print 2>/dev/null | sort)
   node --check vscode/ai-cockpit/extension.js || bad=1
   node --check vscode/ai-cockpit/media/main.js || bad=1
   node -e 'JSON.parse(require("fs").readFileSync("vscode/ai-cockpit/package.json", "utf8"))' || bad=1

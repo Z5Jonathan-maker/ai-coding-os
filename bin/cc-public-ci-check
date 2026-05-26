@@ -232,8 +232,8 @@ source_size_budget() {
     bad=1
   fi
   lines="$(wc -l <vscode/ai-cockpit/extension.js | tr -d ' ')"
-  if [ "$lines" -gt 820 ]; then
-    printf 'vscode/ai-cockpit/extension.js too large: %s lines (max 820); extract a module instead\n' "$lines"
+  if [ "$lines" -gt 760 ]; then
+    printf 'vscode/ai-cockpit/extension.js too large: %s lines (max 760); extract a module instead\n' "$lines"
     bad=1
   fi
   lines="$(wc -l <vscode/ai-cockpit/media/main.js | tr -d ' ')"

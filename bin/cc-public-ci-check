@@ -217,8 +217,8 @@ local_noise_not_tracked() {
 source_size_budget() {
   local bad=0 lines
   lines="$(wc -l <bin/cc-design-handoff | tr -d ' ')"
-  if [ "$lines" -gt 1550 ]; then
-    printf 'bin/cc-design-handoff too large: %s lines (max 1550); extract a module instead\n' "$lines"
+  if [ "$lines" -gt 1520 ]; then
+    printf 'bin/cc-design-handoff too large: %s lines (max 1520); extract a module instead\n' "$lines"
     bad=1
   fi
   return "$bad"

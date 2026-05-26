@@ -47,7 +47,7 @@ synced_if_configured() {
 
 remote_ci_current() {
   command -v gh >/dev/null 2>&1 || return 1
-  local repo head run_id run_head run_status run_conclusion run_url run_row log_hint
+  local repo head run_id run_head run_status run_conclusion run_url run_row failed_log log_hint
   repo="$(git -C "$DOTFILES" config --get remote.origin.url | sed -E 's#^https://github.com/##; s#^git@github.com:##; s#\.git$##')" || return 1
   [ -n "$repo" ] || return 1
   head="$(git -C "$DOTFILES" rev-parse HEAD)" || return 1
@@ -72,8 +72,10 @@ EOF
   fi
   if [ "$run_conclusion" != "success" ]; then
     printf 'latest CI run failed: run=%s conclusion=%s url=%s\n' "$run_id" "$run_conclusion" "$run_url"
-    log_hint="$(gh run view "$run_id" --repo "$repo" --log-failed 2>/dev/null | grep -Eim1 'account is suspended|billing|requested URL returned error|403|resource not accessible' || true)"
-    [ -n "$log_hint" ] || log_hint="$(gh run view "$run_id" --repo "$repo" --log-failed 2>/dev/null | grep -Eim1 'checkout|fatal:' || true)"
+    failed_log="$(gh run view "$run_id" --repo "$repo" --log-failed 2>/dev/null || true)"
+    log_hint="$(printf '%s\n' "$failed_log" | grep -Eim1 'account is suspended|billing|resource not accessible' || true)"
+    [ -n "$log_hint" ] || log_hint="$(printf '%s\n' "$failed_log" | grep -Eim1 'requested URL returned error|403' || true)"
+    [ -n "$log_hint" ] || log_hint="$(printf '%s\n' "$failed_log" | grep -Eim1 'checkout|fatal:' || true)"
     [ -z "$log_hint" ] || printf 'failure hint: %s\n' "$log_hint"
     return 1
   fi

@@ -124,9 +124,22 @@ for (const dir of dirs) {
     const phases = Array.isArray(handoff.phases) ? handoff.phases : [];
     const statuses = phases.map(p => String(p.status || ''));
     const blockedPhase = phases.find(p => String(p.status || '').startsWith('blocked'));
+    const actionFile = path.join(dir, 'next-action.json');
+    let nextAction = null;
+    if (fs.existsSync(actionFile)) {
+      try {
+        nextAction = JSON.parse(fs.readFileSync(actionFile, 'utf8'));
+      } catch (_) {
+        nextAction = null;
+      }
+    }
     if (blockedPhase) {
       blocked += 1;
-      blockedNames.push(`${name}:${blockedPhase.id || blockedPhase.name || blockedPhase.phase || blockedPhase.status}`);
+      if (nextAction && nextAction.phase) {
+        blockedNames.push(`${name}:${nextAction.phase}/${nextAction.status || 'needs_action'}`);
+      } else {
+        blockedNames.push(`${name}:${blockedPhase.id || blockedPhase.name || blockedPhase.phase || blockedPhase.status}`);
+      }
     }
     if (statuses.some(s => !terminal.has(s))) {
       active += 1;

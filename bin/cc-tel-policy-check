@@ -151,6 +151,11 @@ function assertPolicyShape() {
       const optional = assertArray(action.optional_args, `${full}.optional_args`);
       assertArgNames(required, `${full}.required_args`);
       assertArgNames(optional, `${full}.optional_args`);
+      const pathArgs = [...String(action.endpoint).matchAll(/\{([A-Za-z][A-Za-z0-9_]*)\}/g)].map((m) => m[1]);
+      assertArgNames(pathArgs, `${full}.endpoint_path_args`);
+      for (const arg of pathArgs) {
+        if (!required.includes(arg)) throw new Error(`${full}: endpoint path arg must be required: ${arg}`);
+      }
       for (const arg of required) {
         if (optional.includes(arg)) throw new Error(`${full}: arg is both required and optional: ${arg}`);
       }
@@ -197,6 +202,15 @@ function assertStaticRuntimeContract() {
   const server = read('claude/tel/server/server.py');
   if (server.indexOf('registry.get_action') < 0 || server.indexOf('broker.get') < 0 || server.indexOf('registry.get_action') > server.indexOf('broker.get')) {
     throw new Error('server.py must validate registry action before credential resolution');
+  }
+  for (const phrase of ['from string import Formatter', 'def format_endpoint', 'endpoint.format(**path_values)', 'remaining_args']) {
+    if (!server.includes(phrase)) throw new Error(`server.py missing endpoint formatter contract: ${phrase}`);
+  }
+  if (!server.includes('params=call_args') || !server.includes('json=call_args')) {
+    throw new Error('server.py must remove substituted path args from downstream params/json');
+  }
+  if (server.includes('params=req.args') || server.includes('json=req.args')) {
+    throw new Error('server.py must not forward raw req.args after path substitution');
   }
 
   const broker = read('claude/tel/server/auth_broker.py');

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from string import Formatter
 
 import httpx
 from fastapi import FastAPI, HTTPException
@@ -32,6 +33,20 @@ POLICIES_DIR = Path(__file__).resolve().parent.parent / "policies"
 app = FastAPI(title="TEL — Trusted Execution Layer", version="0.1.0")
 broker = AuthBroker()
 registry = ToolRegistry(POLICIES_DIR)
+
+
+def format_endpoint(endpoint: str, args: dict) -> tuple[str, dict]:
+    path_args = {
+        field_name
+        for _, field_name, _, _ in Formatter().parse(endpoint)
+        if field_name
+    }
+    missing = sorted(name for name in path_args if name not in args)
+    if missing:
+        raise ValueError(f"missing_path_args: {missing}")
+    path_values = {name: str(args[name]) for name in path_args}
+    remaining_args = {k: v for k, v in args.items() if k not in path_args}
+    return endpoint.format(**path_values), remaining_args
 
 
 class ExecuteRequest(BaseModel):
@@ -171,7 +186,26 @@ def execute(req: ExecuteRequest) -> ExecuteResponse:
         )
 
     svc = registry.services[req.service]
-    url = svc.base_url.rstrip("/") + "/" + spec.endpoint.lstrip("/")
+    try:
+        endpoint, call_args = format_endpoint(spec.endpoint, req.args)
+    except ValueError as e:
+        audit_id = audit.write(
+            service=req.service,
+            action=req.action,
+            args_redacted=args_redacted,
+            request_id=req.request_id,
+            client=req.client,
+            result=None,
+            ok=False,
+            duration_ms=int((time.perf_counter() - started) * 1000),
+            error=str(e),
+        )
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "path_arg_validation", "audit_id": audit_id, "message": str(e)},
+        )
+
+    url = svc.base_url.rstrip("/") + "/" + endpoint.lstrip("/")
     headers = {spec.auth_header: f"{spec.auth_prefix} {token}".strip()}
 
     try:
@@ -180,8 +214,8 @@ def execute(req: ExecuteRequest) -> ExecuteResponse:
                 spec.method.upper(),
                 url,
                 headers=headers,
-                json=req.args if spec.method.upper() in {"POST", "PUT", "PATCH"} else None,
-                params=req.args if spec.method.upper() in {"GET", "DELETE"} else None,
+                json=call_args if spec.method.upper() in {"POST", "PUT", "PATCH"} else None,
+                params=call_args if spec.method.upper() in {"GET", "DELETE"} else None,
             )
         ok = r.is_success
         try:

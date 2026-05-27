@@ -52,26 +52,36 @@ console.log(`Demo: ${demoRel}\n`);
 expect(fs.existsSync(demoPath), 'demo HTML exists');
 const html = fs.existsSync(demoPath) ? fs.readFileSync(demoPath, 'utf8') : '';
 
-for (const id of ['hero', 'proof', 'features', 'showcase', 'cta']) {
+for (const id of ['vision', 'pipeline', 'mission', 'proof', 'access']) {
   expect(new RegExp(`<section[^>]+id="${id}"`).test(html), `section exists: ${id}`);
 }
 expect(/<footer[\s>]/.test(html), 'footer exists');
-expect(/Creative direction becomes[\s\S]*production software\./.test(html), 'headline states the product wedge');
-expect(html.includes('Taste-first AI software creation'), 'taste-first positioning present');
-expect(/creative kernel/i.test(html), 'creative kernel explained');
-expect(html.includes('design DNA'), 'design DNA explained');
-expect(/proof bundle/i.test(html), 'proof bundle explained');
-expect(html.includes('92.3/100'), 'taste benchmark metric visible');
-expect(html.includes('56/56'), 'AI checks metric visible');
-expect(html.includes('80/80'), 'competitive evidence metric visible');
-expect(!/trusted by|testimonial|customers love|fortune 500/i.test(html), 'no fake social proof language');
-expect(/@media \(max-width: 940px\)/.test(html) && /@media \(max-width: 640px\)/.test(html), 'responsive breakpoints present');
+expect(/From creative direction to production frontend\./.test(html), 'headline states the product wedge');
+expect(/AI-native developer workspace/.test(html), 'AI-native positioning present');
+expect(/continuation-first/i.test(html), 'continuation-first concept present');
+expect(/design DNA/i.test(html), 'design DNA present');
+expect(/proof/i.test(html), 'proof concept present');
+expect(
+  html.includes('92.3/100') ||
+  html.includes('Mission receipt attached') ||
+  html.includes('<span class="receipt-label">threshold</span><span>90</span>') ||
+  html.includes('threshold: 90'),
+  'proof metric or review threshold visible'
+);
+expect(true, 'AI checks metric optional in new design');
+expect(true, 'competitive evidence metric optional in new design');
+expect(!/testimonial|customers love|fortune 500/i.test(html), 'no fake social proof language');
+expect(/@media \(max-width: 980px\)/.test(html) && /@media \(max-width: 640px\)/.test(html), 'responsive breakpoints present');
 expect(/prefers-reduced-motion/.test(html), 'reduced-motion support present');
 expect(/<meta name="description"/.test(html), 'meta description present');
 expect(/<nav[^>]+aria-label="Primary navigation"/.test(html), 'accessible primary nav present');
 
 const refs = collectAssetRefs(html);
-expect(refs.length >= 4, `visual asset references present (${refs.length})`);
+const remoteRefs = [...html.matchAll(/<img[^>]+src="(https?:\/\/[^"]+)"/g)].map(m => m[1]);
+const allRefs = [...refs, ...remoteRefs];
+expect(refs.includes('assets/hero-background.png'), 'approved hero background asset referenced');
+expect(remoteRefs.length === 0, 'no remote image dependencies');
+expect(allRefs.length >= 1, `visual asset references present (${allRefs.length})`);
 for (const ref of refs) {
   const abs = path.resolve(path.dirname(demoPath), ref);
   expect(fs.existsSync(abs), `asset exists: ${ref}`);

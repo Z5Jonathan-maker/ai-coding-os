@@ -605,9 +605,34 @@ function runKimiTargetImplementation(dir, handoff, targetRepo) {
   ], { cwd: repo, timeout: 600000, maxBuffer: 1024 * 1024 * 12 });
   const output = `${res.stdout || ''}${res.stderr || ''}`.trim();
   fs.writeFileSync(path.join(dir, 'implementation.raw.md'), `${output}\n`);
-  if (res.status !== 0) return { ok: false, error: output || `kimi exited ${res.status}` };
 
   const after = gitSnapshot(repo);
+  if (res.status !== 0) {
+    if (after.changed_files.length) {
+      return {
+        ok: true,
+        plan: {
+          schema: 'ai-coding-os.implementation-result.v1',
+          mission_id: handoff.mission_id,
+          phase: 'kimi_implementation',
+          request: handoff.request,
+          generated_at: now(),
+          source: 'kimi-cli',
+          live_lane_call: true,
+          owner_lane: 'kimi-webbridge',
+          target_repo: repo,
+          target_head_before: before.head,
+          target_head_after: after.head,
+          changed_files: after.changed_files,
+          raw_output_artifact: 'implementation.raw.md',
+          verdict: 'ready_for_claude_review',
+          execution_warning: output || `kimi exited ${res.status} after writing target changes`,
+        },
+      };
+    }
+    return { ok: false, error: output || `kimi exited ${res.status}` };
+  }
+
   const parsed = extractJson(output);
   const result = parsed && typeof parsed === 'object' ? parsed : {
     schema: 'ai-coding-os.implementation-result.v1',

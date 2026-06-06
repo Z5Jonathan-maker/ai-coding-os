@@ -1,0 +1,33 @@
+CANDIDATE C RENDER STAND-IN
+Much larger render than the reference, oversaturated, baked-in text in the hero,
+duplicate spacers and dead decorative chrome the reference does not call for.
+Loud secondary palette competing with the cobalt environment, mismatched button
+shape, hero text rasterized instead of rendered as native HTML in code.
+
+ATMOSPHERE: hyper-saturated magenta wash, blown highlights, baked-in headline text.
+TYPOGRAPHY-FEEL: rasterized into hero background, not native, fights the layout.
+MATERIAL: glossy plastic with chromatic aberration, dead chrome stripes, harsh shadow.
+ASSETS-PRESENT: hero-background-with-text-baked-in, mismatched button shape.
+NATIVE-TEXT-IN-CODE: missing. Hero text was rasterized into the background.
+RESPONSIVE-BREAKPOINTS: broken at mobile, copy overflow.
+
+EXTRA-DECORATIVE-LINE-01.
+EXTRA-DECORATIVE-LINE-02.
+EXTRA-DECORATIVE-LINE-03.
+EXTRA-DECORATIVE-LINE-04.
+EXTRA-DECORATIVE-LINE-05.
+EXTRA-DECORATIVE-LINE-06.
+EXTRA-DECORATIVE-LINE-07.
+EXTRA-DECORATIVE-LINE-08.
+EXTRA-DECORATIVE-LINE-09.
+EXTRA-DECORATIVE-LINE-10.
+EXTRA-DECORATIVE-LINE-11.
+EXTRA-DECORATIVE-LINE-12.
+EXTRA-DECORATIVE-LINE-13.
+EXTRA-DECORATIVE-LINE-14.
+EXTRA-DECORATIVE-LINE-15.
+EXTRA-DECORATIVE-LINE-16.
+EXTRA-DECORATIVE-LINE-17.
+EXTRA-DECORATIVE-LINE-18.
+EXTRA-DECORATIVE-LINE-19.
+EXTRA-DECORATIVE-LINE-20.

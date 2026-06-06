@@ -1,0 +1,5 @@
+CANDIDATE B RENDER STAND-IN
+Smaller render than A, missing the section divider and using a lighter palette.
+
+ATMOSPHERE: pale slate, no bloom, off-palette.
+MATERIAL: flat surface.

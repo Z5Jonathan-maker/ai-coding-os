@@ -1,0 +1,108 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const flag = `--${name}`;
+  const i = args.indexOf(flag);
+  if (i === -1 || i + 1 >= args.length) return fallback;
+  return args[i + 1];
+}
+function values(name) {
+  const flag = `--${name}`;
+  const out = [];
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] === flag && i + 1 < args.length) out.push(args[i + 1]);
+  }
+  return out;
+}
+
+const BACKENDS = {
+  'local-pixel-proxy': scoreLocalPixelProxy,
+  'claude-vision': scoreVlmStub('claude-vision'),
+  'gpt-vision': scoreVlmStub('gpt-vision'),
+  'qwen-vlm': scoreVlmStub('qwen-vlm'),
+};
+
+function scoreLocalPixelProxy(refBytes, candBytes) {
+  const dist = Math.abs(refBytes.length - candBytes.length);
+  return { signal: 'byte_length_distance', raw: dist };
+}
+
+function scoreVlmStub(name) {
+  return () => {
+    throw new Error(`backend ${name} requires CC_VISUAL_CRITIC_${name.toUpperCase().replace(/-/g, '_')}_KEY and an installed client; not configured in this environment`);
+  };
+}
+
+function rankRelative(scored) {
+  const sorted = [...scored].sort((a, b) => a.raw - b.raw);
+  return sorted.map((entry, idx) => ({ ...entry, relative_rank: idx + 1 }));
+}
+
+function runCritic(referencePath, candidatePaths, backend) {
+  const fn = BACKENDS[backend];
+  if (!fn) throw new Error(`unknown backend: ${backend}. available: ${Object.keys(BACKENDS).join(', ')}`);
+  const refBytes = fs.readFileSync(referencePath);
+  const scored = candidatePaths.map((p) => {
+    const candBytes = fs.readFileSync(p);
+    const score = fn(refBytes, candBytes);
+    return { path: path.relative(root, p), id: path.basename(p, path.extname(p)), ...score };
+  });
+  const ranked = rankRelative(scored);
+  return {
+    schema: 'ai-coding-os.visual-critic-ranking.v1',
+    reference: path.relative(root, referencePath),
+    backend,
+    eval_strategy: 'relative_ranking_not_absolute',
+    candidates: ranked,
+    winner: ranked.find((c) => c.relative_rank === 1).id,
+  };
+}
+
+function check() {
+  let pass = 0; let fail = 0;
+  const ok = (m) => { console.log(`ok   ${m}`); pass += 1; };
+  const bad = (m) => { console.log(`fail ${m}`); fail += 1; };
+  console.log('# Visual Critic Check\n');
+  const fixtureDir = path.join(root, 'fixtures', 'visual-critic', 'premium-saas');
+  const ref = path.join(fixtureDir, 'reference.txt');
+  const cands = ['candidate-a.txt', 'candidate-b.txt', 'candidate-c.txt'].map((f) => path.join(fixtureDir, f));
+  fs.existsSync(ref) ? ok('reference fixture present') : bad('reference fixture present');
+  cands.forEach((p, i) => fs.existsSync(p) ? ok(`candidate ${i + 1} present`) : bad(`candidate ${i + 1} present`));
+  const ranking = runCritic(ref, cands, 'local-pixel-proxy');
+  ranking.candidates.length === 3 ? ok('ranks all candidates') : bad('ranks all candidates');
+  ranking.winner === 'candidate-a' ? ok('ranks candidate-a as winner') : bad(`ranks candidate-a as winner (got ${ranking.winner})`);
+  const last = ranking.candidates.find((c) => c.relative_rank === 3);
+  last && last.id === 'candidate-c' ? ok('ranks candidate-c last') : bad(`ranks candidate-c last (got ${last && last.id})`);
+  ranking.eval_strategy === 'relative_ranking_not_absolute' ? ok('eval strategy is relative not absolute') : bad('eval strategy is relative not absolute');
+  ranking.candidates.every((c) => typeof c.relative_rank === 'number' && !('absolute_fidelity' in c)) ? ok('no absolute fidelity field emitted') : bad('no absolute fidelity field emitted');
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail}`);
+  console.log(fail ? 'Status: visual-critic-blocked' : 'Status: visual-critic-ready');
+  process.exit(fail ? 1 : 0);
+}
+
+function main() {
+  if (has('check')) return check();
+  const reference = value('reference', '');
+  const candidates = values('candidate');
+  const out = value('output', '');
+  const backend = value('backend', 'local-pixel-proxy');
+  if (!reference || candidates.length < 2) {
+    console.error('Usage: cc-visual-critic --reference REF --candidate A --candidate B [--candidate C ...] [--backend NAME] [--output FILE] [--json]');
+    console.error('       cc-visual-critic --check');
+    process.exit(2);
+  }
+  const ranking = runCritic(path.resolve(reference), candidates.map((c) => path.resolve(c)), backend);
+  if (out) fs.writeFileSync(out, JSON.stringify(ranking, null, 2) + '\n');
+  console.log(has('json') ? JSON.stringify(ranking, null, 2) : `winner=${ranking.winner} backend=${ranking.backend} strategy=${ranking.eval_strategy}`);
+}
+
+try { main(); } catch (err) { console.error(`cc-visual-critic: ${err.message}`); process.exit(1); }

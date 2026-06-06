@@ -1,0 +1,119 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const flag = `--${name}`;
+  const i = args.indexOf(flag);
+  if (i === -1 || i + 1 >= args.length) return fallback;
+  return args[i + 1];
+}
+
+const BACKENDS = {
+  'local-heuristic': proposeFromHeuristic,
+  'assetdropper-api': proposeFromExternal('assetdropper-api'),
+  'qwen-vlm': proposeFromExternal('qwen-vlm'),
+};
+
+function proposeFromHeuristic() {
+  return [
+    { id: 'hero-background', role: 'full-bleed section background', asset_type: 'raster-background',
+      extraction_prompt: 'Provide only the hero background with no text, buttons, logo, or UI labels.',
+      implementation_usage: 'Use as the hero environmental background. Overlay native HTML/CSS.',
+      approval_gate: 'background matches lighting, atmosphere, palette, and spatial depth from canonical reference' },
+    { id: 'primary-button-style', role: 'button material and shape reference', asset_type: 'style-reference',
+      extraction_prompt: 'Provide only the primary button as a clean isolated reference.',
+      implementation_usage: 'Recreate the button as native CSS. Do not rasterize text inside the button.',
+      approval_gate: 'button glow, radius, weight, contrast match canonical reference' },
+    { id: 'section-divider', role: 'transition between page bands', asset_type: 'raster-divider',
+      extraction_prompt: 'Provide a page divider asset that transitions between sections.',
+      implementation_usage: 'Use as decorative divider or CSS background layer.',
+      approval_gate: 'divider feels native to the brand system' },
+    { id: 'feature-banner-background', role: 'supporting section background', asset_type: 'raster-background',
+      extraction_prompt: 'Provide a wide banner background for a proof or feature section.',
+      implementation_usage: 'Use behind native text in implementation layer.',
+      approval_gate: 'banner preserves reference lighting and pacing' },
+  ];
+}
+
+function proposeFromExternal(name) {
+  return () => {
+    throw new Error(`backend ${name} requires external API credentials; not configured in this environment`);
+  };
+}
+
+function buildKit(referencePath, backend) {
+  const fn = BACKENDS[backend];
+  if (!fn) throw new Error(`unknown backend: ${backend}. available: ${Object.keys(BACKENDS).join(', ')}`);
+  const assets = fn().map((a, i) => ({ sequence: i + 1, ...a, status: 'awaiting_human_approval', proposed_by_model: true }));
+  return {
+    schema: 'ai-coding-os.creative-asset-kit.v1',
+    mode: 'sequential_approved_extraction',
+    owner_lane: 'chatgpt-image',
+    proposed_by_model: true,
+    proposer_backend: backend,
+    human_approval_gate: 'each_proposed_asset_must_be_approved_before_next_is_extracted',
+    canonical_reference: { path: path.relative(root, referencePath), status: 'external_reference_required', owner_lane: 'chatgpt-image' },
+    rules: {
+      extract_one_asset_at_a_time: true,
+      approval_required_before_next_asset: true,
+      use_same_image_thread_after_reference_approval: true,
+      implementation_model_must_not_reinvent_visual_direction: true,
+      native_text_and_interactions_stay_in_code: true,
+      do_not_parallelize_extraction_requests: true,
+      model_proposed_assets_do_not_skip_human_approval: true,
+    },
+    assets,
+    handoff_to_kimi: {
+      include: ['canonical_reference', 'approved_assets', 'design.dna.json', 'implementation.plan.json', 'tokens.oklch.json'],
+      instruction: 'Implement only from approved assets. Do not consume awaiting_human_approval items.',
+    },
+  };
+}
+
+function check() {
+  let pass = 0; let fail = 0;
+  const ok = (m) => { console.log(`ok   ${m}`); pass += 1; };
+  const bad = (m) => { console.log(`fail ${m}`); fail += 1; };
+  console.log('# Asset Decompose Pre-Pass Check\n');
+  const proposed = path.join(root, 'fixtures', 'creative-kernel', 'premium-saas', 'creative.asset-kit.proposed.json');
+  fs.existsSync(proposed) ? ok('proposed kit fixture present') : bad('proposed kit fixture present');
+  const kit = buildKit(path.join(root, 'fixtures', 'visual-critic', 'premium-saas', 'reference.txt'), 'local-heuristic');
+  kit.schema === 'ai-coding-os.creative-asset-kit.v1' ? ok('schema valid') : bad('schema valid');
+  kit.proposed_by_model === true ? ok('marked proposed_by_model') : bad('marked proposed_by_model');
+  kit.assets.length === 4 ? ok('proposes 4 assets') : bad(`proposes 4 assets (got ${kit.assets.length})`);
+  kit.assets.every((a) => a.status === 'awaiting_human_approval') ? ok('all assets awaiting human approval') : bad('all assets awaiting human approval');
+  kit.assets.every((a, i) => a.sequence === i + 1) ? ok('assets are ordered') : bad('assets are ordered');
+  kit.rules.model_proposed_assets_do_not_skip_human_approval === true ? ok('approval gate cannot be skipped') : bad('approval gate cannot be skipped');
+  kit.handoff_to_kimi.include.includes('tokens.oklch.json') ? ok('Kimi handoff includes oklch tokens') : bad('Kimi handoff includes oklch tokens');
+  const fixturedKit = JSON.parse(fs.readFileSync(proposed, 'utf8'));
+  fixturedKit.proposed_by_model === true ? ok('fixture kit is marked proposed') : bad('fixture kit is marked proposed');
+  fixturedKit.assets.every((a) => a.status === 'awaiting_human_approval') ? ok('fixture assets awaiting approval') : bad('fixture assets awaiting approval');
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail}`);
+  console.log(fail ? 'Status: asset-decompose-blocked' : 'Status: asset-decompose-ready');
+  process.exit(fail ? 1 : 0);
+}
+
+function main() {
+  if (has('check')) return check();
+  const reference = value('reference', '');
+  const out = value('output', '');
+  const backend = value('backend', 'local-heuristic');
+  if (!reference) {
+    console.error('Usage: cc-asset-decompose --reference REF [--backend NAME] [--output FILE] [--json]');
+    console.error('       cc-asset-decompose --check');
+    process.exit(2);
+  }
+  const kit = buildKit(path.resolve(reference), backend);
+  if (out) fs.writeFileSync(out, JSON.stringify(kit, null, 2) + '\n');
+  console.log(has('json') ? JSON.stringify(kit, null, 2) : `proposed=${kit.assets.length} backend=${backend} status=awaiting_human_approval`);
+}
+
+try { main(); } catch (err) { console.error(`cc-asset-decompose: ${err.message}`); process.exit(1); }

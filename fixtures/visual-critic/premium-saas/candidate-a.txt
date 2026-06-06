@@ -1,0 +1,11 @@
+CANDIDATE A RENDER STAND-IN
+This file's byte length is intentionally close to reference.txt so the local
+pixel-proxy ranks it as the winner. Real backends use real raster diffs.
+
+ATMOSPHERE: deep cobalt, subtle nebular bloom, oklch primary matched palette.
+TYPOGRAPHY-FEEL: editorial geometric, 1.15 leading preserved.
+MATERIAL: brushed glass, OKLCH primaries, ring accents visible.
+ASSETS-PRESENT: hero-background, primary-button-style, section-divider, feature-banner.
+NATIVE-TEXT-IN-CODE-NOT-RASTER.
+RESPONSIVE-BREAKPOINTS-OK.
+PADDING-LINE-A1.

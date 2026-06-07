@@ -291,12 +291,12 @@ Sibling layers compose: auto-memory (per-fact files) + 3-tier memory (auto-disti
 - **In-session parallel** — Brain's Agent tool — multiple agents within one session, single coordinator. **CAVEAT:** 600s stream watchdog kills agents doing long chrome-devtools sequences (navigate + screenshot + evaluate_script without text emission). Use ONLY for tasks that emit text every ~5min. For heavy chrome/file work, route through **cc-dispatch** below.
 - **Watchdog-free fire-and-forget** — `cc-dispatch` (`~/.claude/scripts/dispatch-agent.sh`, see `~/.claude/scripts/CC-DISPATCH-README.md`) — spawns `claude -p` as detached Unix subprocess. State at `~/.claude/jobs/<id>/`. Inspect via `cc-jobs`, `cc-job-status <id>`, `cc-job-output <id> [--tail N|--error]`. **Use for swarms of 5+ agents OR chrome-devtools-heavy work.** Survives session close.
 - **Cross-session, CLI/scripted** — `octogent` is archived/not installed by default. Restore it only for multi-day tentacle orchestration; otherwise use `cc-dispatch`.
-- **Cross-session, GUI** — Conductor.app (Mac, `brew install --cask conductor`)
+- **Cross-session, GUI** — Conductor.app not installed by default (removed 2026-06-07 cleanup). Reinstall on demand: `brew install --cask conductor`.
 
 **Dispatch decision rule:**
 - 1–3 agents, short task, lots of text streaming → Agent tool (cheapest, in-session memory)
 - 4+ agents OR chrome-devtools-heavy OR >5min runtime → `cc-dispatch` (watchdog-free)
-- Multi-day cross-session orchestration → restore `octogent` or use Conductor.app
+- Multi-day cross-session orchestration → restore `octogent` or reinstall Conductor.app (`brew install --cask conductor`)
 
 ## MEGA-BRAIN LEARNINGS LAYER
 

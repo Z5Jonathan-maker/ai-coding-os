@@ -64,8 +64,8 @@ Default tier per mode: MINIMAL→E1, NATIVE→E2, ALGORITHM→E4.
 
 This system is multi-model routed. Roles:
 
-- **Claude (you)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work. **PRIMARY for everything except design-first tasks.**
-- **KIMI (K2.6)** = UI/UX + design intelligence. **PRIMARY for layout composition, visual hierarchy, spacing/alignment, modern UI systems (glassmorphism, minimal, premium SaaS, biotech aesthetic), full-page and component-level design thinking.**
+- **Claude (you, Fable)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work — **AND design-first work (UI/UX, layout composition, visual hierarchy, component design). PRIMARY for everything.** (Founder decision 2026-06-11: design routing to KIMI predated Fable; Fable handles design directly. Supersedes feedback_kimi_leads_design_and_code.)
+- **KIMI (K2.6)** = browser automation lane (WebBridge) + bulk fallback. No longer the design lane.
 - **KIMI free path** = `cf_kimi` tier — `@cf/moonshotai/kimi-k2.6` via Cloudflare Workers AI, 100K-250K tokens/day free. Slots into `design` fallback chain BEFORE `precision`. Direct invoke: `router-ask purpose=bulk_kimi`.
 - **OpenRouter gateway** = `openrouter` tier. Free-first (DeepSeek-v4-flash:free, Qwen3-coder:free), escalates to `gemini-2.5-flash` ($0.30/$2.50 per M) when prompt > 128k chars. Registered as fallback for `cheap` and `precision`. Direct invoke: `router-ask purpose=long_context_query` or `purpose=openrouter_query`.
 - **Other models** may handle reasoning or local tasks.
@@ -76,15 +76,15 @@ Any of: "design a UI / mockup / landing page / dashboard", layout composition, v
 
 ### What you do on a design-first task
 
-1. **Don't generate the design yourself.** Route via `router-ask` to the design tier — KIMI owns both the design audit AND the code (per `feedback_kimi_leads_design_and_code`). Use `purpose: 'ui_design'` or relevant DESIGN_P purpose; falls back to local `design` skill if KIMI is offline.
-2. **Claude orchestrates + reviews + ships.** Validate KIMI's output against brand memory ([design/brands/](file:///Users/leonardofibonacci/.claude/design/brands/)), apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.claude/design/checks/quality-control.md), 95% threshold / 98% print), commit to the production stack.
+1. **Design it yourself (Fable handles design directly, 2026-06-11).** Anchor to brand memory ([design/brands/](file:///Users/leonardofibonacci/.claude/design/brands/)) and the project's DESIGN.md before generating; apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.claude/design/checks/quality-control.md), 95% threshold / 98% print).
+2. **Verify visually** — render via browser (kimi-webbridge / browser-harness screenshots), iterate against the QC checklist, ship to the production stack.
 3. **Multi-step design loop?** Spawn the `design-director` agent — it runs Phase 1-6 (ingest → strategy → execute → QC → log) end-to-end without per-step coordination.
 
 ### What stays Claude-primary, no deferral
 
 Backend logic / APIs / schemas / migrations, system architecture, infra, CI/CD, deploy pipelines, data pipelines + scraping (mega-brain-ingest), automation/scripts/hooks/agents, bug fixes inside existing UI code, audit-driven copy fixes, brand-fidelity execution (rasterizing canonical SVG, swapping wrong refs).
 
-**Routing rule (one-line):** Design-first → KIMI via router (`purpose: 'ui_design'`); fallback `design` skill. Backend/system/data → Claude. Multi-step design → `design-director` agent.
+**Routing rule (one-line):** **Full multi-page WEBSITE build/redesign (existing brand to screenshot) → `image2code-site` — screenshot → Image 2.0 → faithful per-archetype transcription.** Single-component/mockup/design-audit (design-first) → Claude designs directly (use `design` skill conventions + brand memory + QC). Backend/system/data → Claude. Multi-step design → `design-director` agent.
 
 ## SKILL ROUTING TABLE (read this before invoking anything)
 
@@ -95,7 +95,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Write me a prompt for X tool" | `prompt-master` | Single-shot, never loop |
 | "Audit this project / what's broken" | `audit` | Outputs to `./audits/<date>.md` |
 | "Onboard / clean up this messy repo" | `onboard` | Generates CLAUDE.md/AGENTS.md/DESIGN.md |
-| **DESIGN-FIRST** (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | KIMI via `router-ask purpose=ui_design`; fallback `design` skill | KIMI owns audit + code (per `feedback_kimi_leads_design_and_code`). Multi-step → spawn `design-director`. See "Design-family skill picker" below for the 5-way disambiguator. |
+| **DESIGN-FIRST** (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | Claude designs directly (`design` skill + brand memory + QC) | Founder decision 2026-06-11: Fable handles design; KIMI design routing retired. Multi-step → spawn `design-director`. See "Design-family skill picker" below. **EXCEPTION: a full multi-page WEBSITE build/redesign with an existing brand → `image2code-site`** (creative-director mockups via Image 2.0). |
 | "Chinese 高保真 hi-fi prototype style" | `huashu-design` | Only when explicitly asked |
 | "Build design tokens / design system" | `design-system` (Claude executes) | primitive→semantic→component. NOT routed to KIMI — token systems are systematic execution. |
 | "Build this in shadcn/Tailwind/React" | `ui-styling` | Implementation, not mockup |
@@ -114,6 +114,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Load creative workflow" | `10-wf-creative` | Slash command: creative workflow |
 | "Load DoseCraft workflow" | `10-wf-dosecraft` | Slash command: DoseCraft workflow |
 | "Load website workflow" | `10-wf-website` | Slash command: website workflow |
+| "Load trading workflow / systematic trading / mym-autotrader" | `10-wf-trading` | Slash command: routes trading tasks to mym-autotrader (live system + backtest harness), the `tradingview` web-CDP MCP, and `bybit` MCP. Carries money-code hard rules. Doc: `~/AI-HQ/workflow/trading.md` |
 | "What did we do in past sessions" | `recall` | MemPalace semantic search |
 | "Save state / checkpoint" | `checkpoint` | `~/.claude/checkpoints/` |
 | "Morning standup / what's on my plate" | `morning` | Open PRs + brew + commits |
@@ -138,7 +139,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Use my logged-in browser / open a page / screenshot / click around" | `kimi-webbridge` | Default real Chrome bridge with user session/cookies preserved |
 | "Build a self-improving browser skill / autobrowse a site" | `autobrowse` | Karpathy iterative loop. **Exception:** requires raw `ANTHROPIC_API_KEY` (the only routed skill that does — see Identity §). Composes with Kimi WebBridge or Playwright depending on task shape. |
 | "Monitor controversial repos / grey-area archive" | `grey-area-arsenal` | GitHub monitor + local archive tooling |
-| "Build me a website / landing page / marketing site / 3D hero" | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
+| **"Redesign / rebuild / level up my website", full multi-page SITE build with an existing brand to screenshot** | `image2code-site` | **PRIMARY for full-site builds (2026-06). Screenshot real page → ChatGPT Image 2.0 creative-director → faithfully transcribe each archetype's mockup to code (image-to-code).** Engine+playbook: `~/code/projects/image2code/site-engine/PLAYBOOK.md`. **Takes precedence over the design-first→KIMI route AND over `website-design-stack` for whole-site work.** Never mass-template; never route the whole build to KIMI. |
+| "Build me a website / landing page / marketing site / 3D hero" (greenfield, no existing brand to screenshot) | `website-design-stack` | Animation-tier classifier (conservative/moderate/aggressive/editorial/static), 6 mandatory landing-page sections, ship gate, on-demand reference-repo cloning. From the augen-clone Wassim Younes April-2026 bundle. |
 | "Start the self-paced autonomous loop / mega-cycle" | `mega-cycle` | Self-paced depth-ladder loop. Each cycle ≥ previous (surface→diagnostic→root-cause→refactor→audit→foundation). Anti-pattern memories auto-apply. Pairs with `nonstop` + `wired-up`. Slash command at `~/.claude/commands/mega-cycle.md`. |
 | "Check if I'm regressing to surface fixes" | `depth-check` | Meta-audit of recent cycles. Flags depth-drift (agent regressing to 1-line edits). Slash command at `~/.claude/commands/depth-check.md`. |
 | "Go nuclear / godmode / max autonomy this session" | `godmode` | Activates max-autonomy mode (terse + pulse + parallel + no clarifying questions). Slash command at `~/.claude/commands/godmode.md`; CLI at `~/.claude/bin/cc-godmode`. Composes with `/caveman` + `/pulse`. |
@@ -164,6 +166,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 
 | "Register a new skill or CLI into the routing tables" | `cc-skill-register` (CLI, not a skill) | Auto-inserts row into SKILL ROUTING TABLE in CLAUDE.md + adds CLIs to drift-checker allowlist. Closes the drift loop that bit us 4× during today's audit. Idempotent (no-op if already routed). |
 | "Block pre-push if typecheck fails / catch broken commits before they leave dev machine" | `cc-push-gate` (CLI, not a skill) | Installed as .git/hooks/pre-push in repos with autonomous-loop pushers. Runs typecheck (fast, ~1-5s) when pushing to main/master, skips feature branches, fail-soft if no scripts present. Bypass: `git push --no-verify`, `CC_PUSH_GATE=off`, or `touch .git/cc-push-gate-off`. Defense-in-depth for the 2026-05-14 'autonomous loop pushing into void' lesson. |
+| "|" | `image2code-site` | Auto-registered 2026-06-09 by cc-skill-register. Edit this row to refine intent. |
 **Built-in Anthropic skills** (always available, no routing — type `/<name>` to invoke): `claude-api`, `fewer-permission-prompts`, `init`, `keybindings-help`, `loop`, `review`, `schedule`, `security-review`, `simplify`, `update-config`.
 
 ## AGENT ROUTING TABLE
@@ -229,6 +232,8 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Slide generation (cloud) | `claude_ai_Gamma` | OAuth-gated |
 | shadcn component install (project-level) | `shadcn` *(project-scoped — only inside projects with shadcn MCP)* | E.g. inside aurex |
 | Web scraping with full browser control | `webclaw` *(project-scoped — only loads in projects with webclaw MCP config)* | Prefer `chrome-devtools` or `agent-browser` CLI for global use |
+| Read/control a live TradingView chart (state, indicators, Pine lines/labels/tables, OHLCV, draw, alerts, replay, Pine editing) | `tradingview` *(user-scoped stdio; `~/code/projects/tradingview-mcp-jackson/src/server.js`)* | **Targets TradingView WEB in Chrome, NOT the desktop app** (Desktop v3.x is CDP-sealed by Electron fuses). Start Chrome first: `~/code/projects/tradingview-mcp-jackson/scripts/launch_tv_chrome_mac.sh`. connection.js probes IPv4/IPv6 loopback w/ forced Host:localhost. See [[reference-tradingview-desktop-cdp-sealed]]. |
+| Bybit crypto market data / account / trading (243 tools) | `bybit` *(official `bybit-official-trading-server`, bybit.com-maintained; register via `claude mcp add bybit -s user -- npx -y bybit-official-trading-server@latest`)* | Keyless = market data only. API key/secret unlock account+trading — start on testnet (`-e BYBIT_TESTNET=true`). User must run the register command (classifier blocks agent-initiated npm-MCP registration). |
 | Product analytics queries | `claude_ai_Amplitude` | OAuth-gated, currently needs re-auth |
 | B2B prospect enrichment | `claude_ai_Vibe_Prospecting` | Explorium-backed, OAuth-gated |
 | HTTP fetch any URL → clean markdown | `mcp-fetch` | Stateless, parallel-safe utility |
@@ -252,13 +257,13 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 
 | User says | Pick |
 |---|---|
-| "design this", "mock up", "make a landing page" | `design` (HTML/CSS, browser-previewable) — local fallback when KIMI is offline |
+| "design this", "mock up", "make a landing page" | `design` (HTML/CSS, browser-previewable) |
 | "高保真 hi-fi prototype", Chinese-language design intent | `huashu-design` only |
 | "build the design tokens / token system" | `design-system` (primitive→semantic→component) |
 | "build it in shadcn/Tailwind/React" (after visual approved) | `ui-styling` |
 | "what style/palette/font should I use" | `ui-ux-pro-max` (lookup, don't output) |
 
-**Hard rule:** never invoke two design skills in the same task. KIMI router-ask is the primary path; the picker above is for the local-fallback / non-KIMI cases.
+**Hard rule:** never invoke two design skills in the same task. Claude designs directly (2026-06-11); the picker above selects which design skill Claude uses.
 
 ## STOP CONDITIONS FOR AUTONOMOUS LOOPS
 

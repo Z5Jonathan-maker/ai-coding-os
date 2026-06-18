@@ -1,0 +1,19 @@
+{
+  "schema": "ai-coding-os.visual-fidelity-eval.v1",
+  "doctrine": "Absolute VLM fidelity scores are miscalibrated. We test only that the critic ranks the intended winner first among N candidates.",
+  "eval_strategy": "relative_ranking_not_absolute",
+  "backend": "local-pixel-proxy",
+  "cases": [
+    {
+      "id": "premium-saas-hero",
+      "reference": "fixtures/visual-critic/premium-saas/reference.txt",
+      "candidates": [
+        { "id": "kimi-pass-1", "path": "fixtures/visual-critic/premium-saas/candidate-a.txt" },
+        { "id": "kimi-pass-2", "path": "fixtures/visual-critic/premium-saas/candidate-b.txt" },
+        { "id": "kimi-pass-3", "path": "fixtures/visual-critic/premium-saas/candidate-c.txt" }
+      ],
+      "expected_winner": "kimi-pass-1",
+      "expected_last": "kimi-pass-3"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const flag = `--${name}`;
+  const i = args.indexOf(flag);
+  if (i === -1 || i + 1 >= args.length) return fallback;
+  return args[i + 1];
+}
+
+const fixture = process.env.CC_VISUAL_FIDELITY_FIXTURE || path.join(root, 'fixtures', 'visual-fidelity', 'eval.json');
+
+function runCritic(reference, candidates, backend) {
+  const critic = path.join(root, 'bin', 'cc-visual-critic');
+  const argList = ['--reference', reference, '--backend', backend, '--json'];
+  candidates.forEach((c) => { argList.push('--candidate', c.path); });
+  const res = spawnSync(critic, argList, { cwd: root, encoding: 'utf8', timeout: 15000, maxBuffer: 1024 * 1024 });
+  if (res.status !== 0) return { ok: false, error: `${res.stdout || ''}${res.stderr || ''}`.trim() };
+  try { return { ok: true, ranking: JSON.parse(res.stdout) }; } catch (err) { return { ok: false, error: err.message }; }
+}
+
+function lookupId(ranking, candidates, predicate) {
+  const found = ranking.candidates.find(predicate);
+  if (!found) return null;
+  const match = candidates.find((c) => path.basename(c.path, path.extname(c.path)) === found.id);
+  return match ? match.id : found.id;
+}
+
+function main() {
+  const data = JSON.parse(fs.readFileSync(fixture, 'utf8'));
+  const backend = data.backend || 'local-pixel-proxy';
+  const cases = data.cases || [];
+  const results = cases.map((item) => {
+    const ref = path.join(root, item.reference);
+    const cands = item.candidates.map((c) => ({ id: c.id, path: path.join(root, c.path) }));
+    const out = runCritic(ref, cands, backend);
+    if (!out.ok) return { id: item.id, ok: false, error: out.error };
+    const winnerId = lookupId(out.ranking, cands, (c) => c.relative_rank === 1);
+    const lastId = lookupId(out.ranking, cands, (c) => c.relative_rank === cands.length);
+    const winnerOk = winnerId === item.expected_winner;
+    const lastOk = !item.expected_last || lastId === item.expected_last;
+    return { id: item.id, ok: winnerOk && lastOk, expected_winner: item.expected_winner, actual_winner: winnerId, expected_last: item.expected_last, actual_last: lastId };
+  });
+  const passed = results.filter((r) => r.ok).length;
+  const failed = results.length - passed;
+  if (has('json')) {
+    console.log(JSON.stringify({ schema: 'ai-coding-os.visual-fidelity-eval-result.v1', fixture, backend, passed, failed, results }, null, 2));
+  } else {
+    console.log('# Visual Fidelity Eval\n');
+    console.log(`Backend: ${backend}`);
+    console.log(`Strategy: ${data.eval_strategy || 'relative_ranking_not_absolute'}\n`);
+    for (const r of results) {
+      if (r.error) console.log(`fail ${r.id} error=${r.error}`);
+      else console.log(`${r.ok ? 'ok  ' : 'fail'} ${r.id} winner expected=${r.expected_winner} actual=${r.actual_winner}${r.expected_last ? ` last expected=${r.expected_last} actual=${r.actual_last}` : ''}`);
+    }
+    console.log(`\nScore: ${passed}/${results.length}`);
+    console.log(failed ? 'Status: visual-fidelity-eval-blocked' : 'Status: visual-fidelity-eval-ready');
+  }
+  process.exit(failed ? 1 : 0);
+}
+
+main();

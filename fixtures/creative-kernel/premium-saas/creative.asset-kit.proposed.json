@@ -2,6 +2,9 @@
   "schema": "ai-coding-os.creative-asset-kit.v1",
   "mode": "sequential_approved_extraction",
   "owner_lane": "chatgpt-image",
+  "proposed_by_model": true,
+  "proposer_backend": "local-heuristic",
+  "human_approval_gate": "each_proposed_asset_must_be_approved_before_next_is_extracted",
   "canonical_reference": {
     "path": "visual.target.png",
     "status": "external_reference_required",
@@ -13,7 +16,8 @@
     "use_same_image_thread_after_reference_approval": true,
     "implementation_model_must_not_reinvent_visual_direction": true,
     "native_text_and_interactions_stay_in_code": true,
-    "do_not_parallelize_extraction_requests": true
+    "do_not_parallelize_extraction_requests": true,
+    "model_proposed_assets_do_not_skip_human_approval": true
   },
   "assets": [
     {
@@ -23,7 +27,9 @@
       "asset_type": "raster-background",
       "extraction_prompt": "Using the approved hero reference, provide only the hero background with no text, buttons, logo, people, or UI labels.",
       "implementation_usage": "Use as the hero environmental background. Overlay headline, copy, and CTA as native HTML/CSS.",
-      "approval_gate": "background matches lighting, atmosphere, palette, and spatial depth from canonical reference"
+      "approval_gate": "background matches lighting, atmosphere, palette, and spatial depth from canonical reference",
+      "status": "awaiting_human_approval",
+      "proposed_by_model": true
     },
     {
       "sequence": 2,
@@ -32,7 +38,9 @@
       "asset_type": "style-reference",
       "extraction_prompt": "Using the approved hero reference, provide only the primary button as a clean isolated reference with no surrounding page elements.",
       "implementation_usage": "Recreate the button as native CSS. Do not rasterize text inside the button.",
-      "approval_gate": "button glow, radius, weight, contrast, and hover implication match canonical reference"
+      "approval_gate": "button glow, radius, weight, contrast, and hover implication match canonical reference",
+      "status": "awaiting_human_approval",
+      "proposed_by_model": true
     },
     {
       "sequence": 3,
@@ -41,7 +49,9 @@
       "asset_type": "raster-divider",
       "extraction_prompt": "Using the approved visual language, provide a page divider asset that transitions from the hero atmosphere into the next section.",
       "implementation_usage": "Use as a decorative divider or CSS background layer between sections.",
-      "approval_gate": "divider feels native to the same brand system and does not introduce a second visual language"
+      "approval_gate": "divider feels native to the same brand system and does not introduce a second visual language",
+      "status": "awaiting_human_approval",
+      "proposed_by_model": true
     },
     {
       "sequence": 4,
@@ -50,7 +60,9 @@
       "asset_type": "raster-background",
       "extraction_prompt": "Using the approved hero direction, provide a wide banner background for a proof or feature section with no baked-in text.",
       "implementation_usage": "Use behind native text and proof metrics in the implementation layer.",
-      "approval_gate": "banner preserves reference lighting, depth, and premium pacing without competing with the hero"
+      "approval_gate": "banner preserves reference lighting, depth, and premium pacing without competing with the hero",
+      "status": "awaiting_human_approval",
+      "proposed_by_model": true
     }
   ],
   "handoff_to_kimi": {
@@ -61,17 +73,6 @@
       "implementation.plan.json",
       "tokens.oklch.json"
     ],
-    "instruction": "Implement from the approved asset kit. Preserve raster atmosphere and recreate controls natively unless the asset is explicitly decorative. Snap to shadcn primitives bound to OKLCH brand tokens."
-  },
-  "critic_loop": {
-    "tool": "cc-visual-critic",
-    "n_candidates_minimum": 3,
-    "eval_strategy": "relative_ranking_not_absolute",
-    "runs_between": ["kimi_implementation", "claude_review"]
-  },
-  "auto_decompose_prepass": {
-    "tool": "cc-asset-decompose",
-    "output": "creative.asset-kit.proposed.json",
-    "approval_gate_preserved": true
+    "instruction": "Implement only from approved assets. Do not consume awaiting_human_approval items."
   }
 }

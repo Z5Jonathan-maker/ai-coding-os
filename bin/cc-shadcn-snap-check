@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+const root = process.env.DOTFILES || path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+
+function has(name) { return args.includes(`--${name}`); }
+function value(name, fallback = '') {
+  const flag = `--${name}`;
+  const i = args.indexOf(flag);
+  if (i === -1 || i + 1 >= args.length) return fallback;
+  return args[i + 1];
+}
+
+const OKLCH_PATTERN = /oklch\(\s*[\d.]+\s+[\d.]+\s+[\d.]+(\s*\/\s*[\d.]+)?\s*\)/;
+const SHADCN_IMPORT_PATTERN = /from ['"]@\/components\/ui\/(button|card|input|label|separator|badge|dialog|navigation-menu|select|tabs|tooltip)['"]/;
+
+function loadTokens() {
+  const tokensPath = path.join(root, 'fixtures', 'creative-kernel', 'premium-saas', 'tokens.oklch.json');
+  if (!fs.existsSync(tokensPath)) return null;
+  return { path: tokensPath, json: JSON.parse(fs.readFileSync(tokensPath, 'utf8')) };
+}
+
+function scanImplDir(dir) {
+  const found = { shadcn_imports: 0, oklch_var_refs: 0, files_scanned: 0, files: [] };
+  if (!fs.existsSync(dir)) return found;
+  const walk = (d) => {
+    for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+      if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+      const full = path.join(d, entry.name);
+      if (entry.isDirectory()) { walk(full); continue; }
+      if (!/\.(tsx?|jsx?|css|html)$/.test(entry.name)) continue;
+      const text = fs.readFileSync(full, 'utf8');
+      found.files_scanned += 1;
+      const importMatch = SHADCN_IMPORT_PATTERN.test(text);
+      const varRefMatch = /var\(--(?:background|foreground|primary|primary-foreground|muted|muted-foreground|accent|border|ring)/.test(text);
+      if (importMatch) found.shadcn_imports += 1;
+      if (varRefMatch) found.oklch_var_refs += 1;
+      if (importMatch || varRefMatch) found.files.push(path.relative(root, full));
+    }
+  };
+  walk(dir);
+  return found;
+}
+
+function check() {
+  let pass = 0; let fail = 0;
+  const ok = (m) => { console.log(`ok   ${m}`); pass += 1; };
+  const bad = (m) => { console.log(`fail ${m}`); fail += 1; };
+  console.log('# Shadcn + OKLCH Snap Check\n');
+  const tokens = loadTokens();
+  tokens ? ok('tokens.oklch.json exists') : bad('tokens.oklch.json exists');
+  if (!tokens) {
+    console.log('\n## Summary\n');
+    console.log(`passed=${pass} failed=${fail}`);
+    console.log('Status: shadcn-snap-blocked');
+    process.exit(1);
+  }
+  const t = tokens.json;
+  t.schema === 'ai-coding-os.brand-tokens.oklch.v1' ? ok('tokens schema valid') : bad('tokens schema valid');
+  t.color_space === 'oklch' ? ok('color space declared as oklch') : bad('color space declared as oklch');
+  t.tailwind_version === 4 ? ok('targets tailwind v4') : bad('targets tailwind v4');
+  t.snapping_target === 'shadcn/ui' ? ok('snapping target is shadcn/ui') : bad('snapping target is shadcn/ui');
+  const colors = Object.values(t.tokens?.color || {});
+  colors.length >= 6 ? ok(`has at least 6 color tokens (${colors.length})`) : bad(`has at least 6 color tokens (${colors.length})`);
+  colors.every((v) => OKLCH_PATTERN.test(v)) ? ok('every color token uses oklch() syntax') : bad('every color token uses oklch() syntax');
+  const required = ['button', 'card', 'input'];
+  required.every((p) => (t.shadcn_primitives_in_scope || []).includes(p)) ? ok('declares required shadcn primitives') : bad('declares required shadcn primitives');
+  t.round_trip?.figma_variables === true ? ok('round-trips with Figma variables') : bad('round-trips with Figma variables');
+  t.round_trip?.tailwind_v4_css_vars === true ? ok('round-trips with tailwind v4 css vars') : bad('round-trips with tailwind v4 css vars');
+  const implDir = value('impl-dir', '');
+  if (implDir) {
+    const scan = scanImplDir(path.resolve(implDir));
+    scan.shadcn_imports > 0 ? ok(`impl uses shadcn primitives (${scan.shadcn_imports} files)`) : bad('impl uses shadcn primitives');
+    scan.oklch_var_refs > 0 ? ok(`impl references brand tokens (${scan.oklch_var_refs} files)`) : bad('impl references brand tokens');
+  }
+  console.log('\n## Summary\n');
+  console.log(`passed=${pass} failed=${fail}`);
+  console.log(fail ? 'Status: shadcn-snap-blocked' : 'Status: shadcn-snap-ready');
+  process.exit(fail ? 1 : 0);
+}
+
+if (has('check') || args.length === 0) check();
+else { console.error('Usage: cc-shadcn-snap-check [--impl-dir DIR] [--check]'); process.exit(2); }

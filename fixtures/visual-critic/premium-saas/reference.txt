@@ -1,0 +1,10 @@
+REFERENCE IMAGE STAND-IN
+This is a deterministic stand-in for the canonical reference image used by
+cc-visual-critic in its local-pixel-proxy backend. Real backends consume the
+actual rasterized visual.target.png. The proxy ranks candidates by byte-length
+proximity to this file so the harness is testable without a live VLM.
+
+ATMOSPHERE: deep cobalt, subtle nebular bloom, oklch(0.14 0.02 270) ground.
+TYPOGRAPHY-FEEL: editorial geometric, 1.15 leading.
+MATERIAL: brushed glass, OKLCH primaries, ring accents.
+ASSETS-EXPECTED: hero-background, primary-button-style, section-divider, feature-banner-background.

@@ -35,6 +35,7 @@ useful, delete it or move it out of `bin/`.
 - `cc-backup` — restic backup of operational state.
 - `cc-backup-verify` — quarterly restore verification.
 - `cc-asset-kit-check` — verifies the sequential Image 2.0 asset decomposition workflow: canonical reference, one-at-a-time extraction, approval gates, implementation usage, and Kimi handoff.
+- `cc-asset-decompose` — model-proposed asset kit pre-pass that preserves the per-asset human approval gate; pluggable backend (local-heuristic, assetdropper-api, qwen-vlm).
 - `cc-benchmark-source-check` — verifies source-linked upstream issue replay benchmarks have GitHub issue metadata, README links, and expected patches.
 - `cc-benchmark-run` — score one benchmark fixture, including broken-first repair fixtures with expected patches.
 - `cc-benchmark-fixtures` — run tiny public benchmark fixtures for route expectation, npm test, repo-map, and diff-surface regression proof.
@@ -57,6 +58,9 @@ useful, delete it or move it out of `bin/`.
 - `cc-context-snapshot` — current repo context packet for routing/debugging; `--json` exposes named context providers and ignored sources.
 - `cc-creative-kernel-check` — verifies the Creative Direction Kernel, cognitive design routes, design DNA fields, and taste validation scores.
 - `cc-design-handoff` — create/list/status/continue/approve/execute the first-class taste-driven frontend mission spine: Image 2.0 reference, asset approval, design DNA, Kimi implementation packet, Claude review artifact, TEL deploy receipt, and proof bundle.
+- `cc-shadcn-snap-check` — brand tokens are emitted as OKLCH for Tailwind v4 and implementation snaps to shadcn primitives; supports `--impl-dir DIR` to scan implementation output.
+- `cc-visual-critic` — N-candidate rendered-output ranker for the critic loop between Kimi implementation and Claude review; emits only relative ranks, never absolute fidelity scores; pluggable backend.
+- `cc-visual-fidelity-eval` — fixture-driven regression harness for the visual critic; asserts the expected winner is ranked first across known reference/candidate cases.
 - `cc-deploy-watch` — production drift checker.
 - `cc-deploy-watch-cron` — launchd wrapper for deploy drift alerts.
 - `cc-demo-five-minute` — public evaluator demo: readiness, workflow proof, browser proof, and cockpit packaging.

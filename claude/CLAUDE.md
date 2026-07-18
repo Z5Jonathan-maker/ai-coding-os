@@ -64,8 +64,8 @@ Default tier per mode: MINIMAL→E1, NATIVE→E2, ALGORITHM→E4.
 
 This system is multi-model routed. Roles:
 
-- **Claude (you, Fable)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work — **AND design-first work (UI/UX, layout composition, visual hierarchy, component design). PRIMARY for everything.** (Founder decision 2026-06-11: design routing to KIMI predated Fable; Fable handles design directly. Supersedes feedback_kimi_leads_design_and_code.)
-- **KIMI (K2.6)** = browser automation lane (WebBridge) + bulk fallback. No longer the design lane.
+- **Claude (you, Fable)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work — plus **design QA and brand governance**. (Revised 2026-07-17: supersedes 2026-06-11 "Fable handles design directly" — that decision predated Kimi K3.)
+- **KIMI (K3)** = browser automation lane (WebBridge) + bulk fallback + **design-first generation lane (restored 2026-07-17)** — first-pass UI/UX, layouts, landing pages, component design via the `kimi` subagent. Rationale: Arena Frontend Code #1 (1679 vs Fable 1631, 6/7 domains) at ~1/3 the token cost.
 - **KIMI free path** = `cf_kimi` tier — `@cf/moonshotai/kimi-k2.6` via Cloudflare Workers AI, 100K-250K tokens/day free. Slots into `design` fallback chain BEFORE `precision`. Direct invoke: `router-ask purpose=bulk_kimi`.
 - **OpenRouter gateway** = `openrouter` tier. Free-first (DeepSeek-v4-flash:free, Qwen3-coder:free), escalates to `gemini-2.5-flash` ($0.30/$2.50 per M) when prompt > 128k chars. Registered as fallback for `cheap` and `precision`. Direct invoke: `router-ask purpose=long_context_query` or `purpose=openrouter_query`.
 - **Other models** may handle reasoning or local tasks.
@@ -76,7 +76,7 @@ Any of: "design a UI / mockup / landing page / dashboard", layout composition, v
 
 ### What you do on a design-first task
 
-1. **Design it yourself (Fable handles design directly, 2026-06-11).** Anchor to brand memory ([design/brands/](file:///Users/leonardofibonacci/.claude/design/brands/)) and the project's DESIGN.md before generating; apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.claude/design/checks/quality-control.md), 95% threshold / 98% print).
+1. **Delegate first pass to Kimi K3 (`kimi` subagent — design lane restored 2026-07-17).** Put the brand memory ([design/brands/](file:///Users/leonardofibonacci/.claude/design/brands/)) and the project's DESIGN.md directly in the delegation prompt — Kimi cannot see this conversation. Then **you (Fable) run final QA yourself**: apply quality control ([design/checks/quality-control.md](file:///Users/leonardofibonacci/.claude/design/checks/quality-control.md), 95% threshold / 98% print). If the Kimi lane is down (auth/network), design it yourself rather than stalling.
 2. **Verify visually** — render via browser (kimi-webbridge / browser-harness screenshots), iterate against the QC checklist, ship to the production stack.
 3. **Multi-step design loop?** Spawn the `design-director` agent — it runs Phase 1-6 (ingest → strategy → execute → QC → log) end-to-end without per-step coordination.
 
@@ -84,7 +84,7 @@ Any of: "design a UI / mockup / landing page / dashboard", layout composition, v
 
 Backend logic / APIs / schemas / migrations, system architecture, infra, CI/CD, deploy pipelines, data pipelines + scraping (mega-brain-ingest), automation/scripts/hooks/agents, bug fixes inside existing UI code, audit-driven copy fixes, brand-fidelity execution (rasterizing canonical SVG, swapping wrong refs).
 
-**Routing rule (one-line):** **Full multi-page WEBSITE build/redesign (existing brand to screenshot) → `image2code-site` — screenshot → Image 2.0 → faithful per-archetype transcription.** Single-component/mockup/design-audit (design-first) → Claude designs directly (use `design` skill conventions + brand memory + QC). Backend/system/data → Claude. Multi-step design → `design-director` agent.
+**Routing rule (one-line):** **Full multi-page WEBSITE build/redesign (existing brand to screenshot) → `image2code-site` — screenshot → Image 2.0 → faithful per-archetype transcription.** Single-component/mockup/design-audit (design-first) → `kimi` subagent first pass (K3), then Claude final QA (`design` skill conventions + brand memory + QC). Backend/system/data → Claude. Multi-step design → `design-director` agent.
 
 ## SKILL ROUTING TABLE (read this before invoking anything)
 
@@ -95,7 +95,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | "Write me a prompt for X tool" | `prompt-master` | Single-shot, never loop |
 | "Audit this project / what's broken" | `audit` | Outputs to `./audits/<date>.md` |
 | "Onboard / clean up this messy repo" | `onboard` | Generates CLAUDE.md/AGENTS.md/DESIGN.md |
-| **DESIGN-FIRST** (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | Claude designs directly (`design` skill + brand memory + QC) | Founder decision 2026-06-11: Fable handles design; KIMI design routing retired. Multi-step → spawn `design-director`. See "Design-family skill picker" below. **EXCEPTION: a full multi-page WEBSITE build/redesign with an existing brand → `image2code-site`** (creative-director mockups via Image 2.0). |
+| **DESIGN-FIRST** (UI/UX, layouts, landing pages, dashboards, visual hierarchy, branding structure, full-page composition) | Kimi K3 first pass (via the kimi subagent — see AGENT ROUTING TABLE) → Claude final QA (`design` skill QC) | Revised 2026-07-17: Kimi design lane restored after K3 launch (Arena Frontend Code #1, 1679 vs Fable 1631; ~3× cheaper) — supersedes 2026-06-11 retirement. Multi-step → spawn `design-director`. See "Design-family skill picker" below. **EXCEPTION: a full multi-page WEBSITE build/redesign with an existing brand → `image2code-site`** (creative-director mockups via Image 2.0). |
 | "Chinese 高保真 hi-fi prototype style" | `huashu-design` | Only when explicitly asked |
 | "Build design tokens / design system" | `design-system` (Claude executes) | primitive→semantic→component. NOT routed to KIMI — token systems are systematic execution. |
 | "Build this in shadcn/Tailwind/React" | `ui-styling` | Implementation, not mockup |

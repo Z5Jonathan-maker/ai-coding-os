@@ -57,28 +57,6 @@
         ]
       }
     ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/secret-paste-guard.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/loop-guard.sh"
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "",
@@ -150,8 +128,10 @@
     }
   },
   "alwaysThinkingEnabled": false,
+  "effortLevel": "xhigh",
   "showThinkingSummaries": false,
   "skipDangerousModePermissionPrompt": true,
+  "switchModelsOnFlag": false,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,

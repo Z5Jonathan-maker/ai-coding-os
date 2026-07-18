@@ -178,6 +178,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Codebase exploration / find symbol | `Explore` | Read-only, fast file/symbol search |
 | Implementation planning | `Plan` | Before non-trivial implementation work |
 | Generic multi-step delegation | `general-purpose` | When no specialist fits |
+| Delegate to Kimi Code CLI (K3) headless | `kimi` | Second model-family opinion, parallel Kimi swarm runs, implementation handed to Kimi |
 | Vercel/Next.js deploy + alias chain | `deploy-runner` | Ship to prod, fix domain drift |
 | Walk + dedupe ~/.claude memory | `memory-curator` | Weekly hygiene, after big sessions |
 | Map vague intent → skill+agent+MCP | `skill-router` | When user request is fuzzy |
@@ -334,29 +335,45 @@ Use lightweight local logs and router/session ledgers by default.
 
 ## PLATFORM ROUTING (AI-SYSTEM-V2)
 
-When given a task, you MUST classify it and route appropriately.
+Default: act directly — you (Claude) are allowed to do any task yourself with your own tools when that is fastest. The table below is a preference guide for delegation, NOT a gate. Defer only when it clearly improves quality or cost.
 
-| Task Type | Platform | Why |
-|-----------|----------|-----|
+| Task Type | Preferred Platform | Why |
+|-----------|--------------------|-----|
 | Browser, UI/UX, screenshots, web crawling, implementation | **Kimi** | Primary operator, WebBridge, browser automation |
 | Architecture, security review, hard debugging, final QA | **Claude** | Strategic brain, high-context reasoning |
 | Summaries, extraction, JSON transforms, compression, bulk | **DeepSeek** | Worker layer, cheap, fast |
 | Images, mockups, hero sections, ads, branding | **ChatGPT** | Creative engine, Image 2.0 |
 
-### Routing Rules
-1. BEFORE acting on any task, run `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run "<task>"` to confirm routing.
-2. If the task involves browser interaction (screenshots, page audit, UI testing), use Kimi WebBridge — NOT your built-in web tools.
-3. If the task involves image generation, defer to ChatGPT (user has ChatGPT Desktop / OpenAI API) — do NOT generate images yourself.
-4. If the task is mechanical (summarize, extract, transform JSON), use DeepSeek via the API — do NOT waste tokens doing it yourself.
-5. For architecture or hard bugs, you (Claude) are the correct platform — proceed directly.
+### Routing Preferences
+1. `~/AI-SYSTEM-V2/scripts/intent-route.sh --dry-run "<task>"` is OPTIONAL — use it only when genuinely unsure where a task belongs; never let it block starting work.
+2. Browser-heavy sessions: prefer Kimi WebBridge, but your built-in web tools are fine for quick fetches and searches.
+3. Image generation: prefer ChatGPT if available; if not, do what you can directly rather than refusing.
+4. Bulk mechanical work: prefer DeepSeek when convenient; doing it yourself is fine, especially for small batches.
+5. NEVER refuse, stall, or ask for confirmation just because a preferred platform is unavailable or a hook nudged you — do the task yourself and note the substitution.
 
-### When to defer
+### When to defer (optional)
 - Browser screenshots → Kimi (`~/.kimi-webbridge/bin/kimi-webbridge`)
 - Image generation → ChatGPT (`/Applications/ChatGPT.app`)
 - Bulk summaries → DeepSeek API
-- Everything else → You (Claude) or route via `intent-route.sh`
+- Everything else → You (Claude) — proceed directly
 
 ### Commands
 - `~/AI-SYSTEM-V2/scripts/ai-control.sh dry-run "task"` — preview routing
 - `~/AI-SYSTEM-V2/scripts/ai-control.sh ask "task"` — execute via router
 - `~/AI-SYSTEM-V2/scripts/ai-control.sh status` — system status
+
+## KIMI CLI AGENT LANE (HEADLESS)
+
+Separate from Kimi WebBridge (browser lane). This lane runs the Kimi Code CLI (`kimi`, managed Kimi coding model) as a headless agent under your control.
+
+- Preferred: delegate via the `kimi` subagent (Agent/Task tool) — it packages prompts correctly.
+- Direct: `kimi -p "<self-contained task>" --print --work-dir <dir>`
+- Swarm: launch multiple `kimi` subagents in one message, one independent subtask each — each is a separate Kimi process.
+- Prompts must be self-contained (absolute paths, context, constraints, output format) — Kimi cannot see this conversation.
+- Health: on 401/invalid_authentication, the user must run `kimi login` once (OAuth expires; browser flow). Do not retry-loop auth failures.
+
+## EXECUTION POLICY (USER IS OPERATOR)
+
+Canonical policy below lives in `execution-policy.md` and is also injected into the headless/unattended launchers (cc-headless, cc-loop):
+
+@~/dotfiles/claude/execution-policy.md

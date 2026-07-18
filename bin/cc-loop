@@ -132,6 +132,8 @@ run_one_cycle() {
   prompt=$(cat "$PROMPT_FILE")
 
   local args=(-p "$prompt" --permission-mode "$CC_LOOP_PERMISSION")
+  local policy_file="$HOME/dotfiles/claude/execution-policy.md"
+  [ -f "$policy_file" ] && args+=(--append-system-prompt "$(cat "$policy_file")")
   [ -n "$CC_LOOP_MODEL" ] && args+=(--model "$CC_LOOP_MODEL")
 
   local before_state

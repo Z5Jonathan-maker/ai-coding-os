@@ -33,7 +33,10 @@ setopt AUTO_PUSHD                 # cd pushes to dir stack
 setopt PUSHD_IGNORE_DUPS
 
 # Useful aliases
-if command -v eza >/dev/null 2>&1; then
+# eza is for HUMAN terminals; Claude Code sessions (CLAUDECODE=1) get real ls --
+# eza's --git-ignore hid gitignored files from the agent (2026-07-05 lesson: docs/data/
+# looked empty while governor.json sat right there).
+if [[ -z "${CLAUDECODE:-}" ]] && command -v eza >/dev/null 2>&1; then
   alias ls='eza --icons --git-ignore'
   alias ll='eza -lah --icons --git'
   alias la='eza -a --icons'

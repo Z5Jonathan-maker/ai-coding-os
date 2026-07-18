@@ -38,7 +38,10 @@ cd "$cwd" 2>/dev/null || exit 0
 out=""
 
 # Always include cwd (cheap signal)
-out="cwd: $(pwd | sed "s|$HOME|~|")"$'\n'
+# The clock is a sense, not a discipline (2026-07-05: agent said "4 hours to the open"
+# when it was 9.5 -- inferred time from stale context). Founder timezone: ET.
+out="now: $(TZ=America/New_York date '+%A %Y-%m-%d %I:%M %p ET')"$'\n'
+out+="cwd: $(pwd | sed "s|$HOME|~|")"$'\n'
 
 # Git: branch + dirty count + last commit (only if we're in a repo)
 if git rev-parse --git-dir >/dev/null 2>&1; then

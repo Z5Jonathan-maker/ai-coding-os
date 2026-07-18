@@ -42,12 +42,18 @@ elif isinstance(resp, str):
 else:
     txt = ""
 
-# Heuristics: common error markers
-if not failed and isinstance(txt, str):
-    if re.search(r'\b(error|failed|exception|traceback|fatal|denied|exit code [1-9])', txt, re.IGNORECASE):
+# <tool_use_error> is the definitive failure marker for EVERY tool.
+if not failed and isinstance(txt, str) and "<tool_use_error>" in txt:
+    failed = True
+# Keyword heuristics are only meaningful for Bash (command output implies status).
+# For Edit/Write/Read the response legitimately CONTAINS words like 'error'/'failed'
+# (file content, commit messages, diagnostics) -- 2026-07-05: 6 false alarms in one
+# session on successful edits. Explicit success phrasing always wins.
+if not failed and isinstance(txt, str) and tool == "Bash":
+    if re.search(r'\b(command not found|no such file|traceback|fatal:|permission denied|exit code [1-9])', txt, re.IGNORECASE):
         failed = True
-    if "<tool_use_error>" in txt:
-        failed = True
+if failed and isinstance(txt, str) and re.search(r'(updated successfully|created successfully|completed with no output|has been (updated|created))', txt, re.IGNORECASE):
+    failed = False
 
 print(sid, tool.replace(' ', '_'), str(failed).lower())
 PY

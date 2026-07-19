@@ -66,6 +66,7 @@ This system is multi-model routed. Roles:
 
 - **Claude (you, Fable)** = engineering, system architecture, execution, production-ready code, backend logic, APIs, automations, data pipelines, system-level work — plus **design QA and brand governance**. (Revised 2026-07-17: supersedes 2026-06-11 "Fable handles design directly" — that decision predated Kimi K3.)
 - **KIMI (K3)** = browser automation lane (WebBridge) + bulk fallback + **design-first generation lane (restored 2026-07-17)** — first-pass UI/UX, layouts, landing pages, component design via the `kimi` subagent. Rationale: Arena Frontend Code #1 (1679 vs Fable 1631, 6/7 domains) at ~1/3 the token cost.
+- **CODEX (OpenAI sub)** = headless agent lane via the `codex` CLI subagent (added 2026-07-19) — OpenAI-family implementation, second/third opinions, parallel swarm capacity alongside Kimi.
 - **KIMI free path** = `cf_kimi` tier — `@cf/moonshotai/kimi-k2.6` via Cloudflare Workers AI, 100K-250K tokens/day free. Slots into `design` fallback chain BEFORE `precision`. Direct invoke: `router-ask purpose=bulk_kimi`.
 - **OpenRouter gateway** = `openrouter` tier. Free-first (DeepSeek-v4-flash:free, Qwen3-coder:free), escalates to `gemini-2.5-flash` ($0.30/$2.50 per M) when prompt > 128k chars. Registered as fallback for `cheap` and `precision`. Direct invoke: `router-ask purpose=long_context_query` or `purpose=openrouter_query`.
 - **Other models** may handle reasoning or local tasks.
@@ -180,6 +181,7 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Implementation planning | `Plan` | Before non-trivial implementation work |
 | Generic multi-step delegation | `general-purpose` | When no specialist fits |
 | Delegate to Kimi Code CLI (K3) headless | `kimi` | Second model-family opinion, parallel Kimi swarm runs, implementation handed to Kimi |
+| Delegate to OpenAI Codex CLI headless | `codex` | Third model-family opinion, OpenAI-flavored implementation, parallel swarm runs (optionally alongside kimi) |
 | Vercel/Next.js deploy + alias chain | `deploy-runner` | Ship to prod, fix domain drift |
 | Walk + dedupe ~/.claude memory | `memory-curator` | Weekly hygiene, after big sessions |
 | Map vague intent → skill+agent+MCP | `skill-router` | When user request is fuzzy |
@@ -372,6 +374,19 @@ Separate from Kimi WebBridge (browser lane). This lane runs the Kimi Code CLI (`
 - Swarm: launch multiple `kimi` subagents in one message, one independent subtask each — each is a separate Kimi process.
 - Prompts must be self-contained (absolute paths, context, constraints, output format) — Kimi cannot see this conversation.
 - Health: on 401/invalid_authentication, the user must run `kimi login` once (OAuth expires; browser flow). Do not retry-loop auth failures.
+
+## CODEX CLI AGENT LANE (HEADLESS)
+
+Same pattern as the Kimi lane, for the OpenAI Codex CLI (ChatGPT subscription auth).
+
+- Preferred: delegate via the `codex` subagent (Agent/Task tool) — it packages prompts correctly.
+- Direct: `cd <project dir> && codex exec --sandbox workspace-write --skip-git-repo-check "<self-contained task>" </dev/null` — the `</dev/null` is required or exec blocks on stdin.
+- Sandbox levels: `read-only` (review/analysis), `workspace-write` (default for edits), `danger-full-access` (only when truly needed).
+- Each invocation carries a large fixed system-context overhead — batch related subtasks into ONE delegation.
+- A `hook: Stop Failed` line in codex output is a known non-fatal hiccup; judge by returned content.
+- Swarm: launch multiple `codex` subagents in one message, one independent subtask each (can run alongside kimi subagents for cross-family swarms).
+- Prompts must be self-contained (absolute paths, context, constraints, output format) — Codex cannot see this conversation.
+- Health: on auth errors, the user must run `codex login` once (browser flow). Do not retry-loop auth failures.
 
 ## EXECUTION POLICY (USER IS OPERATOR)
 

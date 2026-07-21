@@ -195,17 +195,6 @@ When the user describes a task, match it against this table FIRST. Don't reinven
 | Production PDF RAG (hybrid Qdrant + rerank + citations) | `aaa-rag-rerank` | "chat with these PDFs", "RAG over a doc corpus", knowledge base |
 | arXiv research + Memori v3 persistent memory | `aaa-arxiv-research` | "find papers on X", "continue my literature review", paper-thread memory |
 | AI consultant w/ Memori v3 + Tavily research | `aaa-ai-consultant` | "strategic consulting on X", standing consultant for a client/project |
-| Topic cluster / pillar-spoke architecture | `seo-cluster-strategist` | Designing site IA around topical authority |
-| SERP / content gap / on-page analysis | `seo-content-analyzer` | Auditing existing content vs competitors |
-| Conversion-rate optimization analysis | `seo-cro-analyst` | Funnel breakdowns, CTA + form optimization |
-| Editorial polish on long-form content | `seo-editor` | Final pass before publish |
-| Headline + H1 generation | `seo-headline-generator` | Variant generation with copywriting formulas |
-| Internal linking architecture | `seo-internal-linker` | Anchor-text strategy + link equity flow |
-| Keyword research + intent mapping | `seo-keyword-mapper` | Cluster maps + search-intent classification |
-| Landing page conversion optimization | `seo-landing-page-optimizer` | Page-level conversion tuning |
-| Meta title + description writing | `seo-meta-creator` | SERP snippet optimization |
-| General on-page SEO optimization | `seo-optimizer` | Long-form blog post on-page work |
-| Site speed + Core Web Vitals analysis | `seo-performance` | Performance audits |
 
 ## MCP ROUTING TABLE
 
@@ -281,7 +270,7 @@ When `nonstop` is active, STOP and ask if you hit any of:
 
 ## MEMORY POLICY
 
-Auto-memory (`~/.claude/projects/-Users-leonardofibonacci-Claude-Code/memory/`) is the long-term user-fact store. Always check `MEMORY.md` first before asking the user about themselves. Save new facts as they emerge. Curate weekly via `memory-curator` agent.
+Auto-memory (`~/.claude/projects/-Users-leonardofibonacci/memory/`) is the long-term user-fact store — **canonical, 197 memories (consolidated 2026-07-20).** The old `…-leonardofibonacci-Claude-Code/memory/` path is now a **symlink** to it, so a session launched from ANY directory resolves to the ONE store (this closed a real split-brain that had siloed the `user_*` identity facts + core feedback prefs in the launch-dir-specific store). The `-Claude-Code` originals are archived at `~/.claude/_archive/memory-legacy-2026-07-20/`. Validate store integrity anytime with `python3 ~/.claude/scripts/check_memory_canon.py` (the OS CANON guard — one-truth-per-domain, index-in-sync, 0 orphans). Always check `MEMORY.md` first before asking the user about themselves. Save new facts as they emerge. Curate weekly via `memory-curator` agent.
 
 MemPalace (`recall` skill + `mempalace` MCP) is for cross-session semantic search of *what was discussed before* — episodic, not factual.
 

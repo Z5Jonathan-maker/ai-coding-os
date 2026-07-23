@@ -1,0 +1,37 @@
+{
+  "topic": "scam-corpus",
+  "kind": "anti-pattern forensic reference corpus — trading-product funnel + grey-zone signal-vendor exemplars",
+  "created": "2026-07-12T00:00:00+00:00",
+  "build_method": "manual — hand-built from the already-curated tradeorithms/dossier.md and algoriam/dossier.md files in the source repo",
+  "source_repo": "~/code/projects/mym-autotrader/forensics/research-mine/",
+  "companion_memory_file": "~/.claude/projects/-Users-leonardofibonacci/memory/reference-ig-trading-ad-vetting.md",
+  "companion_memory_note": "the memory file is the founder's running IG/FB-ad fast-vet log (auto-memory layer, not edited by this corpus); this directory is the wiki-side dossier-grade counterpart",
+  "exemplars": [
+    {
+      "name": "tradeorithms",
+      "pattern": "simulated-demo laundered through a legitimate third-party tracker (MyFXTracker) + MLM referral ladder + self-contradicting disclaimer, costumed as a transparent research desk",
+      "verdict": "SKIP-AS-FUNNEL — not legit for research; 6/6 canonical structural-scam markers + 5 aggravating markers",
+      "file": "tradeorithms.md"
+    },
+    {
+      "name": "algoriam",
+      "pattern": "garden-of-forking-paths DoF: one black-box model (model_5) reported as three metric-optimized TP/SL configs (best_return/best_sharpe/best_winrate), no DSR/PBO/CSCV deflation",
+      "verdict": "SKIP — legit incorporated entity (IAM Technologies S.r.l.), grey-zone product, no research corpus exists, one leaked strategy is a black box with a DoF-violation structure",
+      "file": "algoriam.md"
+    }
+  ],
+  "mempalace_ingested": false,
+  "mempalace_note": "mempalace MCP was not a live tool in the session that built this corpus (deferred/injected only) — rg keyword search is the reliable path until a future session has a live connection",
+  "other_files": {
+    "_README.md": "corpus profile, when-to-consult, recall pattern, provenance, relation to the companion memory file"
+  },
+  "provenance": {
+    "wave": "research-mine 5-source wave, 2026-07-12",
+    "synthesis_file": "~/code/projects/mym-autotrader/forensics/research-mine/SYNTHESIS.md",
+    "source_dossiers": [
+      "~/code/projects/mym-autotrader/forensics/research-mine/tradeorithms/dossier.md",
+      "~/code/projects/mym-autotrader/forensics/research-mine/algoriam/dossier.md"
+    ],
+    "standing_caveat": "D-WEB — ideas only; here the ideas are entirely negative (anti-patterns), zero strategy candidates by design"
+  }
+}

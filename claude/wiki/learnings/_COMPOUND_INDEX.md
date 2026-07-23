@@ -3,6 +3,15 @@
 Use this to find which mentor brains discuss a given peptide/compound.
 Counts are videos that mention the compound (full transcript scan).
 
+**Scope note:** this index covers the peptide/TRT/biohacking mentor brains only. Non-peptide mentor
+brains (Karpathy — ML/AI; **Aligrithm and Algorithmic.io — quant-trading methodology**, see
+`mentor-aligrithm/_README.md` and `mentor-algorithmic-io/_README.md`) plus the non-mentor concept/
+forensic layers (`quant-methodology-canon/`, `scam-corpus/`) have no "compound" concept and are
+intentionally not rows here — use each one's own `_README.md` + topical files for its recall pattern
+instead (Aligrithm/Algorithmic.io: `rg` against the brain directory for a strategy-methodology term,
+or see `mentor-aligrithm/top-candidates-master.md` for the ranked candidate index; the canon/corpus
+layers: `rg` against `quant-methodology-canon/` or `scam-corpus/` directly).
+
 | Compound | Total videos | Top mentor | Mentor breakdown |
 |---|---|---|---|
 | **AOD-9604** | 13 | nathalie-niddam (5) | nathalie-niddam(5) · bachmeyer-rumble(3) · jay-campbell(2) · nick-trigili(2) · bachmeyer(1) |

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.jonathan.fabric.gap-miner</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/leonardofibonacci/.claude/fabric/.venv/bin/python</string>
+    <string>/Users/leonardofibonacci/.claude/fabric/gap_miner.py</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/leonardofibonacci/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>HOME</key>
+    <string>/Users/leonardofibonacci</string>
+  </dict>
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>8</integer><key>Minute</key><integer>0</integer></dict>
+  <key>RunAtLoad</key><false/>
+  <key>StandardOutPath</key><string>/Users/leonardofibonacci/.claude/fabric/logs/gap-miner.log</string>
+  <key>StandardErrorPath</key><string>/Users/leonardofibonacci/.claude/fabric/logs/gap-miner.log</string>
+</dict>
+</plist>

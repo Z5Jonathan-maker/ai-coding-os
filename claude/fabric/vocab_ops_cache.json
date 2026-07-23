@@ -1,0 +1,53 @@
+{
+  "breakout": [
+    {"name": "retest of broken level", "keywords": ["retest", "re-test", "backtest", "pullback to", "flip to support", "role reversal"]},
+    {"name": "volume confirmation", "keywords": ["volume", "high volume", "vol spike", "volume confirm", "heavy volume"]},
+    {"name": "close beyond structure", "keywords": ["close above", "close below", "closed beyond", "close through", "body close"]},
+    {"name": "failed / fakeout", "keywords": ["fakeout", "false break", "failed break", "trap", "stop hunt", "bull trap", "bear trap"]},
+    {"name": "momentum / impulse", "keywords": ["momentum", "impulse", "strong move", "acceleration", "explosive"]},
+    {"name": "consolidation before", "keywords": ["consolidation", "coiling", "tight range", "compression", "squeeze"]},
+    {"name": "wait for confirmation", "keywords": ["wait for", "confirm", "confirmation", "patience"]}
+  ],
+  "sweep": [
+    {"name": "liquidity grab", "keywords": ["liquidity", "liquidity grab", "liquidity pool", "grab liquidity"]},
+    {"name": "stop hunt", "keywords": ["stop hunt", "stop run", "raid", "hunt stops"]},
+    {"name": "sweep and reclaim", "keywords": ["reclaim", "sweep and", "recover", "back inside", "failed to hold"]},
+    {"name": "equal highs / lows", "keywords": ["equal highs", "equal lows", "double top", "double bottom", "eqh", "eql"]},
+    {"name": "wick through", "keywords": ["wick", "wicked", "spike through", "long wick"]}
+  ],
+  "rejection": [
+    {"name": "wick / pin rejection", "keywords": ["wick rejection", "pin bar", "long wick", "rejection wick", "hammer", "shooting star"]},
+    {"name": "engulfing", "keywords": ["engulf", "engulfing", "bullish engulf", "bearish engulf"]},
+    {"name": "at key level", "keywords": ["at support", "at resistance", "at the level", "key level", "supply zone", "demand zone"]},
+    {"name": "strong / clean rejection", "keywords": ["strong rejection", "clean rejection", "sharp rejection", "violent"]},
+    {"name": "failed to close beyond", "keywords": ["failed to close", "closed back", "rejected the", "held the"]}
+  ],
+  "pullback": [
+    {"name": "fib retracement", "keywords": ["fib", "fibonacci", "retrace", "0.618", "61.8", "50%", "golden pocket"]},
+    {"name": "to moving average", "keywords": ["moving average", "ma", "ema", "20 ema", "50 ma", "vwap"]},
+    {"name": "to support / demand", "keywords": ["to support", "to demand", "demand zone", "support zone", "prior level"]},
+    {"name": "shallow / deep", "keywords": ["shallow", "deep pullback", "held higher", "healthy pullback"]}
+  ],
+  "reversal": [
+    {"name": "divergence", "keywords": ["divergence", "diverge", "rsi divergence", "hidden divergence", "bearish div", "bullish div"]},
+    {"name": "double top / bottom", "keywords": ["double top", "double bottom", "triple top", "m pattern", "w pattern"]},
+    {"name": "exhaustion / climax", "keywords": ["exhaustion", "climax", "blow off", "capitulation", "parabolic", "overextended"]},
+    {"name": "at major level", "keywords": ["major level", "weekly level", "monthly", "yearly", "all time high", "ath"]}
+  ],
+  "trend": [
+    {"name": "strong trend / momentum", "keywords": ["strong trend", "trending", "momentum", "impulse", "one directional"]},
+    {"name": "higher highs / lower lows", "keywords": ["higher high", "higher low", "lower high", "lower low", "hh", "hl", "market structure"]},
+    {"name": "continuation", "keywords": ["continuation", "trend continuation", "resume", "with the trend"]},
+    {"name": "counter-trend", "keywords": ["counter trend", "against the trend", "fade the", "reversal against"]}
+  ],
+  "confluence": [
+    {"name": "multiple confirmations", "keywords": ["confluence", "multiple", "aligned", "stacked", "converge", "everything lined up"]},
+    {"name": "multi-timeframe agreement", "keywords": ["higher timeframe", "htf", "multi timeframe", "mtf", "daily and", "weekly bias"]}
+  ],
+  "psych": [
+    {"name": "high conviction", "keywords": ["high conviction", "confident", "clean setup", "textbook", "a+ setup", "perfect setup"]},
+    {"name": "fomo / chase", "keywords": ["fomo", "chased", "chasing", "late entry", "missed the"]},
+    {"name": "disciplined / patient", "keywords": ["disciplined", "patience", "waited", "stuck to plan", "no rush"]},
+    {"name": "hesitation / fear", "keywords": ["hesitat", "afraid", "scared", "fearful", "second guess"]}
+  ]
+}

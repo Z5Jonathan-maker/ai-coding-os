@@ -1,0 +1,24 @@
+---
+name: project-mym-capstone-architecture
+description: "Capstone architecture DEFINED 2026-07-18: graft RD-Agent's generator (problem-driven generation over a self-growing typed knowledge graph) BEHIND our honest-fill gauntlet. RD-Agent = strong generator/weak validator; we = weak generator (saturated at 135 fingerprints)/strong validator. Their imagination + our skepticism. Directly fixes the generator-saturation ceiling."
+metadata:
+  node_type: memory
+  type: project
+  originSessionId: 35aa6961-2e1d-4bbc-93f4-b7df230489be
+---
+
+**2026-07-18:** Two findings converged into the capstone design.
+
+**Problem (P0-2 diagnosis):** our generator is STRUCTURALLY SATURATED. `research_cards.py` maps every mined paper through a FIXED `_VEIN_PLAN` (5 families x constant params x finite vessels) -> at most ~135 distinct fingerprints EVER, all already tested/buried. `HypothesisSpec.fingerprint()` hashes {family,params,vessel,direction,gate} only, so a new paper on the same family collides. New corpus adds evidence WEIGHT, not new specs. So "corpus grows -> brain grows" is CAPPED at the realization vocabulary. (Intake expansion = necessary but NOT sufficient.)
+
+**Answer (RD-Agent mine, github.com/microsoft/RD-Agent, MIT):** RD-Agent solves exactly this with PROBLEM-DRIVEN GENERATION over a self-growing typed KNOWLEDGE GRAPH. Instead of "give me a candidate" (which collapses to a fixed template), it does `identify_problem` (scenario + residual-failure feedback) -> samples a persistent idea-pool graph -> generates one hypothesis PER unsolved problem, scored on NOVELTY -> self-critique -> diversity injection. Its `CoSTEERKnowledgeBaseV2` is a typed UndirectedGraph (component/task/trace/success/error nodes); on every attempt it promotes the whole chain, and its standout retrieval is `error_query` (same-error-then-success pairs) -- it LEARNS FROM FAILURES. Correlation-based dedup (drop factors with rho>=0.99 vs the SOTA book). Contextual bandit (LinearThompson) over candidate families.
+
+**RD-Agent's fatal gap = our strength:** NO multiple-testing/DSR deflation, NO placebo/drift controls, NO fill-realism, NO kill-by-default, NO forward-truth. Strong generator, weak validator.
+
+**CAPSTONE ARCHITECTURE (the synthesis):** graft RD-Agent's GENERATOR behind OUR GAUNTLET. Their open-ended problem-driven idea engine mints genuinely-new hypotheses; our honest-fill + cumulative-K-deflated + placebo + tail-floor + forward-truth gauntlet stays the SOLE arbiter of truth. Deposit EVERY gauntlet verdict (pass OR kill, with deflated + forward-truth stats) as a typed knowledge-graph node -> each cycle starts from the compressed lessons of all prior cycles -> the reachable hypothesis space EXPANDS every cycle instead of being a fixed 135-template. This makes the graveyard ACTIVE LEARNING (retrievable failures), architecturally realizing [[feedback-brain-distillation-back-standing-step]]. Their acceptance criteria (LLM-judge on IC vs SOTA, one fixed window) are DISCARDED -- that's the noise-fitting we engineer out.
+
+**Third piece -- the PROBLEM-IDENTIFIER (InfraNodus method, mined 2026-07-18):** the generator needs to know WHICH unsolved problem to propose against. InfraNodus (infranodus.com; paid SaaS, has MCP+API+Claude-Skills) is a text-network-analysis gap-detector: text -> lemmatized co-occurrence graph -> Louvain community detection (topic clusters) -> betweenness centrality -> structural GAPS ("Serendipitous Statements" = two disconnected-but-relevant clusters -> an idea linking them). Run over our growing research corpus, the gaps ARE the open-ended problems the generator proposes against -- which is what structurally breaks the 135-ceiling (gaps grow with the corpus, so the hypothesis space is no longer a fixed template). RECOMMENDATION: LIFT the method (native `corpus-gap` module: networkx + lemmatizer + Louvain + betweenness) rather than rent the SaaS -- keeps corpus in-house (no exfil), free, becomes the capstone's problem-identifier. Optional: trial the free tier/MCP to confirm gaps are trade-relevant before building.
+
+**The complete loop:** InfraNodus-method GAP ANALYSIS (problems) -> RD-Agent problem-driven GENERATION (hypotheses vs gaps) -> our GAUNTLET (kill-by-default arbiter) -> verdict KNOWLEDGE-GRAPH (every pass/kill a typed node) -> back to gap analysis smarter. Cannot saturate.
+
+**Build path:** (1) quick unblock -- bounded card-derived param axes (widen 135 -> low-thousands, anti-flood guarded, changes K for the whole book so founder-nod first); (2) the real fix -- InfraNodus-method gap-finder + RD-Agent problem-driven generator + verdict knowledge-graph grafted behind the gauntlet = the capstone. RD-Agent map: scratchpad/RD-AGENT-CAPSTONE-MAP.md. Related: [[project-mym-platform-mining-pipeline]], [[feedback-corpus-as-brain-standing-directive]], [[reference-providence-alpha-rigorous-peer]] (Atlas 11.3 = same SCAN->generate->test->human-gate loop).

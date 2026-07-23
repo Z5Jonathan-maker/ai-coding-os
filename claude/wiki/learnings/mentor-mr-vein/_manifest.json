@@ -1,0 +1,34 @@
+{
+  "topic": "mr-vein",
+  "kind": "quant-trading vein brain (cross-source mean-reversion canon: QEdges / RobotWealth / Chan / Alvarez / Aligrithm)",
+  "created": "2026-07-15T00:00:00+00:00",
+  "build_method": "manual — distilled from the 2026-07-15 MR dig-queue deepening spec harvest (research/mr-vein/2026-07-15/ spec-01..06 + 37 raw full-text sources), per the mentor-aligrithm / mentor-algorithmic-io precedent",
+  "source_repo": "~/code/projects/mym-autotrader/research/mr-vein/2026-07-15/",
+  "sources": {
+    "aligrithm": "20 articles incl. paid 10.14 (Gulen-Woeppel convexity), 10.10 (CGO/TK-score), 4.70 (calendar-spread fusion); 3.6/4.2/6.32 regime gates; 3.35 Kendall de-bias; 4.49/4.50 Ehlers FDI; 4.51/4.52 sector-neutral reference code; 3.27/3.28 stop law; 6.43/6.44 specific-factor test; 6.5 U-fold; 2.11/2.12 CMMA; 4.46 COT",
+    "quantifiable_edges": "9 CBI posts + 23-row dated CBI spike ledger 2012-2025 (Catapult construction itself is login-gated — NOT accessed, proxy built from public posts)",
+    "robotwealth": "3 posts (OU half-life estimator, 0.5x lookback law verified 32% vs 22% p.a., stat-generates-never-certifies)",
+    "alvarez": "2 posts (limit-entry 1-4% below close on single names, first-up-close exit, ex-index universe)",
+    "chan": "2 posts (AR(1)/ur.df drift estimator, equity-curve-cross live kill, long-only comparison arm)"
+  },
+  "docs": 3,
+  "words_approx": 3600,
+  "mempalace_ingested": false,
+  "mempalace_note": "rg keyword search is the reliable recall path until a live mempalace connection is pointed at this directory",
+  "standing_caveat": "D-WEB — every claim web-sourced; ideas/laws only, kill-by-default gauntlet before any money path; no login-gated content accessed; no paid data purchased (PIT single-name blocker recorded, pending founder)",
+  "realized_cards": "~/code/projects/mym-autotrader/vault/07-opportunity-pipeline/mr-dig-queue-specified.md (mrq-01..mrq-11, gauntlet-ready 2026-07-15)",
+  "top_3_extractables": [
+    "Kendall AR(1) de-bias beta_c = beta + (1+3*beta)/n + block-bootstrap 75th-pct half-life gate — fixes the MR-re-enters-too-soon bias; pairs with the verified 0.5x-half-life z-lookback law and the 63d reject bar",
+    "Capitulation-BREADTH (CBI) beats raw vol as the MR regime gate — 2020 (vol ~35%) was MR Sharpe +1.2, so the naive disable-in-high-vol rule misses the best MR year; falsifiable S&P100 proxy + 23-row calibration ledger extracted",
+    "One-persistence-axis law: AR(1)/Hurst/VR/ER are one number in costumes — one primary + one confirm, never stacked (H165 gate-stack overfit signature); plus the no-tight-stop numbers (-2 ATR stop = -0.55%/trade) and the cross-sectional-demean rule (0.55->0.18 killer)"
+  ],
+  "other_files": {
+    "_README.md": "brain profile, when-to-consult/skip, provenance, recall pattern",
+    "mr-canon.md": "the distilled 10-section MR canon with exact formulas, thresholds, published magnitudes, and blockers"
+  },
+  "provenance": {
+    "wave": "MR dig-queue deepening, 2026-07-15",
+    "context_memories": ["project-mym-mr-dig-queue", "project-mym-reversion-book-blueprint", "feedback_corpus_as_brain_standing_directive"],
+    "drill_verdicts_encoded": ["H163", "H165", "H166", "H167/diversified-book"]
+  }
+}

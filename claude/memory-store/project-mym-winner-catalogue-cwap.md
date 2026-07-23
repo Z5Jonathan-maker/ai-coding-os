@@ -1,0 +1,31 @@
+---
+name: project-mym-winner-catalogue-cwap
+description: CWAP confirmed-winner adoption pipeline — parity engine + FXBlue sweep discovery + winner catalogue on the HQ dashboard (mym-autotrader)
+metadata: 
+  node_type: memory
+  type: project
+  originSessionId: bbebfc06-e8d6-4f7a-8224-4abe435df6ac
+  modified: 2026-07-23T03:07:18.196Z
+---
+
+CWAP (Confirmed-Winner Adoption Pipeline) in mym-autotrader, branch `mym-playbook-and-bots`. Gates: HARVESTED → CERTIFIED (account_edge + certify_track_record) → PARITY (fx_pnl reproduces receipts, corr≥0.95) → DECOMPOSED (mechanical fingerprint) → ADOPTED (copy live / mechanize stale).
+
+Key files (engine/knowledge/): `fx_pnl.py` (parity engine — reproduces FXBlue receipts to ~100%/corr 0.997 via quote-ccy→USD CME FX-futures close + fitted swap+commission), `winner_pipeline.py` (stage bucketer), `catalogue_export.py` (→ `docs/data/winner_catalogue.json`), `strategy_decompose.py`, `gauntlet_calibrate.py`. Discovery: `engine/acquire/discover_fxblue.py` — `sweep(names)` + `--sweep` CLI probes 11 slug-variants per EA/vendor name against public no-auth `api.fxblue.com/wl/data/_OrderList.aspx?id=<slug>`. Registry: `engine/state/fxblue_accounts.txt`. Raw journals `engine/state/trade_journal_*.jsonl` are gitignored (derived, >100MB; regenerable via `harvest_registry`).
+
+Sources (multi): (1) **FXBlue** `discover_fxblue.sweep` — public OrderList, the continuous crank rotates the seed pool. (2) **MQL5 Signals** `discover_mql5` — public enumerable leaderboard ("who's winning"), receipts login-gated, so we mine winning EA NAMES → FXBlue seeds + an `index_signals` per-symbol filter. (3) **Collective2** `engine/acquire/collective2.py` — futures-native (ES/NQ/YM + micros), public per-trade tables at collective2.com/details/<id>, Cloudflare-walled so it drives the user's Chrome via **kimi-webbridge**; on-demand `ops/c2-harvest.sh` (NOT in the headless crank). Scouts found Collective2 + Myfxbook expose receipts behind a FREE account (not yet wired); Darwinex/FXStat dead.
+
+**Continuous crank**: `ops/discovery-crank.sh` + `com.jonathan.mym-discovery-crank` (KeepAlive launchd) sweeps FXBlue every 90s, harvests fresh winners, batches catalogue+index rebuilds. Live status → `docs/data/crank_status.json` (dashboard strip).
+
+**C2 harvest — TWO parallel lanes (no contention)**: (1) browser `engine/acquire/collective2.py` via kimi-webbridge — serial, 1 system/~25s, subject to C2's per-IP rate-limit (throttles after ~5 pages → "RateLimiter Exceeded"; the fix detects/backs-off). (2) **`engine/acquire/collective2_jina.py`** — harvests via the `r.jina.ai` HTTP proxy (renders the Cloudflare page → markdown), so DIFFERENT egress IP (no shared C2 throttle), NO browser, and multithreaded (ThreadPoolExecutor). Both ingest into the same append-only dedup-by-raw_ref journal → collision-safe even across concurrent sessions. jina misses ~54/75 on lazy-loaded tables (JS-rendered after jina's snapshot); browser gets those. **Pattern: parallelize by using a different physical resource (proxy IP), not the same one twice — the swarm discovered the jina trick while ID-hunting.** C2 systems trade the exact micros Jonathan trades (MYM/MNQ/MES/M2K), parity R² ~1.0 (known point values). Multi-session collision discipline: `git pull --rebase` before push, don't co-write the same browser/files, persist shared artifacts (verified IDs → `docs/data/c2_swarm_ids.json`). ⚠ C2-lane martingale/loss-averaging screen not built (e.g. c2-141855669: 97% win/R:R41.6/DD79.5% = detonator — exclude from real net).
+
+**Indices/futures lane** (`engine/knowledge/index_funnel.py`, feed `docs/data/index_winners.json`, "Index → Futures Winners" panel): isolates each account's index book, recovers CFD/futures USD-per-point from receipts (origin fit + R²), maps to CME futures (US30→YM, US100→NQ, US500→ES, US2000→RTY) + the micro Jonathan trades (MYM/MNQ/MES/M2K). Source-agnostic + single-pass. C2 futures reproduce at R² 0.9996–1.0 (known point values). Fixed the visual snapshot lowercase-bucket bug (`visual_enrich.snapshot_url`) — was dropping ~half the TradingView corpus.
+
+Dashboard: `docs/winners.html` = crank strip + certified catalogue + MQL5 leaderboard + Index→Futures panel; HQ **WINNER CATALOGUE** panel (docs/hq/).
+
+**Self-improvement layer** (`engine/knowledge/cwap_intel.py` → `docs/data/cwap_intel.json` + append-only `docs/ai-memory/CWAP-INTEL-LOG.md`): each cycle measures source×desk YIELD so discovery self-directs. **Learned source yield (futures book): Myfxbook 55.6%, Collective2 41.7%, FXBlue 0.1%** → hunt C2+Myfxbook for futures winners, NOT the FX-dominated crank. Winners concentrate in LIQUID desks (index/gold/crude); the 9 niche commodity desks (silver/natgas/softs/livestock/grains) are search-barren on C2 (need a logged-in directory crawl) — deprioritize, don't re-hunt.
+
+**Calibration discipline (hard-won 2026-07-22, instances of [[feedback-parity-confirms-winner]])**: don't over-flag real winners on noisy signals. (1) 20-trade floor was backtest-thinking — dropped → parity-minimum 6, tag `thin_sample`. (2) sizing martingale flag: corr_lots_vs_win over ~30 binary outcomes is noise below |0.3| (1 std ≈ 0.18) — require ≤-0.3, not -0.05 (the -0.05 was eating ~40 winners incl. Bitcoin +$445k / Copper +$380k). (3) select on LIFETIME equity-curve net OR recent, not recent-30 alone (biases against cold-streak winners). (4) extreme R:R≥15 = outlier-dependent, flag. K3 built the diversified-parity (per-trade known-point-value validation, avoids GC$100 vs MGC$10 cross-contamination).
+
+**Adopt end**: `engine/knowledge/adopt_specs.py` → `docs/data/PLAYBOOKS.md` = per-micro deployable specs (session-ET/bias/R:R/micro, sizing stripped) from every clean winner.
+
+State (2026-07-22 eve): index/futures funnel 76 CLEAN winners across 11 desks, ~$395k adoptable net, R² 0.998; 32 fragile-flagged (martingale/detonator/outlier). Sources FXBlue+C2+Myfxbook, each browser+jina lane. Founder directive: "make the brain smarter constantly — everything evolves and improves." Cleared a stuck 8.5h git-rebase blocking all sessions' pushes. See [[feedback-parity-confirms-winner]], [[feedback-self-evolve-every-cycle]], [[project-mym-trade-journal-brain-layer]].

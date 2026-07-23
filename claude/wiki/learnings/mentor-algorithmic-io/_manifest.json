@@ -1,0 +1,31 @@
+{
+  "topic": "algorithmic-io",
+  "kind": "quant-trading methodology mentor (single-source ES range-level-fade validation desk)",
+  "created": "2026-07-12T00:00:00+00:00",
+  "build_method": "manual — hand-built from the already-curated algorithmic-io-blog dossier + cross-source SYNTHESIS.md in the source repo, per the mentor-aligrithm precedent (mega-brain-ingest CLI's local_text path only copies raw text verbatim, no curation)",
+  "source_repo": "~/code/projects/mym-autotrader/forensics/research-mine/algorithmic-io-blog/",
+  "source_site": "algorithmic.io/blog",
+  "author": "anonymous solo founder (no disclosed credentials)",
+  "corpus_total_posts": 28,
+  "corpus_posts_digested": 17,
+  "corpus_coverage_pct": 61,
+  "mempalace_ingested": false,
+  "mempalace_note": "mempalace MCP was not a live tool in the session that built this brain (deferred/injected only) — point a live mempalace connection at this directory in a future session to enable semantic recall; rg keyword search is the reliable path until then",
+  "legitimacy_verdict": "REAL research desk, 0 hard scam markers, 2 soft (no dollar-income claims; mild AI-branding but they published a negative ML result). Signal math gated, validation methodology 100% free. Mine for method, never trust for edge.",
+  "deep_mine_verdict": "YES — for methodology, not signals. Highest-value items: session-level cluster bootstrap (1.4x SE widening), MAE-at-resolution-bar bug (~9x inflation), ML-can't-beat-base-rate negative control (72.39% vs 72.4% base rate).",
+  "top_3_extractables": [
+    "Session-level (cluster) bootstrap for within-session autocorrelation — trades ACF +0.34 vs sessions ACF +0.02, SE widens 1.4x when resampled correctly",
+    "MAE/excursion clipped to entry->resolution bar, not the full observation window — independent confirmation of the bar-END/bar-START boundary-instant bug class, ~9x magnitude when it bites",
+    "ML-can't-beat-base-rate negative control — RF 72.39% / XGBoost 72.31% vs 72.4% unconditional base rate on 9 features; edge is structural, not a hidden metadata filter"
+  ],
+  "other_files": {
+    "_README.md": "mentor profile, when-to-consult, recall pattern, provenance",
+    "validation-corpus-digest.md": "full per-item digest of all 17 mined posts, organized by category, cross-referenced against MYM's own gauntlet"
+  },
+  "provenance": {
+    "wave": "research-mine 5-source wave, 2026-07-12",
+    "synthesis_file": "~/code/projects/mym-autotrader/forensics/research-mine/SYNTHESIS.md",
+    "dossier_file": "~/code/projects/mym-autotrader/forensics/research-mine/algorithmic-io-blog/dossier.md",
+    "standing_caveat": "D-WEB — ideas only, no money-path contact, no new network activity performed to build this brain"
+  }
+}

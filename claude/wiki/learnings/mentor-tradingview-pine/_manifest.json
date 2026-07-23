@@ -1,0 +1,32 @@
+{
+  "topic": "tradingview-pine",
+  "kind": "source-vein brain (multi-author TradingView open-source Pine script corpus, rules-only)",
+  "created": "2026-07-15T00:00:00+00:00",
+  "build_method": "manual — distilled from the 2026-07-15 pine-facade harvest (25 curated scripts, verbatim rule extraction from strategy.entry/exit calls + input defaults); no mega-brain-ingest run (source is code, not transcripts)",
+  "source_repo": "~/code/projects/mym-autotrader/research/pine/2026-07-15/",
+  "source_endpoint": "pine-facade.tradingview.com/pine-facade/get/PUB;<hash>/last (public, no auth); discovery via pubscripts-suggest-json",
+  "authors": "multi-author (LuxAlgo, fluxchart, Zeiierman, QuantCrawler, tbiktag, AlgoAlpha, fareidzulkifli, RicardoSantos, ChrisMoody, exlux99, plmnl01, spudow, BigBeluga, MrTuanDoan, Stable_Camel, Amjad_S, hiimannshu, wbburgin, MtxTrader, BlueChip Algos, TheBigDaddyMax lineage, zzzcrypto123)",
+  "corpus_scripts_surfaced": 733,
+  "corpus_scripts_curated": 25,
+  "hypothesis_cards": 23,
+  "cards_file": "~/code/projects/mym-autotrader/vault/07-opportunity-pipeline/pine-facade-harvest-2026-07-15.md",
+  "machine_fuel": "~/code/projects/mym-autotrader/data/research_corpus/repos-tradingview/tradingview-pine-2026-07-15.json",
+  "mempalace_ingested": false,
+  "mempalace_note": "rg keyword search is the reliable recall path; point a live mempalace connection at this directory in a future session for semantic recall",
+  "standing_caveat": "D-WEB — every rule is web-sourced: locally rebuild + honest-fill gauntlet before any money path; NO TradingView equity curve is evidence (instant-fill fantasy); agreeCount/likes = popularity proxy only, never edge",
+  "top_3_extractables": [
+    "PINE-B2 rolling ADF unit-root test as the mean-reversion ON/OFF regime gate — a REGIME CLASSIFIER, not a strategy; the direct statistical test of the assumption every MR sleeve makes (Season-Engine shaped, top porting priority)",
+    "Two-phase re-entry archetypes wild-confirmed: OR-midpoint retest re-entry (PINE-A5, strip lookahead_on) and session-range sweep-fade (PINE-C4) — direct tests of the failed-first-touch -> re-entry thesis",
+    "Wild-consensus spec confirmations: NY OR = 09:30-09:45; RSI2 thresholds 5/95 with cross-OUT trigger; targets as OR-width fractions; gold session open 08:20 ET"
+  ],
+  "other_files": {
+    "_README.md": "brain profile, D-WEB frame, when-to-consult/skip, recall pattern",
+    "pine-harvest-2026-07-15-distilled.md": "vein mechanics, fill-realism trap taxonomy, wild-consensus parameters, archetype taxonomy (ORB gates / two-phase re-entry / MR regime gates / session sleeves), porting law"
+  },
+  "provenance": {
+    "harvest_date": "2026-07-15",
+    "vein_reference": "reference-tradingview-pine-crack (auto-memory)",
+    "rules_file": "~/code/projects/mym-autotrader/research/pine/2026-07-15/RULES.md",
+    "index_file": "~/code/projects/mym-autotrader/research/pine/2026-07-15/INDEX.json"
+  }
+}

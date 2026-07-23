@@ -1,0 +1,100 @@
+- [User identity](user_identity.md) — Jonathan Cimadevilla (macOS: leonardofibonacci)
+- [User role](user_role.md) — Senior IC, autonomous execution, Next.js/Tailwind/TS/Vercel, no Stripe
+- [Business email](user-business-email.md) — jonathan@careclaimsadjusting.com (ClaimPilot); iCloud personal
+- [GitHub](user_github.md) — Z5Jonathan-maker
+- [IDE](user_ide.md) — Antigravity (VS Code fork, 2026-05-16)
+- [Anthropic access](user_anthropic_access.md) — Claude Max + CLAUDE_CODE_OAUTH_TOKEN
+- [1Password](user_1password.md) — Vault "Personal"; CLI + SSH agent; sudo macOS item
+- [Aurex (dominant)](project_aurex.md) — Next.js 16 at aurex.bio; Telegram bot, wiki SSG; BTCPay live, NMI scaffolded, Stripe BANNED; Janoshik COA
+- [AI-OS manifesto](project_ai_os_manifesto.md) — Federate native runtimes via control plane
+- [Brain architecture](project_brain_architecture.md) — 3 layers, 8 agents, 17 hooks, 6 launchd monitors
+- [Brain lifts 2026-05-15](project_brain_lifts_2026_05_15.md) — ISA, Telos, Nyquist, HANDOFF.json, EXECUTION MODE, skill-metrics, loop-status, isa-nyquist-gate
+- [24/7 iMac](project_24_7_iMac.md) — pmset all sleep modes off; don't propose sleep tuning
+- [Remote control](project_remote_control.md) — Tailscale CLI/daemon; auth pending; SSH on
+- [Email OTP](project_email_otp_pipeline.md) — gh-mail-code + Playwright auto-fill OTPs
+- [Sudo wrapper](project_sudo_wrapper.md) — ~/dotfiles/bin/sudo auto-injects -A + askpass
+- [Router (3-tier)](project_router.md) — at Claude Code/; DEEPSEEK_API_KEY + CLAUDE_CLI
+- [Blotato](project_blotato_cross_post.md) — TikTok/IG/YT/X/Threads cross-post; waitlist; HUMAN only
+- [Forge](project_forge.md) — @forge/forms + @forge/recorder (Typeform/Loom alt)
+- [Aurex branding](feedback_aurex_tritone_cobalt_bw.md) — tritone cobalt + B&W
+- [DoseCraft canonical](feedback_dosecraft_canonical_repo.md) — ~/code/projects/dosecraft (NOT orphan)
+- [DoseCraft TesterArmy](project_dosecraft_testerarmy.md) — use "dose craft llc" PROJECT_ID
+- [DoseCraft Apple](project_dosecraft_apple_typography.md) — v1.0.4 HIG-aligned + iPad 1.15×
+- [DoseCraft brain](project-dosecraft-brain-architecture.md) — 246K chunks, BRAIN_API_URL + Bearer
+- [DoseCraft mentor roster](project-dosecraft-brain-mentor-roster.md) — mentor list + WHYs
+- [DoseCraft Coach](project-dosecraft-coach-ui.md) — Next/Clerk/Vercel; localhost:3000/coach/chat?host=coach
+- [DoseCraft demo](project-dosecraft-demo-video.md) — 60s Remotion (PR #84); npm run render
+- [DoseCraft IG](project-dosecraft-instagram-relaunch.md) — new IG after app live; education-first
+- [Brain: experts-only](feedback_brain_in_space_experts_only.md) — DoseCraft = niche experts only
+- [Coach-first](feedback_dosecraft_coach_first_strategy.md) — Coach IS the product
+- [Brain grounded](feedback_dosecraft_brain_grounded_forever.md) — ALL AI content from master brain
+- [AI features bold](feedback_dosecraft_ai_features_be_bold.md) — BOLD default; single hedge
+- [Automate aggressively](feedback_automate_aggressively.md) — osascript, launchd, expect before handoff
+- [Dogfood ISA](feedback_dogfood_isa_before_non_trivial.md) — .ai/ISA-<slug>.md before writing-plans
+- [Diagnostic-first](feedback_diagnostic_first.md) — Build surfacing tool BEFORE guessing fixes
+- [Self-evolve](feedback_self_evolve_every_cycle.md) — Ship new skills/memories each cycle
+- [Wakeup cadence](feedback_wakeup_cadence.md) — Each cycle climbs depth ladder
+- [Don't gate](feedback_dont_gate_user_choices.md) — Document factually; no prescriptive restrictions
+- [Try harder](feedback_try_harder_before_delegating.md) — Workarounds first
+- [Silent-skip counter](feedback_silent_skip_pattern.md) — Name every rejection
+- [Incremental-save](feedback_incremental_save.md) — Persist per-success, not end-of-batch
+- [Speculative-write](feedback_speculative_write.md) — Verify before claiming resource exists
+- [Skip unit tests](feedback_skip_excessive_testing.md) — Runtime validation enough for libraries
+- [Verify facts](feedback_verify_anthropic_facts.md) — User says X contradicts Claude? Fetch docs
+- [Always update canon](feedback_always_update_canon_on_newer_info.md) — Fresh facts → immediate update
+- [Read source files](feedback_read_all_source_files.md) — Read all refs BEFORE building
+- [Research SOTA](feedback-research-first-every-task.md) — Current best tool/model before defaulting
+- [No uncensored](feedback_no_uncensored_models.md) — Don't suggest jailbreaks
+- [Harness refusals](feedback_harness_policy_refusals.md) — Named-scope phrasings for each
+- [OAuth works](feedback_oauth_capture_blocked.md) — PTY + Playwright → .env DOES work
+- [/remote-control](feedback_remote_control_skill_is_official.md) — Official Anthropic; Terminal/VS Code only
+- [New VS Code](feedback_open_new_vscode_session.md) — vscode://command/claude-vscode.newConversation
+- [Mentor anon](feedback_mentor_corpus_no_attribution.md) — Pull from mentors; frame as "practitioner consensus"
+- [Brain consensus](feedback_brain_consensus_anonymized.md) — Surface score + breadth + tiers; no names
+- [Coach owns](feedback_coach_belongs_to_dosecraft.md) — Coach≠Aurex; Coach≠Aurex
+- [Path B bold](feedback_path_b_be_bold.md) — Lead with reverse/remission, hedge ONCE
+- [Subtle motifs](feedback_subtle_motifs_over_chunky.md) — Ghost/wireframe motifs, NOT vivid
+- [Image anchors](feedback_image_gen_canonical_anchors.md) — ALWAYS reference images for image-2.0
+- [Codemagic leak](feedback_codemagic_yaml_security_issue.md) — Rotate KEY_IDENTIFIER 3D3ZJ67X8L
+- [KIMI leads](feedback_kimi_leads_design_and_code.md) — KIMI end-to-end design+code; Claude ships
+- [Hooks idempotent](feedback_routing_drift_idempotency.md) — $(date +%Y-%m-%d) not $(date)
+- [Routing 3-kinds](feedback_routing_targets_three_kinds.md) — Skills, slash commands, CLIs
+- [One trade/day](feedback_one_trade_per_day_ny_open.md) — ONE move at 9:30 ET; re-entries OK; standdown after
+- [MYM AutoTrader](project-mym-autotrader-assistant.md) — ruff/mypy CI; money-safety rails
+- [MYM live config](project-mym-live-config.md) — VWAP-dir stop50 ($25); LIMIT at figure
+- [MYM best playbook](project-mym-best-playbook.md) — Tradeify Select Flex ≤5
+- [MYM MTF gate](project-mym-mtf-gate-golden-standard.md) — 4H/1H/30M trend gate on 4 fades (OOS PF 11.65)
+- [MYM 30min](project-mym-30min-migration.md) — 4 QF fades 15m→30m (+33%); PF 2.71
+- [ORB validated](project-mym-qf-falsified-orb-validated.md) — YM QF FALSIFIED; ORB-MNQ lone edge
+- [MYM live book 07-17](project-mym-live-book-certificate-2026-07-17.md) — 0 survivors; 8 honest-thin; 28 dead
+- [MYM strategy search](project-mym-strategy-search-verdict.md) — 1344 tested; 0 DSR>0.5 survivors
+- [Goat funded 07-16](project-mym-fundability-2026-07-16.md) — 17-brick HRP 90.6% P(pass); Tradeify banned
+- [Goat evals 07-16](project-goat-evals-passed-2026-07-16.md) — Both Sprint 100Ks passed via relay
+- [Live accounts 07-19](project-mym-live-accounts-2026-07-19.md) — Tradeify 150k only live; Goats standdown
+- [Vendor validation 07-19](project-mym-vendor-validation-2026-07-19.md) — Nebula cracked; streak DEAD; us30 DEAD
+- [Area61 HQ](project-mym-hq-command-center.md) — Nebula-skinned :8770/hq; live cockpit
+- [Diversified book](project-mym-diversified-book-verdict.md) — BOOK real (Sharpe 0.74, 3 families |ρ|≤0.16)
+- [Reversion book](project-mym-reversion-book-blueprint.md) — H163: MR = ONLY edge; cross-asset BOOK
+- [Institutional brain](project-mym-institutional-brain.md) — Learning cortex + ResearchAllocator; MYM_ALLOCATOR=1
+- [Forward fidelity](project-mym-forward-fidelity-verdict.md) — honest-fill kill; funded ~33x below fantasy
+- [Entry-edge verdict](project-mym-entry-edge-verdict.md) — No MECHANICAL entry edge; forward + discretionary
+- [Capstone arch](project-mym-capstone-architecture.md) — RD-Agent problem-gen + verdict KG
+- [Backtest REAL](feedback_backtest_his_real_method_not_strawman.md) — never QF first-touch fade
+- [Never exhausted](feedback_never_claim_exhausted_keep_hunting.md) — Name untapped veins; raw-kill = START
+- [Refine before grave](feedback_refine_before_the_grave.md) — Backtest fail = START of refinement
+- [Robot vs trader](feedback_backtest_measures_robot_not_trader.md) — gap IS his edge
+- [QF re-entry](feedback_qf_two_phase_premove.md) — first touch = trap; failed-retest = trade
+- [Canon signals](feedback_live_trading_canon_only_relay.md) — ONLY journal-recorded canon
+- [Defer instinct](feedback_defer_to_trading_instinct.md) — EXACT trade-mgmt spec; no cleaner version
+- [No crusher ego](feedback_no_strategy_crusher_ego.md) — Collaborator; rigor = means, not identity
+- [Data free first](feedback_data_free_first_then_databento.md) — CBOE, CME, Stooq, FRED first
+- [Stripe scope](feedback_stripe_ban_scope.md) — RUO-peptide ONLY; ClaimPilot/Eden OK
+- [Clock check](feedback_check_clock_before_time_claims.md) — Jonathan ET; run `date`
+- [Winner is winner](feedback_a_winner_is_a_winner_any_asset.md) — commodity/energy/metals count
+- [Cost-tier](feedback_cost_tier_research_hordes.md) — sonnet grunt, frontier planning/verdicts
+- [Goat speed](feedback_goat_evals_speed_first.md) — days-to-pass > red-day minimization
+- [Season engine](feedback_season_doctrine.md) — build Season Engine, not strategy
+- [Dashboards accurate](feedback-dashboards-stay-accurate.md) — show truth; never hand-edit
+- [Forward > backtest](feedback-forward-outweighs-backtest.md) — gauntlet screens, forward decides
+- [Brain distill](feedback-brain-distillation-back-standing-step.md) — cycle ENDS encoding learnings
+- [K3 boundary](feedback-k3-collaboration-boundary.md) — gauntlet IP in-house; K3 public

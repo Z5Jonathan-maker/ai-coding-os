@@ -1,0 +1,14 @@
+---
+name: reference-mym-tape-state-and-cycle-cost
+description: "mym-autotrader data/cycle facts (2026-07-18): only 10 of 26 futures tapes are FRESH (the 2026-07-17 $42 rebuild covered only pull_tapes.py's 10 core vessels); the other 16 are 7-16d stale -> StalenessGuard quarantines them. A discovery cycle costs ~10-20 min (honest backtest on full-history 1m tapes) -- that's cost, not a hang. Nightly gap-fill closes the staleness."
+metadata:
+  node_type: memory
+  type: reference
+  originSessionId: 35aa6961-2e1d-4bbc-93f4-b7df230489be
+---
+
+**Tape freshness (2026-07-18).** RESOLVED end of day: all **26/26 vessels FRESH**. The 2026-07-17 databento rebuild ($42, scratchpad/pull_tapes.py) refreshed only the 10 core vessels (index ES/NQ/YM/RTY, metals GC/SI/PL, energy CL, livestock LE/HE); the other 16 (HG, NG/RB/HO, BTC/ETH, ZB/ZN/ZF, ZC/ZS/ZW, 6A/6B/6E/6J) were 7-16 days stale. The nightly gap-fill's one-shot `--go` catch-up (2026-07-18) appended all 16 for **$0.28, 0 continuity-rejections** -> 26/26 fresh, full discovery surface. The nightly job (`com.jonathan.mym-tape-gapfill`, 07:00) keeps it fresh. NOTE: the DAILY panel is RESAMPLED from the 1m tape (`load_futures_panel` -> `_resample`, databento_loader.py:353), so the 1m gap-fill DOES refresh daily too -- verified 26/26 fresh (daily last=2026-07-17) post-catch-up. Any daily "stale" warning is from a cycle that ran BEFORE a refresh, not a separate daily-tape lag. The `StalenessGuard` (4-day horizon) QUARANTINES a stale vessel (defers as NEW_DATA-reopen, never scores it) -- so stale-vessel warnings in cycle logs are correct, not errors.
+
+**The gap-fill closes it:** `scripts/nightly_tape_gapfill.py` (288f4f3b) does the honest incremental databento append the older `tape_refresh.py` only STAGED. Money rails: budget ceiling (refuse-above), price-continuity guard (rejects a wrong-symbol/discontinuous append before it poisons the tape), same-series symbol rule = `.v.0` if ANY leg is `_v0`-named OR root in {SI,PL} else `.c.0` (two-leg metals like GC carry `_v0` only on the prefix leg -- the bug that first produced GC.c.0). Databento GLBX.MDP3 historical is ~T+1 (observed ~8h lag) -> the job ends its window 12h back. Plist `com.jonathan.mym-tape-gapfill.plist` (bbcc1483) is ready but NOT enabled (recurring PAID -> founder-gated). A one-shot `--go` catches up all 16 stale vessels cheaply (~$1-3).
+
+**Cycle cost:** a single `engine.orchestrate gauntlet` cycle takes ~10-20 min -- the honest-fill gauntlet scanning full-history (2021-2026) 1-minute tapes across vessels x candidates. That is COST, not a hang (a 20-min cycle is normal; don't kill it as stuck). Fine for a continuous 24/7 loop. The process spawns a multiprocessing worker, so 2 `engine.orchestrate` procs = ONE cycle, not a race. Related: [[project-mym-engine-self-learning-live]], [[reference-databento-continuous-metals-gotcha]].

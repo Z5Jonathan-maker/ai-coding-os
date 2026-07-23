@@ -1,0 +1,46 @@
+{
+  "topic": "quant-methodology-canon",
+  "kind": "concept layer — peer-reviewed academic corpus (validation/overfitting/microstructure/sizing)",
+  "created": "2026-07-12T00:00:00+00:00",
+  "build_method": "manual — hand-built from the already-curated academic-sweep/reading-list.md dossier in the source repo, per the mentor-aligrithm precedent",
+  "source_repo": "~/code/projects/mym-autotrader/forensics/research-mine/academic-sweep/",
+  "source_file": "reading-list.md",
+  "sweep_date": "2026-07-12",
+  "papers_in_reading_list_total": 17,
+  "papers_with_extracted_formulas": 9,
+  "mempalace_ingested": false,
+  "mempalace_note": "mempalace MCP was not a live tool in the session that built this brain (deferred/injected only) — point a live mempalace connection at this directory in a future session to enable semantic recall; rg keyword search is the reliable path until then",
+  "deep_mine_verdict": "YES — one of two sources (alongside mentor-algorithmic-io) in the 5-source research-mine wave to earn DEEP-MINE-YES. Validates that MYM's gauntlet already runs the canonical academic stack (PBO/CSCV, DSR, Harvey-Liu haircut); adds CPCV promotion, the Zhang decision-timing gate, and Osler as the published microfoundation of the QF-fade.",
+  "flagship_citation": "Osler (FRBNY SR-150/SR-125) — round-number order clustering, the published microstructural mechanism behind MYM's QF-fade + failed-retest re-entry canon. Cite in docs/ai-memory/STRATEGY.md.",
+  "papers": [
+    {"n": 1, "title": "The Deflated Sharpe Ratio", "authors": "Bailey & Lopez de Prado", "year": 2014, "extract": "A", "action": "audit MYM's DSR implementation against the verbatim formula"},
+    {"n": 2, "title": "The Probability of Backtest Overfitting", "authors": "Bailey, Borwein, Lopez de Prado & Zhu", "year": 2015, "extract": "A", "action": "PBO/CSCV definitional reference for the PBO<20% gate"},
+    {"n": 3, "title": "Backtest Overfitting in the ML Era: CPCV vs Walk-Forward", "authors": "Arian, Norouzi & Seco", "year": 2024, "extract": "B", "action": "promote CPCV to primary validator, feed PBO/DSR from CPCV paths"},
+    {"n": 4, "title": "Backtesting (+ ...Cross-Section of Expected Returns)", "authors": "Harvey & Liu; Harvey, Liu & Zhu", "year": "2015/2016", "extract": "A", "action": "confirm non-linear BHY/Holm haircut, not flat 50%"},
+    {"n": 5, "title": "Stop-Loss Orders and Price Cascades in Currency Markets (SR-150/SR-125)", "authors": "Osler", "year": "2002/2003", "extract": "A", "action": "cite as published microfoundation of the QF-fade + failed-retest re-entry canon", "flagship": true},
+    {"n": 6, "title": "Market Intraday Momentum", "authors": "Gao, Han, Li & Zhou", "year": 2018, "extract": "A", "action": "candidate new sleeve — last-30-min ES/NQ momentum gated by first-30-min vol/volume"},
+    {"n": 7, "title": "Time Series Momentum", "authors": "Moskowitz, Ooi & Pedersen", "year": 2012, "extract": "A", "action": "academic backing for the trend-pullback swing lane + HTF leg of the MTF gate"},
+    {"n": 8, "title": "When Alpha Disappears: A One-Switch Benchmark for Decision-Time Leakage", "authors": "Zhang, Li, Peng & Chen", "year": 2026, "extract": "B", "action": "institutionalize the bar-END/START fix as a standing regression gate"},
+    {"n": 9, "title": "Risk-Constrained Kelly Gambling", "authors": "Busseti, Ryu & Boyd", "year": 2016, "extract": "A", "action": "re-express theta/cushion sizer as lambda = log(beta)/log(alpha)"}
+  ],
+  "other_files": {
+    "_README.md": "concept-layer profile, when-to-consult, recall pattern, provenance",
+    "canon-formulas.md": "the 9 papers' formulas/findings, verbatim, with extractability + CME-fit + action items",
+    "cross-index-gauntlet-convergence.md": "ties this canon to mentor-aligrithm's gauntlet-doctrine-comparison.md — independent practitioner + peer-reviewed literature both converge on MYM's existing gauntlet shape",
+    "academic-harvest-2026-07-15.md": "second wave: 16 papers / 5 veins (ORB lineage incl. Pineda retest anatomy + Mesfin MNQ falsification; Bertram/Leung-Li/Holy-Tomanova/Endres OU closed-form trio; round-number clustering beyond Osler; Gao/Baltussen/Li intraday seasonality; Avellaneda-Lee/Sun/Khandani-Lo cross-sectional MR) — distilled with in-house adjudication status per paper; dig-queue cards lit15-01..08 at vault/07-opportunity-pipeline/academic-lit-mine-2026-07-15.md"
+  },
+  "second_wave": {
+    "date": "2026-07-15",
+    "vein": "academic-lit-gaps",
+    "papers": 16,
+    "source_raws": "~/code/projects/mym-autotrader/research/papers/2026-07-15/",
+    "dig_queue_cards": ["lit15-01", "lit15-02", "lit15-03", "lit15-04", "lit15-05", "lit15-06", "lit15-07", "lit15-08"],
+    "no_card_adjudicated": ["Pineda 2026 (retest family closed permanently)", "Baltussen 2021 (L30 closed 5-for-5)", "Mesfin 2026 (GMM-blocked, email-author stands)", "Tsai 2019 (stop-entry already implements TORB)", "Li-Sakkas-Urquhart 2022 (no vessel)", "Khandani-Lo 2007 (book law, not a strategy)"]
+  },
+  "provenance": {
+    "wave": "research-mine 5-source wave, 2026-07-12",
+    "synthesis_file": "~/code/projects/mym-autotrader/forensics/research-mine/SYNTHESIS.md",
+    "reading_list_file": "~/code/projects/mym-autotrader/forensics/research-mine/academic-sweep/reading-list.md",
+    "standing_caveat": "D-WEB — ideas only, no money-path contact; formulas reproduced are already-published verbatim quotes/equations from free-access sources, no paywalled full-text scraped"
+  }
+}

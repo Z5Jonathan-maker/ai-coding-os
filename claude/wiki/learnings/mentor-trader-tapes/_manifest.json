@@ -1,0 +1,25 @@
+{
+  "brain": "mentor-trader-tapes",
+  "kind": "forensic tape corpus (verified/public trader-decision data, H50 vein)",
+  "created": "2026-07-15",
+  "docs": 2,
+  "words_approx": 1100,
+  "sources": {
+    "fxblue": {
+      "tapes": 20,
+      "granularity": "per-trade",
+      "verification": "UNVERIFIED-BY-US (badges render client-side; browser-lane check pending)",
+      "raw": "~/code/projects/mym-autotrader/research/tapes/2026-07-15/fxblue/"
+    },
+    "darwinex": {
+      "tapes": 13,
+      "granularity": "headline summary only (per-trade 401-gated)",
+      "verification": "broker-real by construction (FCA/CNMV)",
+      "raw": "~/code/projects/mym-autotrader/research/tapes/2026-07-15/darwinex/"
+    },
+    "blocked": ["myfxbook (Cloudflare 403, needs kimi-webbridge)", "collective2 (API key = signup, out of bounds)"]
+  },
+  "dig_queue_cards": "mym-autotrader/vault/07-opportunity-pipeline/trader-tape-mine-2026-07-15.md",
+  "card_ids": ["tape-01", "tape-02", "tape-03", "tape-04", "tape-05", "tape-06"],
+  "companions": ["scam-corpus", "quant-methodology-canon", "mentor-aligrithm"]
+}

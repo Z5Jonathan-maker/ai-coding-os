@@ -1,0 +1,45 @@
+{
+  "topic": "aligrithm",
+  "kind": "quant-trading methodology mentor",
+  "created": "2026-07-12T00:00:00+00:00",
+  "updated": "2026-07-15T00:00:00+00:00",
+  "build_method": "manual — mega-brain-ingest CLI exists at ~/local/bin/mega-brain-ingest but its local_text path only copies raw text verbatim with generic frontmatter (no curation); this brain was built by hand from already-curated, MYM-fit-graded extraction notes in the source repo, per the founder's explicit fallback instruction",
+  "source_repo": "~/code/projects/mym-autotrader/forensics/h111/",
+  "source_waves": ["wave1", "wave2", "wave3", "wave4"],
+  "source_site": "aligrithm.com",
+  "author": "Ali H. Askar, CQF",
+  "corpus_total_articles": 373,
+  "corpus_articles_digested": 232,
+  "corpus_coverage_pct": 62,
+  "mempalace_ingested": false,
+  "mempalace_note": "mempalace MCP was not a live tool in the session that built this brain (deferred/injected only) — point a live mempalace connection at this directory in a future session to enable semantic recall; rg keyword search is the reliable path until then",
+  "pillars": {
+    "1": {"title": "The Scientific Trader", "total": 26, "digested": 26, "coverage_pct": 100, "file": "pillar-01-scientific-trader.md"},
+    "2": {"title": "Indicator Engineering", "total": 82, "digested": 51, "coverage_pct": 62, "file": "pillar-02-indicator-engineering.md", "note": "wave 4 upgraded the ML cluster (2.76-2.82) digests to full-text raw dumps; digest content unchanged"},
+    "3": {"title": "Robust Systems Lab", "total": 37, "digested": 37, "coverage_pct": 100, "file": "pillar-03-robust-systems-lab.md"},
+    "4": {"title": "Market Structure Notes", "total": 71, "digested": 31, "coverage_pct": 44, "file": "pillar-04-market-structure-notes.md", "note": "highest-relevance pillar — noise/ER/regime arc (4.1-4.12) is a near-formal spec for MYM's architecture; wave 4 added intermarket 4.13-4.24, Hurst/FDI 4.49-4.50 (third noise family), cross-sectional/breadth 4.51-4.54"},
+    "5": {"title": "Microstructure Alpha", "total": 45, "digested": 28, "coverage_pct": 62, "file": "pillar-05-microstructure-alpha.md", "note": "verdicted N/A for MYM's stack (needs L2/order-book data, wrong business model) — functionally closed; single exception 5.35 square-root impact law mined wave 4"},
+    "6": {"title": "Portfolio Construction & System Death", "total": 48, "digested": 39, "coverage_pct": 81, "file": "pillar-06-portfolio-construction-system-death.md", "note": "wave 4 upgraded 6.31-6.34/6.43-6.48 digests to full-text raw dumps; digest content unchanged"},
+    "7": {"title": "Python Research Notebooks", "total": 3, "digested": 0, "coverage_pct": 0, "file": "pillar-07-to-10-outside-curriculum.md"},
+    "8": {"title": "Physics, Geometry & Event-Driven Markets", "total": 9, "digested": 0, "coverage_pct": 0, "file": "pillar-07-to-10-outside-curriculum.md"},
+    "9": {"title": "Prediction Market Arbitrage (outside curriculum)", "total": 36, "digested": 6, "coverage_pct": 17, "file": "pillar-07-to-10-outside-curriculum.md"},
+    "10": {"title": "Cross-Sectional & Factor Investing (outside curriculum)", "total": 15, "digested": 1, "coverage_pct": 7, "file": "pillar-07-to-10-outside-curriculum.md"}
+  },
+  "other_files": {
+    "_README.md": "mentor profile, when-to-consult, recall pattern, provenance",
+    "gauntlet-doctrine-comparison.md": "Pillar 1 + 3 vs MYM's own gauntlet doctrine, full side-by-side",
+    "top-candidates-master.md": "22-item ranked candidate list merged across waves 1-3 + wave-4 addendum pointer, D-WEB doctrine applies to all"
+  },
+  "wave4_cards": {
+    "file": "~/code/projects/mym-autotrader/vault/07-opportunity-pipeline/aligrithm-wave4-mine.md",
+    "ids": ["alg4-01", "alg4-02", "alg4-03", "alg4-04", "alg4-05", "alg4-06", "alg4-07", "alg4-08", "alg4-09", "alg4-10"],
+    "note": "10 pre-registered dig-queue hypothesis cards distilled 2026-07-15 from the 19 newly-touched wave-4 articles; all D-WEB, kill bars mirror engine/generator/corpus.py KillCriterion; nothing built or wired into dig_queue()"
+  },
+  "provenance": {
+    "authorization_file": "~/code/projects/mym-autotrader/forensics/h111/FOUNDER-AUTHORIZATION.md",
+    "authorization_commit": "2b155a9",
+    "verified_present_at_brain_build_time": true,
+    "reverified_wave4": true,
+    "standing_caveat": "a git commit is not cryptographic proof of founder identity; repeated forward per each wave's own discipline rather than treated as settled"
+  }
+}

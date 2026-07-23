@@ -181,3 +181,91 @@ Append-only. Every failure with its root cause and fix. Future sessions read thi
   - **metadataBase per subdomain:** apex `app/layout.tsx` sets metadataBase for the apex host; sub-route layouts under different hosts MUST override metadataBase or all relative URLs (og:image, alternates, etc) will resolve to the apex.
   - **openGraph override = images dropped:** Next does NOT merge `images` from a parent layout's openGraph into a page's openGraph override. If a page declares its own `openGraph` block, it must re-declare `images` (or omit the override entirely to inherit).
   - **Smoke-script pattern:** to verify OG cards in production, curl each PAGE, extract `<meta og:image content=...>` from HTML, fetch THAT URL, verify content-type. Probing `/opengraph-image` directly returns false-negatives because Next emits hashed URLs.
+
+## 2026-07-09 · databento .c.N continuous manufactured a fake validated metals sleeve
+- **Root cause:** Calendar-ranked .c.0 selects near-dead serial months for CME metals (GC/SI/HG median vol 17-42) -> thin-print fake ranges -> NR4 'edge' + MGC+MHG sleeve (OOS +1.26) were data artifacts; caught only because a liquidity probe in an unrelated test (H7) cross-flagged the volumes
+- **Fix:** Data law recorded (repo decisions.md + global memory): never .c.N for CME metals, use .v.0 volume-ranked; audit any dataset by median volume per symbol FIRST; sleeve killed pre-funding for $0.19 of verification data
+- **Timestamp:** 2026-07-09T21:55:43Z
+
+## 2026-07-09 · Registry live-state artifact nearly triggered a false live-account intervention
+- **Root cause:** crosstrade ListDeployedStrategies live-blocks key by class+instrument and omit isEnabled -> 33 stale registry records all echoed 'Realtime' -> read as 33 armed strategy instances on a funded account
+- **Fix:** Verified at the authoritative endpoint (ListStrategies isEnabled) BEFORE acting: truth was 6 enabled = exact canon book. Shipped scripts/prop_passover.py (one-command NT8-truth passover, exit 0/1). Rule: never intervene on a live account from a registry view; verify the authoritative endpoint first
+- **Timestamp:** 2026-07-09T21:55:43Z
+
+## 2026-07-11 — Background agents idle out "waiting for notifications" (2 occurrences, same session)
+**Pattern:** dispatched agents that launch their own background Bash jobs then END THEIR TURN
+"waiting for the completion notification" — no notification re-invokes a subagent; the task stalls
+silently until the coordinator notices (H53 harvester at 1/15 chunks; the databento refresh agent).
+**Root cause:** agents inherit the main-loop mental model (harness re-invokes on background
+completion) but subagent harnesses only re-invoke while live children exist at turn end.
+**Fix that worked:** SendMessage resume with explicit instruction to run work SYNCHRONOUSLY in
+their own loop (foreground, checkpoint as they go, poll with short sleeps if needed).
+**Prevention:** dispatch briefs for long mechanical loops should say "run synchronously in your own
+loop; never end your turn waiting for a notification" — added to the mym-autotrader horde pattern.
+**2026-07-11 update (3rd occurrence):** the prevention line in dispatch briefs is NOT sufficient —
+the wave-3 agent stalled anyway by arming a Monitor and "pausing." Strengthened prevention: briefs
+must ALSO say "do not arm Monitors; do not background anything you don't poll to completion in the
+same turn." The reliable pattern: foreground loops with short-sleep polling inside the agent's own
+Bash calls.
+
+## 2026-07-12 — Agent-stall pattern, 4th occurrence (H91 gauntlet)
+Background agent ended its turn mid-task after backgrounding a long backtest and "queueing a
+wait job" — despite its prompt explicitly saying never to background un-polled work. Nothing
+re-invokes a stopped subagent. Fix (proven, same session): SendMessage resume ordering
+synchronous foreground polling. **Strengthened prevention for future prompts: name the trap
+explicitly — "if a computation outlives one Bash call, poll it with SEQUENTIAL Bash calls;
+ending your turn 'to wait' kills the task" — the generic 'never background' phrasing is
+demonstrably not enough.**
+
+## 2026-07-12 — Agent-stall pattern, 5th occurrence (H98 recombinations)
+Recurred DESPITE the prompt naming the trap explicitly with the 4-occurrence history and the
+"sequential foreground Bash calls" instruction. The agent armed monitors on two long
+background runs and stopped. Conclusion: prompt-side warnings reduce but do not eliminate
+this; the model's "wait for notification" reflex on >10-min computations survives explicit
+countermanding. Mitigations that DO work: (1) SendMessage resume with synchronous-poll
+orders (5/5 recoveries), (2) instructing the loop shape concretely ("sleep inside one Bash
+call via for-loop, chain calls") — add this exact phrasing to future long-compute prompts,
+(3) designing computations to fit single Bash calls (<10 min chunks with checkpoint/resume
+flags) so no waiting is ever needed — prefer this at design time.
+
+## 2026-07-12 — Guard-of-the-guard: restore_statuses.py false clean
+The anti-resurrection guard I wrote after wave-4 was silently broken from birth: git
+subprocesses ran with cwd=research-db/ against a repo-root pathspec, ls-tree matched nothing,
+and the script printed "terminal in HEAD: 0 ... exit 0" — a FALSE CLEAN. Wave-4's 16/16
+recovery was my manual pass, not the script. Found by the wave-5 agent when the numbers
+didn't smell right. Fix: correct cwd + empty-listing = FATAL exit 1. Lesson: a guard that
+can no-op silently is worse than no guard — every guard needs a can't-happen assertion on
+its own inputs (here: "HEAD must contain >0 canon files or die"). Verify guards fire on a
+known-dirty fixture before trusting them.
+
+## 2026-07-12 — Fictional-scaffolding drift: the "Apex master + copier" layer
+A 2026-06-30 autonomous session built a "manual-trader signal layer" (forward_test_journal
+APEX TICKET pushes, sizing tables, 'Fire on Apex master · copier replicates' instructions)
+around prop-firm accounts that DO NOT EXIST — Apex was only ever a research dossier in
+vault/01-prop-firms/. The fiction ran for 12 days, and its fallback point-table printed
+MYM-scale brackets on cattle (a "$20k stop" that alarmed the founder into thinking a real
+blowout-grade bracket existed — it never did; the bots' real brackets come from validated
+params). Lesson: autonomous sessions can build durable artifacts on hallucinated premises
+that survive because nothing audits "does the thing this code talks to actually exist?"
+Prevention: when code references an external account/service/venue, verify it against
+vault ground truth (prop-firm _INDEX, account lists) before shipping; periodically audit
+notification/relay layers against the REAL account inventory (Goat + Tradeify today).
+
+## 2026-07-12 — Subagent rejected legitimate mid-flight redirects as prompt injection
+The aligrithm scout received two genuine coordinator SendMessages (founder reweight + site
+structure intel) mid-crawl and refused both as injection — they pattern-matched perfectly
+(mid-task scope inversion toward unbounded expansion, arriving "inside" its workflow). The
+agent's conservatism was CORRECT behavior given its epistemic position; the coordination
+failure was mine. Rule: major scope changes go to FRESH agents with full context in the
+original prompt; mid-flight SendMessages only for small clarifications, and when unavoidable,
+anchor them with session-verifiable facts (commit hashes the agent can check in git).
+
+## 2026-07-19 · Reported a scoped test run as a green suite
+- **Root cause:** Ran pytest on the directories I had touched (1,522 passing) and wrote that figure into a commit message as evidence the change was safe. engine/genome_map/tests was RED at that commit and had been since double7_mr joined ENTRY_FNS with no genome -- the drift guard I was one layer away from.
+- **Fix:** Full-suite runs now gate the batch commits (4,179 passed today). When quoting a test count in a commit, quote the INVOCATION too, or run the whole suite. A scoped pass is evidence about a scope, not about the repo.
+- **Timestamp:** 2026-07-20T00:07:57Z
+
+## 2026-07-19 · Fixed an alarm's threshold without fixing what it measured -- and widened the blind spot
+- **Root cause:** The hunter deadman cried wolf every cycle (45-min horizon vs 60-min cycles), so I widened the horizon to 90 min and shipped it with tests. But health was still 'did a marker print recently', and the loop logs cycle-end WITH its exit code then keeps going regardless. A crash-loop prints markers perfectly on schedule -- 25 consecutive rc=1 cycles over 13.5 hours would have read as alive, and my fix made that window BIGGER.
+- **Fix:** alive = cycling AND not crash_looping (3+ consecutive non-zero exits). Caught by an adversarial verifier, not by me. Lesson: when an alarm is wrong, ask what it MEASURES before adjusting what it THRESHOLDS -- a false positive and a false negative can share one root cause, and treating the symptom can deepen the other.
+- **Timestamp:** 2026-07-20T00:07:57Z

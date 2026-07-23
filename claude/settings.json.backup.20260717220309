@@ -1,39 +1,38 @@
 {
   "permissions": {
     "allow": [
-      "Agent(*)",
-      "AskUserQuestion(*)",
-      "Bash",
       "Bash(*)",
-      "Edit",
-      "Edit(*)",
-      "EnterPlanMode(*)",
-      "ExitPlanMode(*)",
-      "FetchURL(*)",
-      "Glob",
-      "Glob(*)",
-      "Grep",
-      "Grep(*)",
-      "Read",
       "Read(*)",
       "Read(//**)",
-      "SearchWeb(*)",
-      "SetTodoList(*)",
+      "Edit(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Agent(*)",
+      "WebSearch(*)",
+      "WebFetch(*)",
       "Shell(*)",
-      "Task",
+      "SearchWeb(*)",
+      "FetchURL(*)",
+      "AskUserQuestion(*)",
       "TaskList(*)",
       "TaskOutput(*)",
       "TaskStop(*)",
-      "WebFetch",
-      "WebFetch(*)",
-      "WebSearch",
-      "WebSearch(*)",
-      "Write"
+      "EnterPlanMode(*)",
+      "ExitPlanMode(*)",
+      "SetTodoList(*)"
     ],
-    "deny": [],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/)",
+      "Bash(sudo rm -rf /)",
+      "Bash(sudo rm -rf /*)",
+      "Bash(> /dev/sda)",
+      "Bash(dd if=* of=/dev/sda*)"
+    ],
     "defaultMode": "bypassPermissions"
   },
-  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -54,14 +53,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/tel-health.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/canon-guard-check.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/session-health.sh"
           }
         ]
       }
@@ -73,10 +64,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/secret-paste-guard.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/environment-details.sh"
           }
         ]
       }
@@ -142,10 +129,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/skill-metrics.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/ntfy-notify.sh"
           }
         ]
       }

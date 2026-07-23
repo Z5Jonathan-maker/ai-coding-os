@@ -106,3 +106,14 @@ Not every skill is the same kind of thing. Three classes, never mix them up:
 - `/route` is Runtime — actually picks a target (cloud vs local).
 - `/autonomous-loop` is Lookup despite the "loop" name — it's a *bootstrap doc* for installing the pattern; the actual loop runs via `/mega-cycle` (Runtime).
 - `/design` is dual — Lookup for HTML mockup patterns, Runtime when it generates a file.
+
+## MCP additions (curator-applied 2026-07-11, proposals 1+4)
+
+| MCP | Status | Notes |
+|---|---|---|
+| crosstrade | LIVE | NT8 bridge: deploy/disable/journal/quotes for the prop books; ListStrategies isEnabled = authoritative |
+| tradingview | LIVE | web-CDP MCP, 78 tools; targets TradingView WEB in Chrome (desktop app CDP-sealed) |
+| bybit | LIVE | official bybit-official-trading-server, 243 tools; keyless = market data only |
+| camofox-browser | ARCHIVED | restore from archive only for Firefox-fingerprint needs |
+
+cc-health: RETIRED 2026-05-19 (row removed; the 2026-05-20 optimization-log mention was the retirement-week transition).

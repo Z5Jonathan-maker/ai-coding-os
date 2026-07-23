@@ -182,3 +182,6 @@ export PATH="$HOME/.kimi-webbridge/bin:$PATH"
 
 # Power mode aliases with snapshot + rollback + reporting
 [ -f "$HOME/AI-SYSTEM-V2/scripts/power-mode.sh" ] && source "$HOME/AI-SYSTEM-V2/scripts/power-mode.sh"
+
+# Trust the Obsidian Local REST API self-signed cert so Claude Code MCP can connect (2026-07-18)
+export NODE_EXTRA_CA_CERTS="$HOME/.claude/obsidian-rest-ca.pem"

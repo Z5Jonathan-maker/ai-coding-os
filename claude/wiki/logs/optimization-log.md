@@ -384,3 +384,108 @@ Append-only. Every change that made the system faster, cheaper, more autonomous,
 - **After:** The cockpit has a fast readable status panel in task form. It currently reports the true blocker: disk headroom at 21GB free vs 25GB required.
 - **Why:** This is the data surface a future VS Code sidebar would render. It gets most of Cursor's status/context clarity without building an extension yet.
 - **Timestamp:** 2026-05-21T05:29:00Z
+
+## 2026-07-09 · Count-matched random-day placebo = THE strategy discriminator on futures panels
+- **Before:** Candidates judged on IS/OOS Sharpe + DSR; several 'strong' breakout/trend/compression variants (OOS Sharpe up to +1.0) looked deployable
+- **Change:** Made a count-matched random-day placebo (same entry count, same exit machinery, 20-50 seeds) a mandatory pre-registered gate on every candidate
+- **After:** 6+ placebo corroborations in one day: killed R7-1/R7-4/4 compression triggers/crypto transfer (all placebo-indistinguishable); the only survivors (NR4/NR7, NR2of20, HVp-SI) beat their own random draw at P<=0.02
+- **Why:** On trending futures panels ANY entry riding a decent exit harvests generic drift — absolute Sharpe measures the ride, not the signal; only placebo-relative performance measures information
+- **Timestamp:** 2026-07-09T21:55:43Z
+
+## 2026-07-09 · University corrected to APPROVED STRATEGY BOOK (founder canon 2026-07-09)
+- **Before:** University taught stale strategy truth: S7 as candidate, ORB5 as bench, graveyard 29-of-35, RSI2 categorically dead, no Tier 2-5 teaching; founder ruled it 'old, outdated, some wrong'
+- **Change:** Filed founder's 5-tier playbook verbatim as vault/04-playbooks canon + decision-register entry; agent-swept vault/university (L4 full arsenal rewrite w/ 28-cell table 0-diff vs book, dual-truth status lines everywhere, vault-library LIVE_PF -> Tier 1, graveyard 95, kills-are-of-configs nuance); generator title/chip fixed; library regen 17 pages
+- **After:** All gates green (docs/canon/vault/contract), served pages verified visually + DOM (6 live pills light), commits 1291438/615fd46/5dd7523/ce2092e; open founder question recorded: Tier-1 YM book vs 6-cell healer mapping
+- **Why:** Dual-truth law (book = status/numbers, code = deployment snapshot, always labeled) resolves founder-canon vs code drift without silently editing either; verbatim filing + decision record makes the canon un-drifting for future agents
+- **Timestamp:** 2026-07-10T01:45:42Z
+
+## 2026-07-10 · University synced to post-deployment catalog v2 (2026-07-10)
+- **Before:** University taught the 07-09 book: YM-anchored Tier 1, Sniper|MBT live, stale GC numbers, no LE/HE, no firm-rule canon, no 07-10 doctrine
+- **Change:** Read all 9 authoritative sources in founder precedence order myself (registry, whitelist JSON, both firm docs, H17/H21/H22/H24/H27/H29, gauntlet, decisions 07-09/10); wrote approved-book v2 with every number traced; superseded-bannered v1; agent-swept all University surfaces; verified Tier-1 tables against prop_passover.py EXPECTED
+- **After:** 33 lanes/10 live rendered correctly, zero unlabeled stale markers, all gates green, commit 89a8201; contradictions reported not guessed (registry LIVE table stale, LE/HE whitelist gap)
+- **Why:** Post-deployment truth lived in decisions.md + passover code, not the registry LIVE table — reading primary sources in precedence order and diffing the teaching tables against the operational EXPECTED dict is what catches a stale canon doc before it re-poisons the curriculum
+- **Timestamp:** 2026-07-10T13:33:23Z
+
+## 2026-07-10 · Academy expanded: 3 new bar-replay lessons (ORB, livestock, TP0.25 sleeve) on real bars
+- **Before:** Academy had 4 live lessons (§12 YM/MNQ, Sniper BTC, PrecAM GC); ORB, livestock, and the TP0.25 sleeve had no interactive replay lesson
+- **Change:** Extended _extract_wave2.py (non-breaking: per-market tol_pts + exit_hm) for LE/HE/TP25; wrote dedicated _extract_orb.py (OrBars=3/TpR=0/opposite-extreme stop); extracted 3 real-bar datasets (352/403/299 honest candidates); fanned 3 parallel agents to author thin lesson configs from exact extracted numbers + live-01 template; wired shell manifest + hub cards
+- **After:** 3 lessons render + gate-fire verified on :8770 (ORB gate: body-up call-it with 3 graded options); zero fabrication (every price from the dataset meta); gates green; commits 35be4b9 (data) + 3371511 (lessons)
+- **Why:** Separating dataset extraction (zero-fabrication-critical, done inline) from lesson authoring (independent, parallelizable) let 3 agents build concurrently from exact numbers; honest scope calls (HE folded into LE — no MTF-aligned winner exists; S7 deferred — needs the real SMC engine) beat shipping a lesson that misteaches
+- **Timestamp:** 2026-07-10T17:25:32Z
+
+## 2026-07-10 · Academy complete: S7 SMC lesson engine-sourced; full 8-engine set deployed live
+- **Before:** S7 SMC had no interactive lesson; I'd deferred it as needing the real smc_reversal.py engine rather than hand-faked geometry
+- **Change:** Wrote _extract_s7.py that IMPORTS the real validator (scan/build_ctx/MTF), applied S7's actual gates (NY session + >=1.0xATR impulse + MTF 3/3), kept only gated LONG winners, asserted geometry coherence (sweep<entry<MSS, stop<sweep, target>entry), chose 2026-04-06 (+1.84R, 2.54xATR); authored live-08 with the sweep->MSS->fib+OB narrative; deployed the complete 8-lesson Academy to the encrypted Vercel mirror
+- **After:** All 8 engines have interactive real-bars lessons; live-08 renders + gate-fires verified; deploy landed (81 pages, Ready/Production), new lessons 200 on the public alias, body encrypted; commits bb182ef + the deploy
+- **Why:** Driving the actual validation engine to source the teaching setup is the only zero-fabrication path for a complex strategy (sweep/MSS/OB/fib) — reconstructing SMC detection by hand would risk misteaching; the honest deferral until I could do it faithfully, then doing it properly, beat shipping a plausible-but-wrong lesson
+- **Timestamp:** 2026-07-10T18:05:42Z
+
+## 2026-07-10 · Academy: whole course converted to multi-checkpoint + deployed (premium Phase A complete)
+- **Before:** Only the flagship had multi-checkpoint gates; the other 7 lessons were single-decision-point
+- **Change:** Rolled multi-checkpoint to all 7 via 3 parallel agents grouped by strategy pattern (fades / sniper+ORB / sleeve+SMC), each anchored on the dataset's REAL gate bar with epoch-offset predicates (strictly increasing = ordered by construction, so the flagship's ordering bug can't recur). Batch static-verified all 7 (parse under node, correct-keys, epochsMono=true) + runtime-drove 3 representatives to full mastery
+- **After:** 8/8 lessons uniformly multi-checkpoint w/ counterfactual feedback + mastery scoring; committed e10ac08; deployed live (81 pages, all 8 lessons 200 on the public alias)
+- **Why:** Epoch-offset predicates anchored on the known-good gate bar eliminate the content-predicate ordering bug entirely — the right pattern for timed replay checkpoints. Static verification (parse + correct-keys + monotonic epochs) catches structural issues without the browser, reserving browser checks for runtime spot-checks — a fast, reliable verification split for generated interactive lessons
+- **Timestamp:** 2026-07-10T19:07:45Z
+
+## 2026-07-10 · Max-parallel University premium wave: 12 agents, 6 commits, deployed in one sprint
+- **Before:** University had 8 premium multi-checkpoint lessons but static basics/mindset, no spaced-repetition, no working drill/cert, no method-reference/glossary/prep/gauntlet pages
+- **Change:** Founder opted into max-parallel (30-min credit burn). Launched 12 concurrent agents partitioned by STRICT file ownership (each owns disjoint files -> zero collisions): spaced-rep system, drill/cert engine, academy engine polish, hub mastery map, basics 01-07 + 08-14 widgets, foundations/mindset recall cards, method-reference, glossary (57 terms), session-prep ritual, the-gauntlet explorable, simulator upgrade. Integrated as they landed via a fast verification split (node --check config + tag-balance + serve-200, browser only for regression spot-checks), committed in 6 batches, injected the shell rail, ran gates, deployed
+- **After:** All 12 complete, zero collisions, ~40 files, 6 clean commits, all gates green (vault/canon/docs/contract), deployed live (Ready/Production, all 7 new surfaces 200 on public alias, encrypted). Backward-compat verified (live-01 still 3/3 with polished engine)
+- **Why:** Strict disjoint file-ownership partitioning is what makes max-parallel safe on a live codebase -- 12 agents, zero merge conflicts. The static-first verification split (parse+tag+serve, browser only for regression) let one integrator keep pace with 12 producers. Committing in batches as agents land (not one giant commit) banks progress against any single failure and keeps the shared-repo trading lane unblocked
+- **Timestamp:** 2026-07-10T19:52:20Z
+
+## 2026-07-11 · Beauty wave 2 + JARVIS pass: 11 batches, credit-wipeout recovery, QA-driven fixes, deployed
+- **Before:** Data-rich but static app; 5 lessons + foundations still light-theme; archive on old palettes; no motion/presence; agents wiped mid-flight by session credit limit
+- **Change:** 8 resume-aware agents completed all 12 wiped tasks (audit-current-state-first briefs); Data Room built; whole app 100% dark v4; JARVIS presence kit (boot sweep, choreography, count-up, cmd-K, pulse) injected across 65 pages + library generator; dedicated visual-QA agent swept 26 pages and its 6 defects were all fixed same-session (incl. money-values-never-animate honesty rule)
+- **After:** 11 clean commits, all gates green, deployed Ready/Production; QA 'genuinely premium' list includes index/dashboard/gauntlet/data-room/live-01
+- **Why:** Resume-aware briefs (audit state, complete to spec) turn agent wipeouts into cheap restarts because atomic edits leave working trees; a read-only QA agent that MEASURES (scrollWidth, innerText probes, screenshots) closes the loop the founder kept catching by eye
+- **Timestamp:** 2026-07-11T15:56:34Z
+
+## 2026-07-11 · JARVIS J0-J4 complete + deployed despite a second credit wipeout
+- **Before:** Premium-but-static app; second session-limit wipeout killed J1/J3a mid-flight while J2/J3b/J4 survived
+- **Change:** Triage found all partials parseable (atomic edits again); completed J3a inline from the agent's 80%-done sequential-reveal (verified mid-reveal restart safety in-browser), completed J1 inline (made the existing neural mesh verdict-reactive w/ 30fps cap + built the 7-gate system ring + persona line from hydrated DOM state only), banked surviving agents' J2/J3b/J4; fixed stale '6-cell' cockpit label; deployed
+- **After:** Full theater live: reactive mesh, gate ring ('systems nominal - all 7 gates green' verified), clip-revealed equity, sequential geometry reveals, animated funnels/rings/scanlines; all gates green; Ready/Production
+- **Why:** Inline completion of dead agents' partials beats re-dispatching when the partial is verified sound and the spec is in-context — half the latency, zero re-read cost. The money rule (values never transiently wrong) proved load-bearing twice: J2's agent found and fixed a pre-existing $-ticking violation unprompted because the rule was in its brief
+- **Timestamp:** 2026-07-11T16:17:59Z
+
+## 2026-07-17 · Distillation-back must be a standing end-of-cycle step, not reminder-driven
+- **Why:** Committing vault docs persists facts in-repo but is an ARCHIVE, not a brain that changes future reasoning. The model does not auto-learn between sessions, so 'smarter' is only real at the system level via memory. Skipping the write-back forfeits the smarter. 'Grew a file' != 'got smarter' — the test of an entry is whether it changes a future decision.
+- **Timestamp:** 2026-07-18T03:23:54Z
+
+## 2026-07-19 · Declare-or-fail wiring registries beat audits for built-but-not-wired code
+- **Before:** Four layers of mym-autotrader carried large, correct, TESTED modules that nothing called: 5 signal families unreachable by build_entry_fn, 6 of 7 harvesters staging atoms no ingester read, 15 of 19 quant_primitives, graph_retriever (640 lines) and rag (724). Every one looked like live infrastructure.
+- **Change:** Added a machine-readable STATUS registry per layer (WIRED / PENDING_WIRE / MANUAL_TOOL / SUPERSEDED) naming the consumer and the reason, plus a test that GLOBS the directory and fails when a module ships undeclared -- and a second test asserting anything claiming WIRED has a real production importer.
+- **After:** Four layers now enforced (genome.RUNNABLE_ONLY, quant_primitives, engine.knowledge, engine.gauntlet). The WIRED-really-is check caught three of my own false claims on the day it was written.
+- **Why:** An audit finds inert code once; a globbing test finds it forever. And forcing 'unused' to be a STATED status with a reason distinguishes a deliberate manual tool from an accident nobody noticed -- which is the only distinction that matters.
+- **Timestamp:** 2026-07-20T00:07:57Z
+
+## 2026-07-19 · Writing the declaration finds more than the audit that prompted it
+- **Before:** An adversarial sweep reported 12 of 18 quant_primitives unwired.
+- **Change:** Wrote the per-module status entries by hand and let the enforcement test check each claim.
+- **After:** The real number was 15 of 19. Three modules read as wired on evidence that was not production wiring: an intra-package import from another UNWIRED module, a bare string match in an unrelated topic list, and a duplicated implementation where the live copy was a different function entirely.
+- **Why:** Enumerating forces per-item evidence; a scan aggregates and lets weak evidence pass. Chains of unwired modules importing each other are the worst case -- they reach production exactly as often as one does, and they look busier.
+- **Timestamp:** 2026-07-20T00:07:57Z
+
+## 2026-07-19 · Measure duplicated estimators against known truth before converging them
+- **Before:** Found two implementations of the OU half-life; the live gate used the UNTESTED copy. I filed that as a risk, implying the tested primitive was the one to adopt.
+- **Change:** Generated synthetic OU paths with a KNOWN true half-life and measured both estimators' bias across the band.
+- **After:** The untested live copy is markedly BETTER where the band edge sits (-1.6% bias vs +23.4% at true half-life 1.5). Converging onto the tested primitive would have made the gate worse. Also surfaced that the combined screen rejects ~78% of genuine slow reverters at n=250.
+- **Why:** 'Tested' and 'correct' are different properties. A duplicate is a real problem, but which copy to keep is an empirical question -- and synthetic data with a known answer settles it in minutes.
+- **Timestamp:** 2026-07-20T00:07:57Z
+
+## 2026-07-19 · Contract multipliers must be read from a registry, never typed at the call site
+- **Before:** Two independent modules hardcoded dollar-per-point. engine/gauntlet/metrics_engine priced every NQ trade at MYM's $0.50/pt (true $20) and every LE trade the same (true $400) -- 40x and 800x understated. backtest/smc_reversal's INSTR dict declared '$/pt' and carried per-TICK values for MNQ/MES/M2K -- 4x/4x/10x. Both files sat next to a canonical registry (engine/data/contract_specs.py) that self-describes as the single source of truth.
+- **Change:** Both now read contract_specs. Trade.point_value is REQUIRED with no default, so a new caller cannot inherit the bug by omission. Added tests asserting each table matches the registry and that point_value != tick_value.
+- **After:** First NQ Tier A cell moved from -$3,634 to +$635,951 -- a sign flip on the whole cell. Also surfaced that MCL was tracked by the service but absent from the registry, so its pre-trade ladder was being skipped.
+- **Why:** The bug hid because MYM's tick IS one point, so $/tick == $/pt on the one instrument these files are mostly used with. A units error that is invisible on your primary instrument is the most durable kind -- only a registry lookup plus an equality test against it catches it.
+- **Timestamp:** 2026-07-20T00:36:39Z
+
+## 2026-07-19 · Adversarial verification earns its cost: 8 of 11 correctness findings were refuted
+- **Before:** A 6-lens correctness sweep produced 11 candidate 'wrong number' findings, several very plausible (DSR mislabelled, IID bootstrap on correlated returns, z-score ddof split, SMA-called-ATR).
+- **Change:** Every candidate went to an independent verifier told to REFUTE by default and to re-derive the correct value rather than trust the finder's arithmetic.
+- **After:** 3 confirmed, 8 refuted -- and the refutations were substantive: the 'mislabelled DSR' is documented as Sharpe-like on line 1, the bootstrap p-value never enters a pass/fail leg, the two z-scores are module-private with no shared contract, and in one case the finder's OWN expected value was the wrong one.
+- **Why:** A finder optimizes for recall and will rationalize a wrong number into existence. Acting on 11 findings would have meant 8 unnecessary changes to research code -- each one re-deciding filed verdicts. The refutations are the product, not the overhead.
+- **Timestamp:** 2026-07-20T00:36:39Z
+
+## 2026-07-22 · mym-autotrader full wiring pass + reality-loop closure
+- **Timestamp:** 2026-07-22T15:56:22Z
